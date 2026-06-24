@@ -62,7 +62,16 @@ apps/
 docs/                 architecture + the phase blueprint
 ```
 
-## Documentation
+## User manuals
+
+How-to guides for using the tools:
+
+- [Manuals index](docs/manuals/README.md)
+- [Authoring tool (designer)](docs/manuals/authoring-tool.md)
+- [Respondent app (runtime EQ)](docs/manuals/respondent-app.md)
+- [Expression language reference](docs/manuals/expression-language.md)
+
+## Architecture & design docs
 
 - [Architecture overview](docs/architecture.md)
 - [Phase 1 — DDI instrument schema](docs/phase1-schema.md)
