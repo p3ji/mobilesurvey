@@ -1,0 +1,32 @@
+{
+  "name": "@mobilesurvey/designer",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Mobile-first DDI instrument authoring tool (Vite + React).",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@mobilesurvey/expression-engine": "workspace:*",
+    "@mobilesurvey/instrument-schema": "workspace:*",
+    "@mobilesurvey/runtime-engine": "workspace:*",
+    "@radix-ui/react-tabs": "^1.1.2",
+    "@xstate/react": "^5.0.2",
+    "immer": "^10.1.1",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "xstate": "^5.19.0",
+    "zustand": "^5.0.2"
+  },
+  "devDependencies": {
+    "@types/react": "^18.3.18",
+    "@types/react-dom": "^18.3.5",
+    "@vitejs/plugin-react": "^4.3.4",
+    "typescript": "^5.6.3",
+    "vite": "^5.4.11"
+  }
+}

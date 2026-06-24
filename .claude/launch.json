@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "designer",
+      "runtimeExecutable": "pnpm",
+      "runtimeArgs": ["--filter", "@mobilesurvey/designer", "dev"],
+      "port": 5173
+    }
+  ]
+}
