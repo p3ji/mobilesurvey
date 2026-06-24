@@ -158,6 +158,16 @@ textarea {
   border-radius: 6px;
   font-size: 14px;
 }
+.gate__help {
+  display: inline-block;
+  margin-top: 16px;
+  font-size: 13px;
+  color: var(--brand);
+  text-decoration: none;
+}
+.gate__help:hover {
+  text-decoration: underline;
+}
 
 /* ── Survey runner ───────────────────────────────────────────────────────── */
 .eq {

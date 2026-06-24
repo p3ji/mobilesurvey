@@ -682,6 +682,22 @@ code {
   color: var(--warn);
 }
 
+/* Help link */
+.toolbar__help {
+  display: inline-flex;
+  align-items: center;
+  font: inherit;
+  text-decoration: none;
+  color: var(--ink-soft);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 5px 10px;
+}
+.toolbar__help:hover {
+  color: var(--brand);
+  border-color: var(--brand);
+}
+
 /* Render button */
 .toolbar__render-btn {
   background: var(--brand);

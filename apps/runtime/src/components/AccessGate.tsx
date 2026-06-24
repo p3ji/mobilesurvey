@@ -1,6 +1,10 @@
 /** Access-code entry. Resolves the code against the (mock) CMS before entering the survey. */
 import { useState, type FormEvent } from 'react';
 
+/** The respondent-app manual (GitHub renders the markdown). */
+const HELP_URL =
+  'https://github.com/p3ji/mobilesurvey/blob/main/docs/manuals/respondent-app.md';
+
 export function AccessGate({
   onAuthenticate,
 }: {
@@ -60,6 +64,15 @@ export function AccessGate({
           Demo codes: <code>ABC123</code> (Jordan Lee) or <code>DEF456</code> (Marie Tremblay).
           Progress is saved automatically — re-enter the same code to resume.
         </div>
+
+        <a
+          className="gate__help"
+          href={HELP_URL}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          ? Need help completing the survey?
+        </a>
       </div>
     </div>
   );
