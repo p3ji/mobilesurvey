@@ -62,6 +62,7 @@ docs/                 architecture + the three-phase blueprint
 - [Phase 1 — DDI instrument schema](docs/phase1-schema.md)
 - [Phase 2 — state engine & logic parser](docs/phase2-state-engine.md)
 - [Phase 3 — component framework](docs/phase3-components.md)
+- [Phase 4 — metadata registry & semantic search](docs/phase4-metadata-registry.md)
 
 ## Contributing & feedback
 
