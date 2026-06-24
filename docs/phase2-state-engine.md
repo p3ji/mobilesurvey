@@ -75,3 +75,25 @@ and `COMPLETE`. This is the seam where later iterations add:
 Performance: flattening is O(visible nodes), recomputed via memoization keyed on
 `(instrument, state)`; roster expansion is capped; structural sharing (Immer/Zustand) keeps
 re-renders cheap.
+
+## Runtime app (`apps/runtime`) — implemented
+
+The standalone respondent EQ is built on the same three packages:
+
+- **Access codes** — `AccessGate` resolves a code via `CmsClient.resolveAccessCode` → case +
+  pre-fill sample. Demo codes `ABC123` / `DEF456`.
+- **Pagination** — `paginate()` (shared in `runtime-engine`) groups the flattened items at page
+  breaks; `pageHasHardEdits()` gates the Next/Submit button. Conditional pages
+  (`visibleWhen` on a page sequence) appear/disappear live as answers change.
+- **Resume / persistence** — progress (responses + current page) is saved to `SessionStore` on
+  every change; re-entering the same code restores state via the machine's `restore` input. The
+  saved session is cleared on submit.
+- **Paradata** — a `ParadataSink` records `session_start`/`session_resume`, `page_next`,
+  `page_back`, `answer`, `page_complete` and `submit`; the completion screen shows the trail.
+- **Submission** — reports `completed` to the CMS and renders the collected responses in
+  data-schema form (not persisted to any server in this demo).
+
+The integration interfaces now live in `@mobilesurvey/runtime-engine` so the designer preview and
+the runtime app share one contract. Still deferred: moving pagination *into* the XState chart as
+explicit screen sub-states, WebCrypto session encryption, and a real backend behind the
+interfaces.

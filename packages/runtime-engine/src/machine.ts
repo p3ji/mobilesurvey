@@ -13,6 +13,8 @@ export interface RuntimeMachineInput {
   instrument: Instrument;
   sample?: Record<string, unknown>;
   language?: LanguageCode;
+  /** Restore a previously persisted state (resume after a network drop / app reload). */
+  restore?: RuntimeState;
 }
 
 export type RuntimeEvent =
@@ -27,6 +29,8 @@ export interface RuntimeMachineContext {
 }
 
 function initialState(input: RuntimeMachineInput): RuntimeState {
+  // Resume: a persisted state takes precedence over a fresh seed.
+  if (input.restore) return input.restore;
   return {
     responses: seedPrefill(input.instrument, input.sample ?? {}),
     sample: input.sample ?? {},

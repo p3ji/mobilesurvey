@@ -16,8 +16,13 @@ the **rendering** layer, and the **runtime state engine**.
 ```bash
 npm i -g pnpm        # if you don't have pnpm
 pnpm install
-pnpm --filter @mobilesurvey/designer dev   # → http://localhost:5173
+pnpm --filter @mobilesurvey/designer dev   # authoring tool → http://localhost:5173
+pnpm --filter @mobilesurvey/runtime  dev   # respondent EQ  → http://localhost:5174
 ```
+
+The respondent runtime is the standalone questionnaire app: enter a demo access code
+(`ABC123` or `DEF456`), answer page-by-page with live edit checks, reload to resume where you left
+off, and submit to see the collected response data and the paradata trail.
 
 Other commands:
 
@@ -53,7 +58,8 @@ packages/
   runtime-engine      flatten + piping + edit evaluation + XState machine (thin in Iter 1)
 apps/
   designer            Vite + React authoring tool (Iteration-1 focus)
-docs/                 architecture + the three-phase blueprint
+  runtime             respondent-facing EQ app: access codes, resume, paradata (Phase 2)
+docs/                 architecture + the phase blueprint
 ```
 
 ## Documentation
