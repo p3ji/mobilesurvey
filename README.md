@@ -38,7 +38,11 @@ pnpm build       # production build of the designer
 - Export / import the instrument as validated JSON, and download the generated JSON Schema.
 
 The default document is a bilingual (EN/FR) household & employment survey demonstrating every
-feature (see `packages/instrument-schema/src/examples/household.instrument.ts`).
+feature (see `packages/instrument-schema/src/examples/lfs.instrument.ts`). Try the **▶ Render** button to see the full respondent-facing app with page navigation, conditional routing, and response collection.
+
+## Live demo
+
+[https://p3ji.github.io/mobilesurvey/](https://p3ji.github.io/mobilesurvey/)
 
 ## Repository layout
 
@@ -58,6 +62,17 @@ docs/                 architecture + the three-phase blueprint
 - [Phase 1 — DDI instrument schema](docs/phase1-schema.md)
 - [Phase 2 — state engine & logic parser](docs/phase2-state-engine.md)
 - [Phase 3 — component framework](docs/phase3-components.md)
+
+## Contributing & feedback
+
+Have a feature request, bug report, or idea? Reach out:
+
+- **GitHub Issues**: [github.com/p3ji/mobilesurvey/issues](https://github.com/p3ji/mobilesurvey/issues)
+- **Email**: [push.peji@gmail.com](mailto:push.peji@gmail.com)
+
+## More work
+
+Explore other projects: [portfolio-pi-lake-ypm5sq0qik.vercel.app](https://portfolio-pi-lake-ypm5sq0qik.vercel.app/#home)
 
 ## License
 
