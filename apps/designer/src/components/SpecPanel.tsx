@@ -6,9 +6,11 @@ import {
   type ValidationIssue,
 } from '@mobilesurvey/instrument-schema';
 import { useDesigner } from '../store/instrumentStore.js';
+import { printSpec } from '../lib/specReport.js';
 
 export function SpecPanel() {
   const instrument = useDesigner((s) => s.instrument);
+  const language = useDesigner((s) => s.language);
   const load = useDesigner((s) => s.load);
   const [importText, setImportText] = useState('');
   const [importIssues, setImportIssues] = useState<ValidationIssue[] | null>(null);
@@ -77,6 +79,9 @@ export function SpecPanel() {
           }
         >
           ⬇ JSON Schema
+        </button>
+        <button type="button" onClick={() => printSpec(instrument, language)}>
+          🖨 Print spec (PDF)
         </button>
       </div>
 

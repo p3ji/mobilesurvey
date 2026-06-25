@@ -46,7 +46,11 @@ pnpm build       # production build of the designer
   routing conditions** (with live parse feedback), and **pre-fill mappings**.
 - **Preview** the questionnaire live in a mobile frame: routing, nested rosters, text piping,
   pre-fill, language toggle, and soft/hard edits all evaluate in real time.
-- Export / import the instrument as validated JSON, and download the generated JSON Schema.
+- Visualise the **flow logic** as a flowchart (questions, pages, branches and rosters) with zoom
+  and SVG export.
+- Export / import the instrument as validated JSON, download the generated JSON Schema, or
+  **print the specification as a PDF** (questions, response options, edits, routing, variables,
+  code lists).
 
 The default document is a bilingual (EN/FR) household & employment survey demonstrating every
 feature (see `packages/instrument-schema/src/examples/lfs.instrument.ts`). Try the **▶ Render** button to see the full respondent-facing app with page navigation, conditional routing, and response collection.

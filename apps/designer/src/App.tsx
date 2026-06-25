@@ -6,6 +6,7 @@ import { VariablesPanel } from './components/VariablesPanel.jsx';
 import { Inspector } from './components/Inspector.jsx';
 import { SpecPanel } from './components/SpecPanel.jsx';
 import { PreviewPane } from './components/PreviewPane.jsx';
+import { FlowPane } from './components/FlowPane.jsx';
 import { RespondentApp } from './components/RespondentApp.jsx';
 
 export default function App() {
@@ -48,12 +49,18 @@ export default function App() {
               <Tabs.Trigger className="tabs__trigger" value="preview">
                 Preview
               </Tabs.Trigger>
+              <Tabs.Trigger className="tabs__trigger" value="flow">
+                Flow
+              </Tabs.Trigger>
               <Tabs.Trigger className="tabs__trigger" value="spec">
                 JSON Spec
               </Tabs.Trigger>
             </Tabs.List>
             <Tabs.Content value="preview" className="tabs__content">
               <PreviewPane />
+            </Tabs.Content>
+            <Tabs.Content value="flow" className="tabs__content">
+              <FlowPane />
             </Tabs.Content>
             <Tabs.Content value="spec" className="tabs__content">
               <SpecPanel />
