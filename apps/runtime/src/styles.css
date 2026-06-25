@@ -168,6 +168,16 @@ textarea {
 .gate__help:hover {
   text-decoration: underline;
 }
+.gate__conn {
+  margin-top: 16px;
+  font-size: 12px;
+}
+.gate__conn--on {
+  color: var(--ok);
+}
+.gate__conn--off {
+  color: var(--ink-soft);
+}
 
 /* ── Survey runner ───────────────────────────────────────────────────────── */
 .eq {

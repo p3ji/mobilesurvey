@@ -18,11 +18,17 @@ npm i -g pnpm        # if you don't have pnpm
 pnpm install
 pnpm --filter @mobilesurvey/designer dev   # authoring tool → http://localhost:5173
 pnpm --filter @mobilesurvey/runtime  dev   # respondent EQ  → http://localhost:5174
+pnpm --filter @mobilesurvey/api      dev   # backend API   → http://localhost:8787 (optional)
 ```
 
 The respondent runtime is the standalone questionnaire app: enter a demo access code
 (`ABC123` or `DEF456`), answer page-by-page with live edit checks, reload to resume where you left
 off, and submit to see the collected response data and the paradata trail.
+
+If the **API** is running, the runtime app connects to it automatically and persists sessions and
+paradata **server-side** (resume works across devices). If it isn't, the app falls back to local
+in-browser storage, so the hosted demo works with no server. See
+[backend-service.md](docs/backend-service.md).
 
 Other commands:
 
@@ -59,6 +65,7 @@ packages/
 apps/
   designer            Vite + React authoring tool (Iteration-1 focus)
   runtime             respondent-facing EQ app: access codes, resume, paradata (Phase 2)
+  api                 Node/TS + SQLite backend implementing the integration interfaces (Phase 3)
 docs/                 architecture + the phase blueprint
 ```
 
@@ -77,6 +84,7 @@ How-to guides for using the tools:
 - [Phase 1 — DDI instrument schema](docs/phase1-schema.md)
 - [Phase 2 — state engine & logic parser](docs/phase2-state-engine.md)
 - [Phase 3 — component framework](docs/phase3-components.md)
+- [Backend service (API + SQLite)](docs/backend-service.md)
 - [Phase 4 — metadata registry & semantic search](docs/phase4-metadata-registry.md)
 
 ## Contributing & feedback

@@ -10,3 +10,16 @@ coverage/
 .env.*
 !.env.example
 .claude/settings.local.json
+
+# SQLite data (api)
+apps/api/data/
+*.db
+*.db-shm
+*.db-wal
+
+# Local DDI reference distributions (large third-party specs/docs; not part of the repo)
+DDI_L_3_3_2020_04_15/
+ddi-c_2-6_2026-04-15/
+DDI_*/
+ddi-c_*/
+*.zip

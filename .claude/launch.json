@@ -12,6 +12,12 @@
       "runtimeExecutable": "pnpm",
       "runtimeArgs": ["--filter", "@mobilesurvey/runtime", "dev"],
       "port": 5174
+    },
+    {
+      "name": "api",
+      "runtimeExecutable": "pnpm",
+      "runtimeArgs": ["--filter", "@mobilesurvey/api", "dev"],
+      "port": 8787
     }
   ]
 }
