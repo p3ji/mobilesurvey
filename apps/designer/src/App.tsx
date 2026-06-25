@@ -3,6 +3,7 @@ import * as Tabs from '@radix-ui/react-tabs';
 import { Toolbar } from './components/Toolbar.jsx';
 import { StructureTree } from './components/StructureTree.jsx';
 import { VariablesPanel } from './components/VariablesPanel.jsx';
+import { LibraryPanel } from './components/LibraryPanel.jsx';
 import { Inspector } from './components/Inspector.jsx';
 import { SpecPanel } from './components/SpecPanel.jsx';
 import { PreviewPane } from './components/PreviewPane.jsx';
@@ -29,12 +30,18 @@ export default function App() {
               <Tabs.Trigger className="tabs__trigger" value="variables">
                 Variables
               </Tabs.Trigger>
+              <Tabs.Trigger className="tabs__trigger" value="library">
+                Library
+              </Tabs.Trigger>
             </Tabs.List>
             <Tabs.Content value="structure" className="tabs__content">
               <StructureTree />
             </Tabs.Content>
             <Tabs.Content value="variables" className="tabs__content">
               <VariablesPanel />
+            </Tabs.Content>
+            <Tabs.Content value="library" className="tabs__content">
+              <LibraryPanel />
             </Tabs.Content>
           </Tabs.Root>
         </section>

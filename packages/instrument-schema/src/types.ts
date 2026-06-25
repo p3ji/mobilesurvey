@@ -80,7 +80,7 @@ export interface Variable {
 }
 
 /**
- * Standard NSA reserved codes for dichotomous (mark-all) variables.
+ * Conventional reserved codes for dichotomous (mark-all) variables.
  * 1=yes/checked, 2=no/not-selected, 6=valid skip, 7=don't know, 9=not stated/missing.
  */
 export const DICHOTOMOUS_CODES = {

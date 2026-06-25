@@ -1,5 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { householdInstrument } from '../examples/household.instrument.js';
+import { lfsInstrument } from '../examples/lfs.instrument.js';
+import { demoInstrument } from '../examples/demo.instrument.js';
 import { validateInstrument } from '../validate.js';
 import { getInstrumentJsonSchema } from '../jsonSchema.js';
 import type { Instrument } from '../types.js';
@@ -11,6 +13,15 @@ describe('validateInstrument', () => {
   it('accepts the bilingual household example', () => {
     const result = validateInstrument(householdInstrument);
     expect(result.ok).toBe(true);
+  });
+
+  it('accepts the bundled Labour Force and Demo surveys', () => {
+    const lfs = validateInstrument(lfsInstrument);
+    const demo = validateInstrument(demoInstrument);
+    if (!lfs.ok) console.error('LFS issues', lfs.issues);
+    if (!demo.ok) console.error('Demo issues', demo.issues);
+    expect(lfs.ok).toBe(true);
+    expect(demo.ok).toBe(true);
   });
 
   it('rejects a missing defaultLanguage not present in languages', () => {

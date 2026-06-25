@@ -13,6 +13,7 @@
   "dependencies": {
     "@mobilesurvey/expression-engine": "workspace:*",
     "@mobilesurvey/instrument-schema": "workspace:*",
+    "@mobilesurvey/metadata-registry": "workspace:*",
     "@mobilesurvey/runtime-engine": "workspace:*",
     "@radix-ui/react-tabs": "^1.1.2",
     "@xstate/react": "^5.0.2",

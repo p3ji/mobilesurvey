@@ -19,7 +19,7 @@ export const lfsInstrument: Instrument = {
   defaultLanguage: 'en',
   metadata: {
     title: s('Household & Employment Survey', "Enquête sur le ménage et l'emploi"),
-    agency: 'Demo Statistical Agency',
+    agency: 'Example Org',
     description: s(
       'Demonstration instrument covering household demographics and labour force activity.',
       "Instrument de démonstration sur la démographie des ménages et l'activité de la population active.",

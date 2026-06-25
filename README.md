@@ -1,14 +1,14 @@
 # mobilesurvey
 
-A DDI-compliant, **mobile-first survey design & Electronic Questionnaire (EQ) authoring tool**,
-built to national-statistical-agency standards: extreme structural flexibility, multi-layer
-validation, strict accessibility, and a strict separation between the instrument **definition**,
-the **rendering** layer, and the **runtime state engine**.
+A series of **free, open-source, modular apps that help individuals and organizations run
+surveys** — design a questionnaire, run it on any device, and collect the responses. It is
+**mobile-first**, **DDI-aligned** (so instruments are portable, well-structured metadata), and
+built around a clean separation between the instrument **definition**, the **rendering** layer,
+and the **runtime state engine** so each app can be used on its own or together.
 
-> **Iteration 1** delivers the architecture blueprint (`docs/`) plus a runnable scaffold: the
-> DDI instrument schema, a safe expression engine, a thin runtime state engine, and the
-> **authoring/design tool** with a live preview. Backend concerns (sample ingestion, CMS,
-> paradata, encrypted session storage) are mocked behind interfaces. See
+> The suite is built up in phases: a DDI instrument schema, a safe expression engine, a runtime
+> state engine, an **authoring/design tool** with live preview, a standalone **respondent app**,
+> a **backend service**, and a **metadata registry** for reusing questions across surveys. See
 > [`docs/architecture.md`](docs/architecture.md).
 
 ## Quick start
@@ -48,9 +48,15 @@ pnpm build       # production build of the designer
   pre-fill, language toggle, and soft/hard edits all evaluate in real time.
 - Visualise the **flow logic** as a flowchart (questions, pages, branches and rosters) with zoom
   and SVG export.
+- **Reuse questions** across surveys: the **Library** tab searches a metadata registry of the
+  bundled surveys (non-exact / synonym search) and inserts a question, section, page, code list or
+  variable into the current instrument — copying its dependencies automatically.
 - Export / import the instrument as validated JSON, download the generated JSON Schema, or
   **print the specification as a PDF** (questions, response options, edits, routing, variables,
   code lists).
+
+Two surveys ship by default: a **Labour Force**-style household survey and an anonymous **Feature
+Demo Survey** (collects no personal information) that exercises every question type.
 
 The default document is a bilingual (EN/FR) household & employment survey demonstrating every
 feature (see `packages/instrument-schema/src/examples/lfs.instrument.ts`). Try the **▶ Render** button to see the full respondent-facing app with page navigation, conditional routing, and response collection.
@@ -104,4 +110,5 @@ Explore other projects: [portfolio-pi-lake-ypm5sq0qik.vercel.app](https://portfo
 
 ## License
 
-Unpublished / internal demo. No license granted yet.
+Free and open-source. An OSI-approved license (e.g. MIT or Apache-2.0) will be added as a
+`LICENSE` file; until then, treat it as intended-to-be-open-source.

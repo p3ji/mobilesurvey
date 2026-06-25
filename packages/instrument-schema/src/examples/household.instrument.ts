@@ -18,7 +18,7 @@ export const householdInstrument: Instrument = {
   defaultLanguage: 'en',
   metadata: {
     title: s('Household & Employment Survey', "Enquête sur le ménage et l'emploi"),
-    agency: 'Demo Statistical Agency',
+    agency: 'Example Org',
     description: s(
       'A short demonstration instrument covering household composition and employment.',
       "Un court instrument de démonstration sur la composition du ménage et l'emploi.",

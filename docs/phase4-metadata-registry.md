@@ -1,8 +1,21 @@
 # Phase 4 — Metadata Registry & Semantic Search
 
-> **Status:** design (not yet built). Scheduled after the Phase 2 runtime app and Phase 3 backend.
-> This document captures the data model and search architecture so that components authored from
-> now on can be tagged for discovery.
+> **Status:** in progress. The `packages/metadata-registry` package (entry model, indexer, and a
+> dependency-free lexical search) and the designer's **Library** panel (search + insert with
+> dependency copying) are **built**. The `transformers.js` embedding layer and a standalone
+> registry bundle/UI remain to do (see "Semantic search" and "Portability" below).
+>
+> **Implemented so far**
+> - `packages/metadata-registry`: `RegistryEntry` model; `buildRegistry`/`buildCatalog` indexer
+>   (instrument → entries for instrument/page/section/question/variable/code-list, capturing DDI +
+>   non-DDI fields incl. `eq.flowTarget`); `buildSearchIndex`/`search` — TF-IDF cosine with light
+>   stemming and synonym expansion so non-exact queries match (e.g. "occupation"/"employment" →
+>   the job-title component). Vitest covers extraction + search.
+> - Designer **Library** tab: searches the bundled surveys and inserts a question/section/page
+>   (or a code list / variable) into the current instrument, **auto-copying the variable and
+>   code-list dependencies** a construct needs.
+> - **Next:** swap/augment the lexical ranker with `transformers.js` local embeddings; emit the
+>   portable static catalog bundle; optional standalone registry browser.
 
 ## Goal
 
