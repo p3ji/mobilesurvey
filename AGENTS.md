@@ -8,10 +8,10 @@
 
 ## Run / build / test
 - `pnpm install` — install workspace deps (needs pnpm; `npm i -g pnpm@9` if missing; corepack fails on this machine).
-- `pnpm --filter @mobilesurvey/designer dev` — authoring tool at http://localhost:5173.
-- `pnpm --filter @mobilesurvey/runtime dev` — respondent app at http://localhost:5174.
-- `pnpm --filter @mobilesurvey/hub dev` — survey hub at http://localhost:5175.
-- `pnpm --filter @mobilesurvey/api dev` — backend API at http://localhost:8787.
+- **`pnpm --filter @mobilesurvey/hub dev` — survey hub (entry point) at http://localhost:5175.** Lists, creates, configures, and publishes surveys.
+- `pnpm --filter @mobilesurvey/api dev` — backend API at http://localhost:8787 (required by hub for survey persistence).
+- `pnpm --filter @mobilesurvey/designer dev` — authoring tool at http://localhost:5173 (launched from hub; linked from toolbar to return).
+- `pnpm --filter @mobilesurvey/runtime dev` — respondent app at http://localhost:5174 (launched from hub via "Launch" button).
 - `pnpm test` — all package test suites (Vitest); `pnpm typecheck` — all packages.
 - `pnpm build` — production builds (GitHub Pages deployment of designer, runtime, hub).
 

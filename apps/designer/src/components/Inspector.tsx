@@ -1,4 +1,5 @@
 /** Right-of-tree element inspector: edits the selected construct or variable. */
+import React from 'react';
 import type {
   CategoryScheme,
   ControlConstruct,
@@ -7,6 +8,7 @@ import type {
   ResponseDomain,
   Variable,
 } from '@mobilesurvey/instrument-schema';
+import { pick } from '@mobilesurvey/runtime-engine';
 import { useDesigner } from '../store/instrumentStore.js';
 import { findNode, genId } from '../lib/tree.js';
 import { ConditionField, Field, IntlStringField, TextField } from './fields.jsx';
@@ -544,11 +546,194 @@ function VariableEditor({ variable, instrument }: { variable: Variable; instrume
   );
 }
 
+function SchemeEditor({ schemeId, instrument }: { schemeId: string; instrument: Instrument }) {
+  const update = useDesigner((s) => s.update);
+  const language = useDesigner((s) => s.language);
+  const languages = instrument.languages;
+  const scheme = instrument.categorySchemes.find((c) => c.id === schemeId);
+  if (!scheme) return <p className="hint">Scheme not found.</p>;
+
+  return (
+    <>
+      <IntlStringField
+        label="Label"
+        value={scheme.label}
+        languages={languages}
+        onChange={(v) =>
+          update((d) => {
+            const s = d.categorySchemes.find((c) => c.id === schemeId);
+            if (s) s.label = v;
+          })
+        }
+      />
+      <p className="hint">ID: <code>{scheme.id}</code></p>
+      <div className="subpanel">
+        <div className="subpanel__head">
+          <h4>Categories ({scheme.categories.length})</h4>
+          <button
+            type="button"
+            onClick={() =>
+              update((d) => {
+                const s = d.categorySchemes.find((c) => c.id === schemeId);
+                if (s) s.categories.push({ code: `code${s.categories.length + 1}`, label: {} });
+              })
+            }
+          >
+            + Category
+          </button>
+        </div>
+        {scheme.categories.length === 0 && <p className="hint">No categories yet.</p>}
+        {scheme.categories.map((cat, i) => (
+          <div key={i} className="edit-card">
+            <div className="row">
+              <Field label="Code">
+                {(id) => (
+                  <input
+                    id={id}
+                    type="text"
+                    value={cat.code}
+                    onChange={(e) =>
+                      update((d) => {
+                        const s = d.categorySchemes.find((c) => c.id === schemeId);
+                        if (s && s.categories[i]) s.categories[i]!.code = e.target.value;
+                      })
+                    }
+                  />
+                )}
+              </Field>
+              <button
+                type="button"
+                className="danger"
+                aria-label="Remove category"
+                onClick={() =>
+                  update((d) => {
+                    const s = d.categorySchemes.find((c) => c.id === schemeId);
+                    if (s) s.categories = s.categories.filter((_, j) => j !== i);
+                  })
+                }
+              >
+                ✕
+              </button>
+            </div>
+            <IntlStringField
+              label="Label"
+              value={cat.label}
+              languages={languages}
+              onChange={(v) =>
+                update((d) => {
+                  const s = d.categorySchemes.find((c) => c.id === schemeId);
+                  if (s && s.categories[i]) s.categories[i]!.label = v;
+                })
+              }
+            />
+          </div>
+        ))}
+      </div>
+      {scheme.categories.length > 0 && (
+        <p className="hint">
+          Codes: {scheme.categories.map((c) => (
+            <code key={c.code} style={{ marginRight: 4 }}>
+              {c.code} — {(c.label as Record<string, string>)[language] ?? (c.label as Record<string, string>)['en'] ?? '—'}
+            </code>
+          ))}
+        </p>
+      )}
+    </>
+  );
+}
+
+/** Read-only preview of a library construct shown in the center Inspector when user clicks a library card. */
+function LibraryPreview({ node, language }: { node: ControlConstruct; language: string }) {
+  const setLibraryPreview = useDesigner((s) => s.setLibraryPreview);
+  const renderNode = (n: ControlConstruct, depth = 0): React.ReactNode => {
+    const indent = { marginInlineStart: depth * 16 };
+    switch (n.type) {
+      case 'sequence':
+        return (
+          <div key={n.id} style={indent} className="lib-preview__group">
+            <strong>{n.isPage ? '□ Page: ' : '▣ Section: '}{pick(n.label, language) || n.id}</strong>
+            {'children' in n && n.children.map((c) => renderNode(c, depth + 1))}
+          </div>
+        );
+      case 'question':
+        return (
+          <div key={n.id} style={indent} className="lib-preview__q">
+            <span className="lib-preview__qtext">? {pick(n.text, language) || n.variableRef || n.id}</span>
+            {n.responseDomain && (
+              <span className="lib-preview__domain">
+                [{n.responseDomain.type}
+                {'categorySchemeRef' in n.responseDomain ? ` · ${n.responseDomain.categorySchemeRef}` : ''}]
+              </span>
+            )}
+          </div>
+        );
+      case 'statement':
+        return (
+          <div key={n.id} style={indent} className="lib-preview__stmt">
+            " {pick(n.text, language) || n.id}
+          </div>
+        );
+      case 'loop':
+        return (
+          <div key={n.id} style={indent} className="lib-preview__group">
+            <strong>↻ Roster: {pick(n.label, language) || n.id}</strong>
+            {n.children.map((c) => renderNode(c, depth + 1))}
+          </div>
+        );
+      case 'ifThenElse':
+        return (
+          <div key={n.id} style={indent} className="lib-preview__group">
+            <strong>⎇ If: {n.condition || '…'}</strong>
+          </div>
+        );
+      default:
+        return <div key={(n as ControlConstruct).id} style={indent}>· {(n as ControlConstruct).id}</div>;
+    }
+  };
+
+  return (
+    <div className="lib-preview">
+      <div className="lib-preview__badge">
+        Library Preview — read-only
+        <button type="button" className="lib-preview__close" onClick={() => setLibraryPreview(null)}>
+          ✕ Close
+        </button>
+      </div>
+      <div className="lib-preview__content">
+        {renderNode(node)}
+      </div>
+      <p className="hint" style={{ marginTop: 8 }}>Click <strong>+ Insert</strong> in the Library panel to add this to your survey.</p>
+    </div>
+  );
+}
+
 export function Inspector() {
   const instrument = useDesigner((s) => s.instrument);
   const selectedId = useDesigner((s) => s.selectedId);
+  const language = useDesigner((s) => s.language);
+  const libraryPreviewConstruct = useDesigner((s) => s.libraryPreviewConstruct);
+
+  // Library preview takes priority (cleared when user clicks tree).
+  if (libraryPreviewConstruct) {
+    return (
+      <div className="inspector">
+        <LibraryPreview node={libraryPreviewConstruct} language={language} />
+      </div>
+    );
+  }
 
   if (!selectedId) return <p className="hint pad">Select an element from the structure tree.</p>;
+
+  // Category scheme?
+  const scheme = instrument.categorySchemes.find((c) => c.id === selectedId);
+  if (scheme) {
+    return (
+      <div className="inspector">
+        <h3>Code List · <code>{scheme.id}</code></h3>
+        <SchemeEditor schemeId={scheme.id} instrument={instrument} />
+      </div>
+    );
+  }
 
   const variable = instrument.variables.find((v) => v.id === selectedId);
   if (variable) {

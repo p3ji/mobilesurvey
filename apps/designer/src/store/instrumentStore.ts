@@ -5,20 +5,26 @@
  */
 import { produce } from 'immer';
 import { create } from 'zustand';
-import { lfsInstrument, type Instrument, type LanguageCode } from '@mobilesurvey/instrument-schema';
+import { lfsInstrument, type ControlConstruct, type Instrument, type LanguageCode } from '@mobilesurvey/instrument-schema';
 
 const HISTORY_LIMIT = 50;
 
 export interface DesignerStore {
   instrument: Instrument;
-  /** Selected construct id, variable id, or null. */
+  /** Selected construct id, variable id, category-scheme id, or null. */
   selectedId: string | null;
   language: LanguageCode;
   past: Instrument[];
   future: Instrument[];
+  /** Id of the most-recently library-inserted node (shows green highlight for 3 s). */
+  newlyInsertedId: string | null;
+  /** Library-panel preview — shows in the Inspector center panel without inserting. Cleared on tree selection. */
+  libraryPreviewConstruct: ControlConstruct | null;
 
   select(id: string | null): void;
   setLanguage(language: LanguageCode): void;
+  setNewlyInserted(id: string | null): void;
+  setLibraryPreview(node: ControlConstruct | null): void;
   /** Apply an Immer recipe to the instrument and record history. */
   update(recipe: (draft: Instrument) => void): void;
   /** Replace the whole instrument (e.g. on JSON import), recording history. */
@@ -35,9 +41,13 @@ export const useDesigner = create<DesignerStore>((set, get) => ({
   language: lfsInstrument.defaultLanguage,
   past: [],
   future: [],
+  newlyInsertedId: null,
+  libraryPreviewConstruct: null,
 
-  select: (id) => set({ selectedId: id }),
+  select: (id) => set({ selectedId: id, libraryPreviewConstruct: null }),
   setLanguage: (language) => set({ language }),
+  setNewlyInserted: (id) => set({ newlyInsertedId: id }),
+  setLibraryPreview: (node) => set({ libraryPreviewConstruct: node }),
 
   update: (recipe) =>
     set((s) => ({

@@ -52,19 +52,20 @@ function TreeNode({
   depth: number;
   isRoot?: boolean;
 }) {
-  const { selectedId, language } = useDesigner();
+  const { selectedId, language, newlyInsertedId } = useDesigner();
   const select = useDesigner((s) => s.select);
   const update = useDesigner((s) => s.update);
   const [addOpen, setAddOpen] = useState(false);
+  const [collapsed, setCollapsed] = useState(false);
 
   const selected = selectedId === node.id;
   const container = isContainer(node);
+  const isNew = node.id === newlyInsertedId;
 
   const handleAdd = (type: AddableType) => {
     const child = createConstruct(type);
     update((draft) => {
       if (container) {
-        // For ifThenElse default to 'then' branch; other containers just append.
         addChild(draft.sequence, node.id, child, 'then');
       } else {
         insertAfter(draft.sequence, node.id, child);
@@ -78,12 +79,30 @@ function TreeNode({
   const addItems =
     node.type === 'sequence' ? ADD_ITEMS : ADD_ITEMS.filter((t) => t.type !== 'page');
 
+  const rowClass = [
+    'tree__row',
+    selected ? 'tree__row--selected' : '',
+    isNew ? 'tree__row--new' : '',
+  ].filter(Boolean).join(' ');
+
   return (
     <li className="tree__item">
-      <div
-        className={selected ? 'tree__row tree__row--selected' : 'tree__row'}
-        style={{ paddingInlineStart: depth * 14 + 8 }}
-      >
+      <div className={rowClass} style={{ paddingInlineStart: depth * 14 + 8 }}>
+        {/* Collapse chevron for container nodes */}
+        {container ? (
+          <button
+            type="button"
+            className="tree__chevron"
+            aria-label={collapsed ? 'Expand' : 'Collapse'}
+            title={collapsed ? 'Expand children' : 'Collapse children'}
+            onClick={(e) => { e.stopPropagation(); setCollapsed((c) => !c); }}
+          >
+            {collapsed ? '▶' : '▼'}
+          </button>
+        ) : (
+          <span className="tree__chevron-spacer" aria-hidden="true" />
+        )}
+
         <button
           type="button"
           className="tree__select"
@@ -158,7 +177,7 @@ function TreeNode({
         </div>
       )}
 
-      {container && (
+      {container && !collapsed && (
         <ul className="tree__children">
           {childArrays(node).map((arr, branchIndex) => (
             <li key={branchIndex} className="tree__branch">

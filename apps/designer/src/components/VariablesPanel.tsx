@@ -1,8 +1,12 @@
-/** Variables list (collected/hidden/derived) and pre-fill mapping editor. */
+/** Variables list (collected/hidden/derived), category-scheme list, and pre-fill mapping editor. */
 import { useDesigner } from '../store/instrumentStore.js';
 import { createVariable } from '../lib/tree.js';
 import { MOCK_SAMPLE } from '../integrations/mocks.js';
 import { Field } from './fields.jsx';
+
+function genSchemeId() {
+  return `cs.new${Date.now().toString(36)}`;
+}
 
 export function VariablesPanel() {
   const instrument = useDesigner((s) => s.instrument);
@@ -30,8 +34,18 @@ export function VariablesPanel() {
   const removeMapping = (i: number) =>
     update((d) => void (d.prefillMappings = d.prefillMappings.filter((_, idx) => idx !== i)));
 
+  const addScheme = () => {
+    const id = genSchemeId();
+    update((d) => d.categorySchemes.push({ id, label: { en: 'New code list' }, categories: [] }));
+    select(id);
+  };
+
+  const removeScheme = (id: string) =>
+    update((d) => void (d.categorySchemes = d.categorySchemes.filter((c) => c.id !== id)));
+
   return (
     <div className="varpanel">
+      {/* ── Variables ──────────────────────────────────────────────────── */}
       <div className="subpanel__head">
         <h3>Variables</h3>
         <button type="button" onClick={addVariable}>
@@ -53,6 +67,41 @@ export function VariablesPanel() {
         ))}
       </ul>
 
+      {/* ── Category Schemes (Code Lists) ──────────────────────────────── */}
+      <div className="subpanel__head">
+        <h3>Code Lists</h3>
+        <button type="button" onClick={addScheme}>
+          + Scheme
+        </button>
+      </div>
+      <p className="hint">Click a scheme to edit its codes in the Inspector.</p>
+      <ul className="varlist">
+        {instrument.categorySchemes.map((cs) => (
+          <li
+            key={cs.id}
+            className={selectedId === cs.id ? 'varlist__item varlist__item--selected' : 'varlist__item'}
+          >
+            <button type="button" className="varlist__select" onClick={() => select(cs.id)}>
+              <span className="badge badge--scheme">≣</span>
+              <span className="varlist__name">{cs.id}</span>
+              <span className="varlist__rep">{cs.categories.length} categories</span>
+            </button>
+            <button
+              type="button"
+              className="danger"
+              aria-label={`Delete ${cs.id}`}
+              onClick={() => removeScheme(cs.id)}
+            >
+              ✕
+            </button>
+          </li>
+        ))}
+        {instrument.categorySchemes.length === 0 && (
+          <li className="varlist__empty">No code lists yet.</li>
+        )}
+      </ul>
+
+      {/* ── Pre-fill mappings ──────────────────────────────────────────── */}
       <div className="subpanel__head">
         <h3>Pre-fill mappings</h3>
         <button type="button" onClick={addMapping}>

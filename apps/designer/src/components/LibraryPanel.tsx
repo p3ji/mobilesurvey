@@ -2,6 +2,9 @@
  * Library (metadata registry) panel: search reusable components across the bundled surveys and
  * insert a question / section / page (or a code list / variable) into the current instrument.
  * Inserting a construct also copies any variable + code-list dependencies it needs.
+ *
+ * Clicking the item body (not the Insert button) previews it in the center Inspector panel
+ * without inserting. Inserted nodes glow green in the tree for 3 seconds.
  */
 import { useMemo, useState } from 'react';
 import {
@@ -11,6 +14,7 @@ import {
   type ComponentType,
 } from '@mobilesurvey/metadata-registry';
 import {
+  censusInstrument,
   demoInstrument,
   householdInstrument,
   lfsInstrument,
@@ -23,8 +27,8 @@ import { pick } from '@mobilesurvey/runtime-engine';
 import { useDesigner } from '../store/instrumentStore.js';
 import { addChild, findNode, genId, insertAfter, isContainer } from '../lib/tree.js';
 
-/** The bundled surveys that make up the reusable library. */
-const CATALOG: Instrument[] = [lfsInstrument, demoInstrument, householdInstrument];
+/** The bundled surveys that make up the reusable library (including the census question bank). */
+const CATALOG: Instrument[] = [lfsInstrument, demoInstrument, householdInstrument, censusInstrument];
 
 const TYPE_FILTERS: Array<{ value: ComponentType | 'all'; label: string }> = [
   { value: 'all', label: 'All' },
@@ -88,6 +92,9 @@ export function LibraryPanel() {
   const selectedId = useDesigner((s) => s.selectedId);
   const select = useDesigner((s) => s.select);
   const update = useDesigner((s) => s.update);
+  const setNewlyInserted = useDesigner((s) => s.setNewlyInserted);
+  const setLibraryPreview = useDesigner((s) => s.setLibraryPreview);
+  const libraryPreviewConstruct = useDesigner((s) => s.libraryPreviewConstruct);
 
   const [query, setQuery] = useState('');
   const [filter, setFilter] = useState<ComponentType | 'all'>('all');
@@ -104,13 +111,12 @@ export function LibraryPanel() {
 
   const hits = useMemo(() => {
     if (query.trim() === '') {
-      // No query: show a sample of the catalog (respecting the type filter).
       return entries
         .filter((e) => (filter === 'all' ? e.componentType !== 'instrument' : e.componentType === filter))
-        .slice(0, 30)
+        .slice(0, 40)
         .map((entry) => ({ entry, score: 0, matched: [] as string[] }));
     }
-    return search(index, query, { limit: 40, type: filter === 'all' ? undefined : filter });
+    return search(index, query, { limit: 50, type: filter === 'all' ? undefined : filter });
   }, [query, filter, index, entries]);
 
   const sourceTitle = (provenance?: string): string => {
@@ -159,12 +165,28 @@ export function LibraryPanel() {
       else if (sel && sel.id !== draft.sequence.id) insertAfter(draft.sequence, sel.id, clone);
       else draft.sequence.children.push(clone);
 
-      // Defer selection until after the state update commits.
-      queueMicrotask(() => select(clone.id));
+      // Green highlight + selection after the update commits.
+      queueMicrotask(() => {
+        select(clone.id);
+        setNewlyInserted(clone.id);
+        window.setTimeout(() => setNewlyInserted(null), 3000);
+      });
     });
 
-    setNote(`Inserted “${entryLabel(entry)}”.`);
+    setNote(`Inserted "${entryLabel(entry)}".`);
     window.setTimeout(() => setNote(null), 2500);
+  };
+
+  const preview = (entryId: string) => {
+    const entry = entries.find((e) => e.entryId === entryId);
+    if (!entry) return;
+    if (
+      entry.componentType === 'question' ||
+      entry.componentType === 'section' ||
+      entry.componentType === 'page'
+    ) {
+      setLibraryPreview(entry.payload as ControlConstruct);
+    }
   };
 
   const entryLabel = (e: (typeof entries)[number]): string =>
@@ -173,15 +195,15 @@ export function LibraryPanel() {
   return (
     <div className="lib">
       <p className="lib__intro">
-        Reuse questions and components from your other surveys. Search, then insert into the current
-        instrument (dependencies are copied automatically).
+        Reuse questions and components from your other surveys and the census bank. Search, then
+        click to preview or Insert to add (dependencies are copied automatically).
       </p>
 
       <input
         className="lib__search"
         type="search"
         value={query}
-        placeholder="Search the library (e.g. occupation, satisfaction, industry)…"
+        placeholder="Search the library (e.g. occupation, satisfaction, age, income)…"
         onChange={(e) => setQuery(e.target.value)}
       />
 
@@ -202,27 +224,41 @@ export function LibraryPanel() {
 
       <ul className="lib__list">
         {hits.length === 0 && <li className="lib__empty">No matching components.</li>}
-        {hits.map(({ entry, matched }) => (
-          <li key={entry.entryId} className="lib__item">
-            <div className="lib__item-main">
-              <span className="lib__icon" aria-hidden="true">{TYPE_ICON[entry.componentType]}</span>
-              <div className="lib__item-text">
-                <span className="lib__label">{entryLabel(entry)}</span>
-                <span className="lib__meta">
-                  {entry.componentType}
-                  {entry.registry.provenance ? ` · ${sourceTitle(entry.registry.provenance)}` : ''}
-                  {entry.registry.usageCount ? ` · used ×${entry.registry.usageCount}` : ''}
-                  {matched.length ? ` · matched: ${matched.join(', ')}` : ''}
+        {hits.map(({ entry, matched }) => {
+          const isPreviewed =
+            libraryPreviewConstruct !== null &&
+            (entry.payload as ControlConstruct | null)?.id ===
+              libraryPreviewConstruct.id;
+          return (
+            <li
+              key={entry.entryId}
+              className={isPreviewed ? 'lib__item lib__item--previewed' : 'lib__item'}
+            >
+              <button
+                type="button"
+                className="lib__item-main lib__item-preview-btn"
+                title="Click to preview in the Inspector (without inserting)"
+                onClick={() => preview(entry.entryId)}
+              >
+                <span className="lib__icon" aria-hidden="true">{TYPE_ICON[entry.componentType]}</span>
+                <span className="lib__item-text">
+                  <span className="lib__label">{entryLabel(entry)}</span>
+                  <span className="lib__meta">
+                    {entry.componentType}
+                    {entry.registry.provenance ? ` · ${sourceTitle(entry.registry.provenance)}` : ''}
+                    {entry.registry.usageCount ? ` · used ×${entry.registry.usageCount}` : ''}
+                    {matched.length ? ` · matched: ${matched.join(', ')}` : ''}
+                  </span>
                 </span>
-              </div>
-            </div>
-            {entry.componentType !== 'instrument' && (
-              <button type="button" className="lib__insert" onClick={() => insert(entry.entryId)}>
-                + Insert
               </button>
-            )}
-          </li>
-        ))}
+              {entry.componentType !== 'instrument' && (
+                <button type="button" className="lib__insert" onClick={() => insert(entry.entryId)}>
+                  + Insert
+                </button>
+              )}
+            </li>
+          );
+        })}
       </ul>
     </div>
   );
