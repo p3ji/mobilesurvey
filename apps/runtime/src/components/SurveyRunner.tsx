@@ -242,6 +242,30 @@ export function SurveyRunner({
     if (currentPage >= pages.length) setCurrentPage(Math.max(0, pages.length - 1));
   }, [pages.length, currentPage]);
 
+  // Count questions per page for global sequential numbering.
+  const questionsPerPage = useMemo(
+    () => pages.map((p) => p.filter((i) => i.kind === 'question' || i.kind === 'markAll').length),
+    [pages],
+  );
+  const totalQuestions = useMemo(
+    () => questionsPerPage.reduce((a, b) => a + b, 0),
+    [questionsPerPage],
+  );
+  const questionOffset = useMemo(
+    () => questionsPerPage.slice(0, currentPage).reduce((a, b) => a + b, 0),
+    [questionsPerPage, currentPage],
+  );
+  const pageItems = pages[currentPage] ?? [];
+
+  // Attach a global question number to each question/markAll item on the current page.
+  const numberedPageItems = useMemo(() => {
+    let n = questionOffset;
+    return pageItems.map((item) => ({
+      item,
+      qNum: (item.kind === 'question' || item.kind === 'markAll') ? ++n : null,
+    }));
+  }, [pageItems, questionOffset]);
+
   // Persist progress on every change so a reload / drop-out can resume.
   useEffect(() => {
     onPersist(snapshot.context.state, currentPage);
@@ -249,11 +273,9 @@ export function SurveyRunner({
     const t = setTimeout(() => setShowSaved(false), 1200);
     return () => clearTimeout(t);
   }, [snapshot.context.state, currentPage, onPersist]);
-
-  const pageItems = pages[currentPage] ?? [];
   const isLastPage = currentPage >= pages.length - 1;
   const blocked = pageHasHardEdits(pageItems);
-  const progress = pages.length > 1 ? ((currentPage + 1) / pages.length) * 100 : 100;
+  const progress = pages.length > 1 ? (currentPage / Math.max(pages.length - 1, 1)) * 100 : 100;
 
   const scrollTop = () => contentRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
 
@@ -304,19 +326,28 @@ export function SurveyRunner({
       <div
         className="eq__progress-track"
         role="progressbar"
-        aria-valuenow={currentPage + 1}
-        aria-valuemax={pages.length}
+        aria-valuenow={Math.round(progress)}
+        aria-valuemin={0}
+        aria-valuemax={100}
+        aria-label={`Survey progress: ${Math.round(progress)}%`}
       >
         <div className="eq__progress-fill" style={{ width: `${progress}%` }} />
       </div>
       <div className="eq__page-label">
-        {resumed && currentPage === initialPage ? 'Resumed · ' : ''}Page {currentPage + 1} of{' '}
-        {pages.length}
+        <span className="eq__page-label-left">
+          {resumed && currentPage === initialPage ? 'Resumed · ' : ''}
+          {lang === 'fr' ? 'Page' : 'Page'} {currentPage + 1}{' '}
+          {lang === 'fr' ? 'de' : 'of'} {pages.length}
+          {totalQuestions > 0 && (
+            <> · Q{questionOffset + 1}–{Math.min(questionOffset + questionsPerPage[currentPage]!, totalQuestions)} of {totalQuestions}</>
+          )}
+        </span>
+        <span className="eq__page-label-pct">{Math.round(progress)}%</span>
       </div>
 
       <div className="eq__content" ref={contentRef}>
         <form onSubmit={(e) => e.preventDefault()}>
-          {pageItems.map((item) => {
+          {numberedPageItems.map(({ item, qNum }) => {
             if (item.kind === 'pageBreak') {
               return item.title ? (
                 <h2 key={item.key} className="eq__page-heading">
@@ -348,7 +379,10 @@ export function SurveyRunner({
             if (item.kind === 'markAll') {
               return (
                 <div key={item.key} className="eq__question">
-                  <p className="eq__q-text">{item.questionText}</p>
+                  <p className="eq__q-text">
+                    {qNum != null && <span className="eq__q-num">Q{qNum}.</span>}
+                    {item.questionText}
+                  </p>
                   {item.instruction && <p className="eq__instruction">{item.instruction}</p>}
                   <div className="eq__radios" role="group" aria-label={item.questionText}>
                     {item.categories.map((cat) => (
@@ -378,6 +412,7 @@ export function SurveyRunner({
                   className="eq__q-text"
                   htmlFor={isGroupDomain ? undefined : inputId}
                 >
+                  {qNum != null && <span className="eq__q-num">Q{qNum}.</span>}
                   {item.text}
                   {item.construct.required && (
                     <span aria-hidden="true" className="eq__req">

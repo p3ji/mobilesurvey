@@ -224,19 +224,39 @@ textarea {
   color: var(--ok);
 }
 .eq__progress-track {
-  height: 4px;
+  height: 8px;
   background: var(--line);
 }
 .eq__progress-fill {
   height: 100%;
   background: var(--brand);
-  transition: width 0.3s ease;
+  border-radius: 0 4px 4px 0;
+  transition: width 0.4s ease;
 }
 .eq__page-label {
-  text-align: center;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   font-size: 13px;
   color: var(--ink-soft);
-  padding: 8px;
+  padding: 6px 18px;
+}
+.eq__page-label-left {
+  /* page + question range */
+}
+.eq__page-label-pct {
+  font-weight: 600;
+  color: var(--brand);
+  min-width: 36px;
+  text-align: right;
+}
+.eq__q-num {
+  display: inline-block;
+  min-width: 2.4em;
+  font-weight: 700;
+  color: var(--brand);
+  margin-right: 6px;
+  font-variant-numeric: tabular-nums;
 }
 .eq__content {
   flex: 1;
