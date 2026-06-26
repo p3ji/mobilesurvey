@@ -102,7 +102,7 @@ export function Toolbar({
     <header className="toolbar">
       <div className="toolbar__brand">
         <a href={getHubUrl()} className="toolbar__home" title="Return to survey hub">
-          <strong>mobilesurvey</strong>
+          <strong>Modular Survey Tools</strong>
         </a>
         <span className="toolbar__title">{pick(instrument.metadata.title as Record<string, string>, language)}</span>
       </div>
