@@ -47,6 +47,24 @@
 - Dev base paths are `/` (Vite dev serves at root); production uses `/mobilesurvey/` (hub, landing page), `/mobilesurvey/designer/`, `/mobilesurvey/respondent/` for GitHub Pages.
 - Anonymous respondents use stable localStorage-based ID (`anon-<timestamp>`) to resume on the same device.
 
+## Decision Routing (When you update the notes)
+
+When a chat session produces bugs, decisions, or changes, **route them here:**
+
+| What was decided | Write it in AGENTS.md | Write it in Brain2 |
+|---|---|---|
+| Bug found | → Open Bugs | — |
+| New feature / phase added | → Pending Features | → Additional Requirements |
+| Fundamental principle changed | — | → Evergreen Requirements + Architecture Notes |
+| Operational gotcha / convention | → Conventions & gotchas | — |
+| Architecture decision (why X over Y) | — | → Architecture & Design Notes |
+| Code changed | (git commit only, never re-describe in prose) | — |
+
+**End-of-session instruction to agents:**  
+> "Update the project notes with what we decided today."
+
+The agent uses this table to route updates to the correct files.
+
 ## Open Bugs
 *(Log bugs here as discovered; mark resolved with date)*
 - *(none logged)*
