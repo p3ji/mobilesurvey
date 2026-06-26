@@ -106,8 +106,8 @@ export async function submitResponse(
   respondentId: string,
   answers: Record<string, unknown>,
   opts?: { startedAt?: number; durationMs?: number; pageCountReached?: number; totalPages?: number },
-): Promise<boolean> {
-  if (!SUPABASE_URL || !SUPABASE_KEY) return false;
+): Promise<{ saved: boolean; errorMsg?: string }> {
+  if (!SUPABASE_URL || !SUPABASE_KEY) return { saved: false, errorMsg: 'Supabase env vars not configured in this build.' };
   try {
     const { error } = await sb().from('responses').insert({
       survey_id: surveyId,
@@ -119,8 +119,11 @@ export async function submitResponse(
       total_pages: opts?.totalPages ?? 0,
       completed: true,
     });
-    return !error;
-  } catch { return false; }
+    if (error) return { saved: false, errorMsg: `${error.code}: ${error.message}` };
+    return { saved: true };
+  } catch (e) {
+    return { saved: false, errorMsg: String(e) };
+  }
 }
 
 // ── CMS (access codes) ────────────────────────────────────────────────────────

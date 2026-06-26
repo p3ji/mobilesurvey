@@ -41,6 +41,7 @@ interface DoneContext {
   responses: Record<string, unknown>;
   paradata: ParadataEvent[];
   saved: boolean;
+  saveError?: string;
 }
 
 const sessionKey = (instrumentId: string, caseId: string) => `${instrumentId}::${caseId}`;
@@ -197,14 +198,14 @@ export function App() {
     await backend.cms.reportStatus(caseId, 'completed');
     await backend.paradata.flush();
     const surveyId = new URLSearchParams(window.location.search).get('survey');
-    const responseSaved = (surveyId && loaded.notice?.kind !== 'demo-no-save')
+    const submitResult = (surveyId && loaded.notice?.kind !== 'demo-no-save')
       ? await submitResponse(surveyId, caseId, responses, {
           startedAt: surveyStartedAt.current ?? undefined,
           durationMs: surveyStartedAt.current ? now - surveyStartedAt.current : undefined,
         })
-      : false;
+      : { saved: false as boolean, errorMsg: undefined };
     await backend.sessionStore.clear(sessionKey(loaded.instrument.id, caseId));
-    setDone({ caseId, responses, paradata: backend.paradata.buffer(), saved: responseSaved });
+    setDone({ caseId, responses, paradata: backend.paradata.buffer(), saved: submitResult.saved, saveError: submitResult.errorMsg });
     setPhase('done');
   };
 
@@ -251,7 +252,7 @@ export function App() {
       )}
 
       {phase === 'done' && done && (
-        <Completion responses={done.responses} paradata={done.paradata} saved={done.saved} onRestart={restart} />
+        <Completion responses={done.responses} paradata={done.paradata} saved={done.saved} saveError={done.saveError} onRestart={restart} />
       )}
     </div>
   );

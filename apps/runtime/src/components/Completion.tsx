@@ -6,11 +6,13 @@ export function Completion({
   responses,
   paradata,
   saved,
+  saveError,
   onRestart,
 }: {
   responses: Record<string, unknown>;
   paradata: ParadataEvent[];
   saved: boolean;
+  saveError?: string;
   onRestart: () => void;
 }) {
   const [copied, setCopied] = useState(false);
@@ -39,6 +41,11 @@ export function Completion({
             ? 'Thank you. Your responses have been saved to the collection dashboard.'
             : 'Thank you. Your responses were collected in this session but were not saved to a server.'}
         </p>
+        {!saved && saveError && (
+          <p style={{ marginTop: 8, fontSize: '0.75rem', color: '#b91c1c', fontFamily: 'monospace', wordBreak: 'break-all' }}>
+            Debug: {saveError}
+          </p>
+        )}
 
         <div className="done__section">
           <div className="done__section-head">
