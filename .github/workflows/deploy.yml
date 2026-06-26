@@ -35,13 +35,24 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Build designer app
-        run: pnpm --filter @mobilesurvey/designer build
+      - name: Build all apps
+        run: |
+          pnpm --filter @mobilesurvey/hub build
+          pnpm --filter @mobilesurvey/designer build
+          pnpm --filter @mobilesurvey/runtime build
+
+      - name: Prepare deployment directory
+        run: |
+          mkdir -p deploy/mobilesurvey/designer
+          mkdir -p deploy/mobilesurvey/respondent
+          cp -r apps/hub/dist/* deploy/mobilesurvey/
+          cp -r apps/designer/dist/* deploy/mobilesurvey/designer/
+          cp -r apps/runtime/dist/* deploy/mobilesurvey/respondent/
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: apps/designer/dist
+          path: deploy
 
   deploy:
     environment:
