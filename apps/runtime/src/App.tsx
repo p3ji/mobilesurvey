@@ -9,7 +9,7 @@
  * starts immediately. Without a `?survey` param it falls back to the bundled Labour Force survey.
  */
 import { useEffect, useRef, useState } from 'react';
-import { lfsInstrument, type Instrument } from '@mobilesurvey/instrument-schema';
+import { lfsInstrument, demoInstrument, type Instrument } from '@mobilesurvey/instrument-schema';
 import type { ParadataEvent, RuntimeState, SampleUnit } from '@mobilesurvey/runtime-engine';
 import { AccessGate } from './components/AccessGate.jsx';
 import { SurveyRunner } from './components/SurveyRunner.jsx';
@@ -64,6 +64,20 @@ export function App() {
   const [loaded, setLoaded] = useState<LoadedSurvey | null>(null);
   const surveyStartedAt = useRef<number | null>(null);
 
+  // Bundled instruments served by short alias (used when Supabase has no matching row).
+  const BUNDLED: Record<string, LoadedSurvey> = {
+    lfs: {
+      instrument: lfsInstrument,
+      requiresAccessCode: true,
+      notice: { kind: 'demo-no-save', text: 'This is a demo survey. Do not submit real personal information — responses are not saved.' },
+    },
+    demo: {
+      instrument: demoInstrument,
+      requiresAccessCode: false,
+      notice: { kind: 'demo-saves', text: 'This is a demonstration survey — responses you submit will be saved to illustrate the data collection dashboard.' },
+    },
+  };
+
   // Load the backend and the survey (by ?survey=<id>, else the bundled fallback).
   useEffect(() => {
     let active = true;
@@ -73,32 +87,18 @@ export function App() {
       let loadedSurvey: LoadedSurvey;
       if (surveyId) {
         const served = await fetchSurvey(surveyId);
-        loadedSurvey = served
-          ? {
-              instrument: served.instrument as Instrument,
-              requiresAccessCode: served.requiresAccessCode,
-              notice: {
-                kind: 'demo-saves',
-                text: 'This is a demonstration survey — responses you submit will be saved to illustrate the data collection dashboard.',
-              },
-            }
-          : {
-              instrument: lfsInstrument,
-              requiresAccessCode: true,
-              notice: {
-                kind: 'demo-no-save',
-                text: 'This is a demo survey. Do not submit real personal information — responses are not saved.',
-              },
-            };
+        if (served?.instrument) {
+          loadedSurvey = {
+            instrument: served.instrument as Instrument,
+            requiresAccessCode: served.requiresAccessCode,
+            notice: { kind: 'demo-saves', text: 'This is a demonstration survey — responses you submit will be saved to illustrate the data collection dashboard.' },
+          };
+        } else {
+          // Fall back to a bundled instrument if the id matches a known alias.
+          loadedSurvey = BUNDLED[surveyId] ?? BUNDLED.lfs!;
+        }
       } else {
-        loadedSurvey = {
-          instrument: lfsInstrument,
-          requiresAccessCode: true,
-          notice: {
-            kind: 'demo-no-save',
-            text: 'This is a demo survey. Do not submit real personal information — responses are not saved.',
-          },
-        };
+        loadedSurvey = BUNDLED.lfs!;
       }
       if (!active) return;
       setBackend(b);
