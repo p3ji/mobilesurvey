@@ -67,7 +67,7 @@ export default function App() {
         onRender={() => setRenderMode(true)}
         surveyId={surveyId}
         mode={mode}
-        onModeToggle={() => setMode((m) => (m === 'pro' ? 'easy' : 'pro'))}
+        onModeChange={setMode}
       />
 
       {mode === 'easy' ? (

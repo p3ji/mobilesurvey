@@ -1364,13 +1364,7 @@ code {
   font-size: 13px;
   color: var(--ink-soft);
 }
-.easymode__export-btn {
-  flex-shrink: 0;
-  font-weight: 600;
-  color: var(--brand);
-  border-color: var(--brand);
-  padding: 6px 14px;
-}
+/* export-btn removed — now in Export dropdown */
 .easymode__empty {
   text-align: center;
   color: var(--ink-soft);
@@ -1440,4 +1434,255 @@ code {
 }
 .easymode__edit {
   padding-top: 4px;
+}
+.easymode__preview {
+  cursor: pointer;
+}
+.easymode__delete {
+  margin-inline-start: auto;
+  background: none;
+  border: none;
+  color: var(--ink-soft);
+  cursor: pointer;
+  font-size: 13px;
+  padding: 2px 6px;
+  border-radius: 4px;
+  line-height: 1;
+}
+.easymode__delete:hover {
+  color: var(--danger);
+  background: var(--selected);
+}
+.easymode__badge-routing {
+  font-size: 11px;
+  background: #dbeafe;
+  color: #1e40af;
+  padding: 1px 6px;
+  border-radius: 4px;
+  font-weight: 600;
+}
+/* ── Easy Mode category list ── */
+.em-cats {
+  list-style: none;
+  margin: 8px 0 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+.em-cats li {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  font-size: 13px;
+}
+.em-cat-code {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--ink-soft);
+  min-width: 3.5em;
+  text-align: right;
+}
+.em-cat-label {
+  color: var(--ink);
+}
+/* ── Easy Mode routing note ── */
+.em-routing {
+  margin: 6px 0 0;
+  font-size: 12px;
+  color: #1e40af;
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+}
+.em-routing-label {
+  font-weight: 600;
+  flex-shrink: 0;
+}
+.em-routing-expr {
+  font-family: var(--mono);
+  font-size: 11px;
+  background: #eff6ff;
+  padding: 1px 6px;
+  border-radius: 3px;
+}
+/* ── Easy Mode add strip ── */
+.em-add-strip {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  padding: 4px 0;
+}
+.em-add-btn {
+  font-size: 12px;
+  color: var(--brand);
+  background: none;
+  border: 1px dashed var(--brand);
+  border-radius: 4px;
+  padding: 3px 14px;
+  cursor: pointer;
+  opacity: 0.6;
+  transition: opacity 0.15s;
+}
+.em-add-btn:hover {
+  opacity: 1;
+  background: var(--selected);
+}
+.em-add-menu {
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 100;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+  min-width: 180px;
+  padding: 4px 0;
+}
+.em-add-menu__item {
+  display: block;
+  width: 100%;
+  text-align: left;
+  background: none;
+  border: none;
+  padding: 7px 16px;
+  font-size: 13px;
+  cursor: pointer;
+  color: var(--ink);
+}
+.em-add-menu__item:hover {
+  background: var(--selected);
+  color: var(--brand);
+}
+/* ── Easy Mode inline domain / field editors ── */
+.em-domain-editor {
+  margin-top: 10px;
+  border-top: 1px solid var(--line);
+  padding-top: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.em-field-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--ink-soft);
+  display: block;
+  margin-bottom: 4px;
+}
+.em-select {
+  width: 100%;
+  padding: 5px 8px;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  background: var(--bg);
+  font-size: 13px;
+  color: var(--ink);
+}
+.em-cats-editor {
+  border-top: 1px solid var(--line);
+  padding-top: 8px;
+}
+.em-field-row {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  border-top: 1px solid var(--line);
+  padding-top: 8px;
+}
+.em-input {
+  padding: 5px 8px;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  background: var(--bg);
+  font-size: 13px;
+  font-family: var(--mono);
+  color: var(--ink);
+  width: 100%;
+}
+.em-input:focus {
+  outline: none;
+  border-color: var(--brand);
+  box-shadow: 0 0 0 2px rgba(31,95,174,0.15);
+}
+.em-checkbox-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  cursor: pointer;
+  border-top: 1px solid var(--line);
+  padding-top: 8px;
+}
+.em-hint {
+  font-size: 12px;
+  color: var(--ink-soft);
+  font-style: italic;
+}
+.em-placeholder {
+  color: var(--ink-soft);
+}
+/* ── Mode dropdown in toolbar ── */
+.toolbar__mode-wrap {
+  position: relative;
+}
+.toolbar__mode {
+  white-space: nowrap;
+  padding: 4px 10px;
+  border-radius: 4px;
+  font-size: 13px;
+  font-weight: 600;
+  background: var(--selected);
+  border: 1px solid var(--line);
+  color: var(--ink);
+  cursor: pointer;
+}
+.toolbar__mode--open,
+.toolbar__mode:hover {
+  border-color: var(--brand);
+  color: var(--brand);
+}
+.toolbar__mode-menu {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  z-index: 200;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+  min-width: 220px;
+  padding: 4px 0;
+}
+.toolbar__mode-item {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  width: 100%;
+  text-align: left;
+  background: none;
+  border: none;
+  padding: 8px 16px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  color: var(--ink);
+}
+.toolbar__mode-item:hover {
+  background: var(--selected);
+  color: var(--brand);
+}
+.toolbar__mode-item--active {
+  color: var(--brand);
+}
+.toolbar__mode-item--active::after {
+  content: ' ✓';
+}
+.toolbar__mode-desc {
+  font-size: 11px;
+  font-weight: 400;
+  color: var(--ink-soft);
 }

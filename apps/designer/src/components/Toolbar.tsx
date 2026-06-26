@@ -5,6 +5,7 @@ import { getInstrumentJsonSchema } from '@mobilesurvey/instrument-schema';
 import { useDesigner } from '../store/instrumentStore.js';
 import { saveSurvey } from '../lib/surveyApi.js';
 import { printSpec } from '../lib/specReport.js';
+import { exportHtml } from '../lib/htmlExport.js';
 
 /** The authoring-tool manual (GitHub renders the markdown). */
 const HELP_URL =
@@ -27,12 +28,12 @@ export function Toolbar({
   onRender,
   surveyId,
   mode,
-  onModeToggle,
+  onModeChange,
 }: {
   onRender: () => void;
   surveyId: string | null;
   mode: 'pro' | 'easy';
-  onModeToggle: () => void;
+  onModeChange: (m: 'pro' | 'easy') => void;
 }) {
   const instrument = useDesigner((s) => s.instrument);
   const language = useDesigner((s) => s.language);
@@ -43,19 +44,20 @@ export function Toolbar({
   const future = useDesigner((s) => s.future);
   const [saveState, setSaveState] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle');
   const [exportOpen, setExportOpen] = useState(false);
+  const [modeOpen, setModeOpen] = useState(false);
   const exportRef = useRef<HTMLDivElement>(null);
+  const modeRef = useRef<HTMLDivElement>(null);
 
-  // Close export dropdown on outside click.
+  // Close dropdowns on outside click.
   useEffect(() => {
-    if (!exportOpen) return;
+    if (!exportOpen && !modeOpen) return;
     const handler = (e: MouseEvent) => {
-      if (exportRef.current && !exportRef.current.contains(e.target as Node)) {
-        setExportOpen(false);
-      }
+      if (exportRef.current && !exportRef.current.contains(e.target as Node)) setExportOpen(false);
+      if (modeRef.current && !modeRef.current.contains(e.target as Node)) setModeOpen(false);
     };
     document.addEventListener('mousedown', handler);
     return () => document.removeEventListener('mousedown', handler);
-  }, [exportOpen]);
+  }, [exportOpen, modeOpen]);
 
   const save = async () => {
     if (!surveyId) return;
@@ -79,6 +81,14 @@ export function Toolbar({
 
   const exportJsonSchema = () => {
     download(JSON.stringify(getInstrumentJsonSchema(), null, 2), 'instrument.schema.json', 'application/json');
+    setExportOpen(false);
+  };
+
+  const exportHtmlDoc = () => {
+    const html = exportHtml(instrument, language);
+    const slug = (pick(instrument.metadata.title as Record<string, string>, language) ?? 'instrument')
+      .toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
+    download(html, `${slug}.html`, 'text/html;charset=utf-8');
     setExportOpen(false);
   };
 
@@ -114,26 +124,39 @@ export function Toolbar({
         </button>
       </div>
 
-      {/* Easy / Pro mode toggle */}
-      <div className="toolbar__group" role="group" aria-label="Editor mode">
+      {/* Mode dropdown */}
+      <div className="toolbar__group toolbar__mode-wrap" ref={modeRef}>
         <button
           type="button"
-          className={mode === 'easy' ? 'pill pill--active' : 'pill'}
-          aria-pressed={mode === 'easy'}
-          title="Easy Mode: simplified question list, hides routing/variables"
-          onClick={onModeToggle}
+          className={modeOpen ? 'toolbar__mode toolbar__mode--open' : 'toolbar__mode'}
+          aria-haspopup="menu"
+          aria-expanded={modeOpen}
+          onClick={() => setModeOpen((o) => !o)}
         >
-          Easy
+          {mode === 'easy' ? 'Easy Mode' : 'Pro Mode'} ▾
         </button>
-        <button
-          type="button"
-          className={mode === 'pro' ? 'pill pill--active' : 'pill'}
-          aria-pressed={mode === 'pro'}
-          title="Pro Mode: full editor with routing, variables, validation, flowchart"
-          onClick={onModeToggle}
-        >
-          Pro
-        </button>
+        {modeOpen && (
+          <div className="toolbar__mode-menu" role="menu">
+            <button
+              type="button"
+              role="menuitem"
+              className={mode === 'easy' ? 'toolbar__mode-item toolbar__mode-item--active' : 'toolbar__mode-item'}
+              onClick={() => { onModeChange('easy'); setModeOpen(false); }}
+            >
+              Easy Mode
+              <span className="toolbar__mode-desc">Flat question list with categories &amp; routing</span>
+            </button>
+            <button
+              type="button"
+              role="menuitem"
+              className={mode === 'pro' ? 'toolbar__mode-item toolbar__mode-item--active' : 'toolbar__mode-item'}
+              onClick={() => { onModeChange('pro'); setModeOpen(false); }}
+            >
+              Pro Mode
+              <span className="toolbar__mode-desc">Full tree, variables, expressions, flowchart</span>
+            </button>
+          </div>
+        )}
       </div>
 
       {surveyId && (
@@ -169,6 +192,9 @@ export function Toolbar({
         </button>
         {exportOpen && (
           <div className="toolbar__export-menu" role="menu">
+            <button type="button" role="menuitem" onClick={exportHtmlDoc}>
+              ⬇ HTML Questionnaire
+            </button>
             <button type="button" role="menuitem" onClick={exportJson}>
               ⬇ Instrument JSON
             </button>
