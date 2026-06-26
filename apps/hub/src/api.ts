@@ -58,6 +58,16 @@ export interface ResponseRow {
   submittedAt: string;
   durationMs: number | null;
   completed: boolean;
+  answersJson: Record<string, unknown>;
+}
+
+export interface SurveyParadataRow {
+  id: number;
+  sessionKey: string | null;
+  respondentId: string | null;
+  ts: string;
+  type: string;
+  payloadJson: unknown;
 }
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
@@ -164,19 +174,40 @@ export async function deleteSurvey(id: string): Promise<void> {
 export async function fetchResponses(surveyId: string): Promise<ResponseRow[]> {
   const { data, error } = await sb()
     .from('responses')
-    .select('id, respondent_id, submitted_at, duration_ms, completed')
+    .select('id, respondent_id, submitted_at, duration_ms, completed, answers_json')
     .eq('survey_id', surveyId)
     .order('submitted_at', { ascending: false });
   if (error) throw error;
   return (data ?? []).map((r: {
     id: string; respondent_id: string; submitted_at: string;
-    duration_ms: number | null; completed: boolean;
+    duration_ms: number | null; completed: boolean; answers_json: Record<string, unknown> | null;
   }) => ({
     id: r.id,
     respondentId: r.respondent_id,
     submittedAt: r.submitted_at,
     durationMs: r.duration_ms,
     completed: r.completed,
+    answersJson: r.answers_json ?? {},
+  }));
+}
+
+export async function fetchSurveyParadata(surveyId: string): Promise<SurveyParadataRow[]> {
+  const { data, error } = await sb()
+    .from('paradata')
+    .select('id, session_key, respondent_id, ts, type, payload_json')
+    .eq('survey_id', surveyId)
+    .order('ts', { ascending: true });
+  if (error) throw error;
+  return (data ?? []).map((r: {
+    id: number; session_key: string | null; respondent_id: string | null;
+    ts: string; type: string; payload_json: unknown;
+  }) => ({
+    id: r.id,
+    sessionKey: r.session_key,
+    respondentId: r.respondent_id,
+    ts: r.ts,
+    type: r.type,
+    payloadJson: r.payload_json,
   }));
 }
 

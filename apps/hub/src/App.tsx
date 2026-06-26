@@ -18,6 +18,7 @@ import {
   designerLink,
   fetchAllInstruments,
   fetchResponses,
+  fetchSurveyParadata,
   listSurveys,
   pingApi,
   respondentLink,
@@ -25,6 +26,7 @@ import {
   upsertSurvey,
   type InstrumentSummary,
   type ResponseRow,
+  type SurveyParadataRow,
   type SurveySummary,
 } from './api.js';
 
@@ -84,47 +86,309 @@ interface ModuleDef {
   action?: () => void;
 }
 
-// ── Responses panel ───────────────────────────────────────────────────────────
+// ── Collection dashboard ──────────────────────────────────────────────────────
 
-function ResponsesPanel({ surveyId }: { surveyId: string }) {
+/** Group responses by day and return cumulative chart points. */
+function buildChartPoints(rows: ResponseRow[]): { x: number; y: number; label: string }[] {
+  if (rows.length === 0) return [];
+  const byDay = new Map<string, number>();
+  for (const r of rows) {
+    const day = r.submittedAt.slice(0, 10);
+    byDay.set(day, (byDay.get(day) ?? 0) + 1);
+  }
+  const sorted = [...byDay.entries()].sort(([a], [b]) => a.localeCompare(b));
+  let cum = 0;
+  return sorted.map(([day, count]) => {
+    cum += count;
+    return { x: new Date(day + 'T12:00:00').getTime(), y: cum, label: day };
+  });
+}
+
+type FieldType = 'numeric' | 'boolean' | 'categorical';
+interface FieldAnalysis {
+  key: string; label: string; type: FieldType; values: unknown[];
+  avg?: number; min?: number; max?: number; bins?: number[];
+  pctTrue?: number;
+  freqs?: [string, number][];
+}
+
+function slugToLabel(key: string): string {
+  return key.replace(/@.*$/, '').replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase()) || key;
+}
+
+function detectFields(rows: ResponseRow[]): FieldAnalysis[] {
+  if (rows.length === 0) return [];
+  const raw = new Map<string, unknown[]>();
+  for (const row of rows) {
+    for (const [k, v] of Object.entries(row.answersJson ?? {})) {
+      if (!raw.has(k)) raw.set(k, []);
+      if (v !== null && v !== undefined && v !== '') raw.get(k)!.push(v);
+    }
+  }
+  const scored: (FieldAnalysis & { score: number })[] = [];
+  for (const [key, vals] of raw.entries()) {
+    if (vals.length === 0) continue;
+    const label = slugToLabel(key);
+    const nums = vals.filter((v) => typeof v === 'number') as number[];
+    const bools = vals.filter((v) => typeof v === 'boolean') as boolean[];
+    const strs = vals.filter((v) => typeof v === 'string') as string[];
+    if (nums.length / vals.length > 0.8) {
+      const avg = nums.reduce((a, b) => a + b, 0) / nums.length;
+      const min = Math.min(...nums), max = Math.max(...nums);
+      const buckets = 10, binSize = (max - min) / buckets || 1;
+      const bins = Array(buckets).fill(0);
+      for (const n of nums) bins[Math.min(buckets - 1, Math.floor((n - min) / binSize))]++;
+      scored.push({ key, label, type: 'numeric', values: vals, avg, min, max, bins, score: vals.length * 3 });
+    } else if (bools.length / vals.length > 0.8) {
+      const pctTrue = (bools.filter((v) => v).length / bools.length) * 100;
+      scored.push({ key, label, type: 'boolean', values: vals, pctTrue, score: vals.length * 2 });
+    } else if (strs.length > 0) {
+      const dist = new Map<string, number>();
+      for (const s of strs) dist.set(s, (dist.get(s) ?? 0) + 1);
+      const d = dist.size;
+      if (d > 1 && d <= 12) {
+        const freqs = [...dist.entries()].sort((a, b) => b[1] - a[1]).slice(0, 5);
+        scored.push({ key, label, type: 'categorical', values: vals, freqs, score: vals.length + (10 - d) });
+      }
+    }
+  }
+  return scored.sort((a, b) => b.score - a.score).slice(0, 3);
+}
+
+function ResponseChart({ rows }: { rows: ResponseRow[] }) {
+  const pts = buildChartPoints(rows);
+  if (pts.length === 0) return null;
+  const W = 480, H = 110, PL = 28, PR = 8, PT = 8, PB = 22;
+  const plotW = W - PL - PR, plotH = H - PT - PB;
+  const xs = pts.map((p) => p.x);
+  const minX = Math.min(...xs), maxX = Math.max(...xs), rangeX = maxX - minX || 1;
+  const maxY = Math.max(...pts.map((p) => p.y));
+  const px = (x: number) => PL + ((x - minX) / rangeX) * plotW;
+  const py = (y: number) => PT + plotH - (y / maxY) * plotH;
+  const linePts = pts.map((p) => `${px(p.x)},${py(p.y)}`).join(' ');
+  const area = pts.length > 1
+    ? `M${px(minX)},${PT + plotH} ${pts.map((p) => `L${px(p.x)},${py(p.y)}`).join(' ')} L${px(maxX)},${PT + plotH}Z`
+    : '';
+  return (
+    <div className="dash__chart">
+      <svg viewBox={`0 0 ${W} ${H}`} className="dash__svg" aria-hidden="true">
+        <defs>
+          <linearGradient id="dash-area-grad" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor="var(--brand)" stopOpacity="0.18" />
+            <stop offset="100%" stopColor="var(--brand)" stopOpacity="0.01" />
+          </linearGradient>
+        </defs>
+        {[0.25, 0.5, 0.75, 1].map((f) => (
+          <line key={f} x1={PL} y1={py(maxY * f)} x2={W - PR} y2={py(maxY * f)}
+            stroke="currentColor" strokeOpacity="0.07" strokeWidth="1" />
+        ))}
+        {[0, Math.round(maxY / 2), maxY].filter((v, i, a) => a.indexOf(v) === i).map((v) => (
+          <text key={v} x={PL - 4} y={py(v) + 3} textAnchor="end" fontSize="9"
+            fill="currentColor" fillOpacity="0.45">{v}</text>
+        ))}
+        {area && <path d={area} fill="url(#dash-area-grad)" />}
+        {pts.length > 1 && (
+          <polyline points={linePts} fill="none" stroke="var(--brand)"
+            strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+        )}
+        {pts.map((p, i) => <circle key={i} cx={px(p.x)} cy={py(p.y)} r="3.5" fill="var(--brand)" />)}
+        <text x={px(minX)} y={H - 4} textAnchor="middle" fontSize="9" fill="currentColor" fillOpacity="0.45">
+          {pts[0]?.label.slice(5)}
+        </text>
+        {maxX !== minX && (
+          <text x={px(maxX)} y={H - 4} textAnchor="middle" fontSize="9" fill="currentColor" fillOpacity="0.45">
+            {pts[pts.length - 1]?.label.slice(5)}
+          </text>
+        )}
+      </svg>
+      <p className="dash__chart-caption">Cumulative submissions over time</p>
+    </div>
+  );
+}
+
+function FieldCard({ field }: { field: FieldAnalysis }) {
+  const n = field.values.length;
+  if (field.type === 'numeric') {
+    const maxBin = Math.max(...(field.bins ?? [1]));
+    return (
+      <div className="dash__field">
+        <span className="dash__field-name">{field.label}</span>
+        <span className="dash__field-value">{field.avg!.toFixed(1)}</span>
+        <span className="dash__field-sub">avg · {field.min}–{field.max} range · n={n}</span>
+        <div className="dash__hist">
+          {(field.bins ?? []).map((b, i) => (
+            <div key={i} className={`dash__hist-bar${b === maxBin ? ' dash__hist-bar--peak' : ''}`}
+              style={{ height: `${Math.max(3, (b / maxBin) * 36)}px` }} />
+          ))}
+        </div>
+      </div>
+    );
+  }
+  if (field.type === 'boolean') {
+    const pct = Math.round(field.pctTrue!);
+    return (
+      <div className="dash__field">
+        <span className="dash__field-name">{field.label}</span>
+        <span className="dash__field-value">{pct}%</span>
+        <span className="dash__field-sub">answered yes · n={n}</span>
+        <div className="dash__bool-bar"><div className="dash__bool-fill" style={{ width: `${pct}%` }} /></div>
+      </div>
+    );
+  }
+  const maxCount = Math.max(...(field.freqs ?? []).map(([, c]) => c), 1);
+  return (
+    <div className="dash__field">
+      <span className="dash__field-name">{field.label}</span>
+      <span className="dash__field-sub">n={n}</span>
+      <div className="dash__bars">
+        {(field.freqs ?? []).map(([lbl, count]) => (
+          <div key={lbl} className="dash__bar-row">
+            <span className="dash__bar-label" title={lbl}>{lbl}</span>
+            <div className="dash__bar-track">
+              <div className="dash__bar-fill" style={{ width: `${(count / maxCount) * 100}%` }} />
+            </div>
+            <span className="dash__bar-count">{count}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function SubmissionRow({ row, events }: { row: ResponseRow; events: SurveyParadataRow[] }) {
+  const dur = row.durationMs != null ? `${Math.round(row.durationMs / 1000)}s` : '—';
+  const ts = new Date(row.submittedAt).toLocaleString(undefined, {
+    month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit',
+  });
+  return (
+    <details className="dash__submission">
+      <summary>
+        <span className="dash__sub-id">{row.respondentId.slice(0, 14)}</span>
+        <span className="dash__sub-ts">{ts}</span>
+        <span className="dash__sub-dur">{dur}</span>
+        <span className={`badge badge--${row.completed ? 'published' : 'draft'}`} style={{ marginLeft: 'auto' }}>
+          {row.completed ? 'Complete' : 'Partial'}
+        </span>
+      </summary>
+      <div className="dash__sub-events">
+        {events.length === 0 ? (
+          <p style={{ color: 'var(--ink-soft)', fontSize: 12, margin: '4px 0' }}>No paradata recorded.</p>
+        ) : (
+          <table className="dash__event-table">
+            <tbody>
+              {events.map((e, i) => (
+                <tr key={i}>
+                  <td className="dash__event-ts">{new Date(e.ts).toLocaleTimeString()}</td>
+                  <td className="dash__event-type">{e.type}</td>
+                  <td className="dash__event-payload">
+                    {e.payloadJson ? JSON.stringify(e.payloadJson) : ''}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
+      </div>
+    </details>
+  );
+}
+
+function CollectionDashboard({ surveyId }: { surveyId: string }) {
   const [rows, setRows] = useState<ResponseRow[] | null>(null);
+  const [paradata, setParadata] = useState<SurveyParadataRow[] | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetchResponses(surveyId)
-      .then(setRows)
-      .catch(() => setRows([]))
+    Promise.all([fetchResponses(surveyId), fetchSurveyParadata(surveyId)])
+      .then(([r, p]) => { setRows(r); setParadata(p); })
+      .catch(() => { setRows([]); setParadata([]); })
       .finally(() => setLoading(false));
   }, [surveyId]);
 
-  if (loading) return <p className="responses__loading">Loading responses…</p>;
-  if (!rows || rows.length === 0) return <p className="responses__empty">No responses yet.</p>;
+  if (loading) return <p className="dash__empty">Loading…</p>;
+  const r = rows ?? [], p = paradata ?? [];
+
+  const total = r.length;
+  const durations = r.filter((x) => x.durationMs != null).map((x) => x.durationMs!);
+  const avgDurationSec = durations.length
+    ? Math.round(durations.reduce((a, b) => a + b, 0) / durations.length / 1000) : null;
+  const completionPct = total > 0
+    ? Math.round(r.filter((x) => x.completed).length / total * 100) : null;
+
+  const analyzerFields = detectFields(r);
+
+  const byRespondent = new Map<string, SurveyParadataRow[]>();
+  for (const e of p) {
+    if (!e.respondentId) continue;
+    if (!byRespondent.has(e.respondentId)) byRespondent.set(e.respondentId, []);
+    byRespondent.get(e.respondentId)!.push(e);
+  }
+
+  const exportCSV = () => {
+    if (!p.length) return;
+    const header = ['id', 'session_key', 'respondent_id', 'ts', 'type', 'payload_json'];
+    const body = p.map((e) => [
+      String(e.id), e.sessionKey ?? '', e.respondentId ?? '',
+      e.ts, e.type, e.payloadJson ? JSON.stringify(e.payloadJson) : '',
+    ]);
+    const csv = [header, ...body]
+      .map((row) => row.map((v) => `"${String(v).replace(/"/g, '""')}"`).join(','))
+      .join('\n');
+    const url = URL.createObjectURL(new Blob([csv], { type: 'text/csv' }));
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `paradata-${surveyId}-${new Date().toISOString().slice(0, 10)}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
 
   return (
-    <table className="responses__table">
-      <thead>
-        <tr>
-          <th>Respondent</th>
-          <th>Submitted</th>
-          <th>Duration</th>
-          <th>Status</th>
-        </tr>
-      </thead>
-      <tbody>
-        {rows.map((r) => (
-          <tr key={r.id}>
-            <td className="responses__id">{r.respondentId.slice(0, 18)}…</td>
-            <td>{new Date(r.submittedAt).toLocaleString()}</td>
-            <td>{r.durationMs != null ? `${Math.round(r.durationMs / 1000)}s` : '—'}</td>
-            <td>
-              <span className={`badge badge--${r.completed ? 'published' : 'draft'}`}>
-                {r.completed ? 'Complete' : 'Partial'}
-              </span>
-            </td>
-          </tr>
-        ))}
-      </tbody>
-    </table>
+    <div className="dash">
+      <div className="dash__kpis">
+        <div className="dash__kpi">
+          <span className="dash__kpi-value">{total}</span>
+          <span className="dash__kpi-label">Respondents</span>
+        </div>
+        <div className="dash__kpi">
+          <span className="dash__kpi-value">{avgDurationSec != null ? `${avgDurationSec}s` : '—'}</span>
+          <span className="dash__kpi-label">Avg duration</span>
+        </div>
+        <div className="dash__kpi">
+          <span className="dash__kpi-value">{completionPct != null ? `${completionPct}%` : '—'}</span>
+          <span className="dash__kpi-label">Completion rate</span>
+        </div>
+      </div>
+
+      <ResponseChart rows={r} />
+
+      {analyzerFields.length > 0 && (
+        <div className="dash__section">
+          <h4 className="dash__section-title">Analyzer preview</h4>
+          <div className="dash__fields">
+            {analyzerFields.map((f) => <FieldCard key={f.key} field={f} />)}
+          </div>
+        </div>
+      )}
+
+      <div className="dash__section">
+        <div className="dash__section-head">
+          <h4 className="dash__section-title">Recent submissions</h4>
+          <button type="button" className="btn" style={{ fontSize: 12, padding: '4px 10px' }}
+            onClick={exportCSV} disabled={p.length === 0}>
+            ↓ Export paradata CSV
+          </button>
+        </div>
+        {total === 0 ? (
+          <p className="dash__empty">No submissions yet.</p>
+        ) : (
+          <div className="dash__submissions">
+            {r.slice(0, 10).map((row) => (
+              <SubmissionRow key={row.id} row={row} events={byRespondent.get(row.respondentId) ?? []} />
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
   );
 }
 
@@ -167,7 +431,7 @@ function SurveyCard({
   };
 
   return (
-    <div className={`card${isLive ? ' card--live' : ''}`}>
+    <div className={`card${isLive ? ' card--live' : ''}${showResponses ? ' card--expanded' : ''}`}>
       <div className="card__head">
         <h3 className="card__title">{survey.title}</h3>
         <div className="card__badges">
@@ -228,7 +492,7 @@ function SurveyCard({
 
       {showResponses && !readOnly && (
         <div className="card__responses">
-          <ResponsesPanel surveyId={survey.id} />
+          <CollectionDashboard surveyId={survey.id} />
         </div>
       )}
     </div>
