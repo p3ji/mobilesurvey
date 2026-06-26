@@ -204,6 +204,7 @@ export function SurveyRunner({
   initialPage,
   resumed,
   paradata,
+  notice,
   onPersist,
   onSubmit,
 }: {
@@ -214,6 +215,7 @@ export function SurveyRunner({
   initialPage: number;
   resumed: boolean;
   paradata: ParadataSink;
+  notice?: { kind: 'demo-no-save' | 'demo-saves'; text: string };
   onPersist: (state: RuntimeState, page: number) => void;
   onSubmit: (responses: Record<string, unknown>) => void;
 }) {
@@ -344,6 +346,13 @@ export function SurveyRunner({
         </span>
         <span className="eq__page-label-pct">{Math.round(progress)}%</span>
       </div>
+
+      {notice && (
+        <div className={`eq__notice eq__notice--${notice.kind}`} role="note">
+          {notice.kind === 'demo-no-save' ? '⚠ ' : 'ℹ '}
+          {notice.text}
+        </div>
+      )}
 
       <div className="eq__content" ref={contentRef}>
         <form onSubmit={(e) => e.preventDefault()}>

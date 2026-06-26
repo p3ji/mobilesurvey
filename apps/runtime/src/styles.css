@@ -223,6 +223,24 @@ textarea {
   font-size: 12px;
   color: var(--ok);
 }
+/* ── Demo/survey notice banner ───────────────────────────────────────────── */
+.eq__notice {
+  font-size: 13px;
+  line-height: 1.5;
+  padding: 8px 16px;
+  border-bottom: 1px solid transparent;
+}
+.eq__notice--demo-no-save {
+  background: #fff8e1;
+  border-color: #ffe082;
+  color: #795548;
+}
+.eq__notice--demo-saves {
+  background: #e3f2fd;
+  border-color: #90caf9;
+  color: #1565c0;
+}
+
 .eq__progress-track {
   height: 8px;
   background: var(--line);

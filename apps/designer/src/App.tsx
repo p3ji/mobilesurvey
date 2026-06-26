@@ -20,7 +20,9 @@ const MAX_RIGHT = 680;
 
 export default function App() {
   const [renderMode, setRenderMode] = useState(false);
-  const [mode, setMode] = useState<'pro' | 'easy'>('pro');
+  const [mode, setMode] = useState<'pro' | 'easy'>(
+    new URLSearchParams(window.location.search).get('mode') === 'easy' ? 'easy' : 'pro',
+  );
   const [surveyId] = useState<string | null>(currentSurveyId);
 
   // Resizable panel widths.

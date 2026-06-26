@@ -24,6 +24,8 @@ interface SavedSession {
 interface LoadedSurvey {
   instrument: Instrument;
   requiresAccessCode: boolean;
+  /** undefined = no notice; present = show banner on every page */
+  notice?: { kind: 'demo-no-save' | 'demo-saves'; text: string };
 }
 
 interface SurveyContext {
@@ -72,10 +74,31 @@ export function App() {
       if (surveyId) {
         const served = await fetchSurvey(surveyId);
         loadedSurvey = served
-          ? { instrument: served.instrument as Instrument, requiresAccessCode: served.requiresAccessCode }
-          : { instrument: lfsInstrument, requiresAccessCode: true };
+          ? {
+              instrument: served.instrument as Instrument,
+              requiresAccessCode: served.requiresAccessCode,
+              notice: {
+                kind: 'demo-saves',
+                text: 'This is a demonstration survey — responses you submit will be saved to illustrate the data collection dashboard.',
+              },
+            }
+          : {
+              instrument: lfsInstrument,
+              requiresAccessCode: true,
+              notice: {
+                kind: 'demo-no-save',
+                text: 'This is a demo survey. Do not submit real personal information — responses are not saved.',
+              },
+            };
       } else {
-        loadedSurvey = { instrument: lfsInstrument, requiresAccessCode: true };
+        loadedSurvey = {
+          instrument: lfsInstrument,
+          requiresAccessCode: true,
+          notice: {
+            kind: 'demo-no-save',
+            text: 'This is a demo survey. Do not submit real personal information — responses are not saved.',
+          },
+        };
       }
       if (!active) return;
       setBackend(b);
@@ -161,12 +184,14 @@ export function App() {
     backend.paradata.emit({ ts: now, type: 'submit', payload: { caseId } });
     await backend.cms.reportStatus(caseId, 'completed');
     await backend.paradata.flush();
-    // Persist the completed response (best-effort: don't block the UI on failure)
-    const surveyId = new URLSearchParams(window.location.search).get('survey') ?? loaded.instrument.id;
-    void submitResponse(surveyId, caseId, responses, {
-      startedAt: surveyStartedAt.current ?? undefined,
-      durationMs: surveyStartedAt.current ? now - surveyStartedAt.current : undefined,
-    });
+    // Only persist to Supabase for real surveys (not bundled demo fallbacks)
+    const surveyId = new URLSearchParams(window.location.search).get('survey');
+    if (surveyId && loaded.notice?.kind !== 'demo-no-save') {
+      void submitResponse(surveyId, caseId, responses, {
+        startedAt: surveyStartedAt.current ?? undefined,
+        durationMs: surveyStartedAt.current ? now - surveyStartedAt.current : undefined,
+      });
+    }
     await backend.sessionStore.clear(sessionKey(loaded.instrument.id, caseId));
     setDone({ caseId, responses, paradata: backend.paradata.buffer() });
     setPhase('done');
@@ -208,6 +233,7 @@ export function App() {
           initialPage={survey.initialPage}
           resumed={survey.resumed}
           paradata={backend.paradata}
+          notice={loaded.notice}
           onPersist={(state, page) => persist(survey.caseId, state, page)}
           onSubmit={(responses) => submit(survey.caseId, responses)}
         />
