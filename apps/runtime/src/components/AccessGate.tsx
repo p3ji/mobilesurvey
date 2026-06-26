@@ -7,10 +7,8 @@ const HELP_URL =
 
 export function AccessGate({
   onAuthenticate,
-  online,
 }: {
   onAuthenticate: (code: string) => Promise<{ ok: boolean; error?: string }>;
-  online: boolean;
 }) {
   const [code, setCode] = useState('');
   const [busy, setBusy] = useState(false);
@@ -75,10 +73,6 @@ export function AccessGate({
         >
           ? Need help completing the survey?
         </a>
-
-        <div className={online ? 'gate__conn gate__conn--on' : 'gate__conn gate__conn--off'}>
-          {online ? '● Connected to the survey service' : '● Offline — progress saved on this device'}
-        </div>
       </div>
     </div>
   );

@@ -155,6 +155,12 @@ export function App() {
     setPhase('survey');
   };
 
+  /** Hardcoded demo access codes — used as fallback when Supabase has no matching row. */
+  const DEMO_CODES: Record<string, { name: string }> = {
+    ABC123: { name: 'Jordan Lee' },
+    DEF456: { name: 'Marie Tremblay' },
+  };
+
   /** Code-gated path: resolve a code, load any saved session, and enter the survey. */
   const authenticate = async (code: string): Promise<{ ok: boolean; error?: string }> => {
     if (!backend || !loaded) return { ok: false, error: 'Still connecting — please try again.' };
@@ -163,6 +169,14 @@ export function App() {
       resolved = await backend.cms.resolveAccessCode(code);
     } catch {
       return { ok: false, error: 'Could not reach the survey service. Please try again.' };
+    }
+    // Fall back to hardcoded demo codes if CMS has no matching row.
+    if (!resolved) {
+      const demo = DEMO_CODES[code.toUpperCase()];
+      if (demo) {
+        const caseId = `case-${code.toLowerCase()}`;
+        resolved = { caseId, sample: { id: caseId, fields: { name: demo.name } } };
+      }
     }
     if (!resolved) {
       return { ok: false, error: 'That access code was not recognized. Please check and try again.' };
@@ -233,7 +247,7 @@ export function App() {
   return (
     <div className="app">
       {phase === 'gate' && loaded.requiresAccessCode && (
-        <AccessGate onAuthenticate={authenticate} online={backend.online} />
+        <AccessGate onAuthenticate={authenticate} />
       )}
 
       {phase === 'survey' && survey && (
