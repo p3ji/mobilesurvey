@@ -1,9 +1,8 @@
 /**
- * Real backend clients: fetch-based implementations of the integration interfaces that talk to
- * the `@mobilesurvey/api` service. `createBackend()` probes the API's health endpoint and returns
- * either these API-backed clients (when the server is reachable) or the local mocks (so the static
- * demo keeps working with no server).
+ * Supabase-backed implementations of the runtime integration interfaces.
+ * Falls back to local mocks when VITE_SUPABASE_URL is not configured.
  */
+import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 import type {
   CmsClient,
   ParadataEvent,
@@ -13,10 +12,22 @@ import type {
 } from '@mobilesurvey/runtime-engine';
 import { createMockParadataSink, localSessionStore, mockCmsClient } from './mocks.js';
 
-/** API base URL (override with VITE_API_URL). */
-const API_BASE = (import.meta.env.VITE_API_URL as string | undefined) ?? 'http://localhost:8787';
+// ── Supabase client ───────────────────────────────────────────────────────────
 
-/** A published survey served by the hub/backend. */
+const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL as string | undefined;
+const SUPABASE_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY as string | undefined;
+
+let _sb: SupabaseClient | null = null;
+function sb(): SupabaseClient {
+  if (!_sb) {
+    if (!SUPABASE_URL || !SUPABASE_KEY) throw new Error('Supabase not configured');
+    _sb = createClient(SUPABASE_URL, SUPABASE_KEY);
+  }
+  return _sb;
+}
+
+// ── Survey loading ────────────────────────────────────────────────────────────
+
 export interface ServedSurvey {
   id: string;
   title: string;
@@ -25,113 +36,172 @@ export interface ServedSurvey {
   instrument: unknown;
 }
 
-/** Fetch a survey definition + its publish config by id (null if not found / unreachable). */
 export async function fetchSurvey(id: string): Promise<ServedSurvey | null> {
-  try {
-    const res = await fetch(`${API_BASE}/api/surveys/${encodeURIComponent(id)}`, {
-      signal: AbortSignal.timeout(3000),
-    });
-    if (!res.ok) return null;
-    return (await res.json()) as ServedSurvey;
-  } catch {
-    return null;
+  // Try Supabase first
+  if (SUPABASE_URL && SUPABASE_KEY) {
+    try {
+      const { data, error } = await sb()
+        .from('surveys')
+        .select('id, title, requires_access_code, status, instrument_json')
+        .eq('id', id)
+        .single();
+      if (!error && data) {
+        const row = data as {
+          id: string; title: string; requires_access_code: boolean;
+          status: string; instrument_json: unknown;
+        };
+        return {
+          id: row.id,
+          title: row.title,
+          requiresAccessCode: row.requires_access_code,
+          status: row.status,
+          instrument: row.instrument_json,
+        };
+      }
+    } catch { /* fall through */ }
   }
+  // Local API fallback
+  try {
+    const base = (import.meta.env.VITE_API_URL as string | undefined) ?? 'http://localhost:8787';
+    const res = await fetch(`${base}/api/surveys/${encodeURIComponent(id)}`, {
+      signal: AbortSignal.timeout(2000),
+    });
+    if (res.ok) return (await res.json()) as ServedSurvey;
+  } catch { /* not reachable */ }
+  return null;
 }
 
-/** A paradata sink that can be told which session its events belong to. */
+// ── Response submission ───────────────────────────────────────────────────────
+
+export async function submitResponse(
+  surveyId: string,
+  respondentId: string,
+  answers: Record<string, unknown>,
+  opts?: { startedAt?: number; durationMs?: number; pageCountReached?: number; totalPages?: number },
+): Promise<void> {
+  if (!SUPABASE_URL || !SUPABASE_KEY) return; // best-effort; mocks don't persist
+  try {
+    await sb().from('responses').insert({
+      survey_id: surveyId,
+      respondent_id: respondentId,
+      answers_json: answers,
+      started_at: opts?.startedAt ? new Date(opts.startedAt).toISOString() : null,
+      duration_ms: opts?.durationMs ?? null,
+      page_count_reached: opts?.pageCountReached ?? 0,
+      total_pages: opts?.totalPages ?? 0,
+      completed: true,
+    });
+  } catch { /* best-effort */ }
+}
+
+// ── CMS (access codes) ────────────────────────────────────────────────────────
+
+function supabaseCms(): CmsClient {
+  return {
+    resolveAccessCode: async (code) => {
+      const { data, error } = await sb()
+        .from('access_codes')
+        .select('code, survey_id, respondent_name, respondent_fields_json')
+        .eq('code', code)
+        .single();
+      if (error || !data) return null;
+      const row = data as {
+        code: string; survey_id: string;
+        respondent_name: string | null; respondent_fields_json: Record<string, unknown>;
+      };
+      const caseId = `case-${row.code}`;
+      return {
+        caseId,
+        sample: {
+          id: caseId,
+          fields: { name: row.respondent_name ?? '', ...row.respondent_fields_json },
+        } as SampleUnit,
+      };
+    },
+    reportStatus: async (_caseId, _status) => {
+      /* status tracking not yet in the schema — no-op */
+    },
+  };
+}
+
+// ── Session store ─────────────────────────────────────────────────────────────
+
+function supabaseSessionStore(): SessionStore {
+  return {
+    save: async (key, state) => {
+      const surveyId = key.split('::')[0] ?? null;
+      await sb().from('sessions').upsert({
+        key,
+        survey_id: surveyId,
+        state_json: state,
+        updated_at: new Date().toISOString(),
+      }, { onConflict: 'key' });
+    },
+    load: async (key) => {
+      const { data, error } = await sb()
+        .from('sessions')
+        .select('state_json')
+        .eq('key', key)
+        .single();
+      if (error || !data) return null;
+      return (data as { state_json: unknown }).state_json;
+    },
+    clear: async (key) => {
+      await sb().from('sessions').delete().eq('key', key);
+    },
+  };
+}
+
+// ── Paradata sink ─────────────────────────────────────────────────────────────
+
 export type RuntimeParadataSink = ParadataSink & { setSessionKey?(key: string): void };
 
+function supabaseParadataSink(): RuntimeParadataSink {
+  const events: ParadataEvent[] = [];
+  let sessionKey: string | undefined;
+  return {
+    setSessionKey: (key) => { sessionKey = key; },
+    emit: (event) => {
+      events.push(event);
+      const surveyId = sessionKey?.split('::')?.[0] ?? null;
+      const respondentId = sessionKey?.split('::')?.[1] ?? null;
+      void (async () => {
+        try {
+          await sb().from('paradata').insert({
+            session_key: sessionKey ?? null,
+            survey_id: surveyId,
+            respondent_id: respondentId,
+            ts: new Date(event.ts).toISOString(),
+            type: event.type,
+            payload_json: (event as { payload?: unknown }).payload ?? null,
+          });
+        } catch { /* best-effort */ }
+      })();
+    },
+    flush: async () => { /* events sent on emit */ },
+    buffer: () => [...events],
+  };
+}
+
+// ── Backend factory ───────────────────────────────────────────────────────────
+
 export interface Backend {
-  /** True when the API service answered the health check. */
   online: boolean;
   cms: CmsClient;
   sessionStore: SessionStore;
   paradata: RuntimeParadataSink;
 }
 
-function apiCms(base: string): CmsClient {
-  return {
-    resolveAccessCode: async (accessCode) => {
-      const res = await fetch(`${base}/api/access/resolve`, {
-        method: 'POST',
-        headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({ accessCode }),
-      });
-      if (res.status === 404) return null;
-      if (!res.ok) throw new Error(`resolveAccessCode failed: ${res.status}`);
-      return (await res.json()) as { caseId: string; sample: SampleUnit };
-    },
-    reportStatus: async (caseId, status) => {
-      await fetch(`${base}/api/cases/${encodeURIComponent(caseId)}/status`, {
-        method: 'POST',
-        headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({ status }),
-      });
-    },
-  };
-}
-
-function apiSessionStore(base: string): SessionStore {
-  return {
-    save: async (key, state) => {
-      await fetch(`${base}/api/session`, {
-        method: 'PUT',
-        headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({ key, state }),
-      });
-    },
-    load: async (key) => {
-      const res = await fetch(`${base}/api/session?key=${encodeURIComponent(key)}`);
-      if (!res.ok) return null;
-      const body = (await res.json()) as { state: unknown };
-      return body.state ?? null;
-    },
-    clear: async (key) => {
-      await fetch(`${base}/api/session?key=${encodeURIComponent(key)}`, { method: 'DELETE' });
-    },
-  };
-}
-
-/** Posts each event to the API (fire-and-forget) while keeping a local buffer for the UI. */
-function apiParadataSink(base: string): RuntimeParadataSink {
-  const events: ParadataEvent[] = [];
-  let sessionKey: string | undefined;
-  return {
-    setSessionKey: (key) => {
-      sessionKey = key;
-    },
-    emit: (event) => {
-      events.push(event);
-      void fetch(`${base}/api/paradata`, {
-        method: 'POST',
-        headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({ key: sessionKey, event }),
-      }).catch(() => {
-        /* best-effort; the local buffer still reflects the trail */
-      });
-    },
-    flush: async () => {
-      /* events are sent as they occur */
-    },
-    buffer: () => [...events],
-  };
-}
-
-/** Probe the API; fall back to local mocks if it isn't reachable. */
 export async function createBackend(): Promise<Backend> {
-  try {
-    const res = await fetch(`${API_BASE}/api/health`, { signal: AbortSignal.timeout(1500) });
-    if (res.ok) {
-      return {
-        online: true,
-        cms: apiCms(API_BASE),
-        sessionStore: apiSessionStore(API_BASE),
-        paradata: apiParadataSink(API_BASE),
-      };
-    }
-  } catch {
-    /* server not reachable — use mocks */
+  if (SUPABASE_URL && SUPABASE_KEY) {
+    return {
+      online: true,
+      cms: supabaseCms(),
+      sessionStore: supabaseSessionStore(),
+      paradata: supabaseParadataSink(),
+    };
   }
+  // Offline fallback: mocks
   return {
     online: false,
     cms: mockCmsClient,

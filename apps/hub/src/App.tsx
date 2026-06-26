@@ -13,10 +13,12 @@ import {
   createSurvey,
   deleteSurvey,
   designerLink,
+  fetchResponses,
   listSurveys,
   pingApi,
   respondentLink,
   setSurveyConfig,
+  type ResponseRow,
   type SurveySummary,
 } from './api.js';
 
@@ -47,6 +49,7 @@ const DEMO_SURVEYS: SurveySummary[] = [
     status: 'published',
     questionCount: countQuestions(lfsInstrument),
     updatedAt: 0,
+    responseCount: 0,
   },
   {
     id: 'demo',
@@ -55,8 +58,51 @@ const DEMO_SURVEYS: SurveySummary[] = [
     status: 'published',
     questionCount: countQuestions(demoInstrument),
     updatedAt: 0,
+    responseCount: 0,
   },
 ];
+
+function ResponsesPanel({ surveyId }: { surveyId: string }) {
+  const [rows, setRows] = useState<ResponseRow[] | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchResponses(surveyId)
+      .then(setRows)
+      .catch(() => setRows([]))
+      .finally(() => setLoading(false));
+  }, [surveyId]);
+
+  if (loading) return <p className="responses__loading">Loading responses…</p>;
+  if (!rows || rows.length === 0) return <p className="responses__empty">No responses yet.</p>;
+
+  return (
+    <table className="responses__table">
+      <thead>
+        <tr>
+          <th>Respondent</th>
+          <th>Submitted</th>
+          <th>Duration</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        {rows.map((r) => (
+          <tr key={r.id}>
+            <td className="responses__id">{r.respondentId.slice(0, 16)}…</td>
+            <td>{new Date(r.submittedAt).toLocaleString()}</td>
+            <td>{r.durationMs != null ? `${Math.round(r.durationMs / 1000)}s` : '—'}</td>
+            <td>
+              <span className={`badge badge--${r.completed ? 'published' : 'draft'}`}>
+                {r.completed ? 'Complete' : 'Partial'}
+              </span>
+            </td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  );
+}
 
 function SurveyCard({
   survey,
@@ -69,6 +115,7 @@ function SurveyCard({
 }) {
   const [copied, setCopied] = useState(false);
   const [busy, setBusy] = useState(false);
+  const [showResponses, setShowResponses] = useState(false);
   const link = respondentLink(survey.id);
 
   const patch = async (config: Parameters<typeof setSurveyConfig>[1]) => {
@@ -110,6 +157,8 @@ function SurveyCard({
         <span>{survey.questionCount} questions</span>
         <span>·</span>
         <span>{survey.requiresAccessCode ? '🔒 access code required' : '🌐 open (no code)'}</span>
+        <span>·</span>
+        <span>{survey.responseCount} response{survey.responseCount === 1 ? '' : 's'}</span>
       </div>
 
       {!readOnly && (
@@ -149,11 +198,26 @@ function SurveyCard({
           ✎ Edit in Designer
         </a>
         {!readOnly && (
-          <button type="button" className="btn btn--danger" onClick={remove} disabled={busy}>
-            Delete
-          </button>
+          <>
+            <button
+              type="button"
+              className={`btn ${showResponses ? 'btn--active' : ''}`}
+              onClick={() => setShowResponses((v) => !v)}
+            >
+              {showResponses ? '▲ Hide responses' : `▼ Responses (${survey.responseCount})`}
+            </button>
+            <button type="button" className="btn btn--danger" onClick={remove} disabled={busy}>
+              Delete
+            </button>
+          </>
         )}
       </div>
+
+      {showResponses && !readOnly && (
+        <div className="card__responses">
+          <ResponsesPanel surveyId={survey.id} />
+        </div>
+      )}
     </div>
   );
 }

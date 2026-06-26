@@ -8,13 +8,13 @@
  * If the survey is published without an access code, the gate is skipped and an anonymous session
  * starts immediately. Without a `?survey` param it falls back to the bundled Labour Force survey.
  */
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { lfsInstrument, type Instrument } from '@mobilesurvey/instrument-schema';
 import type { ParadataEvent, RuntimeState, SampleUnit } from '@mobilesurvey/runtime-engine';
 import { AccessGate } from './components/AccessGate.jsx';
 import { SurveyRunner } from './components/SurveyRunner.jsx';
 import { Completion } from './components/Completion.jsx';
-import { createBackend, fetchSurvey, type Backend } from './integrations/api.js';
+import { createBackend, fetchSurvey, submitResponse, type Backend } from './integrations/api.js';
 
 interface SavedSession {
   runtimeState: RuntimeState;
@@ -60,6 +60,7 @@ export function App() {
 
   const [backend, setBackend] = useState<Backend | null>(null);
   const [loaded, setLoaded] = useState<LoadedSurvey | null>(null);
+  const surveyStartedAt = useRef<number | null>(null);
 
   // Load the backend and the survey (by ?survey=<id>, else the bundled fallback).
   useEffect(() => {
@@ -107,6 +108,7 @@ export function App() {
     const resumed = Boolean(saved);
     b.paradata.setSessionKey?.(key);
     b.paradata.emit({ ts: Date.now(), type: resumed ? 'session_resume' : 'session_start', payload: { caseId } });
+    if (!resumed) surveyStartedAt.current = Date.now();
     setSurvey({
       caseId,
       sample: { id: caseId, fields: {} },
@@ -140,6 +142,7 @@ export function App() {
       type: resumed ? 'session_resume' : 'session_start',
       payload: { caseId },
     });
+    if (!resumed) surveyStartedAt.current = Date.now();
     await backend.cms.reportStatus(caseId, resumed ? 'resumed' : 'started');
 
     setSurvey({ caseId, sample, restore: saved?.runtimeState, initialPage: saved?.currentPage ?? 0, resumed });
@@ -154,9 +157,16 @@ export function App() {
 
   const submit = async (caseId: string, responses: Record<string, unknown>) => {
     if (!backend || !loaded) return;
-    backend.paradata.emit({ ts: Date.now(), type: 'submit', payload: { caseId } });
+    const now = Date.now();
+    backend.paradata.emit({ ts: now, type: 'submit', payload: { caseId } });
     await backend.cms.reportStatus(caseId, 'completed');
     await backend.paradata.flush();
+    // Persist the completed response (best-effort: don't block the UI on failure)
+    const surveyId = new URLSearchParams(window.location.search).get('survey') ?? loaded.instrument.id;
+    void submitResponse(surveyId, caseId, responses, {
+      startedAt: surveyStartedAt.current ?? undefined,
+      durationMs: surveyStartedAt.current ? now - surveyStartedAt.current : undefined,
+    });
     await backend.sessionStore.clear(sessionKey(loaded.instrument.id, caseId));
     setDone({ caseId, responses, paradata: backend.paradata.buffer() });
     setPhase('done');
