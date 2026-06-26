@@ -1,18 +1,28 @@
 /**
  * mobilesurvey hub — module selector home screen + Collector sub-view.
  */
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { blankInstrument, lfsInstrument, demoInstrument, type Instrument } from '@mobilesurvey/instrument-schema';
+import {
+  buildCatalog,
+  buildSearchIndex,
+  search,
+  type ComponentType,
+  type SearchIndex,
+  type SearchHit,
+} from '@mobilesurvey/metadata-registry';
 import {
   createSurvey,
   deleteSurvey,
   DESIGNER_URL,
   designerLink,
+  fetchAllInstruments,
   fetchResponses,
   listSurveys,
   pingApi,
   respondentLink,
   setSurveyConfig,
+  type InstrumentSummary,
   type ResponseRow,
   type SurveySummary,
 } from './api.js';
@@ -61,7 +71,7 @@ const DEMO_SURVEYS: SurveySummary[] = [
 
 // ── Module definitions ────────────────────────────────────────────────────────
 
-type HubView = 'home' | 'collector';
+type HubView = 'home' | 'collector' | 'searcher';
 
 interface ModuleDef {
   id: string;
@@ -344,6 +354,228 @@ function CollectorView({ onBack }: { onBack: () => void }) {
   );
 }
 
+// ── Searcher view ─────────────────────────────────────────────────────────────
+
+const BUILTIN: InstrumentSummary[] = [
+  { id: lfsInstrument.id, title: 'Household & Employment Survey', instrument: lfsInstrument },
+  { id: demoInstrument.id, title: 'Feature Demo Survey', instrument: demoInstrument },
+];
+
+const TYPE_LABELS: Record<ComponentType | 'all', string> = {
+  all: 'All',
+  instrument: 'Instruments',
+  question: 'Questions',
+  variable: 'Variables',
+  codeList: 'Code Lists',
+  section: 'Sections',
+  page: 'Pages',
+};
+
+const TYPE_ICON: Record<ComponentType, string> = {
+  instrument: '📄',
+  question: '❓',
+  variable: '📐',
+  codeList: '📋',
+  section: '§',
+  page: '📑',
+};
+
+function lbl(intl: Record<string, string> | undefined): string {
+  if (!intl) return '';
+  return intl.en ?? intl.fr ?? Object.values(intl)[0] ?? '';
+}
+
+function HitCard({ hit, surveyTitles }: { hit: SearchHit; surveyTitles: Record<string, string> }) {
+  const { entry, matched } = hit;
+  const label = lbl(entry.ddi.label as Record<string, string> | undefined) || entry.searchText.slice(0, 80);
+  const source = entry.registry.provenance ? (surveyTitles[entry.registry.provenance] ?? entry.registry.provenance) : null;
+  const surveyId = entry.registry.provenance;
+  const codeList = entry.componentType === 'codeList'
+    ? (entry.payload as { categories?: Array<{ code: string; label?: Record<string, string> }> }).categories?.slice(0, 5)
+    : null;
+
+  return (
+    <div className="sr-hit">
+      <div className="sr-hit__head">
+        <span className={`sr-hit__type sr-hit__type--${entry.componentType}`}>
+          {TYPE_ICON[entry.componentType]} {entry.componentType}
+        </span>
+        {source && <span className="sr-hit__source">{source}</span>}
+        {entry.registry.usageCount > 0 && (
+          <span className="sr-hit__usage">used {entry.registry.usageCount}×</span>
+        )}
+      </div>
+
+      <p className="sr-hit__label">{label}</p>
+
+      {codeList && codeList.length > 0 && (
+        <div className="sr-hit__codes">
+          {codeList.map((c) => (
+            <span key={c.code} className="sr-hit__code">
+              <strong>{c.code}</strong> {lbl(c.label)}
+            </span>
+          ))}
+          {((entry.payload as { categories?: unknown[] }).categories?.length ?? 0) > 5 && (
+            <span className="sr-hit__code sr-hit__code--more">
+              +{((entry.payload as { categories?: unknown[] }).categories?.length ?? 0) - 5} more
+            </span>
+          )}
+        </div>
+      )}
+
+      {matched.length > 0 && (
+        <div className="sr-hit__matched">
+          {matched.map((m) => <span key={m} className="sr-hit__term">{m}</span>)}
+        </div>
+      )}
+
+      {surveyId && (
+        <div className="sr-hit__actions">
+          <a className="btn btn--sm" href={designerLink(surveyId)} target="_blank" rel="noopener noreferrer">
+            Open in Designer ↗
+          </a>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function SearcherView({ onBack }: { onBack: () => void }) {
+  const [query, setQuery] = useState('');
+  const [typeFilter, setTypeFilter] = useState<ComponentType | 'all'>('all');
+  const [index, setIndex] = useState<SearchIndex | null>(null);
+  const [surveyTitles, setSurveyTitles] = useState<Record<string, string>>({});
+  const [loading, setLoading] = useState(true);
+  const [surveyCount, setSurveyCount] = useState(0);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    (async () => {
+      let remote: InstrumentSummary[] = [];
+      try { remote = await fetchAllInstruments(); } catch { /* offline — use builtins only */ }
+
+      const seen = new Set<string>();
+      const all = [...remote, ...BUILTIN].filter((s) => {
+        if (seen.has(s.instrument.id)) return false;
+        seen.add(s.instrument.id);
+        return true;
+      });
+
+      const titles: Record<string, string> = {};
+      for (const s of all) titles[s.instrument.id] = s.title;
+      setSurveyTitles(titles);
+      setSurveyCount(all.length);
+      setIndex(buildSearchIndex(buildCatalog(all.map((s) => s.instrument))));
+      setLoading(false);
+      setTimeout(() => inputRef.current?.focus(), 50);
+    })();
+  }, []);
+
+  const FILTER_TYPES: Array<ComponentType | 'all'> = ['all', 'question', 'variable', 'codeList', 'instrument'];
+
+  const hits = useMemo(() => {
+    if (!index) return [];
+    if (query.trim()) {
+      return search(index, query, {
+        limit: 50,
+        type: typeFilter === 'all' ? undefined : typeFilter,
+      });
+    }
+    // Browse: return all entries of the selected type, capped at 100
+    return index.entries
+      .filter((e) => typeFilter === 'all' || e.componentType === typeFilter)
+      .slice(0, 100)
+      .map((e) => ({ entry: e, score: 0, matched: [] as string[] }));
+  }, [index, query, typeFilter]);
+
+  const typeCounts = useMemo(() => {
+    if (!index) return {} as Record<string, number>;
+    const counts: Record<string, number> = { all: index.entries.length };
+    for (const e of index.entries) counts[e.componentType] = (counts[e.componentType] ?? 0) + 1;
+    return counts;
+  }, [index]);
+
+  return (
+    <div className="hub">
+      <header className="hub__header">
+        <div className="hub__brand">
+          <button type="button" className="hub__back" onClick={onBack}>← Hub</button>
+          <strong>Searcher</strong>
+          <span className="hub__sub">Discover · reuse · extend metadata</span>
+        </div>
+        <div className="hub__header-right">
+          {!loading && (
+            <span className="hub__conn hub__conn--on">
+              ● {surveyCount} survey{surveyCount === 1 ? '' : 's'} indexed
+            </span>
+          )}
+          <button
+            type="button"
+            className="btn btn--primary"
+            onClick={() => window.open(`${DESIGNER_URL}/?mode=pro`, '_blank', 'noopener')}
+          >
+            + New survey
+          </button>
+        </div>
+      </header>
+
+      <main className="hub__main sr-main">
+        {/* Search bar */}
+        <div className="sr-search">
+          <input
+            ref={inputRef}
+            className="sr-search__input"
+            type="search"
+            placeholder={'Search questions, variables, code lists… (e.g. “employment”, “age”, “income”)'}
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+          />
+        </div>
+
+        {/* Type filter tabs */}
+        <div className="sr-filters" role="group" aria-label="Filter by component type">
+          {FILTER_TYPES.map((t) => (
+            <button
+              key={t}
+              type="button"
+              className={`sr-filter ${typeFilter === t ? 'sr-filter--active' : ''}`}
+              onClick={() => setTypeFilter(t)}
+            >
+              {TYPE_LABELS[t]}
+              {typeCounts[t] != null && (
+                <span className="sr-filter__count">{typeCounts[t]}</span>
+              )}
+            </button>
+          ))}
+        </div>
+
+        {/* Results */}
+        {loading ? (
+          <p className="hub__loading">Building search index…</p>
+        ) : hits.length === 0 ? (
+          <div className="sr-empty">
+            <p>No results for <strong>"{query}"</strong>.</p>
+            <p>Try a broader term, or <a href={`${DESIGNER_URL}/?mode=pro`} target="_blank" rel="noopener noreferrer">create a new survey</a> to add new metadata.</p>
+          </div>
+        ) : (
+          <>
+            <p className="sr-count">
+              {query.trim()
+                ? `${hits.length} result${hits.length === 1 ? '' : 's'} for "${query}"`
+                : `Browsing ${hits.length} ${typeFilter === 'all' ? 'entries' : TYPE_LABELS[typeFilter].toLowerCase()}`}
+            </p>
+            <div className="sr-results">
+              {hits.map((h) => (
+                <HitCard key={h.entry.entryId} hit={h} surveyTitles={surveyTitles} />
+              ))}
+            </div>
+          </>
+        )}
+      </main>
+    </div>
+  );
+}
+
 // ── Module tile ───────────────────────────────────────────────────────────────
 
 function ModuleTile({ mod }: { mod: ModuleDef }) {
@@ -413,9 +645,9 @@ function HomePage({ onNavigate }: { onNavigate: (v: HubView) => void }) {
       icon: '🔍',
       name: 'Searcher',
       tagline: 'Search and reuse survey metadata',
-      description: 'Discover existing questions, variables, and code lists across all surveys. Search by keyword or concept, preview, and insert directly into your instrument.',
+      description: 'Discover existing questions, variables, and code lists across all surveys. Search by keyword or concept, preview, and open the source survey in the designer.',
       status: 'live',
-      action: () => window.open(`${DESIGNER_URL}/`, '_blank', 'noopener'),
+      action: () => onNavigate('searcher'),
     },
     {
       id: 'analyzer',
@@ -454,7 +686,7 @@ function HomePage({ onNavigate }: { onNavigate: (v: HubView) => void }) {
 
 export function App() {
   const [view, setView] = useState<HubView>('home');
-  return view === 'home'
-    ? <HomePage onNavigate={setView} />
-    : <CollectorView onBack={() => setView('home')} />;
+  if (view === 'collector') return <CollectorView onBack={() => setView('home')} />;
+  if (view === 'searcher') return <SearcherView onBack={() => setView('home')} />;
+  return <HomePage onNavigate={setView} />;
 }

@@ -109,6 +109,9 @@ importers:
       '@mobilesurvey/instrument-schema':
         specifier: workspace:*
         version: link:../../packages/instrument-schema
+      '@mobilesurvey/metadata-registry':
+        specifier: workspace:*
+        version: link:../../packages/metadata-registry
       '@supabase/supabase-js':
         specifier: ^2.108.2
         version: 2.108.2

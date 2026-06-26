@@ -164,6 +164,29 @@ export async function fetchResponses(surveyId: string): Promise<ResponseRow[]> {
   }));
 }
 
+// ── Catalog (for Searcher) ────────────────────────────────────────────────────
+
+export interface InstrumentSummary {
+  id: string;
+  title: string;
+  instrument: Instrument;
+}
+
+export async function fetchAllInstruments(): Promise<InstrumentSummary[]> {
+  const { data, error } = await sb()
+    .from('surveys')
+    .select('id, title, instrument_json')
+    .order('updated_at', { ascending: false });
+  if (error) throw error;
+  return (data ?? [])
+    .filter((r: { instrument_json: unknown }) => r.instrument_json)
+    .map((r: { id: string; title: string; instrument_json: unknown }) => ({
+      id: r.id,
+      title: r.title,
+      instrument: r.instrument_json as Instrument,
+    }));
+}
+
 // ── Connectivity check ────────────────────────────────────────────────────────
 
 export async function pingApi(): Promise<boolean> {
