@@ -259,9 +259,12 @@ function CollectorView({ onBack }: { onBack: () => void }) {
     pingApi().then((connected) => {
       setOnline(connected);
       if (connected) {
-        // Seed the bundled demo survey so responses can be stored against it.
+        // Seed bundled surveys so designer links and response storage work.
         upsertSurvey('demo', 'Feature Demo Survey', demoInstrument, {
           requiresAccessCode: false, status: 'published',
+        }).catch(() => { /* best-effort */ });
+        upsertSurvey('lfs', 'Household & Employment Survey', lfsInstrument, {
+          requiresAccessCode: true, status: 'published',
         }).catch(() => { /* best-effort */ });
       }
     });
@@ -289,7 +292,7 @@ function CollectorView({ onBack }: { onBack: () => void }) {
     <div className="hub">
       <header className="hub__header">
         <div className="hub__brand">
-          <button type="button" className="hub__back" onClick={onBack}>← Hub</button>
+          <button type="button" className="hub__back" onClick={onBack}>← Modular Survey Tools</button>
           <strong>Collector</strong>
           <span className="hub__sub">Manage surveys · monitor collection</span>
         </div>
@@ -508,7 +511,7 @@ function SearcherView({ onBack }: { onBack: () => void }) {
     <div className="hub">
       <header className="hub__header">
         <div className="hub__brand">
-          <button type="button" className="hub__back" onClick={onBack}>← Hub</button>
+          <button type="button" className="hub__back" onClick={onBack}>← Modular Survey Tools</button>
           <strong>Searcher</strong>
           <span className="hub__sub">Discover · reuse · extend metadata</span>
         </div>
@@ -585,6 +588,63 @@ function SearcherView({ onBack }: { onBack: () => void }) {
   );
 }
 
+// ── Demo survey picker ────────────────────────────────────────────────────────
+
+const DEMO_OPTIONS = [
+  { id: 'lfs',  label: 'Household & Employment Survey', live: false },
+  { id: 'demo', label: 'Feature Demo Survey',            live: true  },
+];
+
+function DemoSurveyPicker() {
+  const [selected, setSelected] = useState('demo');
+  return (
+    <div className="demo-picker">
+      <div className="demo-picker__head">
+        <h2 className="demo-picker__title">Try a demo survey</h2>
+        <p className="demo-picker__sub">
+          Load a bundled survey into the designer to explore its features.
+          Only the <strong>Feature Demo Survey</strong> is connected to live data collection — responses are saved to the Collector dashboard.
+          The Household &amp; Employment Survey is for designer exploration only.
+        </p>
+      </div>
+      <div className="demo-picker__options">
+        {DEMO_OPTIONS.map((s) => (
+          <label
+            key={s.id}
+            className={`demo-picker__option${selected === s.id ? ' demo-picker__option--selected' : ''}`}
+          >
+            <input
+              type="radio"
+              name="demo-survey"
+              value={s.id}
+              checked={selected === s.id}
+              onChange={() => setSelected(s.id)}
+            />
+            <span className="demo-picker__option-label">{s.label}</span>
+            {s.live && <span className="badge badge--live">● Live</span>}
+          </label>
+        ))}
+      </div>
+      <div className="demo-picker__actions">
+        <button
+          type="button"
+          className="btn btn--primary"
+          onClick={() => window.open(`${DESIGNER_URL}/?survey=${selected}&mode=pro`, '_blank', 'noopener')}
+        >
+          Open in Pro Mode
+        </button>
+        <button
+          type="button"
+          className="btn"
+          onClick={() => window.open(`${DESIGNER_URL}/?survey=${selected}&mode=easy`, '_blank', 'noopener')}
+        >
+          Open in Easy Mode
+        </button>
+      </div>
+    </div>
+  );
+}
+
 // ── Module tile ───────────────────────────────────────────────────────────────
 
 function ModuleTile({ mod }: { mod: ModuleDef }) {
@@ -619,7 +679,7 @@ function HomePage({ onNavigate }: { onNavigate: (v: HubView) => void }) {
       icon: '⚙',
       name: 'Designer — Pro',
       tagline: 'Full-featured instrument authoring',
-      description: 'Build complex survey instruments with a tree editor, conditional routing, variables, expressions, flowchart view, and multi-language support.',
+      description: 'Opens a blank instrument. Use "Try a demo survey" above to load an example. Supports tree editing, conditional routing, variables, expressions, and flowchart view.',
       status: 'live',
       action: () => window.open(`${DESIGNER_URL}/?mode=pro`, '_blank', 'noopener'),
     },
@@ -628,7 +688,7 @@ function HomePage({ onNavigate }: { onNavigate: (v: HubView) => void }) {
       icon: '✏',
       name: 'Designer — Easy Mode',
       tagline: 'Simple question-by-question editor',
-      description: 'A pared down questionnaire designer, focusing on questions, categories, and simple logic. Perfect for quick questionnaire testing, stakeholder consultations, and outputting static HTML pages. Components are reusable in Designer Pro.',
+      description: 'Opens a blank instrument. Use "Try a demo survey" above to load an example. Focusing on questions, categories, and simple logic — best for quick questionnaire testing.',
       status: 'live',
       action: () => window.open(`${DESIGNER_URL}/?mode=easy`, '_blank', 'noopener'),
     },
@@ -672,7 +732,7 @@ function HomePage({ onNavigate }: { onNavigate: (v: HubView) => void }) {
     <div className="hub">
       <header className="hub__header hub__header--home">
         <div className="hub__brand">
-          <strong className="hub__wordmark">mobilesurvey</strong>
+          <strong className="hub__wordmark">Modular Survey Tools</strong>
           <span className="hub__sub">Open survey platform</span>
         </div>
       </header>
@@ -682,6 +742,8 @@ function HomePage({ onNavigate }: { onNavigate: (v: HubView) => void }) {
           <h1>What would you like to do?</h1>
           <p>Select a module to get started. Modules marked "Coming soon" are on the roadmap.</p>
         </div>
+
+        <DemoSurveyPicker />
 
         <div className="module-grid">
           {modules.map((m) => <ModuleTile key={m.id} mod={m} />)}

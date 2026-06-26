@@ -201,6 +201,46 @@ code { font-family: var(--mono); font-size: 0.88em; }
 .badge--live { background: #e8f6ee; color: var(--ok); }
 .card__badges { display: flex; gap: 6px; flex-shrink: 0; }
 
+/* ── Demo survey picker ───────────────────────────────────────────────────── */
+.demo-picker {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-left: 4px solid var(--brand);
+  border-radius: var(--radius);
+  padding: 20px 24px;
+  margin-bottom: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.demo-picker__title { margin: 0; font-size: 16px; font-weight: 700; }
+.demo-picker__sub { margin: 4px 0 0; font-size: 13px; color: var(--ink-soft); line-height: 1.5; }
+.demo-picker__options {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.demo-picker__option {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  background: var(--bg);
+  transition: border-color 0.15s;
+}
+.demo-picker__option input { width: auto; cursor: pointer; }
+.demo-picker__option:hover { border-color: var(--brand); }
+.demo-picker__option--selected {
+  border-color: var(--brand);
+  background: var(--selected);
+}
+.demo-picker__option-label { font-weight: 500; }
+.demo-picker__actions { display: flex; gap: 10px; flex-wrap: wrap; }
+
 /* ── Module grid (Home view) ──────────────────────────────────────────────── */
 .module-grid {
   display: grid;
