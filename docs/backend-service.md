@@ -1,3 +1,5 @@
+> **Reference only — not actively maintained.** For current state see `AGENTS.md` (phase status, bugs) and `H:\My Drive\Brain2\Projects\mobilesurvey.md` (requirements, decisions).
+
 # Backend Service (`apps/api`)
 
 The backend turns the mocked integration seams into a real service. It implements the four

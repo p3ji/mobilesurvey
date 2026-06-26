@@ -1,3 +1,5 @@
+> **Reference only — not actively maintained.** For current state see `AGENTS.md` (phase status, bugs) and `H:\My Drive\Brain2\Projects\mobilesurvey.md` (requirements, decisions).
+
 # Phase 3 — Component Framework
 
 The authoring tool (`apps/designer`) is a Vite + React 18 + TypeScript SPA. It is the

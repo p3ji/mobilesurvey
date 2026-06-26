@@ -38,6 +38,15 @@
 - Dev base paths are `/` (Vite dev serves at root); production uses `/mobilesurvey/` (hub, landing page), `/mobilesurvey/designer/`, `/mobilesurvey/respondent/` for GitHub Pages.
 - Anonymous respondents use stable localStorage-based ID (`anon-<timestamp>`) to resume on the same device.
 
+## Open Bugs
+*(Log bugs here as discovered; mark resolved with date)*
+- *(none logged)*
+
+## Pending Features / Decisions
+*(Log chat decisions and new feature requests here; move to Brain note when scope is confirmed)*
+- Phase 6 remaining: searchable/collapsible tree for 100+ question surveys
+- Phase 7: Analytics dashboard (monitor responses, completion/drop-off, paradata)
+
 ## Do NOT
 - Commit secrets (`.env`) or large build artifacts.
 - Use better-sqlite3 (no prebuilt binary for Node 24); use built-in `node:sqlite` instead.

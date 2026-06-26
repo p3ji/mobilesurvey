@@ -1,3 +1,5 @@
+> **Reference only — not actively maintained.** For current state see `AGENTS.md` (phase status, bugs) and `H:\My Drive\Brain2\Projects\mobilesurvey.md` (requirements, decisions).
+
 # Phase 4 — Metadata Registry & Semantic Search
 
 > **Status:** in progress. The `packages/metadata-registry` package (entry model, indexer, and a

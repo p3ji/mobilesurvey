@@ -1,3 +1,5 @@
+> **Reference only — not actively maintained.** For current state see `AGENTS.md` (phase status, bugs) and `H:\My Drive\Brain2\Projects\mobilesurvey.md` (requirements, decisions).
+
 # Architecture Overview
 
 mobilesurvey is a DDI-compliant, mobile-first survey design and Electronic Questionnaire (EQ)
