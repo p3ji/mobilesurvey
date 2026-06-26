@@ -74,7 +74,7 @@ const DEMO_SURVEYS: SurveySummary[] = [
 
 // ── Module definitions ────────────────────────────────────────────────────────
 
-type HubView = 'home' | 'collector' | 'searcher';
+type HubView = 'home' | 'collector' | 'searcher' | 'trainer';
 
 interface ModuleDef {
   id: string;
@@ -1083,6 +1083,70 @@ function ModuleTile({ mod }: { mod: ModuleDef }) {
   );
 }
 
+// ── Training hub ──────────────────────────────────────────────────────────────
+
+const TRAINING_RESOURCES = [
+  {
+    id: 'intro-video',
+    kind: 'video' as const,
+    title: 'Introduction to Modular Survey Tools',
+    description:
+      'An AI-generated video overview of the platform — what each module does, how surveys are created and published, and how collection data flows into the analytics dashboard.',
+    duration: '~10 min',
+    url: 'https://notebooklm.google.com/notebook/e5e4a737-72b2-4eda-9f7f-812cb2c7b232/artifact/6a5da107-5309-4052-a4fa-b09559ed7d82',
+    note: 'Opens in NotebookLM — Google account required.',
+  },
+];
+
+function TrainingView({ onBack }: { onBack: () => void }) {
+  return (
+    <div className="hub">
+      <header className="hub__header">
+        <button type="button" className="hub__back" onClick={onBack}>
+          ← Back
+        </button>
+        <div className="hub__brand">
+          <strong className="hub__wordmark">Training Hub</strong>
+          <span className="hub__sub">Learn · explore · get started</span>
+        </div>
+      </header>
+
+      <main className="hub__main">
+        <div className="train__grid">
+          {TRAINING_RESOURCES.map((r) => (
+            <div key={r.id} className="train__card">
+              <div className="train__card-icon" aria-hidden="true">
+                {r.kind === 'video' ? '▶' : '📄'}
+              </div>
+              <div className="train__card-body">
+                <div className="train__card-meta">
+                  <span className="train__badge train__badge--video">Video</span>
+                  <span className="train__duration">{r.duration}</span>
+                </div>
+                <h2 className="train__card-title">{r.title}</h2>
+                <p className="train__card-desc">{r.description}</p>
+                {r.note && <p className="train__card-note">{r.note}</p>}
+                <a
+                  className="btn train__watch-btn"
+                  href={r.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  ▶ Watch video
+                </a>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <p className="train__coming-soon">
+          More resources — written guides, walkthroughs, and worked examples — coming soon.
+        </p>
+      </main>
+    </div>
+  );
+}
+
 // ── Home page ─────────────────────────────────────────────────────────────────
 
 function HomePage({ onNavigate }: { onNavigate: (v: HubView) => void }) {
@@ -1139,6 +1203,15 @@ function HomePage({ onNavigate }: { onNavigate: (v: HubView) => void }) {
       description: 'Explore collected data with descriptive statistics, frequency tables, and charts. Advanced statistical analysis — cross-tabs, regression — coming in a future release.',
       status: 'coming-soon',
     },
+    {
+      id: 'trainer',
+      icon: '🎓',
+      name: 'Training Hub',
+      tagline: 'Learn · explore · get started',
+      description: 'Video overviews, guides, and resources for learning Modular Survey Tools — from first survey to advanced collection management.',
+      status: 'live',
+      action: () => onNavigate('trainer'),
+    },
   ], [onNavigate]);
 
   return (
@@ -1172,5 +1245,6 @@ export function App() {
   const [view, setView] = useState<HubView>('home');
   if (view === 'collector') return <CollectorView onBack={() => setView('home')} />;
   if (view === 'searcher') return <SearcherView onBack={() => setView('home')} />;
+  if (view === 'trainer') return <TrainingView onBack={() => setView('home')} />;
   return <HomePage onNavigate={setView} />;
 }

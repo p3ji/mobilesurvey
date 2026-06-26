@@ -503,4 +503,102 @@ code { font-family: var(--mono); font-size: 0.88em; }
 }
 
 .sr-hit__actions { margin-top: 4px; }
+
+/* ── Training hub ─────────────────────────────────────────────────────────── */
+
+.train__grid {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  max-width: 760px;
+}
+
+.train__card {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 28px 28px 28px 24px;
+  display: flex;
+  gap: 20px;
+  align-items: flex-start;
+}
+
+.train__card-icon {
+  font-size: 2.2rem;
+  line-height: 1;
+  flex-shrink: 0;
+  padding-top: 2px;
+  color: var(--brand);
+}
+
+.train__card-body { flex: 1; }
+
+.train__card-meta {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.train__badge {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  padding: 2px 8px;
+  border-radius: 4px;
+}
+
+.train__badge--video {
+  background: #e8f0fe;
+  color: #1a56c4;
+}
+
+.train__duration {
+  font-size: 12px;
+  color: var(--ink-soft);
+}
+
+.train__card-title {
+  font-size: 1.15rem;
+  font-weight: 600;
+  margin: 0 0 8px;
+  color: var(--ink);
+}
+
+.train__card-desc {
+  font-size: 0.875rem;
+  color: var(--ink-soft);
+  line-height: 1.55;
+  margin: 0 0 8px;
+}
+
+.train__card-note {
+  font-size: 0.8rem;
+  color: var(--ink-soft);
+  font-style: italic;
+  margin: 0 0 16px;
+}
+
+.train__watch-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--brand);
+  color: var(--brand-ink);
+  padding: 9px 20px;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background 0.15s;
+}
+.train__watch-btn:hover { background: var(--brand-dark); }
+
+.train__coming-soon {
+  margin-top: 24px;
+  font-size: 0.85rem;
+  color: var(--ink-soft);
+  font-style: italic;
+}
 .btn--sm { font-size: 12px; padding: 4px 10px; }
