@@ -106,10 +106,10 @@ export async function submitResponse(
   respondentId: string,
   answers: Record<string, unknown>,
   opts?: { startedAt?: number; durationMs?: number; pageCountReached?: number; totalPages?: number },
-): Promise<void> {
-  if (!SUPABASE_URL || !SUPABASE_KEY) return; // best-effort; mocks don't persist
+): Promise<boolean> {
+  if (!SUPABASE_URL || !SUPABASE_KEY) return false;
   try {
-    await sb().from('responses').insert({
+    const { error } = await sb().from('responses').insert({
       survey_id: surveyId,
       respondent_id: respondentId,
       answers_json: answers,
@@ -119,7 +119,8 @@ export async function submitResponse(
       total_pages: opts?.totalPages ?? 0,
       completed: true,
     });
-  } catch { /* best-effort */ }
+    return !error;
+  } catch { return false; }
 }
 
 // ── CMS (access codes) ────────────────────────────────────────────────────────

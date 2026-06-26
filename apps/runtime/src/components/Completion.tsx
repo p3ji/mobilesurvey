@@ -5,10 +5,12 @@ import type { ParadataEvent } from '@mobilesurvey/runtime-engine';
 export function Completion({
   responses,
   paradata,
+  saved,
   onRestart,
 }: {
   responses: Record<string, unknown>;
   paradata: ParadataEvent[];
+  saved: boolean;
   onRestart: () => void;
 }) {
   const [copied, setCopied] = useState(false);
@@ -33,8 +35,9 @@ export function Completion({
         </div>
         <h1 className="done__title">Survey submitted</h1>
         <p className="done__sub">
-          Thank you. Your responses were collected in this session (in data-schema form — not saved
-          to any server in this demo).
+          {saved
+            ? 'Thank you. Your responses have been saved to the collection dashboard.'
+            : 'Thank you. Your responses were collected in this session but were not saved to a server.'}
         </p>
 
         <div className="done__section">

@@ -40,6 +40,7 @@ interface DoneContext {
   caseId: string;
   responses: Record<string, unknown>;
   paradata: ParadataEvent[];
+  saved: boolean;
 }
 
 const sessionKey = (instrumentId: string, caseId: string) => `${instrumentId}::${caseId}`;
@@ -99,9 +100,13 @@ export function App() {
           // Seed the survey row so the FK on responses.survey_id is satisfied.
           const bundled = BUNDLED[surveyId];
           if (bundled) {
-            void ensureSurveyRow(surveyId, bundled.instrument.metadata?.title as Record<string, string> | undefined
-              ? Object.values(bundled.instrument.metadata.title as Record<string, string>)[0] ?? surveyId
-              : surveyId, bundled.instrument, { requiresAccessCode: bundled.requiresAccessCode });
+            const title = (bundled.instrument.metadata?.title as Record<string, string> | undefined);
+            await ensureSurveyRow(
+              surveyId,
+              title ? (Object.values(title)[0] ?? surveyId) : surveyId,
+              bundled.instrument,
+              { requiresAccessCode: bundled.requiresAccessCode },
+            );
           }
         }
       } else {
@@ -191,16 +196,15 @@ export function App() {
     backend.paradata.emit({ ts: now, type: 'submit', payload: { caseId } });
     await backend.cms.reportStatus(caseId, 'completed');
     await backend.paradata.flush();
-    // Only persist to Supabase for real surveys (not bundled demo fallbacks)
     const surveyId = new URLSearchParams(window.location.search).get('survey');
-    if (surveyId && loaded.notice?.kind !== 'demo-no-save') {
-      void submitResponse(surveyId, caseId, responses, {
-        startedAt: surveyStartedAt.current ?? undefined,
-        durationMs: surveyStartedAt.current ? now - surveyStartedAt.current : undefined,
-      });
-    }
+    const responseSaved = (surveyId && loaded.notice?.kind !== 'demo-no-save')
+      ? await submitResponse(surveyId, caseId, responses, {
+          startedAt: surveyStartedAt.current ?? undefined,
+          durationMs: surveyStartedAt.current ? now - surveyStartedAt.current : undefined,
+        })
+      : false;
     await backend.sessionStore.clear(sessionKey(loaded.instrument.id, caseId));
-    setDone({ caseId, responses, paradata: backend.paradata.buffer() });
+    setDone({ caseId, responses, paradata: backend.paradata.buffer(), saved: responseSaved });
     setPhase('done');
   };
 
@@ -247,7 +251,7 @@ export function App() {
       )}
 
       {phase === 'done' && done && (
-        <Completion responses={done.responses} paradata={done.paradata} onRestart={restart} />
+        <Completion responses={done.responses} paradata={done.paradata} saved={done.saved} onRestart={restart} />
       )}
     </div>
   );
