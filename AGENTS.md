@@ -71,6 +71,7 @@ The agent uses this table to route updates to the correct files.
 
 ## Pending Features / Decisions
 *(Log chat decisions and new feature requests here; move to Brain note when scope is confirmed)*
+- **Decision (2026-06-26):** Staying on GitHub Pages for now; Netlify deferred for future hosting migration.
 - Phase 6 remaining: searchable/collapsible tree for 100+ question surveys
 - Phase 7: Analytics dashboard (monitor responses, completion/drop-off, paradata)
 
