@@ -1085,16 +1085,28 @@ function ModuleTile({ mod }: { mod: ModuleDef }) {
 
 // ── Training hub ──────────────────────────────────────────────────────────────
 
-const TRAINING_RESOURCES = [
+interface TrainingResource {
+  id: string;
+  kind: 'video';
+  title: string;
+  description: string;
+  duration: string;
+  /** YouTube video id (for inline embed). */
+  youtubeId?: string;
+  /** Canonical watch URL (fallback link / "open on YouTube"). */
+  url: string;
+}
+
+const TRAINING_RESOURCES: TrainingResource[] = [
   {
     id: 'intro-video',
-    kind: 'video' as const,
+    kind: 'video',
     title: 'Introduction to Modular Survey Tools',
     description:
-      'An AI-generated video overview of the platform — what each module does, how surveys are created and published, and how collection data flows into the analytics dashboard.',
+      'A video overview of the platform — what each module does, how surveys are created and published, and how collection data flows into the analytics dashboard.',
     duration: '~10 min',
-    url: 'https://notebooklm.google.com/notebook/e5e4a737-72b2-4eda-9f7f-812cb2c7b232/artifact/6a5da107-5309-4052-a4fa-b09559ed7d82',
-    note: 'Opens in NotebookLM — Google account required.',
+    youtubeId: 'xxosyO_ZHQc',
+    url: 'https://youtu.be/xxosyO_ZHQc',
   },
 ];
 
@@ -1115,9 +1127,17 @@ function TrainingView({ onBack }: { onBack: () => void }) {
         <div className="train__grid">
           {TRAINING_RESOURCES.map((r) => (
             <div key={r.id} className="train__card">
-              <div className="train__card-icon" aria-hidden="true">
-                {r.kind === 'video' ? '▶' : '📄'}
-              </div>
+              {r.youtubeId && (
+                <div className="train__video">
+                  <iframe
+                    src={`https://www.youtube-nocookie.com/embed/${r.youtubeId}`}
+                    title={r.title}
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                    referrerPolicy="strict-origin-when-cross-origin"
+                    allowFullScreen
+                  />
+                </div>
+              )}
               <div className="train__card-body">
                 <div className="train__card-meta">
                   <span className="train__badge train__badge--video">Video</span>
@@ -1125,14 +1145,13 @@ function TrainingView({ onBack }: { onBack: () => void }) {
                 </div>
                 <h2 className="train__card-title">{r.title}</h2>
                 <p className="train__card-desc">{r.description}</p>
-                {r.note && <p className="train__card-note">{r.note}</p>}
                 <a
-                  className="btn train__watch-btn"
+                  className="train__watch-link"
                   href={r.url}
                   target="_blank"
                   rel="noopener noreferrer"
                 >
-                  ▶ Watch video
+                  Watch on YouTube ↗
                 </a>
               </div>
             </div>
@@ -1208,7 +1227,7 @@ function HomePage({ onNavigate }: { onNavigate: (v: HubView) => void }) {
       icon: '🎓',
       name: 'Training Hub',
       tagline: 'Learn · explore · get started',
-      description: 'Video overviews, guides, and resources for learning Modular Survey Tools — from first survey to advanced collection management.',
+      description: 'Video overviews, guides, and resources for learning Modular Survey Tools. Start with a ~2 min intro, then explore from first survey to advanced collection management.',
       status: 'live',
       action: () => onNavigate('trainer'),
     },
