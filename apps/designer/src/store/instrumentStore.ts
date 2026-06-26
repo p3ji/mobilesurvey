@@ -5,9 +5,10 @@
  */
 import { produce } from 'immer';
 import { create } from 'zustand';
-import { lfsInstrument, type ControlConstruct, type Instrument, type LanguageCode } from '@mobilesurvey/instrument-schema';
+import { blankInstrument, type ControlConstruct, type Instrument, type LanguageCode } from '@mobilesurvey/instrument-schema';
 
 const HISTORY_LIMIT = 50;
+const _initial = blankInstrument();
 
 export interface DesignerStore {
   instrument: Instrument;
@@ -36,9 +37,9 @@ export interface DesignerStore {
 }
 
 export const useDesigner = create<DesignerStore>((set, get) => ({
-  instrument: lfsInstrument,
-  selectedId: lfsInstrument.sequence.id,
-  language: lfsInstrument.defaultLanguage,
+  instrument: _initial,
+  selectedId: _initial.sequence.id,
+  language: _initial.defaultLanguage,
   past: [],
   future: [],
   newlyInsertedId: null,

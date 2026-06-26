@@ -983,6 +983,19 @@ code {
   background: var(--selected);
   color: var(--brand);
 }
+.toolbar__menu-divider {
+  border: none;
+  border-top: 1px solid var(--line);
+  margin: 4px 0;
+}
+.toolbar__import-error {
+  font-size: 11px;
+  color: var(--danger);
+  padding: 2px 14px 4px;
+  margin: 0;
+  white-space: normal;
+  max-width: 260px;
+}
 
 /* ── Respondent App ────────────────────────────────────────────────────────── */
 .rapp {

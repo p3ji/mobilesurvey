@@ -1,7 +1,7 @@
 /** Top toolbar: title, language toggle, undo/redo, mode toggle, save, export menu, help, render. */
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, type ChangeEvent } from 'react';
 import { pick } from '@mobilesurvey/runtime-engine';
-import { getInstrumentJsonSchema } from '@mobilesurvey/instrument-schema';
+import { getInstrumentJsonSchema, validateInstrument } from '@mobilesurvey/instrument-schema';
 import { useDesigner } from '../store/instrumentStore.js';
 import { saveSurvey } from '../lib/surveyApi.js';
 import { printSpec } from '../lib/specReport.js';
@@ -44,15 +44,18 @@ export function Toolbar({
   const instrument = useDesigner((s) => s.instrument);
   const language = useDesigner((s) => s.language);
   const setLanguage = useDesigner((s) => s.setLanguage);
+  const load = useDesigner((s) => s.load);
   const undo = useDesigner((s) => s.undo);
   const redo = useDesigner((s) => s.redo);
   const past = useDesigner((s) => s.past);
   const future = useDesigner((s) => s.future);
   const [saveState, setSaveState] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle');
+  const [importError, setImportError] = useState<string | null>(null);
   const [exportOpen, setExportOpen] = useState(false);
   const [modeOpen, setModeOpen] = useState(false);
   const exportRef = useRef<HTMLDivElement>(null);
   const modeRef = useRef<HTMLDivElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Close dropdowns on outside click.
   useEffect(() => {
@@ -96,6 +99,29 @@ export function Toolbar({
       .toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
     download(html, `${slug}.html`, 'text/html;charset=utf-8');
     setExportOpen(false);
+  };
+
+  const handleImportFile = (e: ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      setImportError(null);
+      try {
+        const parsed = JSON.parse(reader.result as string);
+        const result = validateInstrument(parsed);
+        if (result.ok) {
+          load(result.instrument);
+          setExportOpen(false);
+        } else {
+          setImportError(result.issues.map((i) => i.message).join('; '));
+        }
+      } catch (err) {
+        setImportError(err instanceof Error ? err.message : 'Invalid JSON');
+      }
+      e.target.value = '';
+    };
+    reader.readAsText(file);
   };
 
   return (
@@ -185,19 +211,33 @@ export function Toolbar({
         </div>
       )}
 
-      {/* Export dropdown */}
+      {/* Import / Export dropdown */}
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept=".json,application/json"
+        style={{ display: 'none' }}
+        onChange={handleImportFile}
+      />
       <div className="toolbar__group toolbar__export-wrap" ref={exportRef}>
         <button
           type="button"
           className={exportOpen ? 'toolbar__export toolbar__export--open' : 'toolbar__export'}
           aria-expanded={exportOpen}
           aria-haspopup="menu"
-          onClick={() => setExportOpen((o) => !o)}
+          onClick={() => { setExportOpen((o) => !o); setImportError(null); }}
         >
-          Export ▾
+          Import / Export ▾
         </button>
         {exportOpen && (
           <div className="toolbar__export-menu" role="menu">
+            <button type="button" role="menuitem" onClick={() => fileInputRef.current?.click()}>
+              ⬆ Import instrument JSON
+            </button>
+            {importError && (
+              <p className="toolbar__import-error" role="alert">{importError}</p>
+            )}
+            <hr className="toolbar__menu-divider" />
             <button type="button" role="menuitem" onClick={exportHtmlDoc}>
               ⬇ HTML Questionnaire
             </button>
