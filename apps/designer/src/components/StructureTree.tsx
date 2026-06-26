@@ -5,6 +5,7 @@ import type { ControlConstruct } from '@mobilesurvey/instrument-schema';
 import { useDesigner } from '../store/instrumentStore.js';
 import {
   addChild,
+  buildQNumMap,
   childArrays,
   createConstruct,
   insertAfter,
@@ -23,19 +24,6 @@ const ADD_ITEMS: { type: AddableType; icon: string; label: string }[] = [
   { type: 'statement',   icon: '"',  label: 'Statement' },
   { type: 'computation', icon: 'ƒ',  label: 'Computation' },
 ];
-
-/** Walk the tree in document order and assign a sequential number to each question node. */
-function buildQNumMap(root: ControlConstruct): Map<string, number> {
-  const map = new Map<string, number>();
-  let n = 0;
-  function walk(node: ControlConstruct) {
-    if (node.type === 'question') { map.set(node.id, ++n); return; }
-    if (node.type === 'sequence' || node.type === 'loop') node.children.forEach(walk);
-    else if (node.type === 'ifThenElse') { node.then.forEach(walk); (node.else ?? []).forEach(walk); }
-  }
-  walk(root);
-  return map;
-}
 
 function getIcon(node: ControlConstruct): string {
   if (node.type === 'sequence') return node.isPage ? '□' : '▣';

@@ -152,6 +152,19 @@ export function moveNode(root: ControlConstruct, id: string, direction: -1 | 1):
   return true;
 }
 
+/** Walk the tree in document order and return a map of questionId → sequential number. */
+export function buildQNumMap(root: ControlConstruct): Map<string, number> {
+  const map = new Map<string, number>();
+  let n = 0;
+  function walk(node: ControlConstruct) {
+    if (node.type === 'question') { map.set(node.id, ++n); return; }
+    if (node.type === 'sequence' || node.type === 'loop') node.children.forEach(walk);
+    else if (node.type === 'ifThenElse') { node.then.forEach(walk); (node.else ?? []).forEach(walk); }
+  }
+  walk(root);
+  return map;
+}
+
 /** Create a blank variable with a unique name. */
 export function createVariable(instrument: Instrument): Variable {
   const existing = new Set(instrument.variables.map((v) => v.name));

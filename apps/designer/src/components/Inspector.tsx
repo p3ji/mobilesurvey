@@ -10,7 +10,7 @@ import type {
 } from '@mobilesurvey/instrument-schema';
 import { pick } from '@mobilesurvey/runtime-engine';
 import { useDesigner } from '../store/instrumentStore.js';
-import { findNode, genId } from '../lib/tree.js';
+import { buildQNumMap, findNode, genId } from '../lib/tree.js';
 import { ConditionField, Field, IntlStringField, TextField } from './fields.jsx';
 
 /** Bind an updater to a construct id, casting the located node to the editor's known subtype. */
@@ -748,9 +748,12 @@ export function Inspector() {
   const node = findNode(instrument.sequence, selectedId);
   if (!node) return <p className="hint pad">Selection not found.</p>;
 
+  const qNum = node.type === 'question' ? buildQNumMap(instrument.sequence).get(node.id) : undefined;
+
   return (
     <div className="inspector">
       <h3>
+        {qNum != null && <span className="inspector__qnum">Q{qNum}</span>}
         {node.type} · <code>{node.id}</code>
       </h3>
       <ConstructEditor node={node} instrument={instrument} />
