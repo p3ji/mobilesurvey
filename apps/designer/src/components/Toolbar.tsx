@@ -1,12 +1,14 @@
-/** Top toolbar: title, language toggle, undo/redo, help, render. */
+/** Top toolbar: title, language toggle, undo/redo, save, help, render. */
+import { useState } from 'react';
 import { pick } from '@mobilesurvey/runtime-engine';
 import { useDesigner } from '../store/instrumentStore.js';
+import { saveSurvey } from '../lib/surveyApi.js';
 
 /** The authoring-tool manual (GitHub renders the markdown). */
 const HELP_URL =
   'https://github.com/p3ji/mobilesurvey/blob/main/docs/manuals/authoring-tool.md';
 
-export function Toolbar({ onRender }: { onRender: () => void }) {
+export function Toolbar({ onRender, surveyId }: { onRender: () => void; surveyId: string | null }) {
   const instrument = useDesigner((s) => s.instrument);
   const language = useDesigner((s) => s.language);
   const setLanguage = useDesigner((s) => s.setLanguage);
@@ -14,6 +16,15 @@ export function Toolbar({ onRender }: { onRender: () => void }) {
   const redo = useDesigner((s) => s.redo);
   const past = useDesigner((s) => s.past);
   const future = useDesigner((s) => s.future);
+  const [saveState, setSaveState] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle');
+
+  const save = async () => {
+    if (!surveyId) return;
+    setSaveState('saving');
+    const ok = await saveSurvey(surveyId, instrument);
+    setSaveState(ok ? 'saved' : 'error');
+    setTimeout(() => setSaveState('idle'), 2500);
+  };
 
   return (
     <header className="toolbar">
@@ -42,6 +53,25 @@ export function Toolbar({ onRender }: { onRender: () => void }) {
           ↷ Redo
         </button>
       </div>
+      {surveyId && (
+        <div className="toolbar__group">
+          <button
+            type="button"
+            className={saveState === 'saved' ? 'toolbar__save toolbar__save--ok' : 'toolbar__save'}
+            onClick={save}
+            disabled={saveState === 'saving'}
+            aria-label="Save survey to the hub"
+          >
+            {saveState === 'saving'
+              ? 'Saving…'
+              : saveState === 'saved'
+                ? '✓ Saved'
+                : saveState === 'error'
+                  ? '⚠ Retry save'
+                  : '💾 Save'}
+          </button>
+        </div>
+      )}
       <div className="toolbar__group">
         <a
           className="toolbar__help"

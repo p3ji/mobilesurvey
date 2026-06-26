@@ -16,6 +16,28 @@ import { createMockParadataSink, localSessionStore, mockCmsClient } from './mock
 /** API base URL (override with VITE_API_URL). */
 const API_BASE = (import.meta.env.VITE_API_URL as string | undefined) ?? 'http://localhost:8787';
 
+/** A published survey served by the hub/backend. */
+export interface ServedSurvey {
+  id: string;
+  title: string;
+  requiresAccessCode: boolean;
+  status: string;
+  instrument: unknown;
+}
+
+/** Fetch a survey definition + its publish config by id (null if not found / unreachable). */
+export async function fetchSurvey(id: string): Promise<ServedSurvey | null> {
+  try {
+    const res = await fetch(`${API_BASE}/api/surveys/${encodeURIComponent(id)}`, {
+      signal: AbortSignal.timeout(3000),
+    });
+    if (!res.ok) return null;
+    return (await res.json()) as ServedSurvey;
+  } catch {
+    return null;
+  }
+}
+
 /** A paradata sink that can be told which session its events belong to. */
 export type RuntimeParadataSink = ParadataSink & { setSessionKey?(key: string): void };
 

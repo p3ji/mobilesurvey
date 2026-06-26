@@ -14,6 +14,7 @@ import { Hono } from 'hono';
 import { cors } from 'hono/cors';
 import { z } from 'zod';
 import type { ParadataEvent } from '@mobilesurvey/runtime-engine';
+import { lfsInstrument, demoInstrument } from '@mobilesurvey/instrument-schema';
 import { Store } from './db.js';
 
 const PORT = Number(process.env.PORT ?? 8787);
@@ -21,6 +22,24 @@ const DB_FILE = process.env.DB_FILE ?? './data/app.db';
 
 const store = new Store(DB_FILE);
 store.seed();
+// Seed two default surveys: the Labour Force survey (requires an access code) and the anonymous
+// Feature Demo Survey (no code needed).
+store.seedSurveys([
+  {
+    id: 'lfs',
+    title: 'Household & Employment Survey',
+    instrument: lfsInstrument,
+    requiresAccessCode: true,
+    status: 'published',
+  },
+  {
+    id: 'demo',
+    title: 'Feature Demo Survey',
+    instrument: demoInstrument,
+    requiresAccessCode: false,
+    status: 'published',
+  },
+]);
 
 const app = new Hono();
 app.use('*', cors()); // dev: allow any origin (no credentials/cookies used)
@@ -106,6 +125,56 @@ app.get('/api/samples/:id', (c) => {
   const found = store.getCase(c.req.param('id'));
   if (!found) return c.json(null, 404);
   return c.json({ id: found.id, fields: found.fields });
+});
+
+// ── Surveys (management hub) ──────────────────────────────────────────────────
+app.get('/api/surveys', (c) => c.json(store.listSurveys()));
+
+app.get('/api/surveys/:id', (c) => {
+  const survey = store.getSurvey(c.req.param('id'));
+  if (!survey) return c.json(null, 404);
+  return c.json(survey);
+});
+
+const createSurveySchema = z.object({ title: z.string().min(1), instrument: z.unknown() });
+
+app.post('/api/surveys', async (c) => {
+  const body = createSurveySchema.safeParse(await c.req.json().catch(() => null));
+  if (!body.success) return c.json({ error: 'title and instrument required' }, 400);
+  const id = store.createSurvey({ title: body.data.title, instrument: body.data.instrument });
+  return c.json({ id }, 201);
+});
+
+const updateSurveySchema = z.object({ title: z.string().optional(), instrument: z.unknown() });
+
+app.put('/api/surveys/:id', async (c) => {
+  const body = updateSurveySchema.safeParse(await c.req.json().catch(() => null));
+  if (!body.success) return c.json({ error: 'instrument required' }, 400);
+  const ok = store.updateSurvey(c.req.param('id'), {
+    title: body.data.title,
+    instrument: body.data.instrument,
+  });
+  if (!ok) return c.json({ error: 'unknown survey' }, 404);
+  return c.body(null, 204);
+});
+
+const configSchema = z.object({
+  requiresAccessCode: z.boolean().optional(),
+  status: z.enum(['draft', 'published']).optional(),
+});
+
+app.patch('/api/surveys/:id/config', async (c) => {
+  const body = configSchema.safeParse(await c.req.json().catch(() => null));
+  if (!body.success) return c.json({ error: 'invalid config' }, 400);
+  const ok = store.setSurveyConfig(c.req.param('id'), body.data);
+  if (!ok) return c.json({ error: 'unknown survey' }, 404);
+  return c.body(null, 204);
+});
+
+app.delete('/api/surveys/:id', (c) => {
+  const ok = store.deleteSurvey(c.req.param('id'));
+  if (!ok) return c.json({ error: 'unknown survey' }, 404);
+  return c.body(null, 204);
 });
 
 serve({ fetch: app.fetch, port: PORT }, (info) => {

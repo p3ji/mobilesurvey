@@ -854,6 +854,15 @@ code {
   border-color: var(--brand);
 }
 
+/* Save button */
+.toolbar__save {
+  font-weight: 600;
+}
+.toolbar__save--ok {
+  color: var(--ok);
+  border-color: var(--ok);
+}
+
 /* Render button */
 .toolbar__render-btn {
   background: var(--brand);

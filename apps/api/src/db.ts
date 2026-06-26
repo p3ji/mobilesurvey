@@ -12,6 +12,7 @@
 import { DatabaseSync } from 'node:sqlite';
 import { mkdirSync } from 'node:fs';
 import { dirname } from 'node:path';
+import { randomUUID } from 'node:crypto';
 
 export interface CaseRow {
   id: string;
@@ -23,6 +24,36 @@ export interface ParadataRow {
   ts: number;
   type: string;
   payload?: Record<string, unknown>;
+}
+
+export type SurveyStatus = 'draft' | 'published';
+
+export interface SurveySummary {
+  id: string;
+  title: string;
+  requiresAccessCode: boolean;
+  status: SurveyStatus;
+  questionCount: number;
+  updatedAt: number;
+}
+
+export interface SurveyFull extends SurveySummary {
+  instrument: unknown;
+}
+
+/** Count question constructs in a parsed instrument (best-effort, for list summaries). */
+function countQuestions(instrument: unknown): number {
+  let n = 0;
+  const visit = (node: { type?: string; children?: unknown[]; then?: unknown[]; else?: unknown[] }) => {
+    if (!node || typeof node !== 'object') return;
+    if (node.type === 'question') n += 1;
+    for (const arr of [node.children, node.then, node.else]) {
+      if (Array.isArray(arr)) for (const c of arr) visit(c as never);
+    }
+  };
+  const seq = (instrument as { sequence?: unknown }).sequence;
+  if (seq) visit(seq as never);
+  return n;
 }
 
 export class Store {
@@ -54,7 +85,129 @@ export class Store {
         type TEXT NOT NULL,
         payload_json TEXT
       );
+      CREATE TABLE IF NOT EXISTS surveys (
+        id TEXT PRIMARY KEY,
+        title TEXT NOT NULL,
+        instrument_json TEXT NOT NULL,
+        requires_access_code INTEGER NOT NULL DEFAULT 1,
+        status TEXT NOT NULL DEFAULT 'draft',
+        updated_at INTEGER NOT NULL
+      );
     `);
+  }
+
+  // ── Surveys (management hub) ────────────────────────────────────────────────
+
+  private rowToSummary(r: {
+    id: string;
+    title: string;
+    instrument_json: string;
+    requires_access_code: number;
+    status: string;
+    updated_at: number;
+  }): SurveySummary {
+    return {
+      id: r.id,
+      title: r.title,
+      requiresAccessCode: r.requires_access_code === 1,
+      status: r.status as SurveyStatus,
+      questionCount: countQuestions(JSON.parse(r.instrument_json)),
+      updatedAt: r.updated_at,
+    };
+  }
+
+  listSurveys(): SurveySummary[] {
+    const rows = this.db.prepare(`SELECT * FROM surveys ORDER BY updated_at DESC`).all() as never[];
+    return rows.map((r) => this.rowToSummary(r));
+  }
+
+  getSurvey(id: string): SurveyFull | null {
+    const r = this.db.prepare(`SELECT * FROM surveys WHERE id = ?`).get(id) as
+      | {
+          id: string;
+          title: string;
+          instrument_json: string;
+          requires_access_code: number;
+          status: string;
+          updated_at: number;
+        }
+      | undefined;
+    if (!r) return null;
+    return { ...this.rowToSummary(r), instrument: JSON.parse(r.instrument_json) };
+  }
+
+  createSurvey(input: {
+    id?: string;
+    title: string;
+    instrument: unknown;
+    requiresAccessCode?: boolean;
+    status?: SurveyStatus;
+  }): string {
+    const id = input.id ?? `srv_${randomUUID()}`;
+    this.db
+      .prepare(
+        `INSERT INTO surveys (id, title, instrument_json, requires_access_code, status, updated_at)
+         VALUES (?, ?, ?, ?, ?, ?)`,
+      )
+      .run(
+        id,
+        input.title,
+        JSON.stringify(input.instrument),
+        input.requiresAccessCode === false ? 0 : 1,
+        input.status ?? 'draft',
+        Date.now(),
+      );
+    return id;
+  }
+
+  updateSurvey(id: string, patch: { title?: string; instrument?: unknown }): boolean {
+    const existing = this.getSurvey(id);
+    if (!existing) return false;
+    this.db
+      .prepare(`UPDATE surveys SET title = ?, instrument_json = ?, updated_at = ? WHERE id = ?`)
+      .run(
+        patch.title ?? existing.title,
+        JSON.stringify(patch.instrument ?? existing.instrument),
+        Date.now(),
+        id,
+      );
+    return true;
+  }
+
+  setSurveyConfig(
+    id: string,
+    config: { requiresAccessCode?: boolean; status?: SurveyStatus },
+  ): boolean {
+    const existing = this.getSurvey(id);
+    if (!existing) return false;
+    const requires =
+      config.requiresAccessCode === undefined
+        ? existing.requiresAccessCode
+        : config.requiresAccessCode;
+    this.db
+      .prepare(`UPDATE surveys SET requires_access_code = ?, status = ?, updated_at = ? WHERE id = ?`)
+      .run(requires ? 1 : 0, config.status ?? existing.status, Date.now(), id);
+    return true;
+  }
+
+  deleteSurvey(id: string): boolean {
+    const r = this.db.prepare(`DELETE FROM surveys WHERE id = ?`).run(id);
+    return r.changes > 0;
+  }
+
+  /** Seed default surveys if the table is empty (idempotent). */
+  seedSurveys(
+    defaults: Array<{
+      id: string;
+      title: string;
+      instrument: unknown;
+      requiresAccessCode: boolean;
+      status: SurveyStatus;
+    }>,
+  ): void {
+    const count = this.db.prepare(`SELECT COUNT(*) AS n FROM surveys`).get() as { n: number };
+    if (count.n > 0) return;
+    for (const d of defaults) this.createSurvey(d);
   }
 
   // ── CMS: access codes + cases ───────────────────────────────────────────────

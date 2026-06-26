@@ -1,31 +1,29 @@
 /**
- * Respondent runtime orchestrator. Three phases:
- *   gate    — enter an access code (resolved against the mock CMS) → case + pre-fills
+ * Respondent runtime orchestrator. Phases:
+ *   gate    — enter an access code (resolved against the CMS) → case + pre-fills (code-gated surveys)
  *   survey  — page-by-page questionnaire with resume + paradata
  *   done    — submission confirmation, response data, and the paradata trail
  *
- * A real deployment swaps the mocks for a CMS API, an encrypted server session store, and a
- * paradata sink; the engine and UI are untouched.
+ * Which survey runs is chosen by a `?survey=<id>` link from the hub (loaded from the backend).
+ * If the survey is published without an access code, the gate is skipped and an anonymous session
+ * starts immediately. Without a `?survey` param it falls back to the bundled Labour Force survey.
  */
 import { useEffect, useState } from 'react';
-import { lfsInstrument } from '@mobilesurvey/instrument-schema';
+import { lfsInstrument, type Instrument } from '@mobilesurvey/instrument-schema';
 import type { ParadataEvent, RuntimeState, SampleUnit } from '@mobilesurvey/runtime-engine';
 import { AccessGate } from './components/AccessGate.jsx';
 import { SurveyRunner } from './components/SurveyRunner.jsx';
 import { Completion } from './components/Completion.jsx';
-import { createBackend, type Backend } from './integrations/api.js';
+import { createBackend, fetchSurvey, type Backend } from './integrations/api.js';
 
-/** The deployed questionnaire (in production the case/CMS determines which instrument to serve). */
-const INSTRUMENT = lfsInstrument;
-
-/** Persisted session shape (responses + the screen the respondent was on). */
 interface SavedSession {
   runtimeState: RuntimeState;
   currentPage: number;
 }
 
-function sessionKey(caseId: string): string {
-  return `${INSTRUMENT.id}::${caseId}`;
+interface LoadedSurvey {
+  instrument: Instrument;
+  requiresAccessCode: boolean;
 }
 
 interface SurveyContext {
@@ -42,26 +40,78 @@ interface DoneContext {
   paradata: ParadataEvent[];
 }
 
+const sessionKey = (instrumentId: string, caseId: string) => `${instrumentId}::${caseId}`;
+
+/** A stable per-browser id so anonymous respondents can resume on the same device. */
+function anonId(): string {
+  const KEY = 'eq:anonId';
+  let id = localStorage.getItem(KEY);
+  if (!id) {
+    id = `anon-${Math.abs(Date.now() ^ (performance.now() | 0)).toString(36)}`;
+    localStorage.setItem(KEY, id);
+  }
+  return id;
+}
+
 export function App() {
   const [phase, setPhase] = useState<'gate' | 'survey' | 'done'>('gate');
   const [survey, setSurvey] = useState<SurveyContext | null>(null);
   const [done, setDone] = useState<DoneContext | null>(null);
 
-  // Backend (API service or local-mock fallback), chosen once at startup.
   const [backend, setBackend] = useState<Backend | null>(null);
+  const [loaded, setLoaded] = useState<LoadedSurvey | null>(null);
+
+  // Load the backend and the survey (by ?survey=<id>, else the bundled fallback).
   useEffect(() => {
     let active = true;
-    createBackend().then((b) => {
-      if (active) setBackend(b);
-    });
+    (async () => {
+      const b = await createBackend();
+      const surveyId = new URLSearchParams(window.location.search).get('survey');
+      let loadedSurvey: LoadedSurvey;
+      if (surveyId) {
+        const served = await fetchSurvey(surveyId);
+        loadedSurvey = served
+          ? { instrument: served.instrument as Instrument, requiresAccessCode: served.requiresAccessCode }
+          : { instrument: lfsInstrument, requiresAccessCode: true };
+      } else {
+        loadedSurvey = { instrument: lfsInstrument, requiresAccessCode: true };
+      }
+      if (!active) return;
+      setBackend(b);
+      setLoaded(loadedSurvey);
+    })();
     return () => {
       active = false;
     };
   }, []);
 
-  /** Resolve a code, load any saved session, and enter the survey. */
+  // Auto-start anonymous surveys (no access code) once everything is loaded.
+  useEffect(() => {
+    if (!backend || !loaded || loaded.requiresAccessCode || phase !== 'gate' || survey) return;
+    void startAnonymous(backend, loaded);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [backend, loaded]);
+
+  const startAnonymous = async (b: Backend, l: LoadedSurvey) => {
+    const caseId = anonId();
+    const key = sessionKey(l.instrument.id, caseId);
+    const saved = (await b.sessionStore.load(key)) as SavedSession | null;
+    const resumed = Boolean(saved);
+    b.paradata.setSessionKey?.(key);
+    b.paradata.emit({ ts: Date.now(), type: resumed ? 'session_resume' : 'session_start', payload: { caseId } });
+    setSurvey({
+      caseId,
+      sample: { id: caseId, fields: {} },
+      restore: saved?.runtimeState,
+      initialPage: saved?.currentPage ?? 0,
+      resumed,
+    });
+    setPhase('survey');
+  };
+
+  /** Code-gated path: resolve a code, load any saved session, and enter the survey. */
   const authenticate = async (code: string): Promise<{ ok: boolean; error?: string }> => {
-    if (!backend) return { ok: false, error: 'Still connecting — please try again.' };
+    if (!backend || !loaded) return { ok: false, error: 'Still connecting — please try again.' };
     let resolved;
     try {
       resolved = await backend.cms.resolveAccessCode(code);
@@ -72,8 +122,7 @@ export function App() {
       return { ok: false, error: 'That access code was not recognized. Please check and try again.' };
     }
     const { caseId, sample } = resolved;
-    const key = sessionKey(caseId);
-
+    const key = sessionKey(loaded.instrument.id, caseId);
     const saved = (await backend.sessionStore.load(key)) as SavedSession | null;
     const resumed = Boolean(saved);
 
@@ -85,48 +134,41 @@ export function App() {
     });
     await backend.cms.reportStatus(caseId, resumed ? 'resumed' : 'started');
 
-    setSurvey({
-      caseId,
-      sample,
-      restore: saved?.runtimeState,
-      initialPage: saved?.currentPage ?? 0,
-      resumed,
-    });
+    setSurvey({ caseId, sample, restore: saved?.runtimeState, initialPage: saved?.currentPage ?? 0, resumed });
     setPhase('survey');
     return { ok: true };
   };
 
-  /** Persist progress after each change so a reload / network drop can resume. */
   const persist = (caseId: string, runtimeState: RuntimeState, currentPage: number) => {
-    void backend?.sessionStore.save(sessionKey(caseId), { runtimeState, currentPage });
+    if (!loaded) return;
+    void backend?.sessionStore.save(sessionKey(loaded.instrument.id, caseId), { runtimeState, currentPage });
   };
 
-  /** Final submit: report to CMS, flush paradata, clear the resumable cache. */
   const submit = async (caseId: string, responses: Record<string, unknown>) => {
-    if (!backend) return;
+    if (!backend || !loaded) return;
     backend.paradata.emit({ ts: Date.now(), type: 'submit', payload: { caseId } });
     await backend.cms.reportStatus(caseId, 'completed');
     await backend.paradata.flush();
-    await backend.sessionStore.clear(sessionKey(caseId));
+    await backend.sessionStore.clear(sessionKey(loaded.instrument.id, caseId));
     setDone({ caseId, responses, paradata: backend.paradata.buffer() });
     setPhase('done');
   };
 
-  /** Start over from the access-code gate (clears the saved session for the case). */
   const restart = () => {
-    if (done) void backend?.sessionStore.clear(sessionKey(done.caseId));
+    if (done && loaded) void backend?.sessionStore.clear(sessionKey(loaded.instrument.id, done.caseId));
     setSurvey(null);
     setDone(null);
+    // Re-enter: anonymous surveys auto-start again; code-gated return to the gate.
     setPhase('gate');
   };
 
-  if (!backend) {
+  if (!backend || !loaded) {
     return (
       <div className="app">
         <div className="gate">
           <div className="gate__card">
             <div className="gate__brand">Electronic Questionnaire</div>
-            <p className="gate__sub" style={{ marginTop: 12 }}>Connecting…</p>
+            <p className="gate__sub" style={{ marginTop: 12 }}>Loading…</p>
           </div>
         </div>
       </div>
@@ -135,11 +177,13 @@ export function App() {
 
   return (
     <div className="app">
-      {phase === 'gate' && <AccessGate onAuthenticate={authenticate} online={backend.online} />}
+      {phase === 'gate' && loaded.requiresAccessCode && (
+        <AccessGate onAuthenticate={authenticate} online={backend.online} />
+      )}
 
       {phase === 'survey' && survey && (
         <SurveyRunner
-          instrument={INSTRUMENT}
+          instrument={loaded.instrument}
           caseId={survey.caseId}
           sample={survey.sample}
           restore={survey.restore}
@@ -152,11 +196,7 @@ export function App() {
       )}
 
       {phase === 'done' && done && (
-        <Completion
-          responses={done.responses}
-          paradata={done.paradata}
-          onRestart={restart}
-        />
+        <Completion responses={done.responses} paradata={done.paradata} onRestart={restart} />
       )}
     </div>
   );

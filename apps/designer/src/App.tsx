@@ -1,5 +1,7 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import * as Tabs from '@radix-ui/react-tabs';
+import { useDesigner } from './store/instrumentStore.js';
+import { currentSurveyId, fetchSurvey } from './lib/surveyApi.js';
 import { Toolbar } from './components/Toolbar.jsx';
 import { StructureTree } from './components/StructureTree.jsx';
 import { VariablesPanel } from './components/VariablesPanel.jsx';
@@ -12,6 +14,15 @@ import { RespondentApp } from './components/RespondentApp.jsx';
 
 export default function App() {
   const [renderMode, setRenderMode] = useState(false);
+  const [surveyId] = useState<string | null>(currentSurveyId);
+
+  // If opened from the hub with ?survey=<id>, load that survey into the editor.
+  useEffect(() => {
+    if (!surveyId) return;
+    fetchSurvey(surveyId).then((instrument) => {
+      if (instrument) useDesigner.getState().load(instrument);
+    });
+  }, [surveyId]);
 
   if (renderMode) {
     return <RespondentApp onExit={() => setRenderMode(false)} />;
@@ -19,7 +30,7 @@ export default function App() {
 
   return (
     <div className="app">
-      <Toolbar onRender={() => setRenderMode(true)} />
+      <Toolbar onRender={() => setRenderMode(true)} surveyId={surveyId} />
       <main className="layout">
         <section className="panel panel--left" aria-label="Structure & variables">
           <Tabs.Root defaultValue="structure" className="tabs">
