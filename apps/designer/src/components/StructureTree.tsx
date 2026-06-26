@@ -24,6 +24,19 @@ const ADD_ITEMS: { type: AddableType; icon: string; label: string }[] = [
   { type: 'computation', icon: 'ƒ',  label: 'Computation' },
 ];
 
+/** Walk the tree in document order and assign a sequential number to each question node. */
+function buildQNumMap(root: ControlConstruct): Map<string, number> {
+  const map = new Map<string, number>();
+  let n = 0;
+  function walk(node: ControlConstruct) {
+    if (node.type === 'question') { map.set(node.id, ++n); return; }
+    if (node.type === 'sequence' || node.type === 'loop') node.children.forEach(walk);
+    else if (node.type === 'ifThenElse') { node.then.forEach(walk); (node.else ?? []).forEach(walk); }
+  }
+  walk(root);
+  return map;
+}
+
 function getIcon(node: ControlConstruct): string {
   if (node.type === 'sequence') return node.isPage ? '□' : '▣';
   const icons: Partial<Record<ControlConstruct['type'], string>> = {
@@ -47,10 +60,12 @@ function TreeNode({
   node,
   depth,
   isRoot = false,
+  qNumMap,
 }: {
   node: ControlConstruct;
   depth: number;
   isRoot?: boolean;
+  qNumMap: Map<string, number>;
 }) {
   const { selectedId, language, newlyInsertedId } = useDesigner();
   const select = useDesigner((s) => s.select);
@@ -112,6 +127,9 @@ function TreeNode({
           <span className="tree__icon" aria-hidden="true">
             {getIcon(node)}
           </span>
+          {node.type === 'question' && qNumMap.has(node.id) && (
+            <span className="tree__qnum">Q{qNumMap.get(node.id)}.</span>
+          )}
           <span className="tree__label">{nodeLabel(node, language)}</span>
         </button>
 
@@ -188,7 +206,7 @@ function TreeNode({
               )}
               <ul>
                 {arr.map((child) => (
-                  <TreeNode key={child.id} node={child} depth={depth + 1} />
+                  <TreeNode key={child.id} node={child} depth={depth + 1} qNumMap={qNumMap} />
                 ))}
               </ul>
             </li>
@@ -201,10 +219,11 @@ function TreeNode({
 
 export function StructureTree() {
   const root = useDesigner((s) => s.instrument.sequence);
+  const qNumMap = buildQNumMap(root);
   return (
     <nav className="tree" aria-label="Questionnaire structure">
       <ul>
-        <TreeNode node={root} depth={0} isRoot />
+        <TreeNode node={root} depth={0} isRoot qNumMap={qNumMap} />
       </ul>
     </nav>
   );
