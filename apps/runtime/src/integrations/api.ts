@@ -71,6 +71,34 @@ export async function fetchSurvey(id: string): Promise<ServedSurvey | null> {
   return null;
 }
 
+// ── Survey row seeding ────────────────────────────────────────────────────────
+
+/**
+ * Ensure a survey row exists in Supabase so the FK on responses.survey_id is satisfied.
+ * Called when the runtime falls back to a bundled instrument for a known alias (e.g. "demo").
+ */
+export async function ensureSurveyRow(
+  id: string,
+  title: string,
+  instrument: unknown,
+  opts?: { requiresAccessCode?: boolean },
+): Promise<void> {
+  if (!SUPABASE_URL || !SUPABASE_KEY) return;
+  try {
+    await sb().from('surveys').upsert(
+      {
+        id,
+        title,
+        instrument_json: instrument,
+        requires_access_code: opts?.requiresAccessCode ?? false,
+        status: 'published',
+        updated_at: new Date().toISOString(),
+      },
+      { onConflict: 'id', ignoreDuplicates: true },
+    );
+  } catch { /* best-effort */ }
+}
+
 // ── Response submission ───────────────────────────────────────────────────────
 
 export async function submitResponse(

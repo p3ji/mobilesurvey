@@ -14,7 +14,7 @@ import type { ParadataEvent, RuntimeState, SampleUnit } from '@mobilesurvey/runt
 import { AccessGate } from './components/AccessGate.jsx';
 import { SurveyRunner } from './components/SurveyRunner.jsx';
 import { Completion } from './components/Completion.jsx';
-import { createBackend, fetchSurvey, submitResponse, type Backend } from './integrations/api.js';
+import { createBackend, ensureSurveyRow, fetchSurvey, submitResponse, type Backend } from './integrations/api.js';
 
 interface SavedSession {
   runtimeState: RuntimeState;
@@ -96,6 +96,13 @@ export function App() {
         } else {
           // Fall back to a bundled instrument if the id matches a known alias.
           loadedSurvey = BUNDLED[surveyId] ?? BUNDLED.lfs!;
+          // Seed the survey row so the FK on responses.survey_id is satisfied.
+          const bundled = BUNDLED[surveyId];
+          if (bundled) {
+            void ensureSurveyRow(surveyId, bundled.instrument.metadata?.title as Record<string, string> | undefined
+              ? Object.values(bundled.instrument.metadata.title as Record<string, string>)[0] ?? surveyId
+              : surveyId, bundled.instrument, { requiresAccessCode: bundled.requiresAccessCode });
+          }
         }
       } else {
         loadedSurvey = BUNDLED.lfs!;
