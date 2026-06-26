@@ -54,11 +54,11 @@ jobs:
           
           # 3. Create subdirectories inside deploy *after* copying hub files
           mkdir -p deploy/designer
-          mkdir -p deploy/runtime
-          
+          mkdir -p deploy/respondent
+
           # 4. Copy the sub-apps into their respective paths
           cp -r apps/designer/dist/* deploy/designer/
-          cp -r apps/runtime/dist/* deploy/runtime/
+          cp -r apps/runtime/dist/* deploy/respondent/
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
