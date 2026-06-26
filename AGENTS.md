@@ -70,6 +70,8 @@ The agent uses this table to route updates to the correct files.
 
 ## Open Bugs
 *(Log bugs here as discovered; mark resolved with date)*
+- **(2026-06-26, RESOLVED)** Server-side **session persistence + resume was completely broken** for every collecting survey. The session key was built from `instrument.id` (the DDI urn, e.g. `urn:ddi:mobilesurvey:demo:1.0`), so `sessions.survey_id`/`paradata.survey_id` got the urn — but `surveys.id` is the short alias (`demo`), so the FK failed (`POST /sessions` → 409). Responses survived only because `submitResponse` used the alias. Fix: the runtime session key now uses the survey alias (`surveys.id`); verified — `sessions` now persists with `survey_id='demo'` and resume works.
+- **(2026-06-26, OPEN — config, not code)** **Paradata is never collected in prod:** anon `INSERT` on the `paradata` table is blocked by RLS (`POST /paradata` → 401), while `responses` is allowed. The keying is now correct, so paradata will flow once an anon-insert policy is added (Supabase dashboard). Blocks the Phase 7 analytics/paradata view until fixed.
 - **(2026-06-26, RESOLVED)** `lfs` (Household & Employment) was seeded into Supabase by the hub + runtime and collected real responses — contradicting the intent (and on-screen copy) that only the Feature Demo survey collects data. Root cause: seeding/persistence ignored the exploration-only flag. Fix: all bundled-survey persistence now routes through a `collectsData` registry in `packages/instrument-schema`; exploration-only surveys run entirely on local mocks (verified — no responses/sessions/paradata writes). The stale `lfs` row left in Supabase is inert (a deliberate test case; nothing writes to it).
 
 ## Pending Features / Decisions

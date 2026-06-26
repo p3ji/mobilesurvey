@@ -23,6 +23,8 @@ interface SavedSession {
 
 interface LoadedSurvey {
   instrument: Instrument;
+  /** The survey row id / alias (surveys.id) — the FK target for sessions, paradata, responses. */
+  surveyId: string;
   requiresAccessCode: boolean;
   /** Whether responses are persisted to the backend (false = exploration-only). */
   collectsData: boolean;
@@ -91,6 +93,7 @@ export function App() {
         loadedSurvey = {
           instrument: served.instrument as Instrument,
           requiresAccessCode: served.requiresAccessCode,
+          surveyId: effectiveId,
           collectsData: collects,
           notice: noticeFor(collects),
         };
@@ -100,6 +103,7 @@ export function App() {
         loadedSurvey = {
           instrument: bundled.instrument,
           requiresAccessCode: bundled.requiresAccessCode,
+          surveyId: effectiveId,
           collectsData: collects,
           notice: noticeFor(collects),
         };
@@ -140,7 +144,7 @@ export function App() {
 
   const startAnonymous = async (b: Backend, l: LoadedSurvey) => {
     const caseId = anonId();
-    const key = sessionKey(l.instrument.id, caseId);
+    const key = sessionKey(l.surveyId, caseId);
     const saved = (await b.sessionStore.load(key)) as SavedSession | null;
     const resumed = Boolean(saved);
     b.paradata.setSessionKey?.(key);
@@ -183,7 +187,7 @@ export function App() {
       return { ok: false, error: 'That access code was not recognized. Please check and try again.' };
     }
     const { caseId, sample } = resolved;
-    const key = sessionKey(loaded.instrument.id, caseId);
+    const key = sessionKey(loaded.surveyId, caseId);
     const saved = (await backend.sessionStore.load(key)) as SavedSession | null;
     const resumed = Boolean(saved);
 
@@ -203,7 +207,7 @@ export function App() {
 
   const persist = (caseId: string, runtimeState: RuntimeState, currentPage: number) => {
     if (!loaded) return;
-    void backend?.sessionStore.save(sessionKey(loaded.instrument.id, caseId), { runtimeState, currentPage });
+    void backend?.sessionStore.save(sessionKey(loaded.surveyId, caseId), { runtimeState, currentPage });
   };
 
   const submit = async (caseId: string, responses: Record<string, unknown>) => {
@@ -219,13 +223,13 @@ export function App() {
           durationMs: surveyStartedAt.current ? now - surveyStartedAt.current : undefined,
         })
       : { saved: false as boolean, errorMsg: undefined };
-    await backend.sessionStore.clear(sessionKey(loaded.instrument.id, caseId));
+    await backend.sessionStore.clear(sessionKey(loaded.surveyId, caseId));
     setDone({ caseId, responses, paradata: backend.paradata.buffer(), saved: submitResult.saved, saveError: submitResult.errorMsg });
     setPhase('done');
   };
 
   const restart = () => {
-    if (done && loaded) void backend?.sessionStore.clear(sessionKey(loaded.instrument.id, done.caseId));
+    if (done && loaded) void backend?.sessionStore.clear(sessionKey(loaded.surveyId, done.caseId));
     setSurvey(null);
     setDone(null);
     // Re-enter: anonymous surveys auto-start again; code-gated return to the gate.
