@@ -11,8 +11,7 @@
       "name": "runtime",
       "runtimeExecutable": "pnpm",
       "runtimeArgs": ["--filter", "@mobilesurvey/runtime", "dev"],
-      "port": 5174,
-      "autoPort": true
+      "port": 5174
     },
     {
       "name": "api",

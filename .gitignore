@@ -1,9 +1,18 @@
 node_modules/
 dist/
 build/
+vid/
 coverage/
 *.tsbuildinfo
 .vite/
+
+# Test & debug artifacts (Playwright runs, screenshots — generated locally, never committed)
+.playwright-mcp/
+playwright-report/
+test-results/
+/*.png
+/index.html
+
 .DS_Store
 *.log
 .env

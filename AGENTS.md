@@ -70,8 +70,9 @@ The agent uses this table to route updates to the correct files.
 - *(none logged)*
 
 ## Pending Features / Decisions
-*(Log chat decisions and new feature requests here; move to Brain note when scope is confirmed)*
-- **Decision (2026-06-26):** Staying on GitHub Pages for now; Netlify deferred for future hosting migration.
+*(Log chat decisions and new feature requests here; move to Brain note when scope is confirmed. Decisions are append-only — add a new dated line, don't overwrite a prior one.)*
+- **Decision (2026-06-26):** Staying on GitHub Pages for now; Vercel deferred for future hosting migration.
+- **Decision (2026-06-26):** Evaluated a Netlify migration; deferred. Would require a base-path env var (current Vite configs hard-code `/mobilesurvey/`) plus SPA redirect rules. Staying on GitHub Pages.
 - Phase 6 remaining: searchable/collapsible tree for 100+ question surveys
 - Phase 7: Analytics dashboard (monitor responses, completion/drop-off, paradata)
 
