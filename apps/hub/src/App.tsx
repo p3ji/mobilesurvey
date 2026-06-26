@@ -22,6 +22,7 @@ import {
   pingApi,
   respondentLink,
   setSurveyConfig,
+  upsertSurvey,
   type InstrumentSummary,
   type ResponseRow,
   type SurveySummary,
@@ -255,7 +256,15 @@ function CollectorView({ onBack }: { onBack: () => void }) {
   }, []);
 
   useEffect(() => {
-    pingApi().then(setOnline);
+    pingApi().then((connected) => {
+      setOnline(connected);
+      if (connected) {
+        // Seed the bundled demo survey so responses can be stored against it.
+        upsertSurvey('demo', 'Feature Demo Survey', demoInstrument, {
+          requiresAccessCode: false, status: 'published',
+        }).catch(() => { /* best-effort */ });
+      }
+    });
     refresh();
   }, [refresh]);
 

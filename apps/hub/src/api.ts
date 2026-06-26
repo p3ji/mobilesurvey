@@ -138,6 +138,22 @@ export async function setSurveyConfig(
   if (error) throw error;
 }
 
+/** Upsert a survey row by explicit id — used to seed bundled demo surveys into Supabase. */
+export async function upsertSurvey(id: string, title: string, instrument: Instrument, opts?: {
+  requiresAccessCode?: boolean; status?: SurveyStatus;
+}): Promise<void> {
+  const { error } = await sb().from('surveys').upsert({
+    id,
+    title,
+    instrument_json: instrument,
+    requires_access_code: opts?.requiresAccessCode ?? false,
+    status: opts?.status ?? 'published',
+    question_count: countQuestions(instrument),
+    updated_at: new Date().toISOString(),
+  }, { onConflict: 'id', ignoreDuplicates: true });
+  if (error) throw error;
+}
+
 export async function deleteSurvey(id: string): Promise<void> {
   const { error } = await sb().from('surveys').delete().eq('id', id);
   if (error) throw error;
