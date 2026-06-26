@@ -3,6 +3,7 @@
  */
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { blankInstrument, lfsInstrument, demoInstrument, BUNDLED_SURVEYS, type Instrument } from '@mobilesurvey/instrument-schema';
+import { migrate, type MigrateResult } from '@mobilesurvey/questionnaire-migrator';
 import {
   buildCatalog,
   buildSearchIndex,
@@ -74,7 +75,7 @@ const DEMO_SURVEYS: SurveySummary[] = [
 
 // ── Module definitions ────────────────────────────────────────────────────────
 
-type HubView = 'home' | 'collector' | 'searcher' | 'trainer';
+type HubView = 'home' | 'collector' | 'searcher' | 'trainer' | 'migrator';
 
 interface ModuleDef {
   id: string;
@@ -1100,6 +1101,349 @@ function ModuleTile({ mod }: { mod: ModuleDef }) {
   );
 }
 
+// ── Migrator view ─────────────────────────────────────────────────────────────
+
+function MigratorView({ onBack }: { onBack: () => void }) {
+  const [rawText, setRawText] = useState('');
+  const [titleInput, setTitleInput] = useState('');
+  const [agencyInput, setAgencyInput] = useState('');
+  const [result, setResult] = useState<MigrateResult | null>(null);
+  const [busy, setBusy] = useState(false);
+  const [saveState, setSaveState] = useState<'idle' | 'saving' | 'done' | 'error'>('idle');
+  const fileRef = useRef<HTMLInputElement>(null);
+
+  function handleFile(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      const text = ev.target?.result;
+      if (typeof text === 'string') setRawText(text);
+    };
+    reader.readAsText(file);
+    e.target.value = '';
+  }
+
+  function handleConvert() {
+    if (!rawText.trim()) return;
+    setBusy(true);
+    setResult(null);
+    setSaveState('idle');
+    // Run in a timeout so the UI can render the busy state first
+    setTimeout(() => {
+      try {
+        const r = migrate(rawText, {
+          title: titleInput.trim() || undefined,
+          agency: agencyInput.trim() || undefined,
+        });
+        setResult(r);
+        if (!titleInput.trim() && r.instrument.metadata.title.en) {
+          setTitleInput(r.instrument.metadata.title.en);
+        }
+      } catch (err) {
+        alert(`Conversion error: ${err instanceof Error ? err.message : String(err)}`);
+      } finally {
+        setBusy(false);
+      }
+    }, 0);
+  }
+
+  async function handleSave() {
+    if (!result) return;
+    setSaveState('saving');
+    try {
+      const finalTitle = titleInput.trim() || result.instrument.metadata.title.en || 'Migrated Survey';
+      const updatedInstrument = {
+        ...result.instrument,
+        metadata: {
+          ...result.instrument.metadata,
+          title: { en: finalTitle },
+        },
+      };
+      const id = await createSurvey(finalTitle, updatedInstrument);
+      setSaveState('done');
+      window.open(designerLink(id), '_blank', 'noopener');
+    } catch {
+      setSaveState('error');
+    }
+  }
+
+  function handleDownload() {
+    if (!result) return;
+    const finalTitle = titleInput.trim() || result.instrument.metadata.title.en || 'migrated';
+    const slug = finalTitle.toLowerCase().replace(/[^a-z0-9]+/g, '-').slice(0, 40);
+    const blob = new Blob([JSON.stringify(result.instrument, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${slug}.instrument.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+
+  // Gather question rows from all sections for the preview table
+  const previewRows = useMemo(() => {
+    if (!result) return [];
+    const rows: { num: string; text: string; type: string; options: number; skipRules: number }[] = [];
+    // Re-parse with the same text to get the raw IR for display
+    // (result.sections gives us the summary — we reconstruct from the instrument variables)
+    let qIdx = 0;
+    for (const vars of (result?.instrument?.variables ?? [])) {
+      qIdx++;
+      rows.push({
+        num: String(qIdx),
+        text: vars.label.en ?? '',
+        type: vars.representation === 'code'
+          ? 'Single choice'
+          : vars.representation === 'boolean'
+            ? 'Yes / No'
+            : vars.representation === 'numeric'
+              ? 'Numeric'
+              : vars.representation === 'datetime'
+                ? 'Date'
+                : 'Open text',
+        options: 0,
+        skipRules: 0,
+      });
+    }
+    return rows;
+  }, [result]);
+
+  return (
+    <div className="hub">
+      <header className="hub__header">
+        <div className="hub__brand">
+          <button type="button" className="hub__back" onClick={onBack}>← Modular Survey Tools</button>
+          <strong>Migrator</strong>
+          <span className="hub__sub">Import questionnaires from text</span>
+        </div>
+      </header>
+
+      <main className="hub__main migr__main">
+        <div className="migr__intro">
+          <p>
+            Paste a plain-text questionnaire below (or upload a <code>.txt</code> file).
+            The engine extracts questions, infers response types, and converts routing hints into
+            skip logic — producing an instrument JSON you can open directly in the Designer.
+          </p>
+        </div>
+
+        <div className="migr__body">
+          {/* ── Left: input ─────────────────────────────────────────────── */}
+          <div className="migr__panel migr__panel--input">
+            <div className="migr__field-row">
+              <label className="migr__label" htmlFor="migr-title">Survey title</label>
+              <input
+                id="migr-title"
+                className="migr__text-input"
+                type="text"
+                placeholder="Auto-detected from text, or enter manually"
+                value={titleInput}
+                onChange={e => setTitleInput(e.target.value)}
+              />
+            </div>
+            <div className="migr__field-row">
+              <label className="migr__label" htmlFor="migr-agency">Agency / organisation (optional)</label>
+              <input
+                id="migr-agency"
+                className="migr__text-input"
+                type="text"
+                placeholder="e.g. Statistics Canada"
+                value={agencyInput}
+                onChange={e => setAgencyInput(e.target.value)}
+              />
+            </div>
+
+            <div className="migr__field-row migr__field-row--grow">
+              <div className="migr__label-row">
+                <label className="migr__label" htmlFor="migr-text">Questionnaire text</label>
+                <button
+                  type="button"
+                  className="btn"
+                  style={{ fontSize: 12, padding: '3px 10px' }}
+                  onClick={() => fileRef.current?.click()}
+                >
+                  ⬆ Upload .txt
+                </button>
+                <input
+                  ref={fileRef}
+                  type="file"
+                  accept=".txt,.text,text/plain"
+                  style={{ display: 'none' }}
+                  onChange={handleFile}
+                />
+              </div>
+              <textarea
+                id="migr-text"
+                className="migr__textarea"
+                placeholder={`Paste your questionnaire here. For example:\n\nSECTION A: Demographic Information\n\n1. What is your age?\n   (Enter number)\n\n2. What is your sex?\n   1. Male\n   2. Female\n   3. Other / prefer not to say\n\n3. Are you currently employed?\n   [ ] Yes → Skip to Q5\n   [ ] No\n\n4. How many months have you been unemployed?\n   (Enter number, 0–120)\n\n5. What is your highest level of education?\n   1. No formal schooling\n   2. Primary school\n   3. Secondary school\n   4. Post-secondary`}
+                value={rawText}
+                onChange={e => setRawText(e.target.value)}
+                spellCheck={false}
+              />
+            </div>
+
+            <div className="migr__convert-row">
+              <button
+                type="button"
+                className="btn btn--primary"
+                disabled={!rawText.trim() || busy}
+                onClick={handleConvert}
+              >
+                {busy ? 'Converting…' : '⇄ Convert to survey'}
+              </button>
+              {rawText.trim() && (
+                <button
+                  type="button"
+                  className="btn"
+                  onClick={() => { setRawText(''); setResult(null); setTitleInput(''); setSaveState('idle'); }}
+                >
+                  Clear
+                </button>
+              )}
+            </div>
+          </div>
+
+          {/* ── Right: results ───────────────────────────────────────────── */}
+          <div className="migr__panel migr__panel--results">
+            {!result && !busy && (
+              <div className="migr__empty">
+                <span className="migr__empty-icon">⇄</span>
+                <p>Converted survey will appear here.</p>
+                <p className="migr__empty-hint">
+                  Supported: numbered questions, option lists, section headers,<br />
+                  Yes/No routing ("If Yes → Skip to Q5"), date / numeric hints.
+                </p>
+              </div>
+            )}
+
+            {busy && (
+              <div className="migr__empty">
+                <span className="migr__empty-icon">⇄</span>
+                <p>Parsing…</p>
+              </div>
+            )}
+
+            {result && !busy && (
+              <>
+                {/* Stats bar */}
+                <div className="migr__stats">
+                  <span className="migr__stat">
+                    <strong>{result.questionCount}</strong> question{result.questionCount === 1 ? '' : 's'}
+                  </span>
+                  <span className="migr__stat-sep">·</span>
+                  <span className="migr__stat">
+                    <strong>{result.sectionCount}</strong> section{result.sectionCount === 1 ? '' : 's'}
+                  </span>
+                  {result.sections.filter(s => s.title).map((s, i) => (
+                    <span key={i} className="migr__stat-section">{s.title}</span>
+                  ))}
+                </div>
+
+                {/* Warnings */}
+                {result.warnings.length > 0 && (
+                  <div className="migr__warnings">
+                    <strong className="migr__warn-title">Notices</strong>
+                    <ul className="migr__warn-list">
+                      {result.warnings.map((w, i) => <li key={i}>{w}</li>)}
+                    </ul>
+                  </div>
+                )}
+
+                {/* Preview table */}
+                <div className="migr__preview">
+                  <table className="migr__table">
+                    <thead>
+                      <tr>
+                        <th className="migr__th migr__th--num">#</th>
+                        <th className="migr__th">Question</th>
+                        <th className="migr__th migr__th--type">Type</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {previewRows.map((row, i) => (
+                        <tr key={i} className="migr__tr">
+                          <td className="migr__td migr__td--num">{row.num}</td>
+                          <td className="migr__td migr__td--text" title={row.text}>{row.text}</td>
+                          <td className="migr__td migr__td--type">{row.type}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+
+                {/* Actions */}
+                <div className="migr__actions">
+                  <button
+                    type="button"
+                    className="btn btn--primary"
+                    onClick={handleSave}
+                    disabled={saveState === 'saving'}
+                  >
+                    {saveState === 'saving' ? 'Saving…'
+                      : saveState === 'done' ? '✓ Saved — opening Designer'
+                      : '↗ Save to Collector & open in Designer'}
+                  </button>
+                  <button type="button" className="btn" onClick={handleDownload}>
+                    ↓ Download JSON
+                  </button>
+                  {saveState === 'error' && (
+                    <span className="migr__save-error">Save failed — check Supabase connection.</span>
+                  )}
+                </div>
+              </>
+            )}
+          </div>
+        </div>
+
+        {/* Format hints */}
+        <details className="migr__hints">
+          <summary>Supported input formats</summary>
+          <div className="migr__hints-body">
+            <div className="migr__hint-col">
+              <strong>Questions</strong>
+              <pre className="migr__hint-pre">{`1. Question text
+Q1. Question text
+1) Question text
+1.1. Sub-question`}</pre>
+            </div>
+            <div className="migr__hint-col">
+              <strong>Options</strong>
+              <pre className="migr__hint-pre">{`1. Option text
+a. Option text
+[ ] Option text
+□ Option text
+○ Option text`}</pre>
+            </div>
+            <div className="migr__hint-col">
+              <strong>Routing</strong>
+              <pre className="migr__hint-pre">{`[ ] Yes → Skip to Q5
+[ ] Yes (Go to Q5)
+If Yes, go to Q7
+If male, skip to Q10`}</pre>
+            </div>
+            <div className="migr__hint-col">
+              <strong>Type hints</strong>
+              <pre className="migr__hint-pre">{`(Enter number)
+(Select all that apply)
+(Enter date)
+(Open text)
+_____ years`}</pre>
+            </div>
+            <div className="migr__hint-col">
+              <strong>Sections</strong>
+              <pre className="migr__hint-pre">{`SECTION A: Demographics
+Section 1: Background
+PART I: Employment
+--- Demographics ---`}</pre>
+            </div>
+          </div>
+        </details>
+      </main>
+    </div>
+  );
+}
+
 // ── Training hub ──────────────────────────────────────────────────────────────
 
 interface TrainingResource {
@@ -1232,6 +1576,14 @@ function HomePage({ onNavigate }: { onNavigate: (v: HubView) => void }) {
       action: () => onNavigate('searcher'),
     },
     {
+      id: 'migrator',
+      icon: '⇄',
+      name: 'Migrator',
+      tagline: 'Import questionnaires from text',
+      description: 'Paste or upload a plain-text questionnaire and convert it into a structured DDI instrument. The engine extracts questions, infers response types, and converts routing hints into skip logic.',
+      status: 'coming-soon',
+    },
+    {
       id: 'analyzer',
       icon: '📊',
       name: 'Analyzer',
@@ -1282,5 +1634,6 @@ export function App() {
   if (view === 'collector') return <CollectorView onBack={() => setView('home')} />;
   if (view === 'searcher') return <SearcherView onBack={() => setView('home')} />;
   if (view === 'trainer') return <TrainingView onBack={() => setView('home')} />;
+  if (view === 'migrator') return <MigratorView onBack={() => setView('home')} />;
   return <HomePage onNavigate={setView} />;
 }
