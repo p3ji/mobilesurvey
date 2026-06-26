@@ -65,8 +65,8 @@ app.post('/api/cases/:caseId/status', async (c) => {
   const caseId = c.req.param('caseId');
   const body = statusSchema.safeParse(await c.req.json().catch(() => null));
   if (!body.success) return c.json({ error: 'status required' }, 400);
-  if (!store.getCase(caseId)) return c.json({ error: 'unknown case' }, 404);
-  store.setCaseStatus(caseId, body.data.status);
+  // Unknown case ids (e.g. anonymous respondents) are silently accepted — not an error.
+  if (store.getCase(caseId)) store.setCaseStatus(caseId, body.data.status);
   return c.body(null, 204);
 });
 

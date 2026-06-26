@@ -85,6 +85,14 @@ export function App() {
     };
   }, []);
 
+  // Update the browser tab title to the loaded survey's name.
+  useEffect(() => {
+    if (!loaded) return;
+    const title = loaded.instrument.metadata?.title as Record<string, string> | undefined;
+    const name = title?.[loaded.instrument.defaultLanguage ?? 'en'] ?? title?.en ?? 'Survey';
+    document.title = `${name} — mobilesurvey`;
+  }, [loaded]);
+
   // Auto-start anonymous surveys (no access code) once everything is loaded.
   useEffect(() => {
     if (!backend || !loaded || loaded.requiresAccessCode || phase !== 'gate' || survey) return;
