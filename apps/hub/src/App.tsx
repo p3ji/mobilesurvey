@@ -3,9 +3,12 @@
  * actions: create, edit (in the designer), set up / publish (require an access code or not), copy
  * the respondent link, launch, and delete. The metadata registry is reached from inside the
  * designer's Library tab.
+ *
+ * When the backend is unreachable and we're not on localhost (e.g. GitHub Pages static deploy),
+ * the hub falls back to a read-only demo mode showing the two bundled example surveys.
  */
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { blankInstrument } from '@mobilesurvey/instrument-schema';
+import { blankInstrument, lfsInstrument, demoInstrument, type Instrument } from '@mobilesurvey/instrument-schema';
 import {
   createSurvey,
   deleteSurvey,
@@ -17,12 +20,52 @@ import {
   type SurveySummary,
 } from './api.js';
 
+function isLocalhost(): boolean {
+  if (typeof window === 'undefined') return false;
+  const h = window.location.hostname;
+  return h === 'localhost' || h === '127.0.0.1';
+}
+
+function countQuestions(instrument: Instrument): number {
+  let n = 0;
+  const visit = (node: { type?: string; children?: unknown[]; then?: unknown[]; else?: unknown[] }) => {
+    if (!node || typeof node !== 'object') return;
+    if (node.type === 'question') n += 1;
+    for (const arr of [node.children, node.then, node.else]) {
+      if (Array.isArray(arr)) for (const c of arr) visit(c as never);
+    }
+  };
+  visit(instrument.sequence as never);
+  return n;
+}
+
+const DEMO_SURVEYS: SurveySummary[] = [
+  {
+    id: 'lfs',
+    title: 'Household & Employment Survey',
+    requiresAccessCode: true,
+    status: 'published',
+    questionCount: countQuestions(lfsInstrument),
+    updatedAt: 0,
+  },
+  {
+    id: 'demo',
+    title: 'Feature Demo Survey',
+    requiresAccessCode: false,
+    status: 'published',
+    questionCount: countQuestions(demoInstrument),
+    updatedAt: 0,
+  },
+];
+
 function SurveyCard({
   survey,
   onChange,
+  readOnly,
 }: {
   survey: SurveySummary;
   onChange: () => void;
+  readOnly?: boolean;
 }) {
   const [copied, setCopied] = useState(false);
   const [busy, setBusy] = useState(false);
@@ -46,7 +89,7 @@ function SurveyCard({
   };
 
   const remove = async () => {
-    if (!confirm(`Delete “${survey.title}”? This cannot be undone.`)) return;
+    if (!confirm(`Delete "${survey.title}"? This cannot be undone.`)) return;
     setBusy(true);
     try {
       await deleteSurvey(survey.id);
@@ -69,26 +112,28 @@ function SurveyCard({
         <span>{survey.requiresAccessCode ? '🔒 access code required' : '🌐 open (no code)'}</span>
       </div>
 
-      <div className="card__row">
-        <label className="toggle">
-          <input
-            type="checkbox"
-            checked={survey.requiresAccessCode}
-            disabled={busy}
-            onChange={(e) => patch({ requiresAccessCode: e.target.checked })}
-          />
-          Require access code
-        </label>
-        <label className="toggle">
-          <input
-            type="checkbox"
-            checked={survey.status === 'published'}
-            disabled={busy}
-            onChange={(e) => patch({ status: e.target.checked ? 'published' : 'draft' })}
-          />
-          Published
-        </label>
-      </div>
+      {!readOnly && (
+        <div className="card__row">
+          <label className="toggle">
+            <input
+              type="checkbox"
+              checked={survey.requiresAccessCode}
+              disabled={busy}
+              onChange={(e) => patch({ requiresAccessCode: e.target.checked })}
+            />
+            Require access code
+          </label>
+          <label className="toggle">
+            <input
+              type="checkbox"
+              checked={survey.status === 'published'}
+              disabled={busy}
+              onChange={(e) => patch({ status: e.target.checked ? 'published' : 'draft' })}
+            />
+            Published
+          </label>
+        </div>
+      )}
 
       <div className="card__link">
         <span className="card__link-label">Respondent link</span>
@@ -103,9 +148,11 @@ function SurveyCard({
         <a className="btn btn--primary" href={designerLink(survey.id)} target="_blank" rel="noopener noreferrer">
           ✎ Edit in Designer
         </a>
-        <button type="button" className="btn btn--danger" onClick={remove} disabled={busy}>
-          Delete
-        </button>
+        {!readOnly && (
+          <button type="button" className="btn btn--danger" onClick={remove} disabled={busy}>
+            Delete
+          </button>
+        )}
       </div>
     </div>
   );
@@ -114,15 +161,24 @@ function SurveyCard({
 export function App() {
   const [surveys, setSurveys] = useState<SurveySummary[] | null>(null);
   const [online, setOnline] = useState<boolean | null>(null);
+  const [demoMode, setDemoMode] = useState(false);
   const [creating, setCreating] = useState(false);
 
   const refresh = useCallback(async () => {
     try {
       setSurveys(await listSurveys());
       setOnline(true);
+      setDemoMode(false);
     } catch {
       setOnline(false);
-      setSurveys([]);
+      if (!isLocalhost()) {
+        // Static deploy (e.g. GitHub Pages) — show bundled demo surveys.
+        setSurveys(DEMO_SURVEYS);
+        setDemoMode(true);
+      } else {
+        setSurveys([]);
+        setDemoMode(false);
+      }
     }
   }, []);
 
@@ -161,12 +217,18 @@ export function App() {
           <strong>mobilesurvey</strong>
           <span className="hub__sub">Survey hub</span>
         </div>
-        <span className={online === false ? 'hub__conn hub__conn--off' : 'hub__conn hub__conn--on'}>
-          {online === false ? '● Backend offline' : '● Connected'}
-        </span>
-        <button type="button" className="btn btn--primary" onClick={newSurvey} disabled={creating}>
-          + New survey
-        </button>
+        {demoMode ? (
+          <span className="hub__conn hub__conn--demo">● Demo mode</span>
+        ) : (
+          <span className={online === false ? 'hub__conn hub__conn--off' : 'hub__conn hub__conn--on'}>
+            {online === false ? '● Backend offline' : '● Connected'}
+          </span>
+        )}
+        {!demoMode && (
+          <button type="button" className="btn btn--primary" onClick={newSurvey} disabled={creating}>
+            + New survey
+          </button>
+        )}
       </header>
 
       <main className="hub__main">
@@ -174,15 +236,23 @@ export function App() {
           <h1>Your surveys</h1>
           <p>
             {counts.total} survey{counts.total === 1 ? '' : 's'} · {counts.published} published.
-            Edit a survey in the designer (reuse questions from the Library tab there), set whether
-            it needs an access code, then share its respondent link.
+            {demoMode
+              ? ' Running in demo mode — edit in the designer or launch a survey below.'
+              : ' Edit a survey in the designer (reuse questions from the Library tab there), set whether it needs an access code, then share its respondent link.'}
           </p>
         </div>
 
-        {online === false && (
+        {online === false && !demoMode && (
           <div className="hub__alert">
-            The backend API isn’t reachable. Start it with
+            The backend API isn't reachable. Start it with
             <code> pnpm --filter @mobilesurvey/api dev</code> and refresh.
+          </div>
+        )}
+
+        {demoMode && (
+          <div className="hub__notice">
+            This is a live demo — the surveys below are built-in examples. Edit them in the designer
+            or launch them as a respondent. To manage your own surveys, run the backend locally.
           </div>
         )}
 
@@ -193,7 +263,7 @@ export function App() {
         ) : (
           <div className="hub__grid">
             {surveys.map((s) => (
-              <SurveyCard key={s.id} survey={s} onChange={refresh} />
+              <SurveyCard key={s.id} survey={s} onChange={refresh} readOnly={demoMode} />
             ))}
           </div>
         )}

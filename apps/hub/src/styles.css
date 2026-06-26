@@ -59,6 +59,16 @@ code { font-family: var(--mono); font-size: 0.88em; }
 .hub__conn { margin-left: auto; font-size: 12px; }
 .hub__conn--on { color: var(--ok); }
 .hub__conn--off { color: var(--danger); }
+.hub__conn--demo { color: var(--brand); }
+.hub__notice {
+  background: var(--selected);
+  color: var(--brand);
+  border: 1px solid #b8d0ef;
+  border-radius: 8px;
+  padding: 12px 14px;
+  margin-bottom: 16px;
+  font-size: 14px;
+}
 
 .hub__main { flex: 1; padding: 24px; max-width: 1100px; width: 100%; margin: 0 auto; }
 .hub__intro h1 { margin: 0 0 4px; font-size: 24px; }
