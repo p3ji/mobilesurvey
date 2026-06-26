@@ -35,7 +35,7 @@
 - Keep this file short; put goals/backlog/decisions in the Brain note, not here.
 - Cross-package imports use workspace deps (`@mobilesurvey/*`). In source, import `.ts` files with `.js` suffix, `.tsx` with `.jsx` (esbuild resolution).
 - Expression engine must stay eval-free; extend via `packages/expression-engine/src/evaluator.ts` function whitelist.
-- Dev base paths are `/` (Vite dev serves at root); production uses `/mobilesurvey/`, `/mobilesurvey-runtime/`, `/mobilesurvey-hub/` for GitHub Pages.
+- Dev base paths are `/` (Vite dev serves at root); production uses `/mobilesurvey/` (hub, landing page), `/mobilesurvey/designer/`, `/mobilesurvey/respondent/` for GitHub Pages.
 - Anonymous respondents use stable localStorage-based ID (`anon-<timestamp>`) to resume on the same device.
 
 ## Do NOT
