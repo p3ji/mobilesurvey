@@ -1605,6 +1605,56 @@ code {
   border-top: 1px solid var(--line);
   padding-top: 8px;
 }
+.em-cat-editor {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: 4px;
+}
+.em-cat-row {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+}
+.em-cat-code-input {
+  width: 52px;
+  padding: 4px 6px;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  font-size: 12px;
+  background: var(--surface);
+  color: var(--text);
+  text-align: center;
+  flex-shrink: 0;
+}
+.em-cat-label-input {
+  flex: 1;
+  padding: 4px 8px;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  font-size: 13px;
+  background: var(--surface);
+  color: var(--text);
+}
+.em-cat-code-input:focus,
+.em-cat-label-input:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+.em-add-cat-btn {
+  align-self: flex-start;
+  margin-top: 4px;
+  padding: 4px 10px;
+  font-size: 12px;
+  border: 1px dashed var(--accent);
+  border-radius: 4px;
+  background: transparent;
+  color: var(--accent);
+  cursor: pointer;
+}
+.em-add-cat-btn:hover {
+  background: color-mix(in srgb, var(--accent) 10%, transparent);
+}
 .em-field-row {
   display: flex;
   flex-direction: column;

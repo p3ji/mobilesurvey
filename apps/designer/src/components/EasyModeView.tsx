@@ -79,6 +79,7 @@ function categorySchemeRef(rd: ResponseDomain): string | null {
 
 // ── sub-components ───────────────────────────────────────────────────────────
 
+/** Read-only category list used in the collapsed card preview. */
 function CategoryList({
   schemeId,
   instrument,
@@ -90,9 +91,7 @@ function CategoryList({
 }) {
   const scheme = instrument.categorySchemes.find((s) => s.id === schemeId);
   if (!scheme) return <p className="em-hint">Code list not found: <code>{schemeId}</code></p>;
-  if (!scheme.categories.length) return <p className="em-hint">No categories yet — edit in Variables tab.</p>;
-  const isMulti = instrument.categorySchemes.length > 0;
-  void isMulti;
+  if (!scheme.categories.length) return <p className="em-hint">No categories yet — expand to add.</p>;
   return (
     <ul className="em-cats">
       {scheme.categories.map((c) => (
@@ -102,6 +101,92 @@ function CategoryList({
         </li>
       ))}
     </ul>
+  );
+}
+
+/** Editable category list used inside the expanded card. */
+function CatEditor({
+  schemeId,
+  instrument,
+  lang,
+  update,
+}: {
+  schemeId: string;
+  instrument: Instrument;
+  lang: string;
+  update: (recipe: (d: Instrument) => void) => void;
+}) {
+  const scheme = instrument.categorySchemes.find((s) => s.id === schemeId);
+  if (!scheme) return <p className="em-hint">Code list not found.</p>;
+
+  const addCat = () =>
+    update((d) => {
+      const cs = d.categorySchemes.find((s) => s.id === schemeId);
+      if (!cs) return;
+      const nextCode = String(cs.categories.length + 1);
+      cs.categories.push({ code: nextCode, label: { [lang]: '' } });
+    });
+
+  const removeCat = (code: string) =>
+    update((d) => {
+      const cs = d.categorySchemes.find((s) => s.id === schemeId);
+      if (!cs) return;
+      cs.categories = cs.categories.filter((c) => c.code !== code);
+    });
+
+  const editCode = (oldCode: string, newCode: string) =>
+    update((d) => {
+      const cs = d.categorySchemes.find((s) => s.id === schemeId);
+      if (!cs) return;
+      const cat = cs.categories.find((c) => c.code === oldCode);
+      if (cat) cat.code = newCode;
+    });
+
+  const editLabel = (code: string, label: string) =>
+    update((d) => {
+      const cs = d.categorySchemes.find((s) => s.id === schemeId);
+      if (!cs) return;
+      const cat = cs.categories.find((c) => c.code === code);
+      if (cat) (cat.label as Record<string, string>)[lang] = label;
+    });
+
+  return (
+    <div className="em-cat-editor">
+      {scheme.categories.length === 0 && (
+        <p className="em-hint" style={{ marginBottom: 6 }}>No categories yet.</p>
+      )}
+      {scheme.categories.map((cat) => (
+        <div key={cat.code} className="em-cat-row">
+          <input
+            type="text"
+            className="em-cat-code-input"
+            value={cat.code}
+            aria-label="Code"
+            title="Category code"
+            onChange={(e) => editCode(cat.code, e.target.value)}
+          />
+          <input
+            type="text"
+            className="em-cat-label-input"
+            value={(cat.label as Record<string, string>)[lang] ?? ''}
+            placeholder="Label"
+            aria-label="Label"
+            onChange={(e) => editLabel(cat.code, e.target.value)}
+          />
+          <button
+            type="button"
+            className="easymode__delete"
+            aria-label={`Delete category ${cat.code}`}
+            onClick={() => removeCat(cat.code)}
+          >
+            ✕
+          </button>
+        </div>
+      ))}
+      <button type="button" className="em-add-cat-btn" onClick={addCat}>
+        + Add category
+      </button>
+    </div>
   );
 }
 
@@ -184,7 +269,6 @@ function DomainEditor({
           break;
         }
         case 'statement':
-          // Convert question to statement is complex (different node type); just clear text domain
           n.responseDomain = { type: 'text' };
           break;
       }
@@ -217,11 +301,8 @@ function DomainEditor({
 
       {schemeRef && (
         <div className="em-cats-editor">
-          <div className="em-field-label">
-            Categories
-            <span className="em-hint"> — add/remove in the Variables tab</span>
-          </div>
-          <CategoryList schemeId={schemeRef} instrument={instrument} lang={lang} />
+          <label className="em-field-label">Categories</label>
+          <CatEditor schemeId={schemeRef} instrument={instrument} lang={lang} update={update} />
         </div>
       )}
     </div>
@@ -269,7 +350,6 @@ export function EasyModeView() {
       if (afterId) {
         insertAfter(d.sequence, afterId, newNode);
       } else {
-        // Append to first page / sequence root
         if (d.sequence.type === 'sequence') d.sequence.children.push(newNode);
       }
     });

@@ -11,8 +11,14 @@ import { exportHtml } from '../lib/htmlExport.js';
 const HELP_URL =
   'https://github.com/p3ji/mobilesurvey/blob/main/docs/manuals/authoring-tool.md';
 
-/** Hub home page (override via env in production). */
-const HUB_URL = (import.meta.env.VITE_HUB_URL as string | undefined) ?? 'http://localhost:5175';
+/** Hub home page. In dev (localhost), uses port 5175; in prod (GH Pages), uses /mobilesurvey/. */
+function getHubUrl(): string {
+  const envUrl = import.meta.env.VITE_HUB_URL as string | undefined;
+  if (envUrl) return envUrl;
+  if (typeof window === 'undefined') return '/mobilesurvey/';
+  const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+  return isLocalhost ? 'http://localhost:5175' : '/mobilesurvey/';
+}
 
 function download(content: string, filename: string, type: string) {
   const blob = new Blob([content], { type });
@@ -95,7 +101,7 @@ export function Toolbar({
   return (
     <header className="toolbar">
       <div className="toolbar__brand">
-        <a href={HUB_URL} className="toolbar__home" title="Return to survey hub">
+        <a href={getHubUrl()} className="toolbar__home" title="Return to survey hub">
           <strong>mobilesurvey</strong>
         </a>
         <span className="toolbar__title">{pick(instrument.metadata.title as Record<string, string>, language)}</span>

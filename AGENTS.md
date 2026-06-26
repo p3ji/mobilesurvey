@@ -8,12 +8,12 @@
 
 ## Run / build / test
 - `pnpm install` — install workspace deps (needs pnpm; `npm i -g pnpm@9` if missing; corepack fails on this machine).
-- **`pnpm --filter @mobilesurvey/hub dev` — survey hub (entry point) at http://localhost:5175.** Lists, creates, configures, and publishes surveys.
-- `pnpm --filter @mobilesurvey/api dev` — backend API at http://localhost:8787 (required by hub for survey persistence).
-- `pnpm --filter @mobilesurvey/designer dev` — authoring tool at http://localhost:5173 (launched from hub; linked from toolbar to return).
-- `pnpm --filter @mobilesurvey/runtime dev` — respondent app at http://localhost:5174 (launched from hub via "Launch" button).
+- **`pnpm --filter @mobilesurvey/hub dev` — survey hub (landing page) at http://localhost:5175** → `/mobilesurvey/` in production.
+- `pnpm --filter @mobilesurvey/api dev` — backend API at http://localhost:8787 (required by hub).
+- `pnpm --filter @mobilesurvey/designer dev` — authoring tool at http://localhost:5173 → `/mobilesurvey/designer/` in prod.
+- `pnpm --filter @mobilesurvey/runtime dev` — respondent app at http://localhost:5174 → `/mobilesurvey/respondent/` in prod.
 - `pnpm test` — all package test suites (Vitest); `pnpm typecheck` — all packages.
-- `pnpm build` — production builds (GitHub Pages deployment of designer, runtime, hub).
+- `pnpm build` — production builds for GitHub Pages (hub at root, designer and runtime in subdirs).
 
 ## Layout
 - `packages/instrument-schema` — DDI-aligned spec (types + Zod + validation + examples: LFS, Demo, Household).
@@ -27,8 +27,8 @@
 
 ## Phase status
 1. **Phases 1–4 DONE:** Schema, expression engine, runtime skeleton, designer with flowchart/PDF, metadata registry, demo survey, library panel.
-2. **Phase 5 DONE (2026-06-25):** Survey hub (list, create, publish); API surveys resource (CRUD, config); runtime & designer wired to load/save by link; anonymous auto-start; code-gated gate; all tests + typecheck pass. **Pending:** git commit + push.
-3. **Phase 6:** UI cleanup for surveys up to ~100 questions (defer if time-constrained).
+2. **Phase 5 DONE (2026-06-25):** Survey hub (list, create, publish); API surveys resource (CRUD, config); runtime & designer wired to load/save by link; anonymous auto-start; code-gated gate; all tests + typecheck pass. **Pending: git commit + push (not done yet).**
+3. **Phase 6 PARTIAL (2026-06-25):** Q-numbers everywhere (runtime + tree + inspector); enhanced progress bar; HTML export from designer Export menu; Mode dropdown; Easy Mode category editing inline (CatEditor), add/delete questions, routing display. NOT DONE: searchable/collapsible tree for 100+ question surveys. **Pending: git commit + push.**
 4. **Phase 7:** Analytics dashboard (monitor responses, completion/drop-off, paradata).
 
 ## Conventions & gotchas

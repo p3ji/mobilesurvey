@@ -4,7 +4,7 @@ import react from '@vitejs/plugin-react';
 // Base path only applies to the production (GitHub Pages) build; dev serves at root so the hub's
 // cross-app links work locally.
 export default defineConfig(({ mode }) => ({
-  base: mode === 'production' ? '/mobilesurvey/' : '/',
+  base: mode === 'production' ? '/mobilesurvey/designer/' : '/',
   plugins: [react()],
   server: {
     port: 5173,

@@ -3,11 +3,20 @@ import type { Instrument } from '@mobilesurvey/instrument-schema';
 
 const API_BASE = (import.meta.env.VITE_API_URL as string | undefined) ?? 'http://localhost:8787';
 
+/** Detect if we're running locally (dev) or on GitHub Pages (production). */
+function isLocalhost(): boolean {
+  if (typeof window === 'undefined') return false;
+  return window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+}
+
 /** Where the designer and respondent runtime are served (override via env in other deployments). */
 export const DESIGNER_URL =
-  (import.meta.env.VITE_DESIGNER_URL as string | undefined) ?? 'http://localhost:5173';
+  (import.meta.env.VITE_DESIGNER_URL as string | undefined) ??
+  (isLocalhost() ? 'http://localhost:5173' : '/mobilesurvey/designer/');
+
 export const RUNTIME_URL =
-  (import.meta.env.VITE_RUNTIME_URL as string | undefined) ?? 'http://localhost:5174';
+  (import.meta.env.VITE_RUNTIME_URL as string | undefined) ??
+  (isLocalhost() ? 'http://localhost:5174' : '/mobilesurvey/respondent/');
 
 export type SurveyStatus = 'draft' | 'published';
 
