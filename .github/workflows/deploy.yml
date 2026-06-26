@@ -1,20 +1,68 @@
-- name: Prepare deployment directory
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 9
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build all apps
         run: |
-          # 1. Create the base directory
+          pnpm --filter @mobilesurvey/hub build
+          pnpm --filter @mobilesurvey/designer build
+          pnpm --filter @mobilesurvey/runtime build
+
+      - name: Prepare deployment directory
+        run: |
+          # 1. Create a clean base directory
           mkdir -p deploy
           
-          # 2. Copy the Hub app into the absolute root of the deploy directory first
+          # 2. Copy the Hub app into the root of the deploy directory first
           cp -r apps/hub/dist/* deploy/
           
-          # 3. Create the nested subdirectories inside the deploy folder *after* Hub is copied
+          # 3. Create subdirectories inside deploy *after* copying hub files
           mkdir -p deploy/designer
-          mkdir -p deploy/runtime   # Note: Change to 'respondent' if your apps/runtime/vite.config.ts base is set to '/mobilesurvey/respondent/'
+          mkdir -p deploy/runtime
           
-          # 4. Copy the rest of the sub-apps into their respective directories
+          # 4. Copy the sub-apps into their respective paths
           cp -r apps/designer/dist/* deploy/designer/
-          cp -r apps/runtime/dist/* deploy/runtime/   # Note: Change to deploy/respondent/ if applicable
+          cp -r apps/runtime/dist/* deploy/runtime/
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: deploy   # This uploads the contents of 'deploy' directly to your domain root
+          path: deploy
+
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.
