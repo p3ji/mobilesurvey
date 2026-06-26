@@ -2,7 +2,7 @@
  * mobilesurvey hub — module selector home screen + Collector sub-view.
  */
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { blankInstrument, lfsInstrument, demoInstrument, type Instrument } from '@mobilesurvey/instrument-schema';
+import { blankInstrument, lfsInstrument, demoInstrument, BUNDLED_SURVEYS, type Instrument } from '@mobilesurvey/instrument-schema';
 import {
   buildCatalog,
   buildSearchIndex,
@@ -672,13 +672,12 @@ function CollectorView({ onBack }: { onBack: () => void }) {
     pingApi().then((connected) => {
       setOnline(connected);
       if (connected) {
-        // Seed bundled surveys so designer links and response storage work.
-        upsertSurvey('demo', 'Feature Demo Survey', demoInstrument, {
-          requiresAccessCode: false, status: 'published',
-        }).catch(() => { /* best-effort */ });
-        upsertSurvey('lfs', 'Household & Employment Survey', lfsInstrument, {
-          requiresAccessCode: true, status: 'published',
-        }).catch(() => { /* best-effort */ });
+        // Seed only data-collecting bundled surveys; exploration-only demos never touch Supabase.
+        for (const s of BUNDLED_SURVEYS.filter((b) => b.collectsData)) {
+          upsertSurvey(s.id, s.title, s.instrument, {
+            requiresAccessCode: s.requiresAccessCode, status: 'published',
+          }).catch(() => { /* best-effort */ });
+        }
       }
     });
     refresh();
@@ -697,9 +696,27 @@ function CollectorView({ onBack }: { onBack: () => void }) {
     } finally { setCreating(false); }
   };
 
-  // Separate live (published + no code) from designer demos
-  const liveSurveys = (surveys ?? []).filter((s) => s.status === 'published' && !s.requiresAccessCode);
-  const demoSurveys = (surveys ?? []).filter((s) => !(s.status === 'published' && !s.requiresAccessCode));
+  // Exploration-only bundled surveys are never in Supabase — surface them as read-only demo cards.
+  const explorationDemos: SurveySummary[] = BUNDLED_SURVEYS
+    .filter((b) => !b.collectsData)
+    .map((b) => ({
+      id: b.id,
+      title: b.title,
+      requiresAccessCode: b.requiresAccessCode,
+      status: 'published' as const,
+      questionCount: countQuestions(b.instrument),
+      updatedAt: 0,
+      responseCount: 0,
+    }));
+  const explorationIds = new Set(explorationDemos.map((s) => s.id));
+  // Drop any stale exploration-only rows from the backend list; render the bundled cards instead.
+  const backendSurveys = (surveys ?? []).filter((s) => !explorationIds.has(s.id));
+  // Separate live (published + no code) from designer demos.
+  const liveSurveys = backendSurveys.filter((s) => s.status === 'published' && !s.requiresAccessCode);
+  const demoSurveys = [
+    ...backendSurveys.filter((s) => !(s.status === 'published' && !s.requiresAccessCode)),
+    ...explorationDemos,
+  ];
 
   return (
     <div className="hub">
@@ -767,7 +784,7 @@ function CollectorView({ onBack }: { onBack: () => void }) {
                 </h2>
                 <div className="hub__grid">
                   {demoSurveys.map((s) => (
-                    <SurveyCard key={s.id} survey={s} onChange={refresh} readOnly={demoMode} />
+                    <SurveyCard key={s.id} survey={s} onChange={refresh} readOnly={demoMode || explorationIds.has(s.id)} />
                   ))}
                 </div>
               </section>

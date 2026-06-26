@@ -7,3 +7,9 @@ export { lfsInstrument } from './examples/lfs.instrument.js';
 export { demoInstrument } from './examples/demo.instrument.js';
 export { blankInstrument } from './blank.js';
 export { censusInstrument } from './examples/census.instrument.js';
+export {
+  BUNDLED_SURVEYS,
+  bundledSurvey,
+  surveyCollectsData,
+  type BundledSurvey,
+} from './bundled.js';

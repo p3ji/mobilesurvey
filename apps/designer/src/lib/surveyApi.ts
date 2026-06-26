@@ -3,7 +3,7 @@
  * Falls back to the local Hono API when VITE_SUPABASE_URL is not set.
  */
 import { createClient, type SupabaseClient } from '@supabase/supabase-js';
-import type { Instrument } from '@mobilesurvey/instrument-schema';
+import { bundledSurvey, surveyCollectsData, type Instrument } from '@mobilesurvey/instrument-schema';
 
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL as string | undefined;
 const SUPABASE_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY as string | undefined;
@@ -35,20 +35,23 @@ export async function fetchSurvey(id: string): Promise<Instrument | null> {
       if (!error && data) return (data as { instrument_json: Instrument }).instrument_json;
     } catch { /* fall through */ }
   }
-  // Local API fallback
+  // Local Hono API fallback
   try {
     const res = await fetch(`${API_BASE}/api/surveys/${encodeURIComponent(id)}`, {
       signal: AbortSignal.timeout(3000),
     });
-    if (!res.ok) return null;
-    const survey = (await res.json()) as { instrument: Instrument };
-    return survey.instrument;
-  } catch {
-    return null;
-  }
+    if (res.ok) {
+      const survey = (await res.json()) as { instrument: Instrument };
+      if (survey.instrument) return survey.instrument;
+    }
+  } catch { /* fall through */ }
+  // Bundled fallback — exploration-only demos (e.g. lfs) are never persisted.
+  return bundledSurvey(id)?.instrument ?? null;
 }
 
 export async function saveSurvey(id: string, instrument: Instrument): Promise<boolean> {
+  // Exploration-only bundled surveys are not persisted — no-op success.
+  if (!surveyCollectsData(id)) return true;
   // Try Supabase
   if (SUPABASE_URL && SUPABASE_KEY) {
     try {

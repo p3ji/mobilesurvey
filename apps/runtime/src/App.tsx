@@ -9,7 +9,7 @@
  * starts immediately. Without a `?survey` param it falls back to the bundled Labour Force survey.
  */
 import { useEffect, useRef, useState } from 'react';
-import { lfsInstrument, demoInstrument, type Instrument } from '@mobilesurvey/instrument-schema';
+import { bundledSurvey, surveyCollectsData, type Instrument } from '@mobilesurvey/instrument-schema';
 import type { ParadataEvent, RuntimeState, SampleUnit } from '@mobilesurvey/runtime-engine';
 import { AccessGate } from './components/AccessGate.jsx';
 import { SurveyRunner } from './components/SurveyRunner.jsx';
@@ -24,6 +24,8 @@ interface SavedSession {
 interface LoadedSurvey {
   instrument: Instrument;
   requiresAccessCode: boolean;
+  /** Whether responses are persisted to the backend (false = exploration-only). */
+  collectsData: boolean;
   /** undefined = no notice; present = show banner on every page */
   notice?: { kind: 'demo-no-save' | 'demo-saves'; text: string };
 }
@@ -66,52 +68,51 @@ export function App() {
   const [loaded, setLoaded] = useState<LoadedSurvey | null>(null);
   const surveyStartedAt = useRef<number | null>(null);
 
-  // Bundled instruments served by short alias (used when Supabase has no matching row).
-  const BUNDLED: Record<string, LoadedSurvey> = {
-    lfs: {
-      instrument: lfsInstrument,
-      requiresAccessCode: true,
-      notice: { kind: 'demo-no-save', text: 'This is a demo survey. Do not submit real personal information — responses are not saved.' },
-    },
-    demo: {
-      instrument: demoInstrument,
-      requiresAccessCode: false,
-      notice: { kind: 'demo-saves', text: 'This is a demonstration survey — responses you submit will be saved to illustrate the data collection dashboard.' },
-    },
-  };
+  // Notice banner text depends on whether the survey actually persists responses.
+  const noticeFor = (collects: boolean): LoadedSurvey['notice'] =>
+    collects
+      ? { kind: 'demo-saves', text: 'This is a demonstration survey — responses you submit will be saved to illustrate the data collection dashboard.' }
+      : { kind: 'demo-no-save', text: 'This is a demo survey. Do not submit real personal information — responses are not saved.' };
 
   // Load the backend and the survey (by ?survey=<id>, else the bundled fallback).
   useEffect(() => {
     let active = true;
     (async () => {
-      const b = await createBackend();
       const surveyId = new URLSearchParams(window.location.search).get('survey');
+      // No ?survey param falls back to the bundled Household & Employment demo.
+      const effectiveId = surveyId ?? 'lfs';
+      const collects = surveyCollectsData(effectiveId);
+      // Exploration-only surveys get a mock backend so nothing reaches Supabase.
+      const b = await createBackend({ collectsData: collects });
+
       let loadedSurvey: LoadedSurvey;
-      if (surveyId) {
-        const served = await fetchSurvey(surveyId);
-        if (served?.instrument) {
-          loadedSurvey = {
-            instrument: served.instrument as Instrument,
-            requiresAccessCode: served.requiresAccessCode,
-            notice: { kind: 'demo-saves', text: 'This is a demonstration survey — responses you submit will be saved to illustrate the data collection dashboard.' },
-          };
-        } else {
-          // Fall back to a bundled instrument if the id matches a known alias.
-          loadedSurvey = BUNDLED[surveyId] ?? BUNDLED.lfs!;
-          // Seed the survey row so the FK on responses.survey_id is satisfied.
-          const bundled = BUNDLED[surveyId];
-          if (bundled) {
-            const title = (bundled.instrument.metadata?.title as Record<string, string> | undefined);
-            await ensureSurveyRow(
-              surveyId,
-              title ? (Object.values(title)[0] ?? surveyId) : surveyId,
-              bundled.instrument,
-              { requiresAccessCode: bundled.requiresAccessCode },
-            );
-          }
-        }
+      const served = surveyId ? await fetchSurvey(surveyId) : null;
+      if (served?.instrument) {
+        loadedSurvey = {
+          instrument: served.instrument as Instrument,
+          requiresAccessCode: served.requiresAccessCode,
+          collectsData: collects,
+          notice: noticeFor(collects),
+        };
       } else {
-        loadedSurvey = BUNDLED.lfs!;
+        // Fall back to a bundled instrument (exploration-only demos are never in Supabase).
+        const bundled = bundledSurvey(effectiveId) ?? bundledSurvey('lfs')!;
+        loadedSurvey = {
+          instrument: bundled.instrument,
+          requiresAccessCode: bundled.requiresAccessCode,
+          collectsData: collects,
+          notice: noticeFor(collects),
+        };
+        // Seed the survey row (FK for responses) only for data-collecting surveys.
+        if (collects && surveyId) {
+          const title = bundled.instrument.metadata?.title as Record<string, string> | undefined;
+          await ensureSurveyRow(
+            surveyId,
+            title ? (Object.values(title)[0] ?? surveyId) : surveyId,
+            bundled.instrument,
+            { requiresAccessCode: bundled.requiresAccessCode },
+          );
+        }
       }
       if (!active) return;
       setBackend(b);
@@ -212,7 +213,7 @@ export function App() {
     await backend.cms.reportStatus(caseId, 'completed');
     await backend.paradata.flush();
     const surveyId = new URLSearchParams(window.location.search).get('survey');
-    const submitResult = (surveyId && loaded.notice?.kind !== 'demo-no-save')
+    const submitResult = (surveyId && loaded.collectsData)
       ? await submitResponse(surveyId, caseId, responses, {
           startedAt: surveyStartedAt.current ?? undefined,
           durationMs: surveyStartedAt.current ? now - surveyStartedAt.current : undefined,
