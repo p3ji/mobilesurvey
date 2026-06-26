@@ -255,6 +255,153 @@ function FieldCard({ field }: { field: FieldAnalysis }) {
   );
 }
 
+// ── Demo survey analyzer ──────────────────────────────────────────────────────
+
+const FREQ_LABELS: Record<string, string> = {
+  daily: 'Daily', weekly: 'Weekly', monthly: 'Monthly', rarely: 'Rarely',
+};
+const TOPIC_LABELS: Record<string, string> = {
+  design: 'Design tools', logic: 'Skip logic', i18n: 'Translations',
+  analytics: 'Analytics', accessibility: 'Accessibility', offline: 'Offline support', export: 'Data export',
+};
+const FEATURE_LABELS: Record<string, string> = {
+  preview: 'Live preview', flow: 'Flowchart', pdf: 'PDF export',
+  reuse: 'Question reuse', resume: 'Resume later',
+};
+const PIE_COLORS = ['#1f5fae', '#4a90d9', '#7bbff0', '#b8daf7', '#daeef8'];
+
+function PieChart({ title, data }: { title: string; data: [string, number][] }) {
+  if (data.length === 0) return (
+    <div className="dash__field"><span className="dash__field-name">{title}</span>
+      <span className="dash__empty" style={{ marginTop: 8 }}>No responses yet.</span></div>
+  );
+  const total = data.reduce((s, [, n]) => s + n, 0);
+  const CX = 60, CY = 62, R = 52;
+  let cumAngle = -Math.PI / 2;
+  const slices = data.map(([label, count], i) => {
+    const angle = (count / total) * 2 * Math.PI;
+    const sa = cumAngle; cumAngle += angle;
+    const ea = cumAngle;
+    const x1 = CX + R * Math.cos(sa), y1 = CY + R * Math.sin(sa);
+    const x2 = CX + R * Math.cos(ea), y2 = CY + R * Math.sin(ea);
+    const large = angle > Math.PI ? 1 : 0;
+    const d = data.length === 1
+      ? `M ${CX} ${CY - R} A ${R} ${R} 0 1 1 ${CX - 0.01} ${CY - R} Z`
+      : `M ${CX} ${CY} L ${x1} ${y1} A ${R} ${R} 0 ${large} 1 ${x2} ${y2} Z`;
+    return { d, color: PIE_COLORS[i % PIE_COLORS.length], label, count };
+  });
+  return (
+    <div className="dash__field">
+      <span className="dash__field-name">{title}</span>
+      <svg viewBox="0 0 220 130" className="dash__pie-svg">
+        {slices.map((s, i) => (
+          <path key={i} d={s.d} fill={s.color} stroke="white" strokeWidth="1.5" />
+        ))}
+        {slices.map((s, i) => (
+          <g key={i} transform={`translate(132, ${12 + i * 22})`}>
+            <rect width="10" height="10" rx="2" fill={s.color} />
+            <text x="14" y="9" fontSize="10" fill="var(--ink)">
+              {s.label}{' '}
+              <tspan fill="var(--ink-soft)">({s.count})</tspan>
+            </text>
+          </g>
+        ))}
+      </svg>
+    </div>
+  );
+}
+
+function WordCloud({ title, data }: { title: string; data: [string, number][] }) {
+  if (data.length === 0) return (
+    <div className="dash__field"><span className="dash__field-name">{title}</span>
+      <span className="dash__empty" style={{ marginTop: 8 }}>No responses yet.</span></div>
+  );
+  const maxN = Math.max(...data.map(([, n]) => n));
+  return (
+    <div className="dash__field">
+      <span className="dash__field-name">{title}</span>
+      <div className="dash__wordcloud">
+        {data.map(([word, count]) => {
+          const t = count / maxN;
+          return (
+            <span key={word} className="dash__wc-word" style={{
+              fontSize: Math.round(12 + t * 14),
+              fontWeight: t > 0.6 ? 700 : t > 0.3 ? 600 : 400,
+              opacity: 0.4 + t * 0.6,
+            }}>{word}</span>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+function HBarChart({ title, data }: { title: string; data: [string, number][] }) {
+  if (data.length === 0) return (
+    <div className="dash__field"><span className="dash__field-name">{title}</span>
+      <span className="dash__empty" style={{ marginTop: 8 }}>No responses yet.</span></div>
+  );
+  const maxN = Math.max(...data.map(([, n]) => n), 1);
+  return (
+    <div className="dash__field">
+      <span className="dash__field-name">{title}</span>
+      <div className="dash__hbars">
+        {data.map(([label, count]) => (
+          <div key={label} className="dash__hbar-row">
+            <span className="dash__hbar-label" title={label}>{label}</span>
+            <div className="dash__bar-track">
+              <div className="dash__bar-fill" style={{ width: `${(count / maxN) * 100}%` }} />
+            </div>
+            <span className="dash__bar-count">{count}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function DemoAnalyzer({ rows }: { rows: ResponseRow[] }) {
+  // Q3 — usage frequency
+  const freqMap = new Map<string, number>();
+  for (const r of rows) {
+    const v = r.answersJson['freq@'];
+    if (typeof v === 'string') freqMap.set(v, (freqMap.get(v) ?? 0) + 1);
+  }
+  const freqData: [string, number][] = [...freqMap.entries()]
+    .map(([c, n]): [string, number] => [FREQ_LABELS[c] ?? c, n])
+    .sort((a, b) => b[1] - a[1]);
+
+  // Q6 — topic of interest
+  const topicMap = new Map<string, number>();
+  for (const r of rows) {
+    const v = r.answersJson['topic@'];
+    if (typeof v === 'string') topicMap.set(v, (topicMap.get(v) ?? 0) + 1);
+  }
+  const topicData: [string, number][] = [...topicMap.entries()]
+    .map(([c, n]): [string, number] => [TOPIC_LABELS[c] ?? c, n])
+    .sort((a, b) => b[1] - a[1]);
+
+  // Q7 — features tried (markAll → feat_<code>@ keys)
+  const featureData: [string, number][] = (['preview', 'flow', 'pdf', 'reuse', 'resume'] as const)
+    .map((code): [string, number] => {
+      const count = rows.filter((r) => r.answersJson[`feat_${code}@`] === 1).length;
+      return [FEATURE_LABELS[code] ?? code, count];
+    })
+    .filter(([, n]) => n > 0)
+    .sort((a, b) => b[1] - a[1]);
+
+  return (
+    <div className="dash__section">
+      <h4 className="dash__section-title">Analyzer preview</h4>
+      <div className="dash__fields dash__fields--wide">
+        <PieChart title="Q3 — Usage frequency" data={freqData} />
+        <WordCloud title="Q6 — Topic of interest" data={topicData} />
+        <HBarChart title="Q7 — Features tried" data={featureData} />
+      </div>
+    </div>
+  );
+}
+
 function SubmissionRow({ row, events }: { row: ResponseRow; events: SurveyParadataRow[] }) {
   const dur = row.durationMs != null ? `${Math.round(row.durationMs / 1000)}s` : '—';
   const ts = new Date(row.submittedAt).toLocaleString(undefined, {
@@ -361,7 +508,9 @@ function CollectionDashboard({ surveyId }: { surveyId: string }) {
 
       <ResponseChart rows={r} />
 
-      {analyzerFields.length > 0 && (
+      {surveyId === 'demo' ? (
+        <DemoAnalyzer rows={r} />
+      ) : analyzerFields.length > 0 && (
         <div className="dash__section">
           <h4 className="dash__section-title">Analyzer preview</h4>
           <div className="dash__fields">
