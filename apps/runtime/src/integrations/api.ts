@@ -10,6 +10,7 @@ import type {
   SampleUnit,
   SessionStore,
 } from '@mobilesurvey/runtime-engine';
+import { surveyCollectsData } from '@mobilesurvey/instrument-schema';
 import { createMockParadataSink, localSessionStore, mockCmsClient } from './mocks.js';
 
 // ── Supabase client ───────────────────────────────────────────────────────────
@@ -83,6 +84,8 @@ export async function ensureSurveyRow(
   instrument: unknown,
   opts?: { requiresAccessCode?: boolean },
 ): Promise<void> {
+  // Exploration-only bundled surveys must never be written to the backend.
+  if (!surveyCollectsData(id)) return;
   if (!SUPABASE_URL || !SUPABASE_KEY) return;
   try {
     await sb().from('surveys').upsert(
@@ -107,6 +110,8 @@ export async function submitResponse(
   answers: Record<string, unknown>,
   opts?: { startedAt?: number; durationMs?: number; pageCountReached?: number; totalPages?: number },
 ): Promise<{ saved: boolean; errorMsg?: string }> {
+  // Exploration-only bundled surveys are not stored — return without writing.
+  if (!surveyCollectsData(surveyId)) return { saved: false };
   if (!SUPABASE_URL || !SUPABASE_KEY) return { saved: false, errorMsg: 'Supabase env vars not configured in this build.' };
   try {
     const { error } = await sb().from('responses').insert({
@@ -224,8 +229,9 @@ export interface Backend {
   paradata: RuntimeParadataSink;
 }
 
-export async function createBackend(): Promise<Backend> {
-  if (SUPABASE_URL && SUPABASE_KEY) {
+export async function createBackend(opts?: { collectsData?: boolean }): Promise<Backend> {
+  // Exploration-only surveys run entirely on local mocks — nothing reaches Supabase.
+  if (SUPABASE_URL && SUPABASE_KEY && opts?.collectsData !== false) {
     return {
       online: true,
       cms: supabaseCms(),

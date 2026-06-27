@@ -4,12 +4,12 @@
 
 **Brain note (goals, backlog, full context):** `H:\My Drive\Brain2\Projects\mobilesurvey.md`
 **GitHub:** https://github.com/p3ji/mobilesurvey.git
-**Stack:** pnpm monorepo · TypeScript (strict) · React 18 + Vite · XState v5 · Zod · Zustand+Immer · Vitest
+**Stack:** pnpm monorepo · TypeScript (strict) · React 18 + Vite · XState v5 · Zod · Zustand+Immer · Vitest · **Supabase** (prod persistence; Hono `apps/api` is a local-dev fallback)
 
 ## Run / build / test
 - `pnpm install` — install workspace deps (needs pnpm; `npm i -g pnpm@9` if missing; corepack fails on this machine).
 - **`pnpm --filter @mobilesurvey/hub dev` — survey hub (landing page) at http://localhost:5175** → `/mobilesurvey/` in production.
-- `pnpm --filter @mobilesurvey/api dev` — backend API at http://localhost:8787 (required by hub).
+- `pnpm --filter @mobilesurvey/api dev` — local Hono API at http://localhost:8787. **Local-dev fallback only** — production reads/writes go directly to Supabase (this is used only when `VITE_SUPABASE_URL`/`VITE_SUPABASE_ANON_KEY` are unset).
 - `pnpm --filter @mobilesurvey/designer dev` — authoring tool at http://localhost:5173 → `/mobilesurvey/designer/` in prod.
 - `pnpm --filter @mobilesurvey/runtime dev` — respondent app at http://localhost:5174 → `/mobilesurvey/respondent/` in prod.
 - `pnpm test` — all package test suites (Vitest); `pnpm typecheck` — all packages.
@@ -23,7 +23,7 @@
 - `apps/designer` — Vite + React authoring tool with flowchart view, PDF export, Library search/insert.
 - `apps/runtime` — Vite + React respondent app; loads surveys by `?survey=<id>` (anonymous or code-gated).
 - `apps/hub` — Vite + React survey management home screen; create, edit, configure, publish, launch surveys.
-- `apps/api` — Hono + Node.js backend; SQLite persistence (cases, access codes, sessions, paradata, surveys).
+- `apps/api` — Hono + Node.js + `node:sqlite` backend. **Local-dev fallback only**; production persistence is **Supabase** (browser → Supabase REST). Tables: surveys, responses, sessions, paradata, access_codes.
 
 ## Phase status
 1. **Phases 1–4 DONE:** Schema, expression engine, runtime skeleton, designer with flowchart/PDF, metadata registry, demo survey, library panel.
@@ -46,6 +46,9 @@
 - Expression engine must stay eval-free; extend via `packages/expression-engine/src/evaluator.ts` function whitelist.
 - Dev base paths are `/` (Vite dev serves at root); production uses `/mobilesurvey/` (hub, landing page), `/mobilesurvey/designer/`, `/mobilesurvey/respondent/` for GitHub Pages.
 - Anonymous respondents use stable localStorage-based ID (`anon-<timestamp>`) to resume on the same device.
+- **Prod backend = browser→Supabase REST** with a public *publishable* key baked into the client bundle (`VITE_SUPABASE_*`, injected by `deploy.yml`). No server authz layer — security rests entirely on **Supabase RLS**. For this demo, survey definitions + responses are intentionally public (non-sensitive). Never put a `service_role`/`sb_secret_` key in a `VITE_*` var or CI. (Rationale + RLS hardening plan: Brain note.)
+- **Exploration-only bundled surveys** (currently `lfs`) must **never** persist to Supabase — no row, responses, sessions, or paradata; they run on local mocks but stay launchable/editable as demos. Only `demo` collects data. Drive seeding/persistence from the `collectsData` flag in the `packages/instrument-schema` bundled-survey registry, not ad-hoc id checks.
+- **Never commit MCP/test artifacts** — `.playwright-mcp/`, `playwright-report/`, `test-results/`, root `*.png` are gitignored. `.playwright-mcp/` captures cross-site browser console output (can include third-party secrets/API keys); treat it as sensitive.
 
 ## Decision Routing (When you update the notes)
 
@@ -67,15 +70,21 @@ The agent uses this table to route updates to the correct files.
 
 ## Open Bugs
 *(Log bugs here as discovered; mark resolved with date)*
-- *(none logged)*
+- **(2026-06-26, RESOLVED)** Server-side **session persistence + resume was completely broken** for every collecting survey. The session key was built from `instrument.id` (the DDI urn, e.g. `urn:ddi:mobilesurvey:demo:1.0`), so `sessions.survey_id`/`paradata.survey_id` got the urn — but `surveys.id` is the short alias (`demo`), so the FK failed (`POST /sessions` → 409). Responses survived only because `submitResponse` used the alias. Fix: the runtime session key now uses the survey alias (`surveys.id`); verified — `sessions` now persists with `survey_id='demo'` and resume works.
+- **(2026-06-26, OPEN — config, not code)** **Paradata is never collected in prod:** anon `INSERT` on the `paradata` table is blocked by RLS (`POST /paradata` → 401), while `responses` is allowed. The keying is now correct, so paradata will flow once an anon-insert policy is added (Supabase dashboard). Blocks the Phase 7 analytics/paradata view until fixed.
+- **(2026-06-26, RESOLVED)** `lfs` (Household & Employment) was seeded into Supabase by the hub + runtime and collected real responses — contradicting the intent (and on-screen copy) that only the Feature Demo survey collects data. Root cause: seeding/persistence ignored the exploration-only flag. Fix: all bundled-survey persistence now routes through a `collectsData` registry in `packages/instrument-schema`; exploration-only surveys run entirely on local mocks (verified — no responses/sessions/paradata writes). The stale `lfs` row left in Supabase is inert (a deliberate test case; nothing writes to it).
 
 ## Pending Features / Decisions
 *(Log chat decisions and new feature requests here; move to Brain note when scope is confirmed. Decisions are append-only — add a new dated line, don't overwrite a prior one.)*
 - **Decision (2026-06-26):** Staying on GitHub Pages for now; Vercel deferred for future hosting migration.
+- **Decision (2026-06-26):** Demo site is public-by-design — survey definitions + responses are non-sensitive, so the public Supabase publishable key + permissive RLS is acceptable for now. Full RLS lockdown (responses INSERT-only, access-code validation server-side via RPC, auth-scoped writes) deferred until real/sensitive data is collected.
+- **Decision (2026-06-26):** Only the Feature Demo survey (`demo`) connects to live collection; Household & Employment (`lfs`) is exploration-only and must never touch Supabase. Enforced via a `collectsData` flag in the instrument-schema bundled-survey registry.
 - **Decision (2026-06-26):** Evaluated a Netlify migration; deferred. Would require a base-path env var (current Vite configs hard-code `/mobilesurvey/`) plus SPA redirect rules. Staying on GitHub Pages.
 - Phase 6 remaining: searchable/collapsible tree for 100+ question surveys
 - Phase 7: Analytics dashboard (monitor responses, completion/drop-off, paradata)
 
 ## Do NOT
 - Commit secrets (`.env`) or large build artifacts.
-- Use better-sqlite3 (no prebuilt binary for Node 24); use built-in `node:sqlite` instead.
+- Commit `.playwright-mcp/`, `playwright-report/`, `test-results/`, or root screenshots (gitignored; `.playwright-mcp/` may contain third-party secrets).
+- Connect an exploration-only bundled survey (`lfs`) to Supabase — it must stay on local mocks.
+- Use better-sqlite3 (no prebuilt binary for Node 24); use built-in `node:sqlite` instead (applies to the local `apps/api` fallback).
