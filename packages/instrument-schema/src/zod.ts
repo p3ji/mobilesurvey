@@ -62,6 +62,7 @@ export const variableSchema = z
     conceptRef: idSchema.optional(),
     categorySchemeRef: idSchema.optional(),
     compute: expressionSchema.optional(),
+    interviewerOnly: z.boolean().optional(),
   })
   .refine((v) => v.kind !== 'derived' || (v.compute?.trim().length ?? 0) > 0, {
     message: 'derived variables must define a `compute` expression',
@@ -147,6 +148,7 @@ export const questionConstructSchema = z.object({
   required: z.boolean().optional(),
   edits: z.array(editRuleSchema).optional(),
   visibleWhen: expressionSchema.optional(),
+  interviewerOnly: z.boolean().optional(),
 });
 
 export const sequenceConstructSchema = z.object({
@@ -156,6 +158,8 @@ export const sequenceConstructSchema = z.object({
   children: z.array(controlConstructSchema),
   visibleWhen: expressionSchema.optional(),
   isPage: z.boolean().optional(),
+  moduleKind: z.enum(['entry', 'main', 'exit']).optional(),
+  interviewerOnly: z.boolean().optional(),
 });
 
 export const ifThenElseConstructSchema = z.object({
@@ -193,11 +197,19 @@ export const statementConstructSchema = z.object({
   id: idSchema,
   text: internationalStringSchema,
   visibleWhen: expressionSchema.optional(),
+  interviewerOnly: z.boolean().optional(),
 });
 
 export const prefillMappingSchema = z.object({
   sampleField: z.string().min(1),
   targetVariable: z.string().min(1),
+});
+
+export const interviewerConfigSchema = z.object({
+  enabled: z.boolean(),
+  allowFreeNavigation: z.boolean(),
+  entryModuleRef: z.string().optional(),
+  exitModuleRef: z.string().optional(),
 });
 
 export const instrumentMetadataSchema = z.object({
@@ -221,6 +233,7 @@ export const instrumentSchema = z
     variables: z.array(variableSchema),
     prefillMappings: z.array(prefillMappingSchema),
     sequence: sequenceConstructSchema,
+    interviewer: interviewerConfigSchema.optional(),
   })
   .refine((inst) => inst.languages.includes(inst.defaultLanguage), {
     message: 'defaultLanguage must be one of languages',

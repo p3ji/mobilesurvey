@@ -1091,7 +1091,7 @@ function ModuleTile({ mod }: { mod: ModuleDef }) {
         <div className="module-tile__head">
           <span className="module-tile__name">{mod.name}</span>
           {mod.status === 'coming-soon' && (
-            <span className="module-tile__badge">Coming soon</span>
+            <span className="module-tile__badge">Future feature</span>
           )}
         </div>
         <p className="module-tile__tagline">{mod.tagline}</p>
@@ -1520,7 +1520,7 @@ function TrainingView({ onBack }: { onBack: () => void }) {
         </div>
 
         <p className="train__coming-soon">
-          More resources — written guides, walkthroughs, and worked examples — coming soon.
+          More resources — written guides, walkthroughs, and worked examples — future feature.
         </p>
       </main>
     </div>
@@ -1548,6 +1548,14 @@ function HomePage({ onNavigate }: { onNavigate: (v: HubView) => void }) {
       description: 'Opens a blank instrument. Use "Try a demo survey" above to load an example. Focusing on questions, categories, and simple logic — best for quick questionnaire testing.',
       status: 'live',
       action: () => window.open(`${DESIGNER_URL}/?mode=easy`, '_blank', 'noopener'),
+    },
+    {
+      id: 'designer-interviewer',
+      icon: '🎧',
+      name: 'Designer — Interviewer',
+      tagline: 'CATI · field interviewer · entry/exit modules',
+      description: 'Design surveys for telephone or field interviewers. Build entry modules (phone/address validation), exit modules (household phone enumeration for coverage weighting), and configure free navigation so interviewers can jump to any question.',
+      status: 'coming-soon',
     },
     {
       id: 'designer-business',
@@ -1615,7 +1623,7 @@ function HomePage({ onNavigate }: { onNavigate: (v: HubView) => void }) {
       <main className="hub__main hub__main--home">
         <div className="hub__intro">
           <h1>What would you like to do?</h1>
-          <p>Select a module to get started. Modules marked "Coming soon" are on the roadmap.</p>
+          <p>Select a module to get started. Modules marked "Future feature" are on the roadmap.</p>
         </div>
 
         <DemoSurveyPicker />
