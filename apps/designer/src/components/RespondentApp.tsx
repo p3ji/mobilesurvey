@@ -443,6 +443,48 @@ export function RespondentApp({ onExit }: { onExit: () => void }) {
               );
             }
 
+            // Grid (matrix) question.
+            if (item.kind === 'grid') {
+              return (
+                <div key={item.key} className="rapp__question">
+                  <p className="rapp__q-text">{item.questionText}</p>
+                  {item.instruction && <p className="pv-instruction">{item.instruction}</p>}
+                  <div className="pv-grid-wrapper">
+                    <table className="pv-grid">
+                      <thead>
+                        <tr>
+                          <th className="pv-grid__corner" />
+                          {item.columns.map((col) => (
+                            <th key={col.code} className="pv-grid__col-hdr">{col.label}</th>
+                          ))}
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {item.rows.map((row) => (
+                          <tr key={row.code} className="pv-grid__row">
+                            <td className="pv-grid__row-lbl">{row.label}</td>
+                            {item.columns.map((col) => (
+                              <td key={col.code} className="pv-grid__cell">
+                                <input
+                                  type="radio"
+                                  name={`${item.key}-${row.code}`}
+                                  checked={row.value === col.code}
+                                  onChange={() =>
+                                    send({ type: 'ANSWER', instanceKey: row.instanceKey, value: col.code })
+                                  }
+                                />
+                              </td>
+                            ))}
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                  <EditList edits={item.firedEdits} />
+                </div>
+              );
+            }
+
             // Regular question.
             const inputId = `rapp-ctrl-${item.key}`;
             const isGroupDomain =

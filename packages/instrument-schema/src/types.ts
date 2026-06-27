@@ -111,6 +111,16 @@ export type ResponseDomain =
       categorySchemeRef: Id;
       /** Prefix for the auto-generated dichotomous variables, e.g. `Q01` → Q01_A, Q01_B … */
       variablePrefix: string;
+    }
+  | {
+      /**
+       * Question grid (matrix): rows from `rowSchemeRef`, shared column scale from `colSchemeRef`.
+       * Auto-generates one code variable per row: `{variablePrefix}_{rowCode}` = selected col code.
+       */
+      type: 'grid';
+      rowSchemeRef: Id;
+      colSchemeRef: Id;
+      variablePrefix: string;
     };
 
 /** Hard edits block progression; soft edits warn but allow a confirmed override. */

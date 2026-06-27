@@ -287,6 +287,15 @@ export function PreviewPane() {
           label: item.questionText,
           pageIdx: pageOf.get(item.key) ?? 0,
         });
+      } else if (item.kind === 'grid') {
+        n++;
+        out.push({
+          num: n,
+          key: item.key,
+          varRef: item.variablePrefix + '_*',
+          label: item.questionText,
+          pageIdx: pageOf.get(item.key) ?? 0,
+        });
       }
     }
     return out;
@@ -458,6 +467,56 @@ export function PreviewPane() {
                   <p className="pv-markall-vars">
                     Variables:{' '}
                     {item.categories.map((c) => c.instanceKey.split('@')[0]).join(', ')}
+                  </p>
+                  <EditList edits={item.firedEdits} />
+                </div>
+              );
+            }
+
+            // Grid (matrix) question.
+            if (item.kind === 'grid') {
+              return (
+                <div
+                  key={item.key}
+                  id={`pv-q-${item.key}`}
+                  className="pv-question"
+                  style={{ marginInlineStart: item.depth * 8 }}
+                >
+                  <p className="pv-label">{item.questionText}</p>
+                  {item.instruction && <p className="pv-instruction">{item.instruction}</p>}
+                  <div className="pv-grid-wrapper">
+                    <table className="pv-grid">
+                      <thead>
+                        <tr>
+                          <th className="pv-grid__corner" />
+                          {item.columns.map((col) => (
+                            <th key={col.code} className="pv-grid__col-hdr">{col.label}</th>
+                          ))}
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {item.rows.map((row) => (
+                          <tr key={row.code} className="pv-grid__row">
+                            <td className="pv-grid__row-lbl">{row.label}</td>
+                            {item.columns.map((col) => (
+                              <td key={col.code} className="pv-grid__cell">
+                                <input
+                                  type="radio"
+                                  name={`${item.key}-${row.code}`}
+                                  checked={row.value === col.code}
+                                  onChange={() =>
+                                    send({ type: 'ANSWER', instanceKey: row.instanceKey, value: col.code })
+                                  }
+                                />
+                              </td>
+                            ))}
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                  <p className="pv-markall-vars">
+                    Variables: {item.rows.map((r) => r.instanceKey.split('@')[0]).join(', ')}
                   </p>
                   <EditList edits={item.firedEdits} />
                 </div>

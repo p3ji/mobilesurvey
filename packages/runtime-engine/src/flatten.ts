@@ -123,6 +123,39 @@ export function flattenInstrument(instrument: Instrument, state: RuntimeState): 
         const q = node as QuestionConstruct;
         const scopeSuffix = scope.map((s) => s.index).join('.');
 
+        // grid: each row becomes its own code variable (variablePrefix_rowCode = colCode).
+        if (q.responseDomain.type === 'grid') {
+          const domain = q.responseDomain;
+          const rowScheme = instrument.categorySchemes.find((s) => s.id === domain.rowSchemeRef);
+          const colScheme = instrument.categorySchemes.find((s) => s.id === domain.colSchemeRef);
+          const rows = (rowScheme?.categories ?? []).map((cat) => {
+            const iKey = instanceKey(`${domain.variablePrefix}_${cat.code}`, scope);
+            return {
+              code: cat.code,
+              label: pick(cat.label, language),
+              instanceKey: iKey,
+              value: responses[iKey] as string | undefined,
+            };
+          });
+          const columns = (colScheme?.categories ?? []).map((cat) => ({
+            code: cat.code,
+            label: pick(cat.label, language),
+          }));
+          items.push({
+            kind: 'grid',
+            key: `${q.id}@${scopeSuffix}`,
+            constructId: q.id,
+            variablePrefix: domain.variablePrefix,
+            questionText: localizePiped(q.text, language, ctx),
+            instruction: q.instruction ? localizePiped(q.instruction, language, ctx) : undefined,
+            rows,
+            columns,
+            firedEdits: [],
+            depth,
+          });
+          return;
+        }
+
         // markAll: each category becomes its own dichotomous variable.
         if (q.responseDomain.type === 'markAll') {
           const domain = q.responseDomain;

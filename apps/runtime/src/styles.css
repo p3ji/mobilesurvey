@@ -342,6 +342,53 @@ textarea {
   flex-direction: column;
   gap: 8px;
 }
+/* grid / matrix question */
+.eq__grid-wrapper {
+  overflow-x: auto;
+  margin: 8px 0;
+}
+.eq__grid {
+  border-collapse: collapse;
+  width: 100%;
+  font-size: 15px;
+}
+.eq__grid__corner {
+  min-width: 120px;
+}
+.eq__grid__col-hdr {
+  text-align: center;
+  font-weight: 600;
+  font-size: 13px;
+  color: var(--ink-soft, #666);
+  padding: 6px 10px;
+  border-bottom: 2px solid var(--line, #e0e0e0);
+  white-space: nowrap;
+}
+.eq__grid__row {
+  border-bottom: 1px solid var(--line, #e0e0e0);
+}
+.eq__grid__row:last-child {
+  border-bottom: none;
+}
+.eq__grid__row:nth-child(even) {
+  background: var(--selected, #f5f8ff);
+}
+.eq__grid__row-lbl {
+  padding: 10px 12px 10px 0;
+  font-size: 15px;
+  vertical-align: middle;
+}
+.eq__grid__cell {
+  text-align: center;
+  padding: 8px 10px;
+  vertical-align: middle;
+}
+.eq__grid__cell input[type="radio"] {
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+  accent-color: var(--brand, #1f5fae);
+}
 .eq__radio {
   display: flex;
   align-items: center;

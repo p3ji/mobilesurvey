@@ -82,6 +82,7 @@ function ResponseDomainEditor({
     file: { type: 'file' },
     lookup: { type: 'lookup', categorySchemeRef: firstScheme },
     markAll: { type: 'markAll', categorySchemeRef: firstScheme, variablePrefix: 'Q' },
+    grid: { type: 'grid', rowSchemeRef: firstScheme, colSchemeRef: firstScheme, variablePrefix: 'G' },
   };
 
   return (
@@ -240,6 +241,62 @@ function ResponseDomainEditor({
               Generated:{' '}
               {schemes
                 .find((s) => s.id === domain.categorySchemeRef)
+                ?.categories.map((c) => `${domain.variablePrefix}_${c.code}`)
+                .join(', ') ?? '—'}
+            </p>
+          )}
+        </>
+      )}
+
+      {domain.type === 'grid' && (
+        <>
+          <Field label="Row scheme (items / statements)">
+            {(id) => (
+              <select
+                id={id}
+                value={domain.rowSchemeRef}
+                onChange={(e) => onChange({ ...domain, rowSchemeRef: e.target.value })}
+              >
+                <option value="">— select —</option>
+                {schemes.map((s) => (
+                  <option key={s.id} value={s.id}>{s.id}</option>
+                ))}
+              </select>
+            )}
+          </Field>
+          <Field label="Column scheme (shared response scale)">
+            {(id) => (
+              <select
+                id={id}
+                value={domain.colSchemeRef}
+                onChange={(e) => onChange({ ...domain, colSchemeRef: e.target.value })}
+              >
+                <option value="">— select —</option>
+                {schemes.map((s) => (
+                  <option key={s.id} value={s.id}>{s.id}</option>
+                ))}
+              </select>
+            )}
+          </Field>
+          <Field
+            label="Variable prefix"
+            hint="Generates prefix_rowCode per row (e.g. G01_A, G01_B …). Each stores the selected column code."
+          >
+            {(id) => (
+              <input
+                id={id}
+                type="text"
+                value={domain.variablePrefix}
+                placeholder="G01"
+                onChange={(e) => onChange({ ...domain, variablePrefix: e.target.value })}
+              />
+            )}
+          </Field>
+          {domain.rowSchemeRef && domain.variablePrefix && (
+            <p className="hint">
+              Generated:{' '}
+              {schemes
+                .find((s) => s.id === domain.rowSchemeRef)
                 ?.categories.map((c) => `${domain.variablePrefix}_${c.code}`)
                 .join(', ') ?? '—'}
             </p>

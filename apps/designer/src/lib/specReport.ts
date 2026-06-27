@@ -40,6 +40,8 @@ function domainText(d: ResponseDomain): string {
       return `Lookup (search) from ${d.categorySchemeRef}`;
     case 'markAll':
       return `Mark all that apply → variables ${d.variablePrefix}_*`;
+    case 'grid':
+      return `Grid (rows: ${d.rowSchemeRef}, cols: ${d.colSchemeRef}) → variables ${d.variablePrefix}_*`;
   }
 }
 

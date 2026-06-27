@@ -246,7 +246,7 @@ export function SurveyRunner({
 
   // Count questions per page for global sequential numbering.
   const questionsPerPage = useMemo(
-    () => pages.map((p) => p.filter((i) => i.kind === 'question' || i.kind === 'markAll').length),
+    () => pages.map((p) => p.filter((i) => i.kind === 'question' || i.kind === 'markAll' || i.kind === 'grid').length),
     [pages],
   );
   const totalQuestions = useMemo(
@@ -264,7 +264,7 @@ export function SurveyRunner({
     let n = questionOffset;
     return pageItems.map((item) => ({
       item,
-      qNum: (item.kind === 'question' || item.kind === 'markAll') ? ++n : null,
+      qNum: (item.kind === 'question' || item.kind === 'markAll' || item.kind === 'grid') ? ++n : null,
     }));
   }, [pageItems, questionOffset]);
 
@@ -404,6 +404,48 @@ export function SurveyRunner({
                         {cat.label}
                       </label>
                     ))}
+                  </div>
+                  <EditList edits={item.firedEdits} />
+                </div>
+              );
+            }
+
+            if (item.kind === 'grid') {
+              return (
+                <div key={item.key} className="eq__question">
+                  <p className="eq__q-text">
+                    {qNum != null && <span className="eq__q-num">Q{qNum}.</span>}
+                    {item.questionText}
+                  </p>
+                  {item.instruction && <p className="eq__instruction">{item.instruction}</p>}
+                  <div className="eq__grid-wrapper">
+                    <table className="eq__grid">
+                      <thead>
+                        <tr>
+                          <th className="eq__grid__corner" />
+                          {item.columns.map((col) => (
+                            <th key={col.code} className="eq__grid__col-hdr">{col.label}</th>
+                          ))}
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {item.rows.map((row) => (
+                          <tr key={row.code} className="eq__grid__row">
+                            <td className="eq__grid__row-lbl">{row.label}</td>
+                            {item.columns.map((col) => (
+                              <td key={col.code} className="eq__grid__cell">
+                                <input
+                                  type="radio"
+                                  name={`${item.key}-${row.code}`}
+                                  checked={row.value === col.code}
+                                  onChange={() => answer(row.instanceKey, col.code)}
+                                />
+                              </td>
+                            ))}
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
                   </div>
                   <EditList edits={item.firedEdits} />
                 </div>

@@ -104,6 +104,12 @@ export const responseDomainSchema = z.discriminatedUnion('type', [
     categorySchemeRef: idSchema,
     variablePrefix: z.string().min(1, 'variablePrefix is required'),
   }),
+  z.object({
+    type: z.literal('grid'),
+    rowSchemeRef: idSchema,
+    colSchemeRef: idSchema,
+    variablePrefix: z.string().min(1, 'variablePrefix is required'),
+  }),
 ]);
 
 export const editTypeSchema = z.enum(['hard', 'soft']);

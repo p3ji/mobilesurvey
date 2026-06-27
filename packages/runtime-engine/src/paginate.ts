@@ -37,7 +37,7 @@ export function paginate(items: RenderItem[]): PaginateResult {
 export function pageHasHardEdits(pageItems: RenderItem[]): boolean {
   return pageItems.some(
     (item) =>
-      (item.kind === 'question' || item.kind === 'markAll') &&
+      (item.kind === 'question' || item.kind === 'markAll' || item.kind === 'grid') &&
       item.firedEdits.some((e) => e.type === 'hard'),
   );
 }

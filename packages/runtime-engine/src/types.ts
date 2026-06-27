@@ -25,6 +25,16 @@ export interface MarkAllCategory {
   value: number | undefined;
 }
 
+/** One row inside a `grid` render item. */
+export interface GridRow {
+  code: string;
+  label: string;
+  /** Storage key for this row's answer, e.g. `G01_A@m=1`. */
+  instanceKey: string;
+  /** Selected column code, or undefined if unanswered. */
+  value: string | undefined;
+}
+
 /**
  * A flattened, render-ready item. The designer preview maps these straight onto components; the
  * future runtime EQ paginates over them.
@@ -64,6 +74,19 @@ export type RenderItem =
       questionText: string;
       instruction?: string;
       categories: MarkAllCategory[];
+      firedEdits: FiredEdit[];
+      depth: number;
+    }
+  | {
+      /** Question grid (matrix): rows × shared column scale, one variable per row. */
+      kind: 'grid';
+      key: string;
+      constructId: string;
+      variablePrefix: string;
+      questionText: string;
+      instruction?: string;
+      rows: GridRow[];
+      columns: { code: string; label: string }[];
       firedEdits: FiredEdit[];
       depth: number;
     };

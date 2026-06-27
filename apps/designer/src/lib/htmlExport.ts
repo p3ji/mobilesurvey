@@ -112,6 +112,19 @@ function domainHtml(domain: ResponseDomain, instrument: Instrument, lang: string
         .join('');
       return `<ol class="resp-list">${items}</ol>`;
     }
+    case 'grid': {
+      const rowScheme = instrument.categorySchemes.find((s) => s.id === domain.rowSchemeRef);
+      const colScheme = instrument.categorySchemes.find((s) => s.id === domain.colSchemeRef);
+      const rows = rowScheme?.categories ?? [];
+      const cols = colScheme?.categories ?? [];
+      if (!rows.length || !cols.length) return `<div class="resp-open">(grid: rows=${esc(domain.rowSchemeRef)}, cols=${esc(domain.colSchemeRef)})</div>`;
+      const headerCells = cols.map((c) => `<th>${esc(lbl(c.label as Record<string, string>, lang))}</th>`).join('');
+      const bodyRows = rows.map((r) => {
+        const cells = cols.map(() => `<td style="text-align:center">○</td>`).join('');
+        return `<tr><td><strong>${esc(lbl(r.label as Record<string, string>, lang))}</strong></td>${cells}</tr>`;
+      }).join('');
+      return `<table class="resp-grid"><thead><tr><th></th>${headerCells}</tr></thead><tbody>${bodyRows}</tbody></table>`;
+    }
   }
 }
 
