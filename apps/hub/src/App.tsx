@@ -1581,7 +1581,8 @@ function HomePage({ onNavigate }: { onNavigate: (v: HubView) => void }) {
       name: 'Migrator',
       tagline: 'Import questionnaires from text',
       description: 'Paste or upload a plain-text questionnaire and convert it into a structured DDI instrument. The engine extracts questions, infers response types, and converts routing hints into skip logic.',
-      status: 'coming-soon',
+      status: 'live',
+      action: () => onNavigate('migrator'),
     },
     {
       id: 'analyzer',
