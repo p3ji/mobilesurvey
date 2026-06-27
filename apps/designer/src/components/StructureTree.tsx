@@ -119,6 +119,14 @@ function TreeNode({
             <span className="tree__qnum">Q{qNumMap.get(node.id)}.</span>
           )}
           <span className="tree__label">{nodeLabel(node, language)}</span>
+          {node.type === 'sequence' && node.moduleKind && (
+            <span className={`tree__module-badge tree__module-badge--${node.moduleKind}`}>
+              {node.moduleKind.toUpperCase()}
+            </span>
+          )}
+          {('interviewerOnly' in node && node.interviewerOnly) && (
+            <span className="tree__iv-icon" aria-label="Interviewer only" title="Interviewer only">🎧</span>
+          )}
         </button>
 
         <span className="tree__actions">

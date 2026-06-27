@@ -38,8 +38,8 @@ export function Toolbar({
 }: {
   onRender: () => void;
   surveyId: string | null;
-  mode: 'pro' | 'easy';
-  onModeChange: (m: 'pro' | 'easy') => void;
+  mode: 'pro' | 'easy' | 'interviewer';
+  onModeChange: (m: 'pro' | 'easy' | 'interviewer') => void;
 }) {
   const instrument = useDesigner((s) => s.instrument);
   const language = useDesigner((s) => s.language);
@@ -165,7 +165,7 @@ export function Toolbar({
           aria-expanded={modeOpen}
           onClick={() => setModeOpen((o) => !o)}
         >
-          {mode === 'easy' ? 'Easy Mode' : 'Pro Mode'} ▾
+          {mode === 'easy' ? 'Easy Mode' : mode === 'interviewer' ? 'Interviewer Mode' : 'Pro Mode'} ▾
         </button>
         {modeOpen && (
           <div className="toolbar__mode-menu" role="menu">
@@ -186,6 +186,15 @@ export function Toolbar({
             >
               Pro Mode
               <span className="toolbar__mode-desc">Full tree, variables, expressions, flowchart</span>
+            </button>
+            <button
+              type="button"
+              role="menuitem"
+              className={mode === 'interviewer' ? 'toolbar__mode-item toolbar__mode-item--active' : 'toolbar__mode-item'}
+              onClick={() => { onModeChange('interviewer'); setModeOpen(false); }}
+            >
+              Interviewer Mode
+              <span className="toolbar__mode-desc">CATI · entry/exit modules · free navigation</span>
             </button>
           </div>
         )}

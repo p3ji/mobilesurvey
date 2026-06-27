@@ -12,6 +12,7 @@ import { PreviewPane } from './components/PreviewPane.jsx';
 import { FlowPane } from './components/FlowPane.jsx';
 import { RespondentApp } from './components/RespondentApp.jsx';
 import { EasyModeView } from './components/EasyModeView.jsx';
+import { InterviewerModeView } from './components/InterviewerModeView.jsx';
 
 const MIN_LEFT = 180;
 const MAX_LEFT = 560;
@@ -20,9 +21,12 @@ const MAX_RIGHT = 680;
 
 export default function App() {
   const [renderMode, setRenderMode] = useState(false);
-  const [mode, setMode] = useState<'pro' | 'easy'>(
-    new URLSearchParams(window.location.search).get('mode') === 'easy' ? 'easy' : 'pro',
-  );
+  const [mode, setMode] = useState<'pro' | 'easy' | 'interviewer'>(() => {
+    const m = new URLSearchParams(window.location.search).get('mode');
+    if (m === 'easy') return 'easy';
+    if (m === 'interviewer') return 'interviewer';
+    return 'pro';
+  });
   const [surveyId] = useState<string | null>(currentSurveyId);
 
   // Resizable panel widths.
@@ -69,12 +73,16 @@ export default function App() {
         onRender={() => setRenderMode(true)}
         surveyId={surveyId}
         mode={mode}
-        onModeChange={setMode}
+        onModeChange={(m) => setMode(m)}
       />
 
       {mode === 'easy' ? (
         <main className="layout layout--easy">
           <EasyModeView />
+        </main>
+      ) : mode === 'interviewer' ? (
+        <main className="layout layout--interviewer">
+          <InterviewerModeView />
         </main>
       ) : (
         <main

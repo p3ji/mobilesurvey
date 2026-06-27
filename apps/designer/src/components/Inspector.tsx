@@ -401,6 +401,30 @@ function ConstructEditor({ node, instrument }: { node: ControlConstruct; instrum
             value={node.visibleWhen ?? ''}
             onChange={(v) => edit<typeof node>((n) => void (n.visibleWhen = v))}
           />
+          <Field label="Interviewer module kind">
+            {(id) => (
+              <select
+                id={id}
+                value={node.moduleKind ?? ''}
+                onChange={(e) => edit<typeof node>((n) => {
+                  n.moduleKind = (e.target.value || undefined) as typeof n.moduleKind;
+                })}
+              >
+                <option value="">— standard section/page —</option>
+                <option value="entry">Entry — pre-interview validation</option>
+                <option value="main">Main — core survey content</option>
+                <option value="exit">Exit — post-interview housekeeping</option>
+              </select>
+            )}
+          </Field>
+          <label className="checkbox">
+            <input
+              type="checkbox"
+              checked={Boolean(node.interviewerOnly)}
+              onChange={(e) => edit<typeof node>((n) => void (n.interviewerOnly = e.target.checked || undefined))}
+            />
+            Interviewer only (hidden in self-administered mode)
+          </label>
         </>
       );
     case 'statement':
@@ -418,6 +442,14 @@ function ConstructEditor({ node, instrument }: { node: ControlConstruct; instrum
             value={node.visibleWhen ?? ''}
             onChange={(v) => edit<typeof node>((n) => void (n.visibleWhen = v))}
           />
+          <label className="checkbox">
+            <input
+              type="checkbox"
+              checked={Boolean(node.interviewerOnly)}
+              onChange={(e) => edit<typeof node>((n) => void (n.interviewerOnly = e.target.checked || undefined))}
+            />
+            Interviewer only (hidden in self-administered mode)
+          </label>
         </>
       );
     case 'ifThenElse':
@@ -514,6 +546,14 @@ function ConstructEditor({ node, instrument }: { node: ControlConstruct; instrum
               onChange={(e) => edit<typeof node>((n) => void (n.required = e.target.checked))}
             />
             Required
+          </label>
+          <label className="checkbox">
+            <input
+              type="checkbox"
+              checked={Boolean(node.interviewerOnly)}
+              onChange={(e) => edit<typeof node>((n) => void (n.interviewerOnly = e.target.checked || undefined))}
+            />
+            Interviewer only (hidden in self-administered mode)
           </label>
           <ResponseDomainEditor
             domain={node.responseDomain}

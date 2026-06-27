@@ -77,6 +77,8 @@ export interface Variable {
   categorySchemeRef?: Id;
   /** For `hidden`/`derived` variables: the expression that computes the value. */
   compute?: Expression;
+  /** When true, this variable is suppressed in self-administered mode and shown only to interviewers. */
+  interviewerOnly?: boolean;
 }
 
 /**
@@ -154,6 +156,8 @@ export interface QuestionConstruct {
   edits?: EditRule[];
   /** Conditional visibility (expression). Empty/undefined = always visible. */
   visibleWhen?: Expression;
+  /** When true, this question is suppressed in self-administered mode and shown only to interviewers. */
+  interviewerOnly?: boolean;
 }
 
 /** DDI *Sequence* control construct: an ordered group of children (a section/block). */
@@ -165,6 +169,16 @@ export interface SequenceConstruct {
   visibleWhen?: Expression;
   /** When true this sequence is a page boundary — the runtime renders one page at a time. */
   isPage?: boolean;
+  /**
+   * Designates this sequence as an interviewer administration module:
+   * - `entry`: pre-interview validation (phone/address confirm); runs before the main survey.
+   * - `main`: core survey content (default for sequences without a tag).
+   * - `exit`: post-interview housekeeping (household phone enumeration); runs after main completes.
+   * Entry and exit modules are suppressed entirely in self-administered (respondent) mode.
+   */
+  moduleKind?: 'entry' | 'main' | 'exit';
+  /** When true, this section is hidden from respondents and shown only to interviewers. */
+  interviewerOnly?: boolean;
 }
 
 /** DDI *IfThenElse* control construct: branching / skip patterns. */
@@ -210,6 +224,8 @@ export interface StatementConstruct {
   id: Id;
   text: InternationalString;
   visibleWhen?: Expression;
+  /** When true, this statement is suppressed in self-administered mode and shown only to interviewers. */
+  interviewerOnly?: boolean;
 }
 
 /** The DDI *ControlConstruct* tree node union. */
@@ -225,6 +241,21 @@ export type ControlConstruct =
 export interface PrefillMapping {
   sampleField: string;
   targetVariable: string;
+}
+
+/**
+ * Interviewer-administration configuration for CATI or field-interviewer mode.
+ * When `enabled` is true, the designer exposes a dedicated Interviewer mode with entry/exit
+ * module builders and free-navigation preview.
+ */
+export interface InterviewerConfig {
+  enabled: boolean;
+  /** Allow the interviewer to jump to any question, bypassing routing logic. */
+  allowFreeNavigation: boolean;
+  /** ID of the SequenceConstruct with moduleKind='entry' (pre-interview validation). */
+  entryModuleRef?: string;
+  /** ID of the SequenceConstruct with moduleKind='exit' (post-interview housekeeping). */
+  exitModuleRef?: string;
 }
 
 export interface InstrumentMetadata {
@@ -250,4 +281,6 @@ export interface Instrument {
   prefillMappings: PrefillMapping[];
   /** Root control construct (always a sequence). */
   sequence: SequenceConstruct;
+  /** Optional interviewer-administration settings (CATI / field interviewer mode). */
+  interviewer?: InterviewerConfig;
 }
