@@ -234,6 +234,16 @@ export async function fetchAllInstruments(): Promise<InstrumentSummary[]> {
     }));
 }
 
+export async function fetchSurveyInstrument(surveyId: string): Promise<Instrument | null> {
+  const { data, error } = await sb()
+    .from('surveys')
+    .select('instrument_json')
+    .eq('id', surveyId)
+    .single();
+  if (error || !data) return null;
+  return (data as { instrument_json: Instrument }).instrument_json;
+}
+
 // ── Connectivity check ────────────────────────────────────────────────────────
 
 export async function pingApi(): Promise<boolean> {

@@ -32,6 +32,7 @@ import {
   designerLink,
   fetchAllInstruments,
   fetchResponses,
+  fetchSurveyInstrument,
   fetchSurveyParadata,
   listSurveys,
   pingApi,
@@ -88,7 +89,7 @@ const DEMO_SURVEYS: SurveySummary[] = [
 
 // ── Module definitions ────────────────────────────────────────────────────────
 
-type HubView = 'home' | 'collector' | 'searcher' | 'trainer' | 'migrator';
+type HubView = 'home' | 'collector' | 'searcher' | 'trainer' | 'migrator' | 'analyzer';
 
 interface ModuleDef {
   id: string;
@@ -264,6 +265,62 @@ function FieldCard({ field }: { field: FieldAnalysis }) {
             <span className="dash__bar-count">{count}</span>
           </div>
         ))}
+      </div>
+    </div>
+  );
+}
+
+// ── Question completion funnel ────────────────────────────────────────────────
+
+interface FunnelItem { id: string; varName: string; label: string; num: number; }
+
+function flattenQuestionsForFunnel(instrument: Instrument): FunnelItem[] {
+  const vars = new Map(instrument.variables.map((v) => [v.name, v]));
+  const results: FunnelItem[] = [];
+  let n = 0;
+  function walk(node: { type?: string; id?: string; variableRef?: string; children?: unknown[]; then?: unknown[]; else?: unknown[]; body?: unknown[] }) {
+    if (!node || typeof node !== 'object') return;
+    if (node.type === 'question') {
+      const variable = node.variableRef ? vars.get(node.variableRef) : undefined;
+      if (variable) {
+        n++;
+        const lbl = variable.label as Record<string, string> | undefined;
+        results.push({ id: node.id ?? '', varName: variable.name, num: n,
+          label: lbl ? (lbl.en ?? lbl.fr ?? Object.values(lbl)[0] ?? variable.name) : variable.name });
+      }
+    }
+    for (const arr of [node.children, node.then, node.else, node.body]) {
+      if (Array.isArray(arr)) for (const c of arr) walk(c as never);
+    }
+  }
+  walk(instrument.sequence as never);
+  return results;
+}
+
+function CompletionFunnel({ instrument, rows }: { instrument: Instrument; rows: ResponseRow[] }) {
+  const items = flattenQuestionsForFunnel(instrument);
+  if (items.length === 0 || rows.length === 0) return null;
+  const total = rows.length;
+  return (
+    <div className="dash__section">
+      <h4 className="dash__section-title">Question completion</h4>
+      <div className="dash__funnel">
+        {items.map((item) => {
+          const key = item.varName + '@';
+          const answered = rows.filter((r) => r.answersJson[key] !== undefined && r.answersJson[key] !== null && r.answersJson[key] !== '').length;
+          const pct = Math.round((answered / total) * 100);
+          const color = pct >= 80 ? '#22c55e' : pct >= 50 ? '#f59e0b' : '#ef4444';
+          return (
+            <div key={item.id} className="dash__funnel-row">
+              <span className="dash__funnel-num">Q{item.num}</span>
+              <span className="dash__funnel-label" title={item.label}>{item.label}</span>
+              <div className="dash__funnel-track">
+                <div className="dash__funnel-fill" style={{ width: `${pct}%`, background: color }} />
+              </div>
+              <span className="dash__funnel-pct" style={{ color }}>{pct}%</span>
+            </div>
+          );
+        })}
       </div>
     </div>
   );
@@ -457,11 +514,12 @@ function SubmissionRow({ row, events }: { row: ResponseRow; events: SurveyParada
 function CollectionDashboard({ surveyId }: { surveyId: string }) {
   const [rows, setRows] = useState<ResponseRow[] | null>(null);
   const [paradata, setParadata] = useState<SurveyParadataRow[] | null>(null);
+  const [instrument, setInstrument] = useState<Instrument | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    Promise.all([fetchResponses(surveyId), fetchSurveyParadata(surveyId)])
-      .then(([r, p]) => { setRows(r); setParadata(p); })
+    Promise.all([fetchResponses(surveyId), fetchSurveyParadata(surveyId), fetchSurveyInstrument(surveyId)])
+      .then(([r, p, inst]) => { setRows(r); setParadata(p); setInstrument(inst); })
       .catch(() => { setRows([]); setParadata([]); })
       .finally(() => setLoading(false));
   }, [surveyId]);
@@ -484,6 +542,27 @@ function CollectionDashboard({ surveyId }: { surveyId: string }) {
     if (!byRespondent.has(e.respondentId)) byRespondent.set(e.respondentId, []);
     byRespondent.get(e.respondentId)!.push(e);
   }
+
+  const exportResponsesCsv = () => {
+    if (!r.length) return;
+    const allKeys = new Set<string>();
+    for (const row of r) for (const k of Object.keys(row.answersJson)) allKeys.add(k);
+    const answerCols = [...allKeys].sort();
+    const header = ['respondent_id', 'submitted_at', 'duration_ms', 'completed', ...answerCols];
+    const csvRows = r.map((row) => [
+      row.respondentId, row.submittedAt, row.durationMs ?? '', String(row.completed),
+      ...answerCols.map((k) => row.answersJson[k] ?? ''),
+    ]);
+    const csv = [header, ...csvRows]
+      .map((row) => row.map((v) => `"${String(v).replace(/"/g, '""')}"`).join(','))
+      .join('\n');
+    const url = URL.createObjectURL(new Blob([csv], { type: 'text/csv' }));
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `responses-${surveyId}-${new Date().toISOString().slice(0, 10)}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
 
   const exportCSV = () => {
     if (!p.length) return;
@@ -522,6 +601,8 @@ function CollectionDashboard({ surveyId }: { surveyId: string }) {
 
       <ResponseChart rows={r} />
 
+      {instrument && <CompletionFunnel instrument={instrument} rows={r} />}
+
       {surveyId === 'demo' ? (
         <DemoAnalyzer rows={r} />
       ) : analyzerFields.length > 0 && (
@@ -536,10 +617,16 @@ function CollectionDashboard({ surveyId }: { surveyId: string }) {
       <div className="dash__section">
         <div className="dash__section-head">
           <h4 className="dash__section-title">Recent submissions</h4>
-          <button type="button" className="btn" style={{ fontSize: 12, padding: '4px 10px' }}
-            onClick={exportCSV} disabled={p.length === 0}>
-            ↓ Export paradata CSV
-          </button>
+          <div style={{ display: 'flex', gap: 6 }}>
+            <button type="button" className="btn" style={{ fontSize: 12, padding: '4px 10px' }}
+              onClick={exportResponsesCsv} disabled={r.length === 0}>
+              ↓ Responses CSV
+            </button>
+            <button type="button" className="btn" style={{ fontSize: 12, padding: '4px 10px' }}
+              onClick={exportCSV} disabled={p.length === 0}>
+              ↓ Paradata CSV
+            </button>
+          </div>
         </div>
         {total === 0 ? (
           <p className="dash__empty">No submissions yet.</p>
@@ -1463,6 +1550,58 @@ PART I: Employment
   );
 }
 
+// ── Analyzer view ─────────────────────────────────────────────────────────────
+
+function AnalyzerView({ onBack }: { onBack: () => void }) {
+  const [surveys, setSurveys] = useState<SurveySummary[] | null>(null);
+  const [selected, setSelected] = useState<string | null>(null);
+
+  useEffect(() => {
+    listSurveys()
+      .then((list) => {
+        setSurveys(list);
+        const first = list.find((s) => s.responseCount > 0) ?? list[0];
+        if (first) setSelected(first.id);
+      })
+      .catch(() => setSurveys([]));
+  }, []);
+
+  return (
+    <div className="hub">
+      <header className="hub__header">
+        <div className="hub__brand">
+          <button type="button" className="hub__back" onClick={onBack}>
+            <img src={logo} alt="Back to home" className="hub__back-logo" />
+          </button>
+          <strong>Analyzer</strong>
+          <span className="hub__sub">Response quality and completion metrics</span>
+        </div>
+      </header>
+      <main className="hub__main">
+        {surveys === null ? (
+          <p className="hub__loading">Loading surveys…</p>
+        ) : surveys.length === 0 ? (
+          <p className="hub__empty">No surveys found. Create and collect responses in the Collector first.</p>
+        ) : (
+          <>
+            <div className="analyzer__tabs" role="tablist">
+              {surveys.map((s) => (
+                <button key={s.id} type="button" role="tab" aria-selected={selected === s.id}
+                  className={`analyzer__tab${selected === s.id ? ' analyzer__tab--active' : ''}`}
+                  onClick={() => setSelected(s.id)}>
+                  <span className="analyzer__tab-title">{s.title}</span>
+                  <span className="analyzer__tab-count">{s.responseCount}</span>
+                </button>
+              ))}
+            </div>
+            {selected && <CollectionDashboard surveyId={selected} />}
+          </>
+        )}
+      </main>
+    </div>
+  );
+}
+
 // ── Training hub ──────────────────────────────────────────────────────────────
 
 interface TrainingResource {
@@ -1628,8 +1767,9 @@ function HomePage({ onNavigate }: { onNavigate: (v: HubView) => void }) {
       icon: <BarChart3 size={22} />,
       name: 'Analyzer',
       tagline: 'Charts and tables for your collected data',
-      description: 'Frequency distributions, cross-tabs, and charts built from live responses. Advanced analysis — regression, significance testing — on the roadmap.',
-      status: 'coming-soon',
+      description: 'Completion funnels, frequency distributions, and field-level charts built from live responses. Export responses or paradata as CSV.',
+      status: 'live',
+      action: () => onNavigate('analyzer'),
     },
     {
       id: 'tester',
@@ -1678,5 +1818,6 @@ export function App() {
   if (view === 'searcher') return <SearcherView onBack={() => setView('home')} />;
   if (view === 'trainer') return <TrainingView onBack={() => setView('home')} />;
   if (view === 'migrator') return <MigratorView onBack={() => setView('home')} />;
+  if (view === 'analyzer') return <AnalyzerView onBack={() => setView('home')} />;
   return <HomePage onNavigate={setView} />;
 }
