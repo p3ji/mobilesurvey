@@ -54,7 +54,12 @@
    - `aria-required`, `aria-invalid`, `aria-describedby` on all controls.
    - Grid radio `aria-label` (row + column). Directional arrows flip in RTL.
    - CSS: logical properties (`margin-inline-end`, `text-align: end`), RTL progress-fill, `aria-invalid` red border.
-8. **Phase 10 (planned):** Audit trail, PII redaction, on-prem / air-gapped deployment guide.
+8. **Phase 10 DONE (2026-06-29):** Audit trail, PII redaction, on-prem deployment guide.
+   - `Variable.isPII` flag in schema + Zod; `redactResponses()` / `piiVariableNames()` utilities.
+   - Hub Analyzer: "↓ Redacted CSV" export; `logAudit()` fire-and-forget to Supabase `audit_log`.
+   - Hub events audited: survey.create, survey.publish/unpublish, survey.delete, responses.export.
+   - `audit_log` table in local SQLite (`apps/api/src/db.ts`) + Supabase SQL in `apps/hub/src/audit.ts`.
+   - `DEPLOYMENT.md`: full on-prem guide (local SQLite API, nginx, Docker Compose, env vars).
 9. **Phase 11 (planned):** Interviewer Mode GA — CATI workflow, supervisor dashboard, call-back scheduling.
 
 ## Conventions & gotchas
@@ -99,7 +104,7 @@ The agent uses this table to route updates to the correct files.
 - **Decision (2026-06-26):** Evaluated a Netlify migration; deferred. Would require a base-path env var (current Vite configs hard-code `/mobilesurvey/`) plus SPA redirect rules. Staying on GitHub Pages.
 - **Decision (2026-06-28):** Enterprise adoption phased roadmap adopted (Phases 7–11). Keystone gap was no DDI-XML round-trip; `@mobilesurvey/ddi-xml` (Phase 7 first deliverable) addresses this — government statistical agency client repos are DDI-XML; tool now reads/writes without information loss. See Phase status above for remaining Phase 7 items.
 - Phase 7 remaining: paradata RLS policy (Supabase dashboard), versioned API (`/api/v1/` prefix).
-- **Decision (2026-06-29):** Phase 8 and 9 complete. Next: Phase 10 (audit trail + PII redaction) or Phase 11 (Interviewer Mode GA).
+- **Decision (2026-06-29):** Phases 8, 9, and 10 complete. Next: Phase 11 (Interviewer Mode GA).
 
 ## Do NOT
 - Commit secrets (`.env`) or large build artifacts.
