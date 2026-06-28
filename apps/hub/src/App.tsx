@@ -1601,6 +1601,14 @@ function HomePage({ onNavigate }: { onNavigate: (v: HubView) => void }) {
       status: 'coming-soon',
     },
     {
+      id: 'tester',
+      icon: '🤖',
+      name: 'Questionnaire Tester',
+      tagline: 'Automated end-to-end testing for any web questionnaire',
+      description: 'Walks every flow path automatically — clicking radio buttons, dropdowns, checkboxes, and searchable fields — and produces a report of typos, dead-end flows, routing errors, and differences between the designed instrument and the rendered questionnaire. Works with any web-based survey, not just this platform.',
+      status: 'coming-soon',
+    },
+    {
       id: 'trainer',
       icon: '🎓',
       name: 'Training Hub',

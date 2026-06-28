@@ -1,0 +1,25 @@
+{
+  "name": "@mobilesurvey/questionnaire-bot",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Automated questionnaire testing bot: path enumeration, answer generation, browser driving, assertion, and reporting.",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@mobilesurvey/expression-engine": "workspace:*",
+    "@mobilesurvey/instrument-schema": "workspace:*",
+    "@mobilesurvey/runtime-engine": "workspace:*"
+  },
+  "devDependencies": {
+    "typescript": "^5.6.3",
+    "vitest": "^3.2.6"
+  }
+}
