@@ -79,6 +79,9 @@ export interface Variable {
   compute?: Expression;
   /** When true, this variable is suppressed in self-administered mode and shown only to interviewers. */
   interviewerOnly?: boolean;
+  /** When true, any collected value is considered personally identifiable information (PII)
+   *  and must be redacted before sharing or exporting. */
+  isPII?: boolean;
 }
 
 /**

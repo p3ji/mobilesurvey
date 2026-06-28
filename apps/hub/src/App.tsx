@@ -15,7 +15,7 @@ import {
   PenLine,
 } from 'lucide-react';
 import logo from './assets/logo.png';
-import { blankInstrument, lfsInstrument, demoInstrument, BUNDLED_SURVEYS, type Instrument } from '@mobilesurvey/instrument-schema';
+import { blankInstrument, lfsInstrument, demoInstrument, BUNDLED_SURVEYS, redactResponses, piiVariableNames, type Instrument } from '@mobilesurvey/instrument-schema';
 import { migrate, type MigrateResult } from '@mobilesurvey/questionnaire-migrator';
 import {
   buildCatalog,
@@ -44,6 +44,7 @@ import {
   type SurveyParadataRow,
   type SurveySummary,
 } from './api.js';
+import { logAudit } from './audit.js';
 
 // ── helpers ───────────────────────────────────────────────────────────────────
 
@@ -543,25 +544,49 @@ function CollectionDashboard({ surveyId }: { surveyId: string }) {
     byRespondent.get(e.respondentId)!.push(e);
   }
 
-  const exportResponsesCsv = () => {
-    if (!r.length) return;
+  const buildResponsesCsv = (rowsToExport: ResponseRow[]) => {
     const allKeys = new Set<string>();
-    for (const row of r) for (const k of Object.keys(row.answersJson)) allKeys.add(k);
+    for (const row of rowsToExport) for (const k of Object.keys(row.answersJson)) allKeys.add(k);
     const answerCols = [...allKeys].sort();
     const header = ['respondent_id', 'submitted_at', 'duration_ms', 'completed', ...answerCols];
-    const csvRows = r.map((row) => [
+    const csvRows = rowsToExport.map((row) => [
       row.respondentId, row.submittedAt, row.durationMs ?? '', String(row.completed),
       ...answerCols.map((k) => row.answersJson[k] ?? ''),
     ]);
-    const csv = [header, ...csvRows]
+    return [header, ...csvRows]
       .map((row) => row.map((v) => `"${String(v).replace(/"/g, '""')}"`).join(','))
       .join('\n');
+  };
+
+  const exportResponsesCsv = () => {
+    if (!r.length) return;
+    const csv = buildResponsesCsv(r);
     const url = URL.createObjectURL(new Blob([csv], { type: 'text/csv' }));
     const a = document.createElement('a');
     a.href = url;
     a.download = `responses-${surveyId}-${new Date().toISOString().slice(0, 10)}.csv`;
     a.click();
     URL.revokeObjectURL(url);
+    logAudit('responses.export', 'responses', surveyId, { count: r.length });
+  };
+
+  const exportRedactedCsv = () => {
+    if (!r.length || !instrument) return;
+    const redacted = r.map((row) => ({
+      ...row,
+      answersJson: redactResponses(row.answersJson, instrument),
+    }));
+    const csv = buildResponsesCsv(redacted);
+    const url = URL.createObjectURL(new Blob([csv], { type: 'text/csv' }));
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `responses-${surveyId}-redacted-${new Date().toISOString().slice(0, 10)}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+    logAudit('responses.export_redacted', 'responses', surveyId, {
+      count: r.length,
+      piiFields: [...piiVariableNames(instrument)],
+    });
   };
 
   const exportCSV = () => {
@@ -623,6 +648,11 @@ function CollectionDashboard({ surveyId }: { surveyId: string }) {
               ↓ Responses CSV
             </button>
             <button type="button" className="btn" style={{ fontSize: 12, padding: '4px 10px' }}
+              title="Replace PII-tagged variable values with [REDACTED]"
+              onClick={exportRedactedCsv} disabled={r.length === 0 || !instrument}>
+              ↓ Redacted CSV
+            </button>
+            <button type="button" className="btn" style={{ fontSize: 12, padding: '4px 10px' }}
               onClick={exportCSV} disabled={p.length === 0}>
               ↓ Paradata CSV
             </button>
@@ -662,8 +692,12 @@ function SurveyCard({
 
   const patch = async (config: Parameters<typeof setSurveyConfig>[1]) => {
     setBusy(true);
-    try { await setSurveyConfig(survey.id, config); onChange(); }
-    finally { setBusy(false); }
+    try {
+      await setSurveyConfig(survey.id, config);
+      if (config.status === 'published') logAudit('survey.publish', 'survey', survey.id);
+      else if (config.status === 'draft') logAudit('survey.unpublish', 'survey', survey.id);
+      onChange();
+    } finally { setBusy(false); }
   };
 
   const copyLink = () => {
@@ -676,8 +710,11 @@ function SurveyCard({
   const remove = async () => {
     if (!confirm(`Delete "${survey.title}"? This cannot be undone.`)) return;
     setBusy(true);
-    try { await deleteSurvey(survey.id); onChange(); }
-    finally { setBusy(false); }
+    try {
+      await deleteSurvey(survey.id);
+      logAudit('survey.delete', 'survey', survey.id, { title: survey.title });
+      onChange();
+    } finally { setBusy(false); }
   };
 
   return (
@@ -790,6 +827,7 @@ function CollectorView({ onBack }: { onBack: () => void }) {
     setCreating(true);
     try {
       const id = await createSurvey(title, blankInstrument(title));
+      logAudit('survey.create', 'survey', id, { title });
       window.open(designerLink(id), '_blank', 'noopener');
       await refresh();
     } catch {
@@ -1265,6 +1303,7 @@ function MigratorView({ onBack }: { onBack: () => void }) {
         },
       };
       const id = await createSurvey(finalTitle, updatedInstrument);
+      logAudit('survey.create', 'survey', id, { title: finalTitle, source: 'migrator' });
       setSaveState('done');
       window.open(designerLink(id), '_blank', 'noopener');
     } catch {

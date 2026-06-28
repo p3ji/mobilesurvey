@@ -14,6 +14,16 @@ import { mkdirSync } from 'node:fs';
 import { dirname } from 'node:path';
 import { randomUUID } from 'node:crypto';
 
+export interface AuditRow {
+  id: number;
+  ts: number;
+  actor: string;
+  action: string;
+  entityType: string;
+  entityId: string | null;
+  payload: unknown;
+}
+
 export interface CaseRow {
   id: string;
   fields: Record<string, unknown>;
@@ -83,6 +93,15 @@ export class Store {
         session_key TEXT,
         ts INTEGER NOT NULL,
         type TEXT NOT NULL,
+        payload_json TEXT
+      );
+      CREATE TABLE IF NOT EXISTS audit_log (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        ts INTEGER NOT NULL,
+        actor TEXT NOT NULL DEFAULT 'anon',
+        action TEXT NOT NULL,
+        entity_type TEXT NOT NULL,
+        entity_id TEXT,
         payload_json TEXT
       );
       CREATE TABLE IF NOT EXISTS surveys (
@@ -289,6 +308,51 @@ export class Store {
   }
 
   // ── Seed ────────────────────────────────────────────────────────────────────
+
+  // ── Audit log ───────────────────────────────────────────────────────────────
+
+  logAudit(
+    action: string,
+    entityType: string,
+    entityId: string | null,
+    payload?: unknown,
+    actor = 'anon',
+  ): void {
+    this.db
+      .prepare(
+        `INSERT INTO audit_log (ts, actor, action, entity_type, entity_id, payload_json)
+         VALUES (?, ?, ?, ?, ?, ?)`,
+      )
+      .run(Date.now(), actor, action, entityType, entityId, payload ? JSON.stringify(payload) : null);
+  }
+
+  listAuditLog(opts?: { entityId?: string; limit?: number }): AuditRow[] {
+    const limit = opts?.limit ?? 200;
+    const rows = opts?.entityId
+      ? (this.db
+          .prepare(
+            `SELECT * FROM audit_log WHERE entity_id = ? ORDER BY ts DESC LIMIT ?`,
+          )
+          .all(opts.entityId, limit) as Array<{
+            id: number; ts: number; actor: string; action: string;
+            entity_type: string; entity_id: string | null; payload_json: string | null;
+          }>)
+      : (this.db
+          .prepare(`SELECT * FROM audit_log ORDER BY ts DESC LIMIT ?`)
+          .all(limit) as Array<{
+            id: number; ts: number; actor: string; action: string;
+            entity_type: string; entity_id: string | null; payload_json: string | null;
+          }>);
+    return rows.map((r) => ({
+      id: r.id,
+      ts: r.ts,
+      actor: r.actor,
+      action: r.action,
+      entityType: r.entity_type,
+      entityId: r.entity_id,
+      payload: r.payload_json ? JSON.parse(r.payload_json) : null,
+    }));
+  }
 
   /** Seed demo cases + access codes if the table is empty (idempotent). */
   seed(): void {

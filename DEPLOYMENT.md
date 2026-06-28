@@ -1,0 +1,205 @@
+# mobilesurvey — On-premises / Air-gapped Deployment
+
+This guide explains how to run the full mobilesurvey stack locally or in an air-gapped environment **without Supabase**. The local backend is a lightweight Hono + Node.js server backed by SQLite (`node:sqlite`, no native binaries required).
+
+## Prerequisites
+
+| Tool | Version |
+|------|---------|
+| Node.js | 20 LTS or 22+ |
+| pnpm | 9.x (`npm i -g pnpm@9`) |
+
+No Docker required for a single-machine setup. A Docker Compose option is provided at the end for containerised deployments.
+
+---
+
+## 1. Clone & install
+
+```bash
+git clone https://github.com/p3ji/mobilesurvey.git
+cd mobilesurvey
+pnpm install
+```
+
+---
+
+## 2. Start the local API (SQLite backend)
+
+```bash
+pnpm --filter @mobilesurvey/api dev
+# Listens on http://localhost:8787
+```
+
+The API auto-creates a SQLite database at `apps/api/data/survey.db` on first run. It seeds demo access codes (ABC123 / DEF456) and serves all four REST resources: `/surveys`, `/sessions`, `/paradata`, `/responses`.
+
+**Schema tables created automatically:**
+- `surveys` — instrument JSON + config
+- `cases` / `access_codes` — respondent case list + authentication
+- `sessions` — resumable runtime state
+- `paradata` — append-only respondent behaviour log
+- `audit_log` — hub action trail (create/publish/delete/export)
+
+---
+
+## 3. Configure the apps to use the local API
+
+By default each app auto-detects localhost and falls back to the local API when `VITE_SUPABASE_URL` is unset. No configuration is needed if you are running on `localhost`.
+
+For a non-localhost server (e.g. a VM at `192.168.1.100`), create `.env.local` files:
+
+**`apps/hub/.env.local`**
+```
+VITE_DESIGNER_URL=http://192.168.1.100:5173
+VITE_RUNTIME_URL=http://192.168.1.100:5174
+# Leave VITE_SUPABASE_URL unset to force the local API
+```
+
+**`apps/runtime/.env.local`** and **`apps/designer/.env.local`**
+```
+# No Supabase vars → runtime falls back to http://localhost:8787
+```
+
+---
+
+## 4. Start the apps
+
+In separate terminals (or use a process manager):
+
+```bash
+# Hub (survey management) — http://localhost:5175
+pnpm --filter @mobilesurvey/hub dev
+
+# Designer (questionnaire authoring) — http://localhost:5173
+pnpm --filter @mobilesurvey/designer dev
+
+# Runtime (respondent app) — http://localhost:5174
+pnpm --filter @mobilesurvey/runtime dev
+```
+
+---
+
+## 5. Production build (self-hosted static)
+
+```bash
+pnpm build
+```
+
+Outputs:
+- `apps/hub/dist/` — hub SPA
+- `apps/designer/dist/` — designer SPA
+- `apps/runtime/dist/` — runtime SPA
+
+Serve the three `dist/` directories with any static file server (nginx, Caddy, `serve`). The API must be accessible at the configured URL.
+
+**nginx example** (single host, `/mobilesurvey/` base):
+
+```nginx
+server {
+  listen 80;
+  server_name survey.internal;
+
+  location /mobilesurvey/ {
+    root /var/www/hub/dist;
+    try_files $uri $uri/ /index.html;
+  }
+  location /mobilesurvey/designer/ {
+    root /var/www/designer/dist;
+    try_files $uri $uri/ /index.html;
+  }
+  location /mobilesurvey/respondent/ {
+    root /var/www/runtime/dist;
+    try_files $uri $uri/ /index.html;
+  }
+  location /api/ {
+    proxy_pass http://127.0.0.1:8787/;
+  }
+}
+```
+
+---
+
+## 6. PII & data isolation
+
+Variables tagged `isPII: true` in the instrument schema are redacted in the **Redacted CSV** export (hub Analyzer → "↓ Redacted CSV"). Raw exports include all values.
+
+To permanently strip PII from a SQLite database before sharing:
+
+```bash
+sqlite3 apps/api/data/survey.db \
+  "UPDATE responses SET answers_json = json_patch(answers_json, '{}')"
+```
+
+(Replace with a targeted SQL update for specific variable keys in production.)
+
+---
+
+## 7. Audit trail
+
+Every hub action (survey create / publish / unpublish / delete, responses export) writes a row to `audit_log`. Query it:
+
+```bash
+sqlite3 apps/api/data/survey.db \
+  "SELECT datetime(ts/1000,'unixepoch'), actor, action, entity_id FROM audit_log ORDER BY ts DESC LIMIT 50"
+```
+
+---
+
+## 8. Docker Compose (optional)
+
+```yaml
+# docker-compose.yml
+services:
+  api:
+    image: node:22-alpine
+    working_dir: /app
+    volumes:
+      - .:/app
+      - survey-data:/app/apps/api/data
+    command: sh -c "npm i -g pnpm@9 && pnpm install && pnpm --filter @mobilesurvey/api dev"
+    ports:
+      - "8787:8787"
+
+  hub:
+    image: node:22-alpine
+    working_dir: /app
+    volumes:
+      - .:/app
+    command: sh -c "pnpm --filter @mobilesurvey/hub dev --host"
+    ports:
+      - "5175:5175"
+    depends_on: [api]
+
+  designer:
+    image: node:22-alpine
+    working_dir: /app
+    volumes:
+      - .:/app
+    command: sh -c "pnpm --filter @mobilesurvey/designer dev --host"
+    ports:
+      - "5173:5173"
+
+  runtime:
+    image: node:22-alpine
+    working_dir: /app
+    volumes:
+      - .:/app
+    command: sh -c "pnpm --filter @mobilesurvey/runtime dev --host"
+    ports:
+      - "5174:5174"
+
+volumes:
+  survey-data:
+```
+
+```bash
+docker compose up
+```
+
+---
+
+## Security notes
+
+- The public Supabase `anon` key in the bundle is a **publishable key** — it is safe to expose but grants only the permissions defined by Row Level Security (RLS) policies.
+- For air-gapped deployments the local SQLite backend uses no network calls. All data stays on-disk in `apps/api/data/`.
+- Never set `VITE_SUPABASE_URL` and point it to a `service_role` key.
+- The `audit_log` table records who did what but does not enforce authentication — add network-level access controls (VPN, firewall rules) for sensitive deployments.
