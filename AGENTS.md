@@ -43,11 +43,11 @@
    - ✓ Designer Interviewer (AI-assisted interview flow for building questionnaires)
    - NOT DONE: searchable/collapsible tree for 100+ question surveys
 4. **Phase 6 remaining:** searchable/collapsible tree for 100+ question surveys — DONE (committed to main).
-5. **Phase 7 PARTIALLY DONE (2026-06-28):**
+5. **Phase 7 DONE (2026-06-29):**
    - ✓ `@mobilesurvey/ddi-xml` — DDI-L 3.3 round-trip codec; 18 tests; wired into Designer toolbar.
    - ✓ Analyzer view in hub (completion funnel, response CSV export).
-   - NOT DONE: paradata RLS policy (Supabase dashboard config — anon INSERT blocked; see Open Bugs).
-   - NOT DONE: versioned API contract (`/api/v1/` prefix + deprecation headers).
+   - ✓ Versioned API contract: canonical `/api/v1/*`; deprecated `/api/*` alias adds `Deprecation`, `X-API-Version`, `Link`, and `Sunset` headers. Sunset: 2027-01-01.
+   - ✓ Paradata RLS policy SQL documented in `DEPLOYMENT.md` §9 — apply once in Supabase dashboard to unblock anon INSERT on `paradata` (see Open Bugs for status).
 6. **Phase 8 DONE (2026-06-29):** Expression engine coverage (50 tests: `len`, `contains`, `upper`/`lower`, `abs`/`round`/`floor`/`ceil`, `min`/`max`, `/`, `%`, `null`, nested calls). 1000-question `flattenInstrument` benchmark (< 200 ms). All 152 tests pass.
 7. **Phase 9 DONE (2026-06-29):** WCAG 2.1 AA + RTL in `apps/runtime`:
    - Skip-to-main-content link; `document.lang`+`dir` synced to locale.
@@ -99,7 +99,7 @@ The agent uses this table to route updates to the correct files.
 ## Open Bugs
 *(Log bugs here as discovered; mark resolved with date)*
 - **(2026-06-26, RESOLVED)** Server-side **session persistence + resume was completely broken** for every collecting survey. The session key was built from `instrument.id` (the DDI urn, e.g. `urn:ddi:mobilesurvey:demo:1.0`), so `sessions.survey_id`/`paradata.survey_id` got the urn — but `surveys.id` is the short alias (`demo`), so the FK failed (`POST /sessions` → 409). Responses survived only because `submitResponse` used the alias. Fix: the runtime session key now uses the survey alias (`surveys.id`); verified — `sessions` now persists with `survey_id='demo'` and resume works.
-- **(2026-06-26, OPEN — config, not code)** **Paradata is never collected in prod:** anon `INSERT` on the `paradata` table is blocked by RLS (`POST /paradata` → 401), while `responses` is allowed. The keying is now correct, so paradata will flow once an anon-insert policy is added (Supabase dashboard). Blocks the Phase 7 analytics/paradata view until fixed.
+- **(2026-06-26, DOCUMENTED 2026-06-29 — requires Supabase dashboard action)** **Paradata never collected in prod:** anon `INSERT` on `paradata` blocked by RLS. SQL fix documented in `DEPLOYMENT.md` §9. Apply once in Supabase Dashboard → SQL Editor to resolve. Code is correct; only the dashboard policy is missing.
 - **(2026-06-26, RESOLVED)** `lfs` (Household & Employment) was seeded into Supabase by the hub + runtime and collected real responses — contradicting the intent (and on-screen copy) that only the Feature Demo survey collects data. Root cause: seeding/persistence ignored the exploration-only flag. Fix: all bundled-survey persistence now routes through a `collectsData` registry in `packages/instrument-schema`; exploration-only surveys run entirely on local mocks (verified — no responses/sessions/paradata writes). The stale `lfs` row left in Supabase is inert (a deliberate test case; nothing writes to it).
 
 ## Pending Features / Decisions
@@ -109,7 +109,7 @@ The agent uses this table to route updates to the correct files.
 - **Decision (2026-06-26):** Only the Feature Demo survey (`demo`) connects to live collection; Household & Employment (`lfs`) is exploration-only and must never touch Supabase. Enforced via a `collectsData` flag in the instrument-schema bundled-survey registry.
 - **Decision (2026-06-26):** Evaluated a Netlify migration; deferred. Would require a base-path env var (current Vite configs hard-code `/mobilesurvey/`) plus SPA redirect rules. Staying on GitHub Pages.
 - **Decision (2026-06-28):** Enterprise adoption phased roadmap adopted (Phases 7–11). Keystone gap was no DDI-XML round-trip; `@mobilesurvey/ddi-xml` (Phase 7 first deliverable) addresses this — government statistical agency client repos are DDI-XML; tool now reads/writes without information loss. See Phase status above for remaining Phase 7 items.
-- Phase 7 remaining: paradata RLS policy (Supabase dashboard), versioned API (`/api/v1/` prefix).
+- Phase 7 fully resolved 2026-06-29: versioned API shipped; paradata RLS SQL documented in DEPLOYMENT.md §9 (requires one Supabase dashboard SQL run).
 - **Decision (2026-06-29):** Phases 8, 9, and 10 complete. Next: Phase 11 (Interviewer Mode GA).
 - **Decision (2026-06-29):** Phase 11 complete. CATI is an on-prem/local-API feature — no Supabase schema required. Hub CATI views fall back to the local Hono API (http://localhost:8787). 169 tests pass.
 
