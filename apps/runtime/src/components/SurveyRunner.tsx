@@ -34,10 +34,12 @@ function lbl(intl: Record<string, string> | undefined, lang: string): string {
   return intl[lang] ?? Object.values(intl)[0] ?? '';
 }
 
-function EditList({ edits }: { edits: FiredEdit[] }) {
+const RTL_LANGS = new Set(['ar', 'he', 'fa', 'ur']);
+
+function EditList({ edits, id }: { edits: FiredEdit[]; id?: string }) {
   if (!edits.length) return null;
   return (
-    <ul className="eq__edits">
+    <ul id={id} className="eq__edits">
       {edits.map((e) => (
         <li
           key={e.id}
@@ -58,6 +60,9 @@ function Control({
   value,
   instrument,
   lang,
+  required,
+  hasError,
+  errorId,
   onChange,
 }: {
   domain: Exclude<ResponseDomain, { type: 'markAll' }>;
@@ -65,8 +70,17 @@ function Control({
   value: unknown;
   instrument: Instrument;
   lang: string;
+  required?: boolean;
+  hasError?: boolean;
+  errorId?: string;
   onChange: (v: unknown) => void;
 }) {
+  const ariaProps = {
+    'aria-required': required || undefined,
+    'aria-invalid': hasError || undefined,
+    'aria-describedby': hasError && errorId ? errorId : undefined,
+  };
+
   switch (domain.type) {
     case 'numeric':
       return (
@@ -77,6 +91,7 @@ function Control({
           value={value === undefined || value === null ? '' : String(value)}
           min={domain.min}
           max={domain.max}
+          {...ariaProps}
           onChange={(e) => onChange(e.target.value === '' ? undefined : Number(e.target.value))}
         />
       );
@@ -86,6 +101,7 @@ function Control({
           id={inputId}
           rows={3}
           value={(value as string) ?? ''}
+          {...ariaProps}
           onChange={(e) => onChange(e.target.value)}
         />
       ) : (
@@ -94,12 +110,20 @@ function Control({
           type="text"
           maxLength={domain.maxLength}
           value={(value as string) ?? ''}
+          {...ariaProps}
           onChange={(e) => onChange(e.target.value)}
         />
       );
     case 'boolean':
       return (
-        <div className="eq__radios" role="radiogroup" aria-labelledby={inputId}>
+        <div
+          className="eq__radios"
+          role="radiogroup"
+          aria-labelledby={inputId}
+          aria-required={required || undefined}
+          aria-invalid={hasError || undefined}
+          aria-describedby={hasError && errorId ? errorId : undefined}
+        >
           {[
             { v: true, l: lang === 'fr' ? 'Oui' : 'Yes' },
             { v: false, l: lang === 'fr' ? 'Non' : 'No' },
@@ -122,6 +146,7 @@ function Control({
           id={inputId}
           type={domain.mode === 'datetime' ? 'datetime-local' : domain.mode}
           value={(value as string) ?? ''}
+          {...ariaProps}
           onChange={(e) => onChange(e.target.value)}
         />
       );
@@ -131,6 +156,7 @@ function Control({
           id={inputId}
           type="file"
           accept={domain.accept?.join(',')}
+          {...ariaProps}
           onChange={() => onChange('(file selected)')}
         />
       );
@@ -143,8 +169,9 @@ function Control({
             id={inputId}
             list={listId}
             value={(value as string) ?? ''}
-            onChange={(e) => onChange(e.target.value)}
             placeholder={lang === 'fr' ? 'Rechercher…' : 'Search…'}
+            {...ariaProps}
+            onChange={(e) => onChange(e.target.value)}
           />
           <datalist id={listId}>
             {opts.map((c) => (
@@ -159,7 +186,14 @@ function Control({
       if (domain.selection === 'multiple') {
         const arr = Array.isArray(value) ? (value as string[]) : [];
         return (
-          <div className="eq__radios" role="group" aria-labelledby={inputId}>
+          <div
+            className="eq__radios"
+            role="group"
+            aria-labelledby={inputId}
+            aria-required={required || undefined}
+            aria-invalid={hasError || undefined}
+            aria-describedby={hasError && errorId ? errorId : undefined}
+          >
             {opts.map((c) => (
               <label key={c.code} className="eq__radio">
                 <input
@@ -176,7 +210,14 @@ function Control({
         );
       }
       return (
-        <div className="eq__radios" role="radiogroup" aria-labelledby={inputId}>
+        <div
+          className="eq__radios"
+          role="radiogroup"
+          aria-labelledby={inputId}
+          aria-required={required || undefined}
+          aria-invalid={hasError || undefined}
+          aria-describedby={hasError && errorId ? errorId : undefined}
+        >
           {opts.map((c) => (
             <label key={c.code} className="eq__radio">
               <input
@@ -229,9 +270,19 @@ export function SurveyRunner({
   });
 
   const lang = snapshot.context.state.language;
+  const dir = RTL_LANGS.has(lang) ? 'rtl' : 'ltr';
   const [currentPage, setCurrentPage] = useState(initialPage);
   const [showSaved, setShowSaved] = useState(false);
   const contentRef = useRef<HTMLDivElement>(null);
+
+  // Keep the document language and direction in sync with the active locale.
+  useEffect(() => {
+    document.documentElement.lang = lang;
+    document.documentElement.dir = dir;
+    return () => {
+      document.documentElement.removeAttribute('dir');
+    };
+  }, [lang, dir]);
 
   const result = useMemo(
     () => flattenInstrument(instrument, snapshot.context.state),
@@ -280,6 +331,7 @@ export function SurveyRunner({
   const progress = pages.length > 1 ? (currentPage / Math.max(pages.length - 1, 1)) * 100 : 100;
 
   const scrollTop = () => contentRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
+  const focusContent = () => contentRef.current?.focus();
 
   const handleNext = () => {
     if (blocked) return;
@@ -290,6 +342,7 @@ export function SurveyRunner({
       paradata.emit({ ts: Date.now(), type: 'page_next', payload: { from: currentPage } });
       setCurrentPage((p) => p + 1);
       scrollTop();
+      focusContent();
     }
   };
 
@@ -297,6 +350,7 @@ export function SurveyRunner({
     paradata.emit({ ts: Date.now(), type: 'page_back', payload: { from: currentPage } });
     setCurrentPage((p) => Math.max(0, p - 1));
     scrollTop();
+    focusContent();
   };
 
   const answer = (instanceKey: string, value: unknown) => {
@@ -305,7 +359,7 @@ export function SurveyRunner({
   };
 
   return (
-    <div className="eq">
+    <div className="eq" dir={dir}>
       <header className="eq__header">
         <span className="eq__title">{pick(instrument.metadata.title, lang)}</span>
         {showSaved ? <span className="eq__saved">✓ Saved</span> : null}
@@ -354,7 +408,7 @@ export function SurveyRunner({
         </div>
       )}
 
-      <div className="eq__content" ref={contentRef}>
+      <div id="eq-main" className="eq__content" ref={contentRef} tabIndex={-1}>
         <form onSubmit={(e) => e.preventDefault()}>
           {numberedPageItems.map(({ item, qNum }) => {
             if (item.kind === 'pageBreak') {
@@ -386,6 +440,8 @@ export function SurveyRunner({
               );
             }
             if (item.kind === 'markAll') {
+              const markAllHardEdit = item.firedEdits.some((e) => e.type === 'hard');
+              const markAllErrId = markAllHardEdit ? `${item.key}-err` : undefined;
               return (
                 <div key={item.key} className="eq__question">
                   <p className="eq__q-text">
@@ -393,7 +449,13 @@ export function SurveyRunner({
                     {item.questionText}
                   </p>
                   {item.instruction && <p className="eq__instruction">{item.instruction}</p>}
-                  <div className="eq__radios" role="group" aria-label={item.questionText}>
+                  <div
+                    className="eq__radios"
+                    role="group"
+                    aria-label={item.questionText}
+                    aria-invalid={markAllHardEdit || undefined}
+                    aria-describedby={markAllErrId}
+                  >
                     {item.categories.map((cat) => (
                       <label key={cat.code} className="eq__radio">
                         <input
@@ -405,12 +467,14 @@ export function SurveyRunner({
                       </label>
                     ))}
                   </div>
-                  <EditList edits={item.firedEdits} />
+                  <EditList edits={item.firedEdits} id={markAllErrId} />
                 </div>
               );
             }
 
             if (item.kind === 'grid') {
+              const gridHardEdit = item.firedEdits.some((e) => e.type === 'hard');
+              const gridErrId = gridHardEdit ? `${item.key}-err` : undefined;
               return (
                 <div key={item.key} className="eq__question">
                   <p className="eq__q-text">
@@ -418,7 +482,11 @@ export function SurveyRunner({
                     {item.questionText}
                   </p>
                   {item.instruction && <p className="eq__instruction">{item.instruction}</p>}
-                  <div className="eq__grid-wrapper">
+                  <div
+                    className="eq__grid-wrapper"
+                    aria-invalid={gridHardEdit || undefined}
+                    aria-describedby={gridErrId}
+                  >
                     <table className="eq__grid">
                       <thead>
                         <tr>
@@ -437,6 +505,7 @@ export function SurveyRunner({
                                 <input
                                   type="radio"
                                   name={`${item.key}-${row.code}`}
+                                  aria-label={`${row.label}: ${col.label}`}
                                   checked={row.value === col.code}
                                   onChange={() => answer(row.instanceKey, col.code)}
                                 />
@@ -447,7 +516,7 @@ export function SurveyRunner({
                       </tbody>
                     </table>
                   </div>
-                  <EditList edits={item.firedEdits} />
+                  <EditList edits={item.firedEdits} id={gridErrId} />
                 </div>
               );
             }
@@ -456,6 +525,8 @@ export function SurveyRunner({
             const isGroupDomain =
               item.construct.responseDomain.type === 'code' ||
               item.construct.responseDomain.type === 'boolean';
+            const hasHardEdit = item.firedEdits.some((e) => e.type === 'hard');
+            const errId = hasHardEdit ? `${inputId}-err` : undefined;
             return (
               <div key={item.key} className="eq__question">
                 <label
@@ -484,9 +555,12 @@ export function SurveyRunner({
                   value={item.value}
                   instrument={instrument}
                   lang={lang}
+                  required={item.construct.required}
+                  hasError={hasHardEdit}
+                  errorId={errId}
                   onChange={(v) => answer(item.instanceKey, v)}
                 />
-                <EditList edits={item.firedEdits} />
+                <EditList edits={item.firedEdits} id={errId} />
               </div>
             );
           })}
@@ -500,7 +574,7 @@ export function SurveyRunner({
           disabled={currentPage === 0}
           onClick={handleBack}
         >
-          ← {lang === 'fr' ? 'Retour' : 'Back'}
+          {dir === 'rtl' ? '→' : '←'} {lang === 'fr' ? 'Retour' : 'Back'}
         </button>
 
         {blocked ? (
@@ -522,8 +596,8 @@ export function SurveyRunner({
               ? 'Soumettre ✓'
               : 'Submit ✓'
             : lang === 'fr'
-              ? 'Suivant →'
-              : 'Next →'}
+              ? `Suivant ${dir === 'rtl' ? '←' : '→'}`
+              : `Next ${dir === 'rtl' ? '←' : '→'}`}
         </button>
       </footer>
     </div>

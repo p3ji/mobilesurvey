@@ -266,14 +266,14 @@ textarea {
   font-weight: 600;
   color: var(--brand);
   min-width: 36px;
-  text-align: right;
+  text-align: end;
 }
 .eq__q-num {
   display: inline-block;
   min-width: 2.4em;
   font-weight: 700;
   color: var(--brand);
-  margin-right: 6px;
+  margin-inline-end: 6px;
   font-variant-numeric: tabular-nums;
 }
 .eq__content {
@@ -574,4 +574,35 @@ textarea {
   background: var(--brand);
   color: var(--brand-ink);
   border-color: var(--brand);
+}
+
+/* ── Skip link (WCAG 2.1 AA) ─────────────────────────────────────────────── */
+.skip-link {
+  position: absolute;
+  inset-block-start: -40px;
+  inset-inline-start: 0;
+  background: var(--brand);
+  color: var(--brand-ink);
+  padding: 8px 16px;
+  z-index: 1000;
+  border-radius: 0 0 var(--radius) var(--radius);
+  text-decoration: none;
+  font-weight: 600;
+  transition: inset-block-start 0.1s;
+}
+.skip-link:focus {
+  inset-block-start: 0;
+}
+
+/* ── aria-invalid styling ────────────────────────────────────────────────── */
+input[aria-invalid="true"],
+textarea[aria-invalid="true"],
+select[aria-invalid="true"] {
+  border-color: var(--danger);
+  outline-color: var(--danger);
+}
+
+/* ── RTL overrides ───────────────────────────────────────────────────────── */
+[dir="rtl"] .eq__progress-fill {
+  border-radius: 4px 0 0 4px;
 }
