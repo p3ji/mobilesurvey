@@ -11,6 +11,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@mobilesurvey/ddi-xml": "workspace:*",
     "@mobilesurvey/expression-engine": "workspace:*",
     "@mobilesurvey/instrument-schema": "workspace:*",
     "@mobilesurvey/metadata-registry": "workspace:*",

@@ -1,6 +1,6 @@
 # mobilesurvey — Agent Guide
 
-> Single source of truth for *how to work on this repo*. Claude and Antigravity both read this (`CLAUDE.md` → `@AGENTS.md`; `GEMINI.md` → pointer). Keep it short. *(Updated 2026-06-26; edit freely — re-runs won't overwrite an existing AGENTS.md.)*
+> Single source of truth for *how to work on this repo*. Claude and Antigravity both read this (`CLAUDE.md` → `@AGENTS.md`; `GEMINI.md` → pointer). Keep it short. *(Updated 2026-06-27; edit freely — re-runs won't overwrite an existing AGENTS.md.)*
 
 **Brain note (goals, backlog, full context):** `H:\My Drive\Brain2\Projects\mobilesurvey.md`
 **GitHub:** https://github.com/p3ji/mobilesurvey.git
@@ -28,15 +28,18 @@
 ## Phase status
 1. **Phases 1–4 DONE:** Schema, expression engine, runtime skeleton, designer with flowchart/PDF, metadata registry, demo survey, library panel.
 2. **Phase 5 DONE (2026-06-25):** Survey hub (list, create, publish); API surveys resource (CRUD, config); runtime & designer wired to load/save by link; anonymous auto-start; code-gated gate; all tests + typecheck pass. Committed & pushed.
-3. **Phase 6 IN PROGRESS (2026-06-26):** 
+3. **Phase 6 IN PROGRESS (2026-06-26/27):** 
    - ✓ Q-numbers everywhere (runtime + tree + inspector)
    - ✓ Enhanced progress bar
    - ✓ HTML export from designer Export menu
    - ✓ Mode dropdown (Pro / Easy)
    - ✓ Easy Mode category editing inline (CatEditor), add/delete questions, routing display
-   - ✓ Training Hub view with NotebookLM video resource (new 🎓 module on hub home)
+   - ✓ Training Hub view with YouTube intro video embed (new 🎓 module on hub home)
    - ✓ Designer defaults to blank instrument (not LFS)
    - ✓ File import in Designer (⬆ Import instrument JSON)
+   - ✓ Questionnaire Migrator (hub tile)
+   - ✓ Questionnaire Tester (hub tile)
+   - ✓ Designer Interviewer (AI-assisted interview flow for building questionnaires)
    - NOT DONE: searchable/collapsible tree for 100+ question surveys
 4. **Phase 7:** Analytics dashboard (monitor responses, completion/drop-off, paradata).
 

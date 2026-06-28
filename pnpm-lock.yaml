@@ -51,6 +51,9 @@ importers:
 
   apps/designer:
     dependencies:
+      '@mobilesurvey/ddi-xml':
+        specifier: workspace:*
+        version: link:../../packages/ddi-xml
       '@mobilesurvey/expression-engine':
         specifier: workspace:*
         version: link:../../packages/expression-engine
@@ -189,6 +192,19 @@ importers:
       vite:
         specifier: ^5.4.11
         version: 5.4.21(@types/node@22.20.0)
+
+  packages/ddi-xml:
+    dependencies:
+      '@mobilesurvey/instrument-schema':
+        specifier: workspace:*
+        version: link:../instrument-schema
+    devDependencies:
+      typescript:
+        specifier: ^5.6.3
+        version: 5.9.3
+      vitest:
+        specifier: ^3.2.6
+        version: 3.2.6(@types/node@22.20.0)
 
   packages/expression-engine:
     devDependencies:
