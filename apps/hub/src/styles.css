@@ -1,17 +1,17 @@
 :root {
-  --bg: #f4f6f9;
+  --bg: #f7f6f3;
   --panel: #ffffff;
   --ink: #1b2733;
   --ink-soft: #5b6b7b;
   --line: #d7dee6;
-  --brand: #1f5fae;
-  --brand-dark: #174d8f;
+  --brand: #1d4ed8;
+  --brand-dark: #1e3a8a;
   --brand-ink: #ffffff;
-  --selected: #e6f0fb;
+  --selected: #dbeafe;
   --danger: #b3261e;
   --ok: #1a7f4b;
-  --warn-bg: #fff6e0;
-  --warn: #8a5a00;
+  --warn-bg: #fff7ed;
+  --warn: #9a3412;
   --radius: 10px;
   --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
   --sans: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
@@ -334,6 +334,17 @@ code { font-family: var(--mono); font-size: 0.88em; }
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
   gap: 16px;
+  margin-bottom: 8px;
+}
+.module-grid--roadmap { margin-bottom: 0; }
+
+.module-section-label {
+  margin: 20px 0 10px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
 }
 
 .module-tile {
@@ -350,19 +361,24 @@ code { font-family: var(--mono); font-size: 0.88em; }
 }
 .module-tile:hover:not(:disabled) {
   border-color: var(--brand);
-  box-shadow: 0 2px 12px rgba(31, 95, 174, 0.12);
+  box-shadow: 0 2px 12px rgba(29, 78, 216, 0.12);
 }
 .module-tile:disabled,
 .module-tile--soon {
-  opacity: 0.65;
-  cursor: not-allowed;
+  opacity: 0.5;
+  cursor: default;
 }
 .module-tile__icon {
-  font-size: 28px;
-  line-height: 1;
+  width: 28px;
+  height: 28px;
   flex-shrink: 0;
   margin-top: 2px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--brand);
 }
+.module-tile--soon .module-tile__icon { color: var(--ink-soft); }
 .module-tile__body { display: flex; flex-direction: column; gap: 4px; }
 .module-tile__head { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
 .module-tile__name { font-size: 16px; font-weight: 700; color: var(--ink); }
@@ -373,10 +389,12 @@ code { font-family: var(--mono); font-size: 0.88em; }
   text-transform: uppercase;
   padding: 2px 7px;
   border-radius: 999px;
-  background: #f0f2f5;
-  color: var(--ink-soft);
+  background: #fff7ed;
+  color: #9a3412;
+  border: 1px solid #fed7aa;
 }
 .module-tile__tagline { margin: 0; font-size: 13px; font-weight: 600; color: var(--brand); }
+.module-tile--soon .module-tile__tagline { color: var(--ink-soft); }
 .module-tile__desc { margin: 0; font-size: 13px; color: var(--ink-soft); line-height: 1.5; }
 
 /* ── Searcher view ────────────────────────────────────────────────────────── */

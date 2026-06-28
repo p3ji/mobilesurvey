@@ -1,7 +1,19 @@
 /**
  * mobilesurvey hub — module selector home screen + Collector sub-view.
  */
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
+import {
+  BarChart3,
+  Building2,
+  FileInput,
+  FlaskConical,
+  GraduationCap,
+  Headphones,
+  LayoutDashboard,
+  Layers,
+  Library,
+  PenLine,
+} from 'lucide-react';
 import { blankInstrument, lfsInstrument, demoInstrument, BUNDLED_SURVEYS, type Instrument } from '@mobilesurvey/instrument-schema';
 import { migrate, type MigrateResult } from '@mobilesurvey/questionnaire-migrator';
 import {
@@ -79,7 +91,7 @@ type HubView = 'home' | 'collector' | 'searcher' | 'trainer' | 'migrator';
 
 interface ModuleDef {
   id: string;
-  icon: string;
+  icon: ReactNode;
   name: string;
   tagline: string;
   description: string;
@@ -725,7 +737,7 @@ function CollectorView({ onBack }: { onBack: () => void }) {
         <div className="hub__brand">
           <button type="button" className="hub__back" onClick={onBack}>← Modular Survey Tools</button>
           <strong>Collector</strong>
-          <span className="hub__sub">Manage surveys · monitor collection</span>
+          <span className="hub__sub">Manage surveys and track collection</span>
         </div>
         <div className="hub__header-right">
           {demoMode ? (
@@ -944,7 +956,7 @@ function SearcherView({ onBack }: { onBack: () => void }) {
         <div className="hub__brand">
           <button type="button" className="hub__back" onClick={onBack}>← Modular Survey Tools</button>
           <strong>Searcher</strong>
-          <span className="hub__sub">Discover · reuse · extend metadata</span>
+          <span className="hub__sub">Find and reuse questions across surveys</span>
         </div>
         <div className="hub__header-right">
           {!loading && (
@@ -1091,7 +1103,7 @@ function ModuleTile({ mod }: { mod: ModuleDef }) {
         <div className="module-tile__head">
           <span className="module-tile__name">{mod.name}</span>
           {mod.status === 'coming-soon' && (
-            <span className="module-tile__badge">Future feature</span>
+            <span className="module-tile__badge">Coming soon</span>
           )}
         </div>
         <p className="module-tile__tagline">{mod.tagline}</p>
@@ -1215,7 +1227,7 @@ function MigratorView({ onBack }: { onBack: () => void }) {
         <div className="hub__brand">
           <button type="button" className="hub__back" onClick={onBack}>← Modular Survey Tools</button>
           <strong>Migrator</strong>
-          <span className="hub__sub">Import questionnaires from text</span>
+          <span className="hub__sub">Turn a text questionnaire into a live survey</span>
         </div>
       </header>
 
@@ -1480,7 +1492,7 @@ function TrainingView({ onBack }: { onBack: () => void }) {
         </button>
         <div className="hub__brand">
           <strong className="hub__wordmark">Training Hub</strong>
-          <span className="hub__sub">Learn · explore · get started</span>
+          <span className="hub__sub">Videos, guides, and resources</span>
         </div>
       </header>
 
@@ -1520,7 +1532,7 @@ function TrainingView({ onBack }: { onBack: () => void }) {
         </div>
 
         <p className="train__coming-soon">
-          More resources — written guides, walkthroughs, and worked examples — future feature.
+          Written guides, walkthroughs, and worked examples — coming soon.
         </p>
       </main>
     </div>
@@ -1533,89 +1545,89 @@ function HomePage({ onNavigate }: { onNavigate: (v: HubView) => void }) {
   const modules = useMemo((): ModuleDef[] => [
     {
       id: 'designer-pro',
-      icon: '⚙',
+      icon: <Layers size={22} />,
       name: 'Designer — Pro',
       tagline: 'Full-featured instrument authoring',
-      description: 'Opens a blank instrument. Use "Try a demo survey" above to load an example. Supports tree editing, conditional routing, variables, expressions, and flowchart view.',
+      description: 'Opens a blank instrument. Use "Try a demo survey" above to load an example. Tree editing, conditional routing, variables, expressions, and flowchart view.',
       status: 'live',
       action: () => window.open(`${DESIGNER_URL}/?mode=pro`, '_blank', 'noopener'),
     },
     {
       id: 'designer-easy',
-      icon: '✏',
+      icon: <PenLine size={22} />,
       name: 'Designer — Easy Mode',
-      tagline: 'Simple question-by-question editor',
-      description: 'Opens a blank instrument. Use "Try a demo survey" above to load an example. Focusing on questions, categories, and simple logic — best for quick questionnaire testing.',
+      tagline: 'Build a questionnaire question by question',
+      description: 'Opens a blank instrument. Use "Try a demo survey" above to load an example. Focused on questions, categories, and simple logic — good for quick questionnaire drafting.',
       status: 'live',
       action: () => window.open(`${DESIGNER_URL}/?mode=easy`, '_blank', 'noopener'),
     },
     {
-      id: 'designer-interviewer',
-      icon: '🎧',
-      name: 'Designer — Interviewer',
-      tagline: 'CATI · field interviewer · entry/exit modules',
-      description: 'Design surveys for telephone or field interviewers. Build entry modules (phone/address validation), exit modules (household phone enumeration for coverage weighting), and configure free navigation so interviewers can jump to any question.',
-      status: 'coming-soon',
-    },
-    {
-      id: 'designer-business',
-      icon: '🏢',
-      name: 'Designer — Business Collection',
-      tagline: 'Optimized for business data collection',
-      description: 'A form-first designer tuned for collecting data from businesses — structured inputs, validation rules, and integration with business registers.',
-      status: 'coming-soon',
-    },
-    {
       id: 'collector',
-      icon: '📋',
+      icon: <LayoutDashboard size={22} />,
       name: 'Collector',
-      tagline: 'Manage surveys · monitor collection',
+      tagline: 'Manage live surveys and track who\'s responding',
       description: 'Create and publish surveys, share respondent links, track collection status, and view the response dashboard for each active survey.',
       status: 'live',
       action: () => onNavigate('collector'),
     },
     {
       id: 'searcher',
-      icon: '🔍',
+      icon: <Library size={22} />,
       name: 'Searcher',
-      tagline: 'Search and reuse survey metadata',
-      description: 'Discover existing questions, variables, and code lists across all surveys. Add to the repo with new metadata sources.',
+      tagline: 'Find and reuse questions across every survey',
+      description: 'Search questions, variables, and code lists from all surveys by keyword. One click to add a match to a new instrument.',
       status: 'live',
       action: () => onNavigate('searcher'),
     },
     {
       id: 'migrator',
-      icon: '⇄',
+      icon: <FileInput size={22} />,
       name: 'Migrator',
-      tagline: 'Import questionnaires from text',
-      description: 'Paste or upload a plain-text questionnaire and convert it into a structured DDI instrument. The engine extracts questions, infers response types, and converts routing hints into skip logic.',
+      tagline: 'Turn a Word doc or text file into a live survey',
+      description: 'Paste or upload any plain-text questionnaire. The engine extracts questions, infers response types, and converts routing hints into skip logic.',
       status: 'live',
       action: () => onNavigate('migrator'),
     },
     {
+      id: 'trainer',
+      icon: <GraduationCap size={22} />,
+      name: 'Training Hub',
+      tagline: 'Videos and guides to get you started fast',
+      description: 'Video overviews, walkthroughs, and resources for learning Modular Survey Tools. Start with a 2-min intro, then explore from first survey to collection management.',
+      status: 'live',
+      action: () => onNavigate('trainer'),
+    },
+    {
+      id: 'designer-interviewer',
+      icon: <Headphones size={22} />,
+      name: 'Designer — Interviewer',
+      tagline: 'For telephone and field-based data collection',
+      description: 'Design surveys for CATI or field interviewers. Build entry/exit modules, phone enumeration for coverage weighting, and free navigation so interviewers can jump to any question.',
+      status: 'coming-soon',
+    },
+    {
+      id: 'designer-business',
+      icon: <Building2 size={22} />,
+      name: 'Designer — Business Collection',
+      tagline: 'Structured forms for business data collection',
+      description: 'A form-first designer tuned for collecting data from businesses — structured inputs, validation rules, and integration with business registers.',
+      status: 'coming-soon',
+    },
+    {
       id: 'analyzer',
-      icon: '📊',
+      icon: <BarChart3 size={22} />,
       name: 'Analyzer',
-      tagline: 'Descriptive stats · future: full analysis',
-      description: 'Explore collected data with descriptive statistics, frequency tables, and charts. Advanced statistical analysis — cross-tabs, regression — coming in a future release.',
+      tagline: 'Charts and tables for your collected data',
+      description: 'Frequency distributions, cross-tabs, and charts built from live responses. Advanced analysis — regression, significance testing — on the roadmap.',
       status: 'coming-soon',
     },
     {
       id: 'tester',
-      icon: '🤖',
+      icon: <FlaskConical size={22} />,
       name: 'Questionnaire Tester',
-      tagline: 'Automated end-to-end testing for any web questionnaire',
-      description: 'Walks every flow path automatically — clicking radio buttons, dropdowns, checkboxes, and searchable fields — and produces a report of typos, dead-end flows, routing errors, and differences between the designed instrument and the rendered questionnaire. Works with any web-based survey, not just this platform.',
+      tagline: 'Catch routing errors before respondents do',
+      description: 'Walks every path through a web survey automatically — catching dead ends, routing errors, and gaps between the designed instrument and the rendered form. Works on any survey platform.',
       status: 'coming-soon',
-    },
-    {
-      id: 'trainer',
-      icon: '🎓',
-      name: 'Training Hub',
-      tagline: 'Learn · explore · get started',
-      description: 'Video overviews, guides, and resources for learning Modular Survey Tools. Start with a ~2 min intro, then explore from first survey to advanced collection management.',
-      status: 'live',
-      action: () => onNavigate('trainer'),
     },
   ], [onNavigate]);
 
@@ -1624,20 +1636,24 @@ function HomePage({ onNavigate }: { onNavigate: (v: HubView) => void }) {
       <header className="hub__header hub__header--home">
         <div className="hub__brand">
           <strong className="hub__wordmark">Modular Survey Tools</strong>
-          <span className="hub__sub">Open survey platform</span>
+          <span className="hub__sub">Open-source survey platform</span>
         </div>
       </header>
 
       <main className="hub__main hub__main--home">
         <div className="hub__intro">
-          <h1>What would you like to do?</h1>
-          <p>Select a module to get started. Modules marked "Future feature" are on the roadmap.</p>
+          <h1>Design, collect, and analyze surveys — end to end.</h1>
+          <p>Pick a tool to get started, or try a demo survey below.</p>
         </div>
 
         <DemoSurveyPicker />
 
         <div className="module-grid">
-          {modules.map((m) => <ModuleTile key={m.id} mod={m} />)}
+          {modules.filter(m => m.status === 'live').map((m) => <ModuleTile key={m.id} mod={m} />)}
+        </div>
+        <p className="module-section-label">On the roadmap</p>
+        <div className="module-grid module-grid--roadmap">
+          {modules.filter(m => m.status === 'coming-soon').map((m) => <ModuleTile key={m.id} mod={m} />)}
         </div>
       </main>
     </div>
