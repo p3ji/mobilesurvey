@@ -905,6 +905,14 @@ code {
   font-weight: 600;
   margin-bottom: 6px;
 }
+.pv-q-num {
+  display: inline-block;
+  min-width: 2.4em;
+  font-weight: 700;
+  color: var(--brand);
+  margin-inline-end: 4px;
+  font-variant-numeric: tabular-nums;
+}
 .pv-req {
   color: var(--danger);
 }
@@ -1149,6 +1157,14 @@ code {
   font-size: 15px;
   margin-bottom: 8px;
   line-height: 1.4;
+}
+.rapp__q-num {
+  display: inline-block;
+  min-width: 2.4em;
+  font-weight: 700;
+  color: var(--brand);
+  margin-inline-end: 4px;
+  font-variant-numeric: tabular-nums;
 }
 .rapp__nav {
   display: flex;

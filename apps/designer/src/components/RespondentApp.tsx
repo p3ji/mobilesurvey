@@ -306,6 +306,20 @@ export function RespondentApp({ onExit }: { onExit: () => void }) {
     if (currentPage >= pages.length) setCurrentPage(Math.max(0, pages.length - 1));
   }, [pages.length, currentPage]);
 
+  // Global question-number map: item.key → 1-based sequential number.
+  const qNumByKey = useMemo(() => {
+    const m = new Map<string, number>();
+    let n = 0;
+    for (const page of pages) {
+      for (const item of page) {
+        if (item.kind === 'question' || item.kind === 'markAll' || item.kind === 'grid') {
+          m.set(item.key, ++n);
+        }
+      }
+    }
+    return m;
+  }, [pages]);
+
   const pageItems = pages[currentPage] ?? [];
   const isLastPage = currentPage >= pages.length - 1;
   const blocked = pageHasHardEdits(pageItems);
@@ -414,9 +428,13 @@ export function RespondentApp({ onExit }: { onExit: () => void }) {
 
             // markAll — dichotomous checkboxes, one variable per category.
             if (item.kind === 'markAll') {
+              const maNum = qNumByKey.get(item.key);
               return (
                 <div key={item.key} className="rapp__question">
-                  <p className="rapp__q-text">{item.questionText}</p>
+                  <p className="rapp__q-text">
+                    {maNum != null && <span className="rapp__q-num">Q{maNum}.</span>}
+                    {item.questionText}
+                  </p>
                   {item.instruction && (
                     <p className="pv-instruction">{item.instruction}</p>
                   )}
@@ -445,9 +463,13 @@ export function RespondentApp({ onExit }: { onExit: () => void }) {
 
             // Grid (matrix) question.
             if (item.kind === 'grid') {
+              const gridNum = qNumByKey.get(item.key);
               return (
                 <div key={item.key} className="rapp__question">
-                  <p className="rapp__q-text">{item.questionText}</p>
+                  <p className="rapp__q-text">
+                    {gridNum != null && <span className="rapp__q-num">Q{gridNum}.</span>}
+                    {item.questionText}
+                  </p>
                   {item.instruction && <p className="pv-instruction">{item.instruction}</p>}
                   <div className="pv-grid-wrapper">
                     <table className="pv-grid">
@@ -490,6 +512,7 @@ export function RespondentApp({ onExit }: { onExit: () => void }) {
             const isGroupDomain =
               item.construct.responseDomain.type === 'code' ||
               item.construct.responseDomain.type === 'boolean';
+            const qNum = qNumByKey.get(item.key);
 
             return (
               <div key={item.key} className="rapp__question">
@@ -498,6 +521,7 @@ export function RespondentApp({ onExit }: { onExit: () => void }) {
                   className="rapp__q-text"
                   htmlFor={isGroupDomain ? undefined : inputId}
                 >
+                  {qNum != null && <span className="rapp__q-num">Q{qNum}.</span>}
                   {item.text}
                   {item.construct.required && (
                     <span aria-hidden="true" className="pv-req"> *</span>
