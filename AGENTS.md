@@ -82,6 +82,8 @@ The agent uses this table to route updates to the correct files.
 - **Decision (2026-06-26):** Evaluated a Netlify migration; deferred. Would require a base-path env var (current Vite configs hard-code `/mobilesurvey/`) plus SPA redirect rules. Staying on GitHub Pages.
 - Phase 6 remaining: searchable/collapsible tree for 100+ question surveys
 - Phase 7: Analytics dashboard (monitor responses, completion/drop-off, paradata)
+- **Decision (2026-06-28):** Reframed the roadmap around an enterprise-client review (see `docs/enterprise-adoption-plan.md`). Next phases ordered by client business impact; the keystone is DDI-XML interoperability with external repositories. Phase 7 broadened beyond analytics to "Interoperability & Proof Foundation."
+- **Phase 7 started (2026-06-28):** `packages/ddi-xml` — DDI-XML import/export codec with a per-import fidelity report. Loss-free round-trip for the full Instrument model today (verified against all 4 bundled instruments); next increment is a full DDI-Lifecycle 3.3 / Codebook 2.5 adapter for external repository files. The low-level XML reader/writer is isolated in `src/xml.ts` so it can be swapped for a hardened parser without touching the mapping layer. Still open from the plan: fix prod paradata RLS, publish a versioned API contract.
 
 ## Do NOT
 - Commit secrets (`.env`) or large build artifacts.
