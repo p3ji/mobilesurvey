@@ -398,6 +398,11 @@ code { font-family: var(--mono); font-size: 0.88em; }
   color: #9a3412;
   border: 1px solid #fed7aa;
 }
+.module-tile__badge--tag {
+  background: #fffbeb;
+  color: #92400e;
+  border-color: #fde68a;
+}
 .module-tile__tagline { margin: 0; font-size: 13px; font-weight: 600; color: var(--brand); }
 .module-tile--soon .module-tile__tagline { color: var(--ink-soft); }
 .module-tile__desc { margin: 0; font-size: 13px; color: var(--ink-soft); line-height: 1.5; }

@@ -107,6 +107,7 @@ interface ModuleDef {
   tagline: string;
   description: string;
   status: 'live' | 'coming-soon';
+  tag?: string;
   action?: () => void;
 }
 
@@ -1240,6 +1241,9 @@ function ModuleTile({ mod }: { mod: ModuleDef }) {
       <div className="module-tile__body">
         <div className="module-tile__head">
           <span className="module-tile__name">{mod.name}</span>
+          {mod.tag && (
+            <span className="module-tile__badge module-tile__badge--tag">{mod.tag}</span>
+          )}
           {mod.status === 'coming-soon' && (
             <span className="module-tile__badge">Coming soon</span>
           )}
@@ -1779,6 +1783,7 @@ function HomePage({ onNavigate }: { onNavigate: (v: HubView) => void }) {
       id: 'migrator',
       icon: <FileInput size={22} />,
       name: 'Migrator',
+      tag: 'Testing',
       tagline: 'Turn a Word doc or text file into a live survey',
       description: 'Paste or upload any plain-text questionnaire. The engine extracts questions, infers response types, and converts routing hints into skip logic.',
       status: 'live',
@@ -1821,6 +1826,7 @@ function HomePage({ onNavigate }: { onNavigate: (v: HubView) => void }) {
       id: 'analyzer',
       icon: <BarChart3 size={22} />,
       name: 'Analyzer',
+      tag: 'Testing',
       tagline: 'Charts and tables for your collected data',
       description: 'Completion funnels, frequency distributions, and field-level charts built from live responses. Export responses or paradata as CSV.',
       status: 'live',
