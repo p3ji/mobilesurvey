@@ -29,17 +29,25 @@ import {
   createSurvey,
   deleteSurvey,
   DESIGNER_URL,
+  RUNTIME_URL,
   designerLink,
   fetchAllInstruments,
+  fetchCases,
+  fetchInterviewers,
   fetchResponses,
   fetchSurveyInstrument,
   fetchSurveyParadata,
   listSurveys,
   pingApi,
+  recordCaseOutcome,
   respondentLink,
+  assignCaseToInterviewer,
   setSurveyConfig,
   upsertSurvey,
+  type CaseDetail,
+  type CaseStatus,
   type InstrumentSummary,
+  type InterviewerRow,
   type ResponseRow,
   type SurveyParadataRow,
   type SurveySummary,
@@ -90,7 +98,7 @@ const DEMO_SURVEYS: SurveySummary[] = [
 
 // ── Module definitions ────────────────────────────────────────────────────────
 
-type HubView = 'home' | 'collector' | 'searcher' | 'trainer' | 'migrator' | 'analyzer';
+type HubView = 'home' | 'collector' | 'searcher' | 'trainer' | 'migrator' | 'analyzer' | 'interviewer' | 'supervisor';
 
 interface ModuleDef {
   id: string;
@@ -1786,12 +1794,22 @@ function HomePage({ onNavigate }: { onNavigate: (v: HubView) => void }) {
       action: () => onNavigate('trainer'),
     },
     {
-      id: 'designer-interviewer',
+      id: 'interviewer',
       icon: <Headphones size={22} />,
-      name: 'Designer — Interviewer',
-      tagline: 'For telephone and field-based data collection',
-      description: 'Design surveys for CATI or field interviewers. Build entry/exit modules, phone enumeration for coverage weighting, and free navigation so interviewers can jump to any question.',
-      status: 'coming-soon',
+      name: 'Interviewer Mode',
+      tagline: 'CATI case queue with call-back scheduling',
+      description: 'View assigned cases, launch telephone interviews, and record call outcomes (complete, call-back, refused, non-contact). Schedules call-backs with date, time, and notes.',
+      status: 'live',
+      action: () => onNavigate('interviewer'),
+    },
+    {
+      id: 'supervisor',
+      icon: <Layers size={22} />,
+      name: 'Supervisor Dashboard',
+      tagline: 'Monitor interviewer progress and assign cases',
+      description: 'See completion rates and outcome breakdowns by interviewer. Assign or reassign cases to balance workloads across your field team.',
+      status: 'live',
+      action: () => onNavigate('supervisor'),
     },
     {
       id: 'designer-business',
@@ -1849,6 +1867,350 @@ function HomePage({ onNavigate }: { onNavigate: (v: HubView) => void }) {
   );
 }
 
+// ── CATI: Interviewer Mode ────────────────────────────────────────────────────
+
+const STATUS_LABELS: Record<CaseStatus, string> = {
+  new: 'New',
+  in_progress: 'In Progress',
+  complete: 'Complete',
+  callback: 'Callback',
+  refused: 'Refused',
+  non_contact: 'Non-contact',
+};
+const STATUS_COLORS: Record<CaseStatus, string> = {
+  new: '#3b82f6',
+  in_progress: '#f59e0b',
+  complete: '#10b981',
+  callback: '#8b5cf6',
+  refused: '#ef4444',
+  non_contact: '#6b7280',
+};
+const STATUS_ORDER: Record<CaseStatus, number> = {
+  callback: 0, new: 1, in_progress: 2, complete: 3, refused: 4, non_contact: 5,
+};
+
+function InterviewerView({ onBack }: { onBack: () => void }) {
+  const [interviewers, setInterviewers] = useState<InterviewerRow[]>([]);
+  const [selectedId, setSelectedId] = useState('');
+  const [cases, setCases] = useState<CaseDetail[]>([]);
+  const [surveyId, setSurveyId] = useState('lfs');
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [outcomeStatus, setOutcomeStatus] = useState<CaseStatus>('new');
+  const [callbackAt, setCallbackAt] = useState('');
+  const [callbackNote, setCallbackNote] = useState('');
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    fetchInterviewers()
+      .then((rows) => {
+        setInterviewers(rows);
+        if (rows.length > 0) setSelectedId(rows[0]!.id);
+      })
+      .catch(() => setError('Local API not reachable — run: pnpm --filter @mobilesurvey/api dev'))
+      .finally(() => setLoading(false));
+  }, []);
+
+  useEffect(() => {
+    if (!selectedId) return;
+    setLoading(true);
+    fetchCases(selectedId)
+      .then(setCases)
+      .catch(() => setError('Failed to load cases'))
+      .finally(() => setLoading(false));
+  }, [selectedId]);
+
+  async function saveOutcome(caseId: string) {
+    await recordCaseOutcome(caseId, {
+      status: outcomeStatus,
+      callbackAt: callbackAt ? new Date(callbackAt).getTime() : undefined,
+      callbackNote: callbackNote || undefined,
+    });
+    setEditingId(null);
+    const refreshed = await fetchCases(selectedId);
+    setCases(refreshed);
+  }
+
+  function openInterview(c: CaseDetail) {
+    const url = c.accessCode
+      ? `${RUNTIME_URL}/?survey=${encodeURIComponent(surveyId)}&code=${encodeURIComponent(c.accessCode)}`
+      : `${RUNTIME_URL}/?survey=${encodeURIComponent(surveyId)}`;
+    window.open(url, '_blank', 'noopener');
+  }
+
+  const sortedCases = [...cases].sort(
+    (a, b) => (STATUS_ORDER[a.status] ?? 9) - (STATUS_ORDER[b.status] ?? 9),
+  );
+
+  return (
+    <div className="hub">
+      <header className="hub__header">
+        <button onClick={onBack} className="hub__back">← Home</button>
+        <h1 style={{ margin: 0, fontSize: 20, fontWeight: 700 }}>Interviewer Mode</h1>
+      </header>
+      <main className="hub__main" style={{ maxWidth: 860, margin: '0 auto', padding: '24px 16px' }}>
+        {error && <p className="cati__error">{error}</p>}
+
+        <div className="cati__controls">
+          <label className="cati__label">Interviewer</label>
+          <select className="cati__select" value={selectedId} onChange={(e) => setSelectedId(e.target.value)}>
+            {interviewers.map((i) => (
+              <option key={i.id} value={i.id}>{i.name}</option>
+            ))}
+          </select>
+          <label className="cati__label">Survey</label>
+          <input
+            className="cati__select"
+            value={surveyId}
+            onChange={(e) => setSurveyId(e.target.value)}
+            placeholder="survey id (e.g. lfs)"
+            style={{ minWidth: 120 }}
+          />
+        </div>
+
+        {loading ? (
+          <p className="cati__empty">Loading cases…</p>
+        ) : sortedCases.length === 0 ? (
+          <p className="cati__empty">No cases assigned to this interviewer.</p>
+        ) : (
+          <div className="cati__list">
+            {sortedCases.map((c) => {
+              const cbDate = c.callbackAt ? new Date(c.callbackAt) : null;
+              const isEditing = editingId === c.id;
+              const contact = (c.fields.contact_name as string | undefined) || c.id;
+              const region = c.fields.region_code as string | undefined;
+              return (
+                <div key={c.id} className={`cati__case${c.status === 'callback' && cbDate ? ' cati__case--due' : ''}`}>
+                  <div className="cati__case-header">
+                    <span className="cati__case-id">{c.id}</span>
+                    <span className="cati__badge" style={{ background: STATUS_COLORS[c.status] ?? '#6b7280' }}>
+                      {STATUS_LABELS[c.status] ?? c.status}
+                    </span>
+                    <span className="cati__contact">{contact}{region ? ` · ${region}` : ''}</span>
+                    {cbDate && (
+                      <span className="cati__callback-time cati__callback-time--due">
+                        Callback: {cbDate.toLocaleDateString()} {cbDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                      </span>
+                    )}
+                  </div>
+                  {c.callbackNote && <p className="cati__note">{c.callbackNote}</p>}
+                  <div className="cati__actions">
+                    <button className="cati__btn cati__btn--primary" onClick={() => openInterview(c)}>
+                      ▶ Launch Interview
+                    </button>
+                    <button
+                      className="cati__btn"
+                      onClick={() => {
+                        if (isEditing) { setEditingId(null); return; }
+                        setEditingId(c.id);
+                        setOutcomeStatus(c.status);
+                        setCallbackAt(c.callbackAt ? new Date(c.callbackAt).toISOString().slice(0, 16) : '');
+                        setCallbackNote(c.callbackNote ?? '');
+                      }}
+                    >
+                      {isEditing ? 'Cancel' : 'Record Outcome'}
+                    </button>
+                  </div>
+                  {isEditing && (
+                    <div className="cati__outcome-form">
+                      <label className="cati__label">Outcome</label>
+                      <select
+                        className="cati__select"
+                        value={outcomeStatus}
+                        onChange={(e) => setOutcomeStatus(e.target.value as CaseStatus)}
+                      >
+                        {(Object.keys(STATUS_LABELS) as CaseStatus[]).map((s) => (
+                          <option key={s} value={s}>{STATUS_LABELS[s]}</option>
+                        ))}
+                      </select>
+                      {outcomeStatus === 'callback' && (
+                        <>
+                          <label className="cati__label">Callback date / time</label>
+                          <input
+                            type="datetime-local"
+                            className="cati__select"
+                            value={callbackAt}
+                            onChange={(e) => setCallbackAt(e.target.value)}
+                          />
+                          <label className="cati__label">Note</label>
+                          <textarea
+                            className="cati__textarea"
+                            value={callbackNote}
+                            rows={2}
+                            placeholder="e.g. Call back after 6 pm"
+                            onChange={(e) => setCallbackNote(e.target.value)}
+                          />
+                        </>
+                      )}
+                      <div>
+                        <button className="cati__btn cati__btn--primary" onClick={() => void saveOutcome(c.id)}>
+                          Save
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        )}
+      </main>
+    </div>
+  );
+}
+
+// ── CATI: Supervisor Dashboard ────────────────────────────────────────────────
+
+function SupervisorView({ onBack }: { onBack: () => void }) {
+  const [interviewers, setInterviewers] = useState<InterviewerRow[]>([]);
+  const [cases, setCases] = useState<CaseDetail[]>([]);
+  const [assignCaseId, setAssignCaseId] = useState('');
+  const [assignIntId, setAssignIntId] = useState('');
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  async function load() {
+    setLoading(true);
+    try {
+      const [ints, cs] = await Promise.all([fetchInterviewers(), fetchCases()]);
+      setInterviewers(ints);
+      setCases(cs);
+    } catch {
+      setError('Local API not reachable — run: pnpm --filter @mobilesurvey/api dev');
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  useEffect(() => { void load(); }, []);
+
+  async function doAssign() {
+    if (!assignCaseId || !assignIntId) return;
+    await assignCaseToInterviewer(assignCaseId, assignIntId);
+    setAssignCaseId('');
+    setAssignIntId('');
+    void load();
+  }
+
+  const totals = useMemo(() => {
+    const counts: Partial<Record<CaseStatus, number>> = {};
+    for (const c of cases) counts[c.status] = (counts[c.status] ?? 0) + 1;
+    return counts;
+  }, [cases]);
+
+  const byInterviewer = useMemo(() => {
+    const m = new Map<string, { int: InterviewerRow; counts: Partial<Record<CaseStatus, number>> }>();
+    for (const i of interviewers) m.set(i.id, { int: i, counts: {} });
+    for (const c of cases) {
+      if (c.interviewerId && m.has(c.interviewerId)) {
+        const entry = m.get(c.interviewerId)!;
+        entry.counts[c.status] = (entry.counts[c.status] ?? 0) + 1;
+      }
+    }
+    return [...m.values()];
+  }, [interviewers, cases]);
+
+  const STAT_KEYS: CaseStatus[] = ['new', 'in_progress', 'complete', 'callback', 'refused', 'non_contact'];
+
+  return (
+    <div className="hub">
+      <header className="hub__header">
+        <button onClick={onBack} className="hub__back">← Home</button>
+        <h1 style={{ margin: 0, fontSize: 20, fontWeight: 700 }}>Supervisor Dashboard</h1>
+      </header>
+      <main className="hub__main" style={{ maxWidth: 960, margin: '0 auto', padding: '24px 16px' }}>
+        {error && <p className="cati__error">{error}</p>}
+        {loading ? (
+          <p className="cati__empty">Loading…</p>
+        ) : (
+          <>
+            {/* Summary stats */}
+            <div className="cati__stats">
+              <div className="cati__stat">
+                <span className="cati__stat-val">{cases.length}</span>
+                <span className="cati__stat-label">Total</span>
+              </div>
+              {STAT_KEYS.map((k) => (
+                <div key={k} className="cati__stat">
+                  <span className="cati__stat-val" style={{ color: STATUS_COLORS[k] }}>
+                    {totals[k] ?? 0}
+                  </span>
+                  <span className="cati__stat-label">{STATUS_LABELS[k]}</span>
+                </div>
+              ))}
+            </div>
+
+            {/* Per-interviewer breakdown */}
+            <h2 className="cati__section-title">Interviewers</h2>
+            <table className="cati__table">
+              <thead>
+                <tr>
+                  <th>Interviewer</th>
+                  {STAT_KEYS.map((k) => <th key={k}>{STATUS_LABELS[k]}</th>)}
+                  <th>Completion rate</th>
+                </tr>
+              </thead>
+              <tbody>
+                {byInterviewer.map(({ int, counts }) => {
+                  const total = STAT_KEYS.reduce((s, k) => s + (counts[k] ?? 0), 0);
+                  const done = counts.complete ?? 0;
+                  const rate = total > 0 ? Math.round((done / total) * 100) : 0;
+                  return (
+                    <tr key={int.id}>
+                      <td style={{ fontWeight: 500 }}>{int.name}</td>
+                      {STAT_KEYS.map((k) => (
+                        <td key={k} style={{ color: (counts[k] ?? 0) > 0 ? STATUS_COLORS[k] : undefined, fontWeight: (counts[k] ?? 0) > 0 ? 600 : undefined }}>
+                          {counts[k] ?? 0}
+                        </td>
+                      ))}
+                      <td>{rate}%</td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+
+            {/* Case assignment */}
+            <h2 className="cati__section-title">Assign Case</h2>
+            <div className="cati__controls">
+              <label className="cati__label">Case</label>
+              <select
+                className="cati__select"
+                value={assignCaseId}
+                onChange={(e) => setAssignCaseId(e.target.value)}
+                style={{ minWidth: 220 }}
+              >
+                <option value="">Select a case…</option>
+                {cases.map((c) => (
+                  <option key={c.id} value={c.id}>
+                    {c.id} — {(c.fields.contact_name as string | undefined) ?? '?'} [{STATUS_LABELS[c.status] ?? c.status}]
+                  </option>
+                ))}
+              </select>
+              <label className="cati__label">Interviewer</label>
+              <select
+                className="cati__select"
+                value={assignIntId}
+                onChange={(e) => setAssignIntId(e.target.value)}
+              >
+                <option value="">Select interviewer…</option>
+                {interviewers.map((i) => <option key={i.id} value={i.id}>{i.name}</option>)}
+              </select>
+              <button
+                className="cati__btn cati__btn--primary"
+                disabled={!assignCaseId || !assignIntId}
+                onClick={() => void doAssign()}
+              >
+                Assign
+              </button>
+            </div>
+          </>
+        )}
+      </main>
+    </div>
+  );
+}
+
 // ── Root ──────────────────────────────────────────────────────────────────────
 
 export function App() {
@@ -1858,5 +2220,7 @@ export function App() {
   if (view === 'trainer') return <TrainingView onBack={() => setView('home')} />;
   if (view === 'migrator') return <MigratorView onBack={() => setView('home')} />;
   if (view === 'analyzer') return <AnalyzerView onBack={() => setView('home')} />;
+  if (view === 'interviewer') return <InterviewerView onBack={() => setView('home')} />;
+  if (view === 'supervisor') return <SupervisorView onBack={() => setView('home')} />;
   return <HomePage onNavigate={setView} />;
 }

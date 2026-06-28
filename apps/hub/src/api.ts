@@ -244,6 +244,76 @@ export async function fetchSurveyInstrument(surveyId: string): Promise<Instrumen
   return (data as { instrument_json: Instrument }).instrument_json;
 }
 
+// ── CATI: types + local-API client ───────────────────────────────────────────
+
+/** Local Hono API base URL — used for CATI endpoints (not in Supabase schema). */
+const LOCAL_API =
+  (import.meta.env.VITE_API_URL as string | undefined) ??
+  (isLocalhost() ? 'http://localhost:8787' : null);
+
+export type CaseStatus =
+  | 'new'
+  | 'in_progress'
+  | 'complete'
+  | 'callback'
+  | 'refused'
+  | 'non_contact';
+
+export interface CaseDetail {
+  id: string;
+  fields: Record<string, string | number | boolean>;
+  status: CaseStatus;
+  interviewerId: string | null;
+  callbackAt: number | null;
+  callbackNote: string | null;
+  accessCode: string | null;
+}
+
+export interface InterviewerRow {
+  id: string;
+  name: string;
+  email: string | null;
+}
+
+async function localFetch<T>(path: string, init?: RequestInit): Promise<T | null> {
+  if (!LOCAL_API) return null;
+  const res = await fetch(`${LOCAL_API}${path}`, init);
+  if (!res.ok) throw new Error(`API ${res.status}: ${path}`);
+  const ct = res.headers.get('content-type') ?? '';
+  return ct.includes('json') ? (res.json() as Promise<T>) : (null as T);
+}
+
+export async function fetchCases(interviewerId?: string): Promise<CaseDetail[]> {
+  const qs = interviewerId ? `?interviewer_id=${encodeURIComponent(interviewerId)}` : '';
+  return (await localFetch<CaseDetail[]>(`/api/cases${qs}`)) ?? [];
+}
+
+export async function fetchInterviewers(): Promise<InterviewerRow[]> {
+  return (await localFetch<InterviewerRow[]>('/api/interviewers')) ?? [];
+}
+
+export async function assignCaseToInterviewer(
+  caseId: string,
+  interviewerId: string,
+): Promise<void> {
+  await localFetch(`/api/cases/${encodeURIComponent(caseId)}/assign`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ interviewerId }),
+  });
+}
+
+export async function recordCaseOutcome(
+  caseId: string,
+  outcome: { status: CaseStatus; callbackAt?: number; callbackNote?: string },
+): Promise<void> {
+  await localFetch(`/api/cases/${encodeURIComponent(caseId)}/outcome`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(outcome),
+  });
+}
+
 // ── Connectivity check ────────────────────────────────────────────────────────
 
 export async function pingApi(): Promise<boolean> {

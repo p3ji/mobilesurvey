@@ -13,6 +13,7 @@ import { serve } from '@hono/node-server';
 import { Hono } from 'hono';
 import { cors } from 'hono/cors';
 import { z } from 'zod';
+import { randomUUID } from 'node:crypto';
 import type { ParadataEvent } from '@mobilesurvey/runtime-engine';
 import { lfsInstrument, demoInstrument } from '@mobilesurvey/instrument-schema';
 import { Store } from './db.js';
@@ -22,6 +23,7 @@ const DB_FILE = process.env.DB_FILE ?? './data/app.db';
 
 const store = new Store(DB_FILE);
 store.seed();
+store.seedCati();
 // Seed two default surveys: the Labour Force survey (requires an access code) and the anonymous
 // Feature Demo Survey (no code needed).
 store.seedSurveys([
@@ -174,6 +176,56 @@ app.patch('/api/surveys/:id/config', async (c) => {
 app.delete('/api/surveys/:id', (c) => {
   const ok = store.deleteSurvey(c.req.param('id'));
   if (!ok) return c.json({ error: 'unknown survey' }, 404);
+  return c.body(null, 204);
+});
+
+// ── CATI: interviewers ────────────────────────────────────────────────────────
+app.get('/api/interviewers', (c) => c.json(store.listInterviewers()));
+
+const createInterviewerSchema = z.object({
+  id: z.string().min(1).optional(),
+  name: z.string().min(1),
+  email: z.string().email().optional(),
+});
+
+app.post('/api/interviewers', async (c) => {
+  const body = createInterviewerSchema.safeParse(await c.req.json().catch(() => null));
+  if (!body.success) return c.json({ error: 'name required' }, 400);
+  const id = body.data.id ?? `int-${randomUUID()}`;
+  store.createInterviewer(id, body.data.name, body.data.email);
+  return c.json({ id }, 201);
+});
+
+// ── CATI: cases ───────────────────────────────────────────────────────────────
+app.get('/api/cases', (c) => {
+  const interviewerId = c.req.query('interviewer_id');
+  return c.json(store.listCasesDetailed(interviewerId ? { interviewerId } : undefined));
+});
+
+const assignSchema = z.object({ interviewerId: z.string().min(1) });
+
+app.post('/api/cases/:caseId/assign', async (c) => {
+  const body = assignSchema.safeParse(await c.req.json().catch(() => null));
+  if (!body.success) return c.json({ error: 'interviewerId required' }, 400);
+  store.assignCase(c.req.param('caseId'), body.data.interviewerId);
+  return c.body(null, 204);
+});
+
+const outcomeSchema = z.object({
+  status: z.enum(['new', 'in_progress', 'complete', 'callback', 'refused', 'non_contact']),
+  callbackAt: z.number().optional(),
+  callbackNote: z.string().optional(),
+});
+
+app.post('/api/cases/:caseId/outcome', async (c) => {
+  const body = outcomeSchema.safeParse(await c.req.json().catch(() => null));
+  if (!body.success) return c.json({ error: 'invalid outcome' }, 400);
+  store.setCaseOutcome(
+    c.req.param('caseId'),
+    body.data.status,
+    body.data.callbackAt ?? null,
+    body.data.callbackNote ?? null,
+  );
   return c.body(null, 204);
 });
 
