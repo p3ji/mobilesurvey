@@ -215,6 +215,8 @@ create policy "anon select" on responses for select to anon using (true);
 alter table if exists paradata enable row level security;
 create policy "anon insert" on paradata for insert to anon with check (true);
 create policy "anon select" on paradata for select to anon using (true);
+-- Also grant sequence usage so anon INSERT can generate the auto-increment id:
+grant usage, select on sequence paradata_id_seq to anon;
 
 -- sessions: respondents read/write their own session by key
 alter table if exists sessions enable row level security;
