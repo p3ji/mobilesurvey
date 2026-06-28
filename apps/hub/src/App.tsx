@@ -14,6 +14,7 @@ import {
   Library,
   PenLine,
 } from 'lucide-react';
+import logo from './assets/logo.png';
 import { blankInstrument, lfsInstrument, demoInstrument, BUNDLED_SURVEYS, type Instrument } from '@mobilesurvey/instrument-schema';
 import { migrate, type MigrateResult } from '@mobilesurvey/questionnaire-migrator';
 import {
@@ -735,7 +736,9 @@ function CollectorView({ onBack }: { onBack: () => void }) {
     <div className="hub">
       <header className="hub__header">
         <div className="hub__brand">
-          <button type="button" className="hub__back" onClick={onBack}>← Modular Survey Tools</button>
+          <button type="button" className="hub__back" onClick={onBack}>
+            <img src={logo} alt="Back to home" className="hub__back-logo" />
+          </button>
           <strong>Collector</strong>
           <span className="hub__sub">Manage surveys and track collection</span>
         </div>
@@ -954,7 +957,9 @@ function SearcherView({ onBack }: { onBack: () => void }) {
     <div className="hub">
       <header className="hub__header">
         <div className="hub__brand">
-          <button type="button" className="hub__back" onClick={onBack}>← Modular Survey Tools</button>
+          <button type="button" className="hub__back" onClick={onBack}>
+            <img src={logo} alt="Back to home" className="hub__back-logo" />
+          </button>
           <strong>Searcher</strong>
           <span className="hub__sub">Find and reuse questions across surveys</span>
         </div>
@@ -1225,7 +1230,9 @@ function MigratorView({ onBack }: { onBack: () => void }) {
     <div className="hub">
       <header className="hub__header">
         <div className="hub__brand">
-          <button type="button" className="hub__back" onClick={onBack}>← Modular Survey Tools</button>
+          <button type="button" className="hub__back" onClick={onBack}>
+            <img src={logo} alt="Back to home" className="hub__back-logo" />
+          </button>
           <strong>Migrator</strong>
           <span className="hub__sub">Turn a text questionnaire into a live survey</span>
         </div>
@@ -1491,8 +1498,11 @@ function TrainingView({ onBack }: { onBack: () => void }) {
           ← Back
         </button>
         <div className="hub__brand">
-          <strong className="hub__wordmark">Training Hub</strong>
-          <span className="hub__sub">Videos, guides, and resources</span>
+          <img src={logo} alt="Modular Survey Tools" className="hub__logo" />
+          <div className="hub__brand-text">
+            <strong>Training Hub</strong>
+            <span className="hub__sub">Videos, guides, and resources</span>
+          </div>
         </div>
       </header>
 
@@ -1635,7 +1645,7 @@ function HomePage({ onNavigate }: { onNavigate: (v: HubView) => void }) {
     <div className="hub">
       <header className="hub__header hub__header--home">
         <div className="hub__brand">
-          <strong className="hub__wordmark">Modular Survey Tools</strong>
+          <img src={logo} alt="Modular Survey Tools" className="hub__logo" />
           <span className="hub__sub">Open-source survey platform</span>
         </div>
       </header>
