@@ -197,6 +197,42 @@ docker compose up
 
 ---
 
+## 9. Supabase setup (production only)
+
+When running against Supabase instead of the local SQLite API, apply the following policies once in the Supabase SQL editor (Dashboard → SQL Editor → New query):
+
+```sql
+-- surveys: public read so respondents can load the instrument; authenticated hub writes via RLS
+alter table if exists surveys enable row level security;
+create policy "anon select" on surveys for select to anon using (true);
+
+-- responses: anonymous respondents can insert their own row
+alter table if exists responses enable row level security;
+create policy "anon insert" on responses for insert to anon with check (true);
+create policy "anon select" on responses for select to anon using (true);
+
+-- paradata: anonymous respondents can append events (was blocked — apply this to fix Phase 7 bug)
+alter table if exists paradata enable row level security;
+create policy "anon insert" on paradata for insert to anon with check (true);
+create policy "anon select" on paradata for select to anon using (true);
+
+-- sessions: respondents read/write their own session by key
+alter table if exists sessions enable row level security;
+create policy "anon insert" on sessions for insert to anon with check (true);
+create policy "anon update" on sessions for update to anon using (true);
+create policy "anon select" on sessions for select to anon using (true);
+
+-- audit_log: hub writes; anyone can read (non-sensitive action trail)
+alter table if exists audit_log enable row level security;
+create policy "anon insert" on audit_log for insert to anon with check (true);
+create policy "anon select" on audit_log for select to anon using (true);
+```
+
+> **Paradata note (Phase 7 bug):** The `paradata` anon-insert policy was the missing piece causing
+> `POST /paradata` → 401 in production. Applying the block above resolves it.
+
+---
+
 ## Security notes
 
 - The public Supabase `anon` key in the bundle is a **publishable key** — it is safe to expose but grants only the permissions defined by Row Level Security (RLS) policies.

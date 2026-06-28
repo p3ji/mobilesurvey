@@ -8,6 +8,9 @@
  *
  * Session keys and paradata keys are passed as query params / body fields (not path segments)
  * because they contain `:` and `/` (e.g. `urn:ddi:…::case-0001`).
+ *
+ * Versioning: canonical routes are at /api/v1/*. The /api/* prefix is a deprecated alias —
+ * responses carry Deprecation, X-API-Version, Link (successor-version), and Sunset headers.
  */
 import { serve } from '@hono/node-server';
 import { Hono } from 'hono';
@@ -43,59 +46,11 @@ store.seedSurveys([
   },
 ]);
 
-const app = new Hono();
-app.use('*', cors()); // dev: allow any origin (no credentials/cookies used)
+// ── Zod schemas ───────────────────────────────────────────────────────────────
 
-// ── Health ───────────────────────────────────────────────────────────────────
-app.get('/api/health', (c) => c.json({ ok: true, service: 'mobilesurvey-api' }));
-
-// ── CMS: access codes + status ────────────────────────────────────────────────
 const resolveSchema = z.object({ accessCode: z.string().min(1) });
-
-app.post('/api/access/resolve', async (c) => {
-  const body = resolveSchema.safeParse(await c.req.json().catch(() => null));
-  if (!body.success) return c.json({ error: 'accessCode required' }, 400);
-
-  const found = store.resolveAccessCode(body.data.accessCode);
-  if (!found) return c.json(null, 404);
-  return c.json({ caseId: found.id, sample: { id: found.id, fields: found.fields } });
-});
-
 const statusSchema = z.object({ status: z.string().min(1) });
-
-app.post('/api/cases/:caseId/status', async (c) => {
-  const caseId = c.req.param('caseId');
-  const body = statusSchema.safeParse(await c.req.json().catch(() => null));
-  if (!body.success) return c.json({ error: 'status required' }, 400);
-  // Unknown case ids (e.g. anonymous respondents) are silently accepted — not an error.
-  if (store.getCase(caseId)) store.setCaseStatus(caseId, body.data.status);
-  return c.body(null, 204);
-});
-
-// ── Sessions (resume) ─────────────────────────────────────────────────────────
-app.get('/api/session', (c) => {
-  const key = c.req.query('key');
-  if (!key) return c.json({ error: 'key required' }, 400);
-  return c.json({ state: store.loadSession(key) });
-});
-
 const saveSessionSchema = z.object({ key: z.string().min(1), state: z.unknown() });
-
-app.put('/api/session', async (c) => {
-  const body = saveSessionSchema.safeParse(await c.req.json().catch(() => null));
-  if (!body.success) return c.json({ error: 'key and state required' }, 400);
-  store.saveSession(body.data.key, body.data.state);
-  return c.body(null, 204);
-});
-
-app.delete('/api/session', (c) => {
-  const key = c.req.query('key');
-  if (!key) return c.json({ error: 'key required' }, 400);
-  store.clearSession(key);
-  return c.body(null, 204);
-});
-
-// ── Paradata ──────────────────────────────────────────────────────────────────
 const paradataSchema = z.object({
   key: z.string().optional(),
   event: z.object({
@@ -104,52 +59,112 @@ const paradataSchema = z.object({
     payload: z.record(z.unknown()).optional(),
   }),
 });
+const createSurveySchema = z.object({ title: z.string().min(1), instrument: z.unknown() });
+const updateSurveySchema = z.object({ title: z.string().optional(), instrument: z.unknown() });
+const configSchema = z.object({
+  requiresAccessCode: z.boolean().optional(),
+  status: z.enum(['draft', 'published']).optional(),
+});
+const createInterviewerSchema = z.object({
+  id: z.string().min(1).optional(),
+  name: z.string().min(1),
+  email: z.string().email().optional(),
+});
+const assignSchema = z.object({ interviewerId: z.string().min(1) });
+const outcomeSchema = z.object({
+  status: z.enum(['new', 'in_progress', 'complete', 'callback', 'refused', 'non_contact']),
+  callbackAt: z.number().optional(),
+  callbackNote: z.string().optional(),
+});
 
-app.post('/api/paradata', async (c) => {
+// ── v1 sub-app (canonical) ────────────────────────────────────────────────────
+
+const v1 = new Hono();
+
+// Health
+v1.get('/health', (c) => c.json({ ok: true, service: 'mobilesurvey-api', version: '1' }));
+
+// CMS: access codes + status
+v1.post('/access/resolve', async (c) => {
+  const body = resolveSchema.safeParse(await c.req.json().catch(() => null));
+  if (!body.success) return c.json({ error: 'accessCode required' }, 400);
+  const found = store.resolveAccessCode(body.data.accessCode);
+  if (!found) return c.json(null, 404);
+  return c.json({ caseId: found.id, sample: { id: found.id, fields: found.fields } });
+});
+
+v1.post('/cases/:caseId/status', async (c) => {
+  const caseId = c.req.param('caseId');
+  const body = statusSchema.safeParse(await c.req.json().catch(() => null));
+  if (!body.success) return c.json({ error: 'status required' }, 400);
+  // Unknown case ids (e.g. anonymous respondents) are silently accepted — not an error.
+  if (store.getCase(caseId)) store.setCaseStatus(caseId, body.data.status);
+  return c.body(null, 204);
+});
+
+// Sessions (resume)
+v1.get('/session', (c) => {
+  const key = c.req.query('key');
+  if (!key) return c.json({ error: 'key required' }, 400);
+  return c.json({ state: store.loadSession(key) });
+});
+
+v1.put('/session', async (c) => {
+  const body = saveSessionSchema.safeParse(await c.req.json().catch(() => null));
+  if (!body.success) return c.json({ error: 'key and state required' }, 400);
+  store.saveSession(body.data.key, body.data.state);
+  return c.body(null, 204);
+});
+
+v1.delete('/session', (c) => {
+  const key = c.req.query('key');
+  if (!key) return c.json({ error: 'key required' }, 400);
+  store.clearSession(key);
+  return c.body(null, 204);
+});
+
+// Paradata
+v1.post('/paradata', async (c) => {
   const body = paradataSchema.safeParse(await c.req.json().catch(() => null));
   if (!body.success) return c.json({ error: 'event required' }, 400);
   store.addParadata(body.data.key ?? null, body.data.event as ParadataEvent);
   return c.body(null, 204);
 });
 
-app.get('/api/paradata', (c) => {
+v1.get('/paradata', (c) => {
   const key = c.req.query('key');
   if (!key) return c.json({ error: 'key required' }, 400);
   return c.json({ events: store.listParadata(key) });
 });
 
-// ── Samples (SampleProvider) ──────────────────────────────────────────────────
-app.get('/api/samples', (c) =>
+// Samples (SampleProvider)
+v1.get('/samples', (c) =>
   c.json(store.listCases().map((r) => ({ id: r.id, fields: r.fields }))),
 );
 
-app.get('/api/samples/:id', (c) => {
+v1.get('/samples/:id', (c) => {
   const found = store.getCase(c.req.param('id'));
   if (!found) return c.json(null, 404);
   return c.json({ id: found.id, fields: found.fields });
 });
 
-// ── Surveys (management hub) ──────────────────────────────────────────────────
-app.get('/api/surveys', (c) => c.json(store.listSurveys()));
+// Surveys (management hub)
+v1.get('/surveys', (c) => c.json(store.listSurveys()));
 
-app.get('/api/surveys/:id', (c) => {
+v1.get('/surveys/:id', (c) => {
   const survey = store.getSurvey(c.req.param('id'));
   if (!survey) return c.json(null, 404);
   return c.json(survey);
 });
 
-const createSurveySchema = z.object({ title: z.string().min(1), instrument: z.unknown() });
-
-app.post('/api/surveys', async (c) => {
+v1.post('/surveys', async (c) => {
   const body = createSurveySchema.safeParse(await c.req.json().catch(() => null));
   if (!body.success) return c.json({ error: 'title and instrument required' }, 400);
   const id = store.createSurvey({ title: body.data.title, instrument: body.data.instrument });
   return c.json({ id }, 201);
 });
 
-const updateSurveySchema = z.object({ title: z.string().optional(), instrument: z.unknown() });
-
-app.put('/api/surveys/:id', async (c) => {
+v1.put('/surveys/:id', async (c) => {
   const body = updateSurveySchema.safeParse(await c.req.json().catch(() => null));
   if (!body.success) return c.json({ error: 'instrument required' }, 400);
   const ok = store.updateSurvey(c.req.param('id'), {
@@ -160,12 +175,7 @@ app.put('/api/surveys/:id', async (c) => {
   return c.body(null, 204);
 });
 
-const configSchema = z.object({
-  requiresAccessCode: z.boolean().optional(),
-  status: z.enum(['draft', 'published']).optional(),
-});
-
-app.patch('/api/surveys/:id/config', async (c) => {
+v1.patch('/surveys/:id/config', async (c) => {
   const body = configSchema.safeParse(await c.req.json().catch(() => null));
   if (!body.success) return c.json({ error: 'invalid config' }, 400);
   const ok = store.setSurveyConfig(c.req.param('id'), body.data);
@@ -173,22 +183,16 @@ app.patch('/api/surveys/:id/config', async (c) => {
   return c.body(null, 204);
 });
 
-app.delete('/api/surveys/:id', (c) => {
+v1.delete('/surveys/:id', (c) => {
   const ok = store.deleteSurvey(c.req.param('id'));
   if (!ok) return c.json({ error: 'unknown survey' }, 404);
   return c.body(null, 204);
 });
 
-// ── CATI: interviewers ────────────────────────────────────────────────────────
-app.get('/api/interviewers', (c) => c.json(store.listInterviewers()));
+// CATI: interviewers
+v1.get('/interviewers', (c) => c.json(store.listInterviewers()));
 
-const createInterviewerSchema = z.object({
-  id: z.string().min(1).optional(),
-  name: z.string().min(1),
-  email: z.string().email().optional(),
-});
-
-app.post('/api/interviewers', async (c) => {
+v1.post('/interviewers', async (c) => {
   const body = createInterviewerSchema.safeParse(await c.req.json().catch(() => null));
   if (!body.success) return c.json({ error: 'name required' }, 400);
   const id = body.data.id ?? `int-${randomUUID()}`;
@@ -196,28 +200,20 @@ app.post('/api/interviewers', async (c) => {
   return c.json({ id }, 201);
 });
 
-// ── CATI: cases ───────────────────────────────────────────────────────────────
-app.get('/api/cases', (c) => {
+// CATI: cases
+v1.get('/cases', (c) => {
   const interviewerId = c.req.query('interviewer_id');
   return c.json(store.listCasesDetailed(interviewerId ? { interviewerId } : undefined));
 });
 
-const assignSchema = z.object({ interviewerId: z.string().min(1) });
-
-app.post('/api/cases/:caseId/assign', async (c) => {
+v1.post('/cases/:caseId/assign', async (c) => {
   const body = assignSchema.safeParse(await c.req.json().catch(() => null));
   if (!body.success) return c.json({ error: 'interviewerId required' }, 400);
   store.assignCase(c.req.param('caseId'), body.data.interviewerId);
   return c.body(null, 204);
 });
 
-const outcomeSchema = z.object({
-  status: z.enum(['new', 'in_progress', 'complete', 'callback', 'refused', 'non_contact']),
-  callbackAt: z.number().optional(),
-  callbackNote: z.string().optional(),
-});
-
-app.post('/api/cases/:caseId/outcome', async (c) => {
+v1.post('/cases/:caseId/outcome', async (c) => {
   const body = outcomeSchema.safeParse(await c.req.json().catch(() => null));
   if (!body.success) return c.json({ error: 'invalid outcome' }, 400);
   store.setCaseOutcome(
@@ -229,7 +225,29 @@ app.post('/api/cases/:caseId/outcome', async (c) => {
   return c.body(null, 204);
 });
 
+// ── Root app ──────────────────────────────────────────────────────────────────
+
+const app = new Hono();
+app.use('*', cors()); // dev: allow any origin (no credentials/cookies used)
+
+// Canonical versioned routes
+app.route('/api/v1', v1);
+
+// Deprecated /api/* alias — same handlers, adds deprecation response headers.
+// Sunset: give clients one year to migrate (adjust as the API stabilises).
+app.use('/api/*', async (c, next) => {
+  await next();
+  c.header('Deprecation', 'true');
+  c.header('X-API-Version', '1');
+  c.header('Link', '</api/v1>; rel="successor-version"');
+  c.header('Sunset', 'Sat, 01 Jan 2027 00:00:00 GMT');
+});
+app.route('/api', v1);
+
 serve({ fetch: app.fetch, port: PORT }, (info) => {
   // eslint-disable-next-line no-console
-  console.log(`[mobilesurvey-api] listening on http://localhost:${info.port}  (db: ${DB_FILE})`);
+  console.log(
+    `[mobilesurvey-api] listening on http://localhost:${info.port}  (db: ${DB_FILE})\n` +
+    `  canonical: /api/v1/  |  legacy (deprecated): /api/`,
+  );
 });

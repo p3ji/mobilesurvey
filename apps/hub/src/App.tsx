@@ -1799,8 +1799,7 @@ function HomePage({ onNavigate }: { onNavigate: (v: HubView) => void }) {
       name: 'Interviewer Mode',
       tagline: 'CATI case queue with call-back scheduling',
       description: 'View assigned cases, launch telephone interviews, and record call outcomes (complete, call-back, refused, non-contact). Schedules call-backs with date, time, and notes.',
-      status: 'live',
-      action: () => onNavigate('interviewer'),
+      status: 'coming-soon',
     },
     {
       id: 'supervisor',
@@ -1808,8 +1807,7 @@ function HomePage({ onNavigate }: { onNavigate: (v: HubView) => void }) {
       name: 'Supervisor Dashboard',
       tagline: 'Monitor interviewer progress and assign cases',
       description: 'See completion rates and outcome breakdowns by interviewer. Assign or reassign cases to balance workloads across your field team.',
-      status: 'live',
-      action: () => onNavigate('supervisor'),
+      status: 'coming-soon',
     },
     {
       id: 'designer-business',
