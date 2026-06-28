@@ -872,3 +872,99 @@ code { font-family: var(--mono); font-size: 0.88em; }
   border: none;
   white-space: pre;
 }
+
+/* ── Completion funnel ───────────────────────────────────────────────────── */
+
+.dash__funnel {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: 6px;
+  max-height: 360px;
+  overflow-y: auto;
+}
+.dash__funnel-row {
+  display: grid;
+  grid-template-columns: 28px 1fr auto auto;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+}
+.dash__funnel-num {
+  font-size: 10px;
+  color: var(--ink-soft);
+  font-family: var(--mono);
+  text-align: right;
+}
+.dash__funnel-label {
+  color: var(--ink);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.dash__funnel-track {
+  width: 140px;
+  height: 10px;
+  background: var(--line);
+  border-radius: 3px;
+  overflow: hidden;
+}
+.dash__funnel-fill {
+  height: 100%;
+  border-radius: 3px;
+  transition: width 0.3s ease;
+}
+.dash__funnel-pct {
+  font-size: 11px;
+  font-family: var(--mono);
+  width: 32px;
+  text-align: right;
+  font-weight: 600;
+}
+
+/* ── Analyzer tabs ───────────────────────────────────────────────────────── */
+
+.analyzer__tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--line);
+  margin-bottom: 0;
+}
+.analyzer__tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--panel);
+  font-size: 13px;
+  color: var(--ink-soft);
+  cursor: pointer;
+  transition: background 0.1s, border-color 0.1s, color 0.1s;
+}
+.analyzer__tab:hover {
+  background: var(--surface);
+  border-color: var(--brand);
+  color: var(--ink);
+}
+.analyzer__tab--active {
+  background: var(--brand);
+  border-color: var(--brand);
+  color: #fff;
+}
+.analyzer__tab--active .analyzer__tab-count {
+  background: rgba(255,255,255,0.25);
+  color: #fff;
+}
+.analyzer__tab-title { font-weight: 500; }
+.analyzer__tab-count {
+  font-size: 11px;
+  font-weight: 600;
+  background: var(--line);
+  color: var(--ink-soft);
+  border-radius: 10px;
+  padding: 1px 6px;
+}

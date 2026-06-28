@@ -2,6 +2,7 @@
 import { useEffect, useRef, useState, type ChangeEvent } from 'react';
 import { pick } from '@mobilesurvey/runtime-engine';
 import { getInstrumentJsonSchema, validateInstrument } from '@mobilesurvey/instrument-schema';
+import { exportDdiXml, importDdiXml } from '@mobilesurvey/ddi-xml';
 import { useDesigner } from '../store/instrumentStore.js';
 import { saveSurvey } from '../lib/surveyApi.js';
 import { printSpec } from '../lib/specReport.js';
@@ -56,6 +57,7 @@ export function Toolbar({
   const exportRef = useRef<HTMLDivElement>(null);
   const modeRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const xmlInputRef = useRef<HTMLInputElement>(null);
 
   // Close dropdowns on outside click.
   useEffect(() => {
@@ -99,6 +101,36 @@ export function Toolbar({
       .toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
     download(html, `${slug}.html`, 'text/html;charset=utf-8');
     setExportOpen(false);
+  };
+
+  const exportDdi = () => {
+    const xml = exportDdiXml(instrument);
+    const slug = (pick(instrument.metadata.title as Record<string, string>, language) ?? 'instrument')
+      .toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
+    download(xml, `${slug}.ddi.xml`, 'application/xml;charset=utf-8');
+    setExportOpen(false);
+  };
+
+  const handleImportXml = (e: ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      setImportError(null);
+      try {
+        const { instrument: imported, report } = importDdiXml(reader.result as string);
+        const warnings = report.notes.filter(n => n.severity === 'warning');
+        if (warnings.length) {
+          setImportError(`Imported with ${warnings.length} warning(s): ${warnings[0]?.message ?? ''}`);
+        }
+        load(imported);
+        setExportOpen(false);
+      } catch (err) {
+        setImportError(err instanceof Error ? err.message : 'Invalid DDI-XML');
+      }
+      e.target.value = '';
+    };
+    reader.readAsText(file);
   };
 
   const handleImportFile = (e: ChangeEvent<HTMLInputElement>) => {
@@ -228,6 +260,13 @@ export function Toolbar({
         style={{ display: 'none' }}
         onChange={handleImportFile}
       />
+      <input
+        ref={xmlInputRef}
+        type="file"
+        accept=".xml,application/xml,text/xml"
+        style={{ display: 'none' }}
+        onChange={handleImportXml}
+      />
       <div className="toolbar__group toolbar__export-wrap" ref={exportRef}>
         <button
           type="button"
@@ -243,6 +282,9 @@ export function Toolbar({
             <button type="button" role="menuitem" onClick={() => fileInputRef.current?.click()}>
               ⬆ Import instrument JSON
             </button>
+            <button type="button" role="menuitem" onClick={() => xmlInputRef.current?.click()}>
+              ⬆ Import DDI-XML
+            </button>
             {importError && (
               <p className="toolbar__import-error" role="alert">{importError}</p>
             )}
@@ -252,6 +294,9 @@ export function Toolbar({
             </button>
             <button type="button" role="menuitem" onClick={exportJson}>
               ⬇ Instrument JSON
+            </button>
+            <button type="button" role="menuitem" onClick={exportDdi}>
+              ⬇ DDI-XML (DDI-L 3.3)
             </button>
             <button type="button" role="menuitem" onClick={exportJsonSchema}>
               ⬇ JSON Schema
