@@ -1,6 +1,6 @@
 # mobilesurvey — Agent Guide
 
-> Single source of truth for *how to work on this repo*. Claude and Antigravity both read this (`CLAUDE.md` → `@AGENTS.md`; `GEMINI.md` → pointer). Keep it short. *(Updated 2026-06-27; edit freely — re-runs won't overwrite an existing AGENTS.md.)*
+> Single source of truth for *how to work on this repo*. Claude and Antigravity both read this (`CLAUDE.md` → `@AGENTS.md`; `GEMINI.md` → pointer). Keep it short. *(Updated 2026-06-28; edit freely — re-runs won't overwrite an existing AGENTS.md.)*
 
 **Brain note (goals, backlog, full context):** `H:\My Drive\Brain2\Projects\mobilesurvey.md`
 **GitHub:** https://github.com/p3ji/mobilesurvey.git
@@ -20,6 +20,7 @@
 - `packages/expression-engine` — safe (no-eval) evaluator for routing, edits, derived fields.
 - `packages/runtime-engine` — thin XState machine: flattening, piping, edits, rosters (nested supported).
 - `packages/metadata-registry` — TF-IDF indexer + semantic search for question/component reuse.
+- `packages/ddi-xml` — DDI-Lifecycle 3.3 XML codec: `exportDdiXml` / `importDdiXml`. Zero external deps. MST-specific fields as `<r:UserID type="mst:KEY">` extensions; FidelityReport for lossy external files.
 - `apps/designer` — Vite + React authoring tool with flowchart view, PDF export, Library search/insert.
 - `apps/runtime` — Vite + React respondent app; loads surveys by `?survey=<id>` (anonymous or code-gated).
 - `apps/hub` — Vite + React survey management home screen; create, edit, configure, publish, launch surveys.
@@ -41,7 +42,15 @@
    - ✓ Questionnaire Tester (hub tile)
    - ✓ Designer Interviewer (AI-assisted interview flow for building questionnaires)
    - NOT DONE: searchable/collapsible tree for 100+ question surveys
-4. **Phase 7:** Analytics dashboard (monitor responses, completion/drop-off, paradata).
+4. **Phase 6 remaining:** searchable/collapsible tree for 100+ question surveys (not yet started).
+5. **Phase 7 IN PROGRESS (2026-06-28) — Enterprise foundation:**
+   - ✓ `@mobilesurvey/ddi-xml` — DDI-L 3.3 round-trip codec; 18 tests passing all 4 fixtures; wired into Designer toolbar (Import DDI-XML / Export DDI-XML). Branch `feat/ddi-xml-codec` pushed.
+   - NOT DONE: paradata RLS policy (Supabase dashboard config — anon INSERT blocked; see Open Bugs)
+   - NOT DONE: versioned API contract (`/api/v1/` prefix + deprecation headers)
+6. **Phase 8 (planned):** Scale & expression assurance — stress tests (1000+ items), expression-engine coverage, performance benchmarks.
+7. **Phase 9 (planned):** WCAG 2.1 AA + RTL language support (Arabic/Hebrew locales).
+8. **Phase 10 (planned):** Audit trail, PII redaction, on-prem / air-gapped deployment guide.
+9. **Phase 11 (planned):** Interviewer Mode GA — CATI workflow, supervisor dashboard, call-back scheduling.
 
 ## Conventions & gotchas
 - Keep this file short; put goals/backlog/decisions in the Brain note, not here.
@@ -83,8 +92,9 @@ The agent uses this table to route updates to the correct files.
 - **Decision (2026-06-26):** Demo site is public-by-design — survey definitions + responses are non-sensitive, so the public Supabase publishable key + permissive RLS is acceptable for now. Full RLS lockdown (responses INSERT-only, access-code validation server-side via RPC, auth-scoped writes) deferred until real/sensitive data is collected.
 - **Decision (2026-06-26):** Only the Feature Demo survey (`demo`) connects to live collection; Household & Employment (`lfs`) is exploration-only and must never touch Supabase. Enforced via a `collectsData` flag in the instrument-schema bundled-survey registry.
 - **Decision (2026-06-26):** Evaluated a Netlify migration; deferred. Would require a base-path env var (current Vite configs hard-code `/mobilesurvey/`) plus SPA redirect rules. Staying on GitHub Pages.
+- **Decision (2026-06-28):** Enterprise adoption phased roadmap adopted (Phases 7–11). Keystone gap was no DDI-XML round-trip; `@mobilesurvey/ddi-xml` (Phase 7 first deliverable) addresses this — government statistical agency client repos are DDI-XML; tool now reads/writes without information loss. See Phase status above for remaining Phase 7 items.
 - Phase 6 remaining: searchable/collapsible tree for 100+ question surveys
-- Phase 7: Analytics dashboard (monitor responses, completion/drop-off, paradata)
+- Phase 7 remaining: paradata RLS policy (Supabase dashboard), versioned API (`/api/v1/` prefix)
 
 ## Do NOT
 - Commit secrets (`.env`) or large build artifacts.
