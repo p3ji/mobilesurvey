@@ -736,7 +736,7 @@ function CollectorView({ onBack }: { onBack: () => void }) {
       <header className="hub__header">
         <div className="hub__brand">
           <button type="button" className="hub__back" onClick={onBack}>← Modular Survey Tools</button>
-          <strong>Field Control</strong>
+          <strong>Collector</strong>
           <span className="hub__sub">Manage surveys and track collection</span>
         </div>
         <div className="hub__header-right">
@@ -955,7 +955,7 @@ function SearcherView({ onBack }: { onBack: () => void }) {
       <header className="hub__header">
         <div className="hub__brand">
           <button type="button" className="hub__back" onClick={onBack}>← Modular Survey Tools</button>
-          <strong>Question Library</strong>
+          <strong>Searcher</strong>
           <span className="hub__sub">Find and reuse questions across surveys</span>
         </div>
         <div className="hub__header-right">
@@ -1226,7 +1226,7 @@ function MigratorView({ onBack }: { onBack: () => void }) {
       <header className="hub__header">
         <div className="hub__brand">
           <button type="button" className="hub__back" onClick={onBack}>← Modular Survey Tools</button>
-          <strong>Import</strong>
+          <strong>Migrator</strong>
           <span className="hub__sub">Turn a text questionnaire into a live survey</span>
         </div>
       </header>
@@ -1491,7 +1491,7 @@ function TrainingView({ onBack }: { onBack: () => void }) {
           ← Back
         </button>
         <div className="hub__brand">
-          <strong className="hub__wordmark">Training</strong>
+          <strong className="hub__wordmark">Training Hub</strong>
           <span className="hub__sub">Videos, guides, and resources</span>
         </div>
       </header>
@@ -1546,7 +1546,7 @@ function HomePage({ onNavigate }: { onNavigate: (v: HubView) => void }) {
     {
       id: 'designer-pro',
       icon: <Layers size={22} />,
-      name: 'Pro Studio',
+      name: 'Designer — Pro',
       tagline: 'Full-featured instrument authoring',
       description: 'Opens a blank instrument. Use "Try a demo survey" above to load an example. Tree editing, conditional routing, variables, expressions, and flowchart view.',
       status: 'live',
@@ -1555,7 +1555,7 @@ function HomePage({ onNavigate }: { onNavigate: (v: HubView) => void }) {
     {
       id: 'designer-easy',
       icon: <PenLine size={22} />,
-      name: 'Easy Mode',
+      name: 'Designer — Easy Mode',
       tagline: 'Build a questionnaire question by question',
       description: 'Opens a blank instrument. Use "Try a demo survey" above to load an example. Focused on questions, categories, and simple logic — good for quick questionnaire drafting.',
       status: 'live',
@@ -1564,7 +1564,7 @@ function HomePage({ onNavigate }: { onNavigate: (v: HubView) => void }) {
     {
       id: 'collector',
       icon: <LayoutDashboard size={22} />,
-      name: 'Field Control',
+      name: 'Collector',
       tagline: 'Manage live surveys and track who\'s responding',
       description: 'Create and publish surveys, share respondent links, track collection status, and view the response dashboard for each active survey.',
       status: 'live',
@@ -1573,7 +1573,7 @@ function HomePage({ onNavigate }: { onNavigate: (v: HubView) => void }) {
     {
       id: 'searcher',
       icon: <Library size={22} />,
-      name: 'Question Library',
+      name: 'Searcher',
       tagline: 'Find and reuse questions across every survey',
       description: 'Search questions, variables, and code lists from all surveys by keyword. One click to add a match to a new instrument.',
       status: 'live',
@@ -1582,7 +1582,7 @@ function HomePage({ onNavigate }: { onNavigate: (v: HubView) => void }) {
     {
       id: 'migrator',
       icon: <FileInput size={22} />,
-      name: 'Import',
+      name: 'Migrator',
       tagline: 'Turn a Word doc or text file into a live survey',
       description: 'Paste or upload any plain-text questionnaire. The engine extracts questions, infers response types, and converts routing hints into skip logic.',
       status: 'live',
@@ -1591,7 +1591,7 @@ function HomePage({ onNavigate }: { onNavigate: (v: HubView) => void }) {
     {
       id: 'trainer',
       icon: <GraduationCap size={22} />,
-      name: 'Training',
+      name: 'Training Hub',
       tagline: 'Videos and guides to get you started fast',
       description: 'Video overviews, walkthroughs, and resources for learning Modular Survey Tools. Start with a 2-min intro, then explore from first survey to collection management.',
       status: 'live',
@@ -1600,7 +1600,7 @@ function HomePage({ onNavigate }: { onNavigate: (v: HubView) => void }) {
     {
       id: 'designer-interviewer',
       icon: <Headphones size={22} />,
-      name: 'Interviewer Mode',
+      name: 'Designer — Interviewer',
       tagline: 'For telephone and field-based data collection',
       description: 'Design surveys for CATI or field interviewers. Build entry/exit modules, phone enumeration for coverage weighting, and free navigation so interviewers can jump to any question.',
       status: 'coming-soon',
@@ -1608,7 +1608,7 @@ function HomePage({ onNavigate }: { onNavigate: (v: HubView) => void }) {
     {
       id: 'designer-business',
       icon: <Building2 size={22} />,
-      name: 'Business Mode',
+      name: 'Designer — Business Collection',
       tagline: 'Structured forms for business data collection',
       description: 'A form-first designer tuned for collecting data from businesses — structured inputs, validation rules, and integration with business registers.',
       status: 'coming-soon',
@@ -1616,7 +1616,7 @@ function HomePage({ onNavigate }: { onNavigate: (v: HubView) => void }) {
     {
       id: 'analyzer',
       icon: <BarChart3 size={22} />,
-      name: 'Insights',
+      name: 'Analyzer',
       tagline: 'Charts and tables for your collected data',
       description: 'Frequency distributions, cross-tabs, and charts built from live responses. Advanced analysis — regression, significance testing — on the roadmap.',
       status: 'coming-soon',
@@ -1624,7 +1624,7 @@ function HomePage({ onNavigate }: { onNavigate: (v: HubView) => void }) {
     {
       id: 'tester',
       icon: <FlaskConical size={22} />,
-      name: 'Flow Tester',
+      name: 'Questionnaire Tester',
       tagline: 'Catch routing errors before respondents do',
       description: 'Walks every path through a web survey automatically — catching dead ends, routing errors, and gaps between the designed instrument and the rendered form. Works on any survey platform.',
       status: 'coming-soon',
