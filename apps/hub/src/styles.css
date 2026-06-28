@@ -53,9 +53,14 @@ code { font-family: var(--mono); font-size: 0.88em; }
   background: var(--panel);
   border-bottom: 1px solid var(--line);
 }
-.hub__brand { display: flex; align-items: baseline; gap: 10px; }
-.hub__brand strong { color: var(--brand); font-size: 18px; }
-.hub__sub { color: var(--ink-soft); }
+.hub__brand { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+.hub__brand strong { color: var(--ink); font-size: 16px; }
+.hub__logo { height: 40px; width: auto; }
+.hub__back { display: flex; align-items: center; background: none; border: none; cursor: pointer; padding: 0; }
+.hub__back-logo { height: 28px; width: auto; }
+.hub__brand-text { display: flex; flex-direction: column; gap: 2px; }
+.hub__brand-text strong { color: var(--ink); font-size: 16px; }
+.hub__sub { color: var(--ink-soft); font-size: 14px; }
 .hub__conn { margin-left: auto; font-size: 12px; }
 .hub__conn--on { color: var(--ok); }
 .hub__conn--off { color: var(--danger); }
