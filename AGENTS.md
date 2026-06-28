@@ -60,7 +60,13 @@
    - Hub events audited: survey.create, survey.publish/unpublish, survey.delete, responses.export.
    - `audit_log` table in local SQLite (`apps/api/src/db.ts`) + Supabase SQL in `apps/hub/src/audit.ts`.
    - `DEPLOYMENT.md`: full on-prem guide (local SQLite API, nginx, Docker Compose, env vars).
-9. **Phase 11 (planned):** Interviewer Mode GA — CATI workflow, supervisor dashboard, call-back scheduling.
+9. **Phase 11 DONE (2026-06-29):** Interviewer Mode GA — CATI workflow, supervisor dashboard, call-back scheduling.
+   - `interviewers` table + CATI columns on `cases` (`interviewer_id`, `callback_at`, `callback_note`).
+   - API: `GET/POST /api/interviewers`; `GET /api/cases`; `POST /api/cases/:id/assign`; `POST /api/cases/:id/outcome`.
+   - `seedCati()`: 3 demo interviewers (Alice, Bob, Chen); 6 demo cases with mixed statuses.
+   - Hub `InterviewerView`: case queue sorted by callback urgency, launch interview, record outcome, schedule callback.
+   - Hub `SupervisorView`: aggregate stats strip, per-interviewer breakdown table, case assignment panel.
+   - Both tiles promoted to live on home screen. CATI is local-API-only (on-prem feature, not Supabase).
 
 ## Conventions & gotchas
 - Keep this file short; put goals/backlog/decisions in the Brain note, not here.
@@ -105,6 +111,7 @@ The agent uses this table to route updates to the correct files.
 - **Decision (2026-06-28):** Enterprise adoption phased roadmap adopted (Phases 7–11). Keystone gap was no DDI-XML round-trip; `@mobilesurvey/ddi-xml` (Phase 7 first deliverable) addresses this — government statistical agency client repos are DDI-XML; tool now reads/writes without information loss. See Phase status above for remaining Phase 7 items.
 - Phase 7 remaining: paradata RLS policy (Supabase dashboard), versioned API (`/api/v1/` prefix).
 - **Decision (2026-06-29):** Phases 8, 9, and 10 complete. Next: Phase 11 (Interviewer Mode GA).
+- **Decision (2026-06-29):** Phase 11 complete. CATI is an on-prem/local-API feature — no Supabase schema required. Hub CATI views fall back to the local Hono API (http://localhost:8787). 169 tests pass.
 
 ## Do NOT
 - Commit secrets (`.env`) or large build artifacts.
