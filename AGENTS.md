@@ -1,6 +1,6 @@
 # mobilesurvey — Agent Guide
 
-> Single source of truth for *how to work on this repo*. Claude and Antigravity both read this (`CLAUDE.md` → `@AGENTS.md`; `GEMINI.md` → pointer). Keep it short. *(Updated 2026-06-28; edit freely — re-runs won't overwrite an existing AGENTS.md.)*
+> Single source of truth for *how to work on this repo*. Claude and Antigravity both read this (`CLAUDE.md` → `@AGENTS.md`; `GEMINI.md` → pointer). Keep it short. *(Updated 2026-06-29; edit freely — re-runs won't overwrite an existing AGENTS.md.)*
 
 **Brain note (goals, backlog, full context):** `H:\My Drive\Brain2\Projects\mobilesurvey.md`
 **GitHub:** https://github.com/p3ji/mobilesurvey.git
@@ -42,13 +42,18 @@
    - ✓ Questionnaire Tester (hub tile)
    - ✓ Designer Interviewer (AI-assisted interview flow for building questionnaires)
    - NOT DONE: searchable/collapsible tree for 100+ question surveys
-4. **Phase 6 remaining:** searchable/collapsible tree for 100+ question surveys (not yet started).
-5. **Phase 7 IN PROGRESS (2026-06-28) — Enterprise foundation:**
-   - ✓ `@mobilesurvey/ddi-xml` — DDI-L 3.3 round-trip codec; 18 tests passing all 4 fixtures; wired into Designer toolbar (Import DDI-XML / Export DDI-XML). Branch `feat/ddi-xml-codec` pushed.
-   - NOT DONE: paradata RLS policy (Supabase dashboard config — anon INSERT blocked; see Open Bugs)
-   - NOT DONE: versioned API contract (`/api/v1/` prefix + deprecation headers)
-6. **Phase 8 (planned):** Scale & expression assurance — stress tests (1000+ items), expression-engine coverage, performance benchmarks.
-7. **Phase 9 (planned):** WCAG 2.1 AA + RTL language support (Arabic/Hebrew locales).
+4. **Phase 6 remaining:** searchable/collapsible tree for 100+ question surveys — DONE (committed to main).
+5. **Phase 7 PARTIALLY DONE (2026-06-28):**
+   - ✓ `@mobilesurvey/ddi-xml` — DDI-L 3.3 round-trip codec; 18 tests; wired into Designer toolbar.
+   - ✓ Analyzer view in hub (completion funnel, response CSV export).
+   - NOT DONE: paradata RLS policy (Supabase dashboard config — anon INSERT blocked; see Open Bugs).
+   - NOT DONE: versioned API contract (`/api/v1/` prefix + deprecation headers).
+6. **Phase 8 DONE (2026-06-29):** Expression engine coverage (50 tests: `len`, `contains`, `upper`/`lower`, `abs`/`round`/`floor`/`ceil`, `min`/`max`, `/`, `%`, `null`, nested calls). 1000-question `flattenInstrument` benchmark (< 200 ms). All 152 tests pass.
+7. **Phase 9 DONE (2026-06-29):** WCAG 2.1 AA + RTL in `apps/runtime`:
+   - Skip-to-main-content link; `document.lang`+`dir` synced to locale.
+   - `aria-required`, `aria-invalid`, `aria-describedby` on all controls.
+   - Grid radio `aria-label` (row + column). Directional arrows flip in RTL.
+   - CSS: logical properties (`margin-inline-end`, `text-align: end`), RTL progress-fill, `aria-invalid` red border.
 8. **Phase 10 (planned):** Audit trail, PII redaction, on-prem / air-gapped deployment guide.
 9. **Phase 11 (planned):** Interviewer Mode GA — CATI workflow, supervisor dashboard, call-back scheduling.
 
@@ -93,8 +98,8 @@ The agent uses this table to route updates to the correct files.
 - **Decision (2026-06-26):** Only the Feature Demo survey (`demo`) connects to live collection; Household & Employment (`lfs`) is exploration-only and must never touch Supabase. Enforced via a `collectsData` flag in the instrument-schema bundled-survey registry.
 - **Decision (2026-06-26):** Evaluated a Netlify migration; deferred. Would require a base-path env var (current Vite configs hard-code `/mobilesurvey/`) plus SPA redirect rules. Staying on GitHub Pages.
 - **Decision (2026-06-28):** Enterprise adoption phased roadmap adopted (Phases 7–11). Keystone gap was no DDI-XML round-trip; `@mobilesurvey/ddi-xml` (Phase 7 first deliverable) addresses this — government statistical agency client repos are DDI-XML; tool now reads/writes without information loss. See Phase status above for remaining Phase 7 items.
-- Phase 6 remaining: searchable/collapsible tree for 100+ question surveys
-- Phase 7 remaining: paradata RLS policy (Supabase dashboard), versioned API (`/api/v1/` prefix)
+- Phase 7 remaining: paradata RLS policy (Supabase dashboard), versioned API (`/api/v1/` prefix).
+- **Decision (2026-06-29):** Phase 8 and 9 complete. Next: Phase 10 (audit trail + PII redaction) or Phase 11 (Interviewer Mode GA).
 
 ## Do NOT
 - Commit secrets (`.env`) or large build artifacts.
