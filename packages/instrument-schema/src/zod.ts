@@ -63,6 +63,7 @@ export const variableSchema = z
     categorySchemeRef: idSchema.optional(),
     compute: expressionSchema.optional(),
     interviewerOnly: z.boolean().optional(),
+    isPII: z.boolean().optional(),
   })
   .refine((v) => v.kind !== 'derived' || (v.compute?.trim().length ?? 0) > 0, {
     message: 'derived variables must define a `compute` expression',

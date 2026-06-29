@@ -1,343 +1,515 @@
 /**
- * Import: DDI-Lifecycle-flavoured XML → mobilesurvey `Instrument`, with a fidelity report.
+ * Import a DDI-Lifecycle 3.3 XML document into an Instrument.
  *
- * The mapping is the exact reverse of `export.ts`. Unrecognized elements are not silently dropped —
- * they are recorded as `dropped` notes so an operator can see precisely what did not carry over. The
- * result is run through the schema's own `validateInstrument`, so shape and referential-integrity
- * failures surface as `error` notes (the import still returns the best-effort instrument).
+ * Designed primarily for round-tripping XML produced by exportDdiXml(), but
+ * also handles external DDI-L 3.3 files on a best-effort basis, surfacing any
+ * approximations as fidelity notes.
  */
-import {
-  validateInstrument,
-  type CategoryScheme,
-  type Concept,
-  type ControlConstruct,
-  type EditRule,
-  type Instrument,
-  type InstrumentMetadata,
-  type InternationalString,
-  type InterviewerConfig,
-  type PrefillMapping,
-  type QuestionConstruct,
-  type ResponseDomain,
-  type SequenceConstruct,
-  type Universe,
-  type Variable,
+import type {
+  Instrument,
+  ControlConstruct,
+  SequenceConstruct,
+  QuestionConstruct,
+  IfThenElseConstruct,
+  LoopConstruct,
+  ComputationConstruct,
+  StatementConstruct,
+  InternationalString,
+  ResponseDomain,
+  Variable,
+  CategoryScheme,
+  Concept,
+  Universe,
+  EditRule,
+  PrefillMapping,
+  InterviewerConfig,
 } from '@mobilesurvey/instrument-schema';
-import { parseXml, DdiXmlError, type XmlElement } from './xml.js';
-import type { FidelityNote, ImportResult } from './fidelity.js';
+import { parseXml, type XmlNode } from './xml.js';
+import type { FidelityNote, ImportResult } from './types.js';
 
-// ── element-tree helpers ───────────────────────────────────────────────────────
+// ---------------------------------------------------------------------------
+// DOM helpers
+// ---------------------------------------------------------------------------
 
-function kid(el: XmlElement, tag: string): XmlElement | undefined {
-  return el.children.find((c) => c.tag === tag);
+function kids(n: XmlNode | undefined, localName: string): XmlNode[] {
+  if (!n) return [];
+  return n.children.filter(c => c.localName === localName);
 }
-function kids(el: XmlElement, tag: string): XmlElement[] {
-  return el.children.filter((c) => c.tag === tag);
+
+function kid(n: XmlNode | undefined, localName: string): XmlNode | undefined {
+  return n?.children.find(c => c.localName === localName);
 }
-function attr(el: XmlElement, name: string): string | undefined {
-  return el.attrs[name];
+
+/** Read <r:UserID type="mst:KEY"> text from a node's direct children. */
+function mst(n: XmlNode, key: string): string | undefined {
+  return n.children.find(c => c.localName === 'UserID' && c.attrs['type'] === `mst:${key}`)?.text;
 }
-function numAttr(el: XmlElement, name: string): number | undefined {
-  const v = el.attrs[name];
-  return v === undefined ? undefined : Number(v);
-}
-function boolAttr(el: XmlElement, name: string): boolean | undefined {
-  const v = el.attrs[name];
-  return v === undefined ? undefined : v === 'true';
-}
-function textOf(el: XmlElement | undefined): string | undefined {
-  return el?.text;
+
+/** r:ID text of a node. */
+function rid(n: XmlNode): string {
+  return kid(n, 'ID')?.text ?? '';
 }
 
 /**
- * Read an `InternationalString` from a parent's language-tagged children of the given tag, e.g.
- * `readIntl(question, 'Text')` collects `<Text xml:lang="en">…</Text><Text xml:lang="fr">…</Text>`.
+ * Extract the local ID from a full URN produced by exportDdiXml().
+ * Format: {instrumentUrn}!{localId}, where instrumentUrn contains no '!'.
  */
-function readIntl(parent: XmlElement | undefined, tag: string): InternationalString {
-  const out: InternationalString = {};
-  if (!parent) return out;
-  for (const e of kids(parent, tag)) {
-    out[e.attrs['xml:lang'] ?? ''] = e.text;
-  }
-  return out;
+function urnToLocalId(urn: string): string {
+  const bang = urn.indexOf('!');
+  return bang >= 0 ? urn.slice(bang + 1) : urn;
 }
 
-/** True when the parent has at least one language-tagged child of the given tag. */
-function hasIntl(parent: XmlElement, tag: string): boolean {
-  return kids(parent, tag).length > 0;
-}
+// ---------------------------------------------------------------------------
+// InternationalString extraction
+// ---------------------------------------------------------------------------
 
-/** Drop keys whose value is `undefined`, so optional fields stay absent (not present-as-undefined). */
-function compact<T extends object>(obj: T): T {
-  for (const key of Object.keys(obj) as (keyof T)[]) {
-    if (obj[key] === undefined) delete obj[key];
-  }
-  return obj;
-}
-
-/** Record any child elements that the named readers did not consume. */
-function noteUnknownChildren(el: XmlElement, known: ReadonlySet<string>, path: string, notes: FidelityNote[]): void {
-  for (const child of el.children) {
-    if (!known.has(child.tag)) {
-      notes.push({ level: 'dropped', path: `${path} > ${child.tag}`, message: `Unsupported <${child.tag}> element was ignored.` });
+function intlFromLabel(n: XmlNode | undefined): InternationalString {
+  const result: InternationalString = {};
+  if (!n) return result;
+  const label = kid(n, 'Label');
+  const source = label ?? n;
+  for (const c of source.children) {
+    if (c.localName === 'Content' || c.localName === 'String') {
+      result[c.attrs['xml:lang'] ?? 'en'] = c.text;
     }
   }
+  return result;
 }
 
-// ── response domain ─────────────────────────────────────────────────────────────
-
-function readResponseDomain(el: XmlElement, path: string, notes: FidelityNote[]): ResponseDomain {
-  const type = attr(el, 'type');
-  switch (type) {
-    case 'code':
-      return compact({ type, categorySchemeRef: attr(el, 'categorySchemeRef') ?? '', selection: (attr(el, 'selection') ?? 'single') as 'single' | 'multiple' }) as ResponseDomain;
-    case 'numeric':
-      return compact({ type, min: numAttr(el, 'min'), max: numAttr(el, 'max'), decimals: numAttr(el, 'decimals'), unit: hasIntl(el, 'Unit') ? readIntl(el, 'Unit') : undefined }) as ResponseDomain;
-    case 'text':
-      return compact({ type, multiline: boolAttr(el, 'multiline'), maxLength: numAttr(el, 'maxLength'), pattern: attr(el, 'pattern') }) as ResponseDomain;
-    case 'datetime':
-      return { type, mode: (attr(el, 'mode') ?? 'date') as 'date' | 'time' | 'datetime' };
-    case 'boolean':
-      return { type };
-    case 'file':
-      return compact({ type, accept: kids(el, 'Accept').length > 0 ? kids(el, 'Accept').map((a) => a.text) : undefined, maxSizeMb: numAttr(el, 'maxSizeMb') }) as ResponseDomain;
-    case 'lookup':
-      return compact({ type, categorySchemeRef: attr(el, 'categorySchemeRef') ?? '', hierarchical: boolAttr(el, 'hierarchical') }) as ResponseDomain;
-    case 'markAll':
-      return { type, categorySchemeRef: attr(el, 'categorySchemeRef') ?? '', variablePrefix: attr(el, 'variablePrefix') ?? '' };
-    case 'grid':
-      return { type, rowSchemeRef: attr(el, 'rowSchemeRef') ?? '', colSchemeRef: attr(el, 'colSchemeRef') ?? '', variablePrefix: attr(el, 'variablePrefix') ?? '' };
-    default:
-      notes.push({ level: 'approximated', path, message: `Unknown ResponseDomain type "${type ?? '(none)'}"; treated as open text.` });
-      return { type: 'text' };
+function intlFromDdiText(n: XmlNode | undefined): InternationalString {
+  const result: InternationalString = {};
+  if (!n) return result;
+  const lit = kid(n, 'LiteralText');
+  for (const t of kids(lit, 'Text')) {
+    result[t.attrs['xml:lang'] ?? 'en'] = t.text;
   }
+  return result;
 }
 
-function readEdit(el: XmlElement): EditRule {
-  const scopeEl = kid(el, 'Scope');
-  return compact({
-    id: attr(el, 'id') ?? '',
-    type: (attr(el, 'type') ?? 'soft') as 'hard' | 'soft',
-    when: textOf(kid(el, 'When')) ?? '',
-    message: readIntl(el, 'Message'),
-    scope: scopeEl ? kids(scopeEl, 'Var').map((v) => attr(v, 'name') ?? '') : undefined,
-  });
-}
+// ---------------------------------------------------------------------------
+// Response domain parsing
+// ---------------------------------------------------------------------------
 
-// ── control constructs ──────────────────────────────────────────────────────────
-
-function readChildren(wrapper: XmlElement | undefined, path: string, notes: FidelityNote[]): ControlConstruct[] {
-  if (!wrapper) return [];
-  const out: ControlConstruct[] = [];
-  wrapper.children.forEach((child, i) => {
-    const c = readConstruct(child, `${path}[${i}]`, notes);
-    if (c) out.push(c);
-  });
-  return out;
-}
-
-function readConstruct(el: XmlElement, path: string, notes: FidelityNote[]): ControlConstruct | null {
-  switch (el.tag) {
-    case 'Question':
-      return compact<QuestionConstruct>({
-        type: 'question',
-        id: attr(el, 'id') ?? '',
-        variableRef: attr(el, 'variableRef') ?? '',
-        text: readIntl(el, 'Text'),
-        instruction: hasIntl(el, 'Instruction') ? readIntl(el, 'Instruction') : undefined,
-        tooltip: hasIntl(el, 'Tooltip') ? readIntl(el, 'Tooltip') : undefined,
-        responseDomain: readResponseDomain(kid(el, 'ResponseDomain') ?? el, `${path} > ResponseDomain`, notes),
-        required: boolAttr(el, 'required'),
-        edits: kid(el, 'Edits') ? kids(kid(el, 'Edits')!, 'Edit').map(readEdit) : undefined,
-        visibleWhen: textOf(kid(el, 'VisibleWhen')),
-        interviewerOnly: boolAttr(el, 'interviewerOnly'),
-      });
-    case 'Sequence':
-      return compact<SequenceConstruct>({
-        type: 'sequence',
-        id: attr(el, 'id') ?? '',
-        label: hasIntl(el, 'Label') ? readIntl(el, 'Label') : undefined,
-        children: readChildren(kid(el, 'Children'), `${path} > Children`, notes),
-        visibleWhen: textOf(kid(el, 'VisibleWhen')),
-        isPage: boolAttr(el, 'isPage'),
-        moduleKind: attr(el, 'moduleKind') as SequenceConstruct['moduleKind'],
-        interviewerOnly: boolAttr(el, 'interviewerOnly'),
-      });
-    case 'IfThenElse': {
-      const elseEl = kid(el, 'Else');
-      return compact<ControlConstruct>({
-        type: 'ifThenElse',
-        id: attr(el, 'id') ?? '',
-        condition: textOf(kid(el, 'Condition')) ?? '',
-        then: readChildren(kid(el, 'Then'), `${path} > Then`, notes),
-        else: elseEl ? readChildren(elseEl, `${path} > Else`, notes) : undefined,
-      });
-    }
-    case 'Loop':
-      return compact<ControlConstruct>({
-        type: 'loop',
-        id: attr(el, 'id') ?? '',
-        loopVariable: attr(el, 'loopVariable') ?? '',
-        countVariableRef: attr(el, 'countVariableRef'),
-        loopWhile: textOf(kid(el, 'LoopWhile')),
-        label: hasIntl(el, 'Label') ? readIntl(el, 'Label') : undefined,
-        itemLabel: hasIntl(el, 'ItemLabel') ? readIntl(el, 'ItemLabel') : undefined,
-        children: readChildren(kid(el, 'Children'), `${path} > Children`, notes),
-        visibleWhen: textOf(kid(el, 'VisibleWhen')),
-      });
-    case 'Computation':
+function parseRd(qiNode: XmlNode, qid: string, notes: FidelityNote[]): ResponseDomain {
+  const codeDom = kid(qiNode, 'CodeDomain');
+  if (codeDom) {
+    const rdType = mst(codeDom, 'rdType');
+    if (rdType === 'boolean') return { type: 'boolean' };
+    const clRef = kid(codeDom, 'CodeListReference');
+    const clId = clRef ? rid(clRef) : '';
+    const csRef = clId.endsWith('.cl') ? clId.slice(0, -3) : clId;
+    if (rdType === 'lookup') {
       return {
-        type: 'computation',
-        id: attr(el, 'id') ?? '',
-        targetVariableRef: attr(el, 'targetVariableRef') ?? '',
-        expression: textOf(kid(el, 'Expression')) ?? '',
+        type: 'lookup',
+        categorySchemeRef: csRef,
+        hierarchical: mst(codeDom, 'hierarchical') === 'true' || undefined,
       };
-    case 'Statement':
-      return compact<ControlConstruct>({
-        type: 'statement',
-        id: attr(el, 'id') ?? '',
-        text: readIntl(el, 'Text'),
-        visibleWhen: textOf(kid(el, 'VisibleWhen')),
-        interviewerOnly: boolAttr(el, 'interviewerOnly'),
-      });
-    default:
-      notes.push({ level: 'dropped', path, message: `Unsupported control construct <${el.tag}> was ignored.` });
-      return null;
-  }
-}
-
-// ── top-level pieces ────────────────────────────────────────────────────────────
-
-function readMetadata(el: XmlElement | undefined): InstrumentMetadata {
-  if (!el) return { title: {} };
-  return compact<InstrumentMetadata>({
-    title: readIntl(el, 'Title'),
-    agency: textOf(kid(el, 'Agency')),
-    description: hasIntl(el, 'Description') ? readIntl(el, 'Description') : undefined,
-    created: textOf(kid(el, 'Created')),
-  });
-}
-
-function readConcept(el: XmlElement): Concept {
-  return compact<Concept>({
-    id: attr(el, 'id') ?? '',
-    label: readIntl(el, 'Label'),
-    description: hasIntl(el, 'Description') ? readIntl(el, 'Description') : undefined,
-  });
-}
-
-function readUniverse(el: XmlElement): Universe {
-  return compact<Universe>({
-    id: attr(el, 'id') ?? '',
-    label: readIntl(el, 'Label'),
-    clause: textOf(kid(el, 'Clause')),
-  });
-}
-
-function readCategoryScheme(el: XmlElement): CategoryScheme {
-  return {
-    id: attr(el, 'id') ?? '',
-    label: readIntl(el, 'Label'),
-    categories: kids(el, 'Category').map((cat) => ({ code: attr(cat, 'code') ?? '', label: readIntl(cat, 'Label') })),
-  };
-}
-
-function readVariable(el: XmlElement): Variable {
-  return compact<Variable>({
-    id: attr(el, 'id') ?? '',
-    name: attr(el, 'name') ?? '',
-    kind: (attr(el, 'kind') ?? 'collected') as Variable['kind'],
-    label: readIntl(el, 'Label'),
-    representation: (attr(el, 'representation') ?? 'text') as Variable['representation'],
-    conceptRef: attr(el, 'conceptRef'),
-    categorySchemeRef: attr(el, 'categorySchemeRef'),
-    compute: textOf(kid(el, 'Compute')),
-    interviewerOnly: boolAttr(el, 'interviewerOnly'),
-  });
-}
-
-function readPrefill(el: XmlElement): PrefillMapping {
-  return { sampleField: attr(el, 'sampleField') ?? '', targetVariable: attr(el, 'targetVariable') ?? '' };
-}
-
-function readInterviewer(el: XmlElement): InterviewerConfig {
-  return compact<InterviewerConfig>({
-    enabled: boolAttr(el, 'enabled') ?? false,
-    allowFreeNavigation: boolAttr(el, 'allowFreeNavigation') ?? false,
-    entryModuleRef: attr(el, 'entryModuleRef'),
-    exitModuleRef: attr(el, 'exitModuleRef'),
-  });
-}
-
-const INSTRUMENT_CHILDREN = new Set([
-  'Languages',
-  'Metadata',
-  'Concepts',
-  'Universes',
-  'CategorySchemes',
-  'Variables',
-  'PrefillMappings',
-  'Sequence',
-  'Interviewer',
-]);
-
-function buildInstrument(root: XmlElement, notes: FidelityNote[]): Instrument {
-  noteUnknownChildren(root, INSTRUMENT_CHILDREN, 'Instrument', notes);
-
-  const languagesEl = kid(root, 'Languages');
-  const languages = languagesEl ? kids(languagesEl, 'Language').map((l) => attr(l, 'code') ?? '') : [];
-
-  const sequenceEl = kid(root, 'Sequence');
-  const sequence = sequenceEl ? readConstruct(sequenceEl, 'Instrument > Sequence', notes) : null;
-  if (!sequence || sequence.type !== 'sequence') {
-    notes.push({ level: 'error', path: 'Instrument > Sequence', message: 'Missing or invalid root <Sequence>.' });
-  }
-
-  const interviewerEl = kid(root, 'Interviewer');
-
-  return compact<Instrument>({
-    id: attr(root, 'id') ?? '',
-    version: attr(root, 'version') ?? '1.0.0',
-    ddiProfile: (attr(root, 'ddiProfile') ?? 'ddi-lifecycle-3.3') as Instrument['ddiProfile'],
-    languages,
-    defaultLanguage: attr(root, 'defaultLanguage') ?? languages[0] ?? 'en',
-    metadata: readMetadata(kid(root, 'Metadata')),
-    concepts: kids(kid(root, 'Concepts') ?? root, 'Concept').map(readConcept),
-    universes: kids(kid(root, 'Universes') ?? root, 'Universe').map(readUniverse),
-    categorySchemes: kids(kid(root, 'CategorySchemes') ?? root, 'CategoryScheme').map(readCategoryScheme),
-    variables: kids(kid(root, 'Variables') ?? root, 'Variable').map(readVariable),
-    prefillMappings: kids(kid(root, 'PrefillMappings') ?? root, 'PrefillMapping').map(readPrefill),
-    sequence: (sequence?.type === 'sequence' ? sequence : { type: 'sequence', id: 'seq.root', children: [] }) as SequenceConstruct,
-    interviewer: interviewerEl ? readInterviewer(interviewerEl) : undefined,
-  });
-}
-
-/**
- * Parse a DDI-XML document into an instrument, returning the result plus a fidelity report.
- * Never throws on malformed input — parse failures and validation failures surface as notes.
- */
-export function ddiXmlToInstrument(xml: string): ImportResult {
-  let root: XmlElement;
-  try {
-    root = parseXml(xml);
-  } catch (err) {
-    const message = err instanceof DdiXmlError ? err.message : String(err);
-    return { ok: false, instrument: null, notes: [{ level: 'error', path: '', message: `Malformed XML: ${message}` }] };
-  }
-
-  const notes: FidelityNote[] = [];
-  if (root.tag !== 'Instrument') {
-    notes.push({ level: 'error', path: root.tag, message: `Expected <Instrument> root element, found <${root.tag}>.` });
-  }
-
-  const built = buildInstrument(root, notes);
-  const validation = validateInstrument(built);
-  if (!validation.ok) {
-    for (const issue of validation.issues) {
-      notes.push({ level: 'error', path: issue.path, message: issue.message });
     }
-    return { ok: false, instrument: built, notes };
+    if (rdType === 'markAll') {
+      return {
+        type: 'markAll',
+        categorySchemeRef: csRef,
+        variablePrefix: mst(codeDom, 'variablePrefix') ?? '',
+      };
+    }
+    const sel = (mst(codeDom, 'selection') ?? 'single') as 'single' | 'multiple';
+    return { type: 'code', categorySchemeRef: csRef, selection: sel };
   }
 
-  return { ok: notes.every((n) => n.level !== 'error'), instrument: validation.instrument, notes };
+  const numDom = kid(qiNode, 'NumericDomain');
+  if (numDom) {
+    const mn = mst(numDom, 'min');
+    const mx = mst(numDom, 'max');
+    const dec = mst(numDom, 'decimals');
+    const unit = mst(numDom, 'unit');
+    return {
+      type: 'numeric',
+      min: mn != null ? Number(mn) : undefined,
+      max: mx != null ? Number(mx) : undefined,
+      decimals: dec != null ? Number(dec) : undefined,
+      unit: unit ? (JSON.parse(unit) as InternationalString) : undefined,
+    };
+  }
+
+  const txtDom = kid(qiNode, 'TextDomain');
+  if (txtDom) {
+    if (mst(txtDom, 'rdType') === 'file') {
+      const acc = mst(txtDom, 'accept');
+      const mb = mst(txtDom, 'maxSizeMb');
+      return {
+        type: 'file',
+        accept: acc ? acc.split(',') : undefined,
+        maxSizeMb: mb != null ? Number(mb) : undefined,
+      };
+    }
+    const ml = mst(txtDom, 'multiline');
+    const maxLen = mst(txtDom, 'maxLength');
+    const pat = mst(txtDom, 'pattern');
+    return {
+      type: 'text',
+      multiline: ml === 'true' || undefined,
+      maxLength: maxLen != null ? Number(maxLen) : undefined,
+      pattern: pat ?? undefined,
+    };
+  }
+
+  const dtDom = kid(qiNode, 'DateTimeDomain');
+  if (dtDom) {
+    return { type: 'datetime', mode: (mst(dtDom, 'mode') ?? 'date') as 'date' | 'time' | 'datetime' };
+  }
+
+  const gridDom = kid(qiNode, 'GridDomain');
+  if (gridDom) {
+    return {
+      type: 'grid',
+      rowSchemeRef: mst(gridDom, 'rowSchemeRef') ?? '',
+      colSchemeRef: mst(gridDom, 'colSchemeRef') ?? '',
+      variablePrefix: mst(gridDom, 'variablePrefix') ?? '',
+    };
+  }
+
+  notes.push({ severity: 'warning', elementId: qid, message: 'Unknown response domain; defaulted to text' });
+  return { type: 'text' };
+}
+
+// ---------------------------------------------------------------------------
+// Main import
+// ---------------------------------------------------------------------------
+
+export function importDdiXml(xml: string): ImportResult {
+  const notes: FidelityNote[] = [];
+  const root = parseXml(xml);
+  const su = root.localName === 'StudyUnit'
+    ? root
+    : (root.children.find(c => c.localName === 'StudyUnit') ?? root);
+
+  // --- StudyUnit metadata ---
+  const instrumentUrn = kid(su, 'URN')?.text ?? '';
+  const version = kid(su, 'Version')?.text ?? '1.0.0';
+  const languages = (mst(su, 'languages') ?? 'en').split(/\s+/).filter(Boolean);
+  const defaultLanguage = mst(su, 'defaultLanguage') ?? languages[0] ?? 'en';
+  const ddiProfile = (mst(su, 'ddiProfile') ?? 'ddi-lifecycle-3.3') as 'ddi-lifecycle-3.3';
+  const prefillMappings: PrefillMapping[] = JSON.parse(mst(su, 'prefillMappings') ?? '[]');
+  const interviewerRaw = mst(su, 'interviewer');
+  const interviewer: InterviewerConfig | undefined = interviewerRaw
+    ? (JSON.parse(interviewerRaw) as InterviewerConfig)
+    : undefined;
+
+  // --- Citation ---
+  const citation = kid(su, 'Citation');
+  const titleNode = kid(citation, 'Title');
+  const title: InternationalString = {};
+  for (const s of kids(titleNode, 'String')) {
+    title[s.attrs['xml:lang'] ?? 'en'] = s.text;
+  }
+  if (!Object.keys(title).length) title['en'] = 'Untitled';
+  const agencyName = kid(citation, 'Creator')?.text;
+  const abstractNode = kid(citation, 'Abstract');
+  const description: InternationalString = {};
+  for (const c of kids(abstractNode, 'Content')) {
+    description[c.attrs['xml:lang'] ?? 'en'] = c.text;
+  }
+  const created = kid(citation, 'Date')?.text;
+
+  // --- ConceptualComponent ---
+  const cc = su.children.find(c => c.localName === 'ConceptualComponent');
+  const conceptScheme = kid(cc, 'ConceptScheme');
+  const universeScheme = kid(cc, 'UniverseScheme');
+
+  const concepts: Concept[] = kids(conceptScheme, 'Concept').map(c => {
+    const descNode = kid(c, 'Description');
+    const desc: InternationalString = {};
+    for (const s of kids(descNode, 'Content')) desc[s.attrs['xml:lang'] ?? 'en'] = s.text;
+    return {
+      id: mst(c, 'id') ?? rid(c),
+      label: intlFromLabel(c),
+      description: Object.keys(desc).length ? desc : undefined,
+    };
+  });
+
+  const universes: Universe[] = kids(universeScheme, 'Universe').map(u => ({
+    id: mst(u, 'id') ?? rid(u),
+    label: intlFromLabel(u),
+    clause: mst(u, 'clause') ?? undefined,
+  }));
+
+  // --- LogicalProduct ---
+  const lp = su.children.find(c => c.localName === 'LogicalProduct');
+  const clsNode = kid(lp, 'CodeListScheme');
+
+  const categorySchemes: CategoryScheme[] = kids(lp, 'CategoryScheme').map(csNode => {
+    const csId = mst(csNode, 'id') ?? rid(csNode);
+    // Map category r:ID → code value from the matching CodeList
+    const matchingCl = kids(clsNode, 'CodeList').find(cl => (mst(cl, 'id') ?? '') === csId);
+    const codeMap = new Map<string, string>();
+    for (const codeEl of kids(matchingCl, 'Code')) {
+      const catRef = kid(codeEl, 'CategoryReference');
+      const catRid = catRef ? rid(catRef) : urnToLocalId(kid(catRef ?? codeEl, 'URN')?.text ?? '');
+      codeMap.set(catRid, kid(codeEl, 'Value')?.text ?? '');
+    }
+    return {
+      id: csId,
+      label: intlFromLabel(csNode),
+      categories: kids(csNode, 'Category').map(catNode => {
+        const catRid = rid(catNode);
+        return {
+          code: mst(catNode, 'code') ?? codeMap.get(catRid) ?? catRid.split('.').pop() ?? catRid,
+          label: intlFromLabel(catNode),
+        };
+      }),
+    };
+  });
+
+  // --- Variables ---
+  const vsNode = kid(lp, 'VariableScheme');
+  const variables: Variable[] = kids(vsNode, 'Variable').map(vNode => {
+    const varId = mst(vNode, 'id') ?? rid(vNode);
+    const name =
+      mst(vNode, 'name') ??
+      kid(kid(vNode, 'VariableName'), 'String')?.text ??
+      varId;
+    const kind = (mst(vNode, 'kind') ?? 'collected') as Variable['kind'];
+    const reprNode = kid(vNode, 'Representation');
+    let representation: Variable['representation'] = 'text';
+    let categorySchemeRef: string | undefined;
+    if (reprNode) {
+      const codeRepr = kid(reprNode, 'CodeRepresentation');
+      if (codeRepr) {
+        representation = 'code';
+        const clRef = kid(codeRepr, 'CodeListReference');
+        const clId = clRef ? rid(clRef) : '';
+        categorySchemeRef = clId.endsWith('.cl') ? clId.slice(0, -3) : clId || undefined;
+      } else if (kid(reprNode, 'NumericRepresentation')) {
+        representation = 'numeric';
+      } else if (kid(reprNode, 'DateTimeRepresentation')) {
+        representation = 'datetime';
+      } else {
+        const r = mst(reprNode, 'repr');
+        if (r) representation = r as Variable['representation'];
+      }
+    }
+    const conceptRefNode = kid(vNode, 'ConceptReference');
+    return {
+      id: varId,
+      name,
+      kind,
+      label: intlFromLabel(vNode),
+      representation,
+      categorySchemeRef,
+      compute: mst(vNode, 'compute') ?? undefined,
+      interviewerOnly: mst(vNode, 'interviewerOnly') === 'true' || undefined,
+      conceptRef: conceptRefNode ? rid(conceptRefNode) : undefined,
+    };
+  });
+
+  // --- DataCollection ---
+  const dc = su.children.find(c => c.localName === 'DataCollection');
+  const qsNode = kid(dc, 'QuestionScheme');
+  const ccsNode = kid(dc, 'ControlConstructScheme');
+  const isNode = kid(dc, 'InstrumentScheme');
+
+  // QuestionItem registry: key = r:ID (e.g. "qi.q1")
+  const qiRegistry = new Map<string, XmlNode>();
+  for (const qi of kids(qsNode, 'QuestionItem')) qiRegistry.set(rid(qi), qi);
+
+  // ControlConstruct registry: key = r:ID
+  const ccRegistry = new Map<string, { node: XmlNode; tag: string }>();
+  for (const c of ccsNode?.children ?? []) {
+    if (c.prefix === 'd' || !c.prefix) ccRegistry.set(rid(c), { node: c, tag: c.localName });
+  }
+
+  // Find root sequence local ID from InstrumentScheme
+  const instNode = kid(isNode, 'Instrument');
+  const rootRef = kid(instNode, 'ControlConstructReference');
+  const rootUrn = kid(rootRef, 'URN')?.text ?? '';
+  const rootLocalId = urnToLocalId(rootUrn);
+
+  // --- Construct tree walker ---
+
+  function walkSeq(localId: string): SequenceConstruct {
+    const entry = ccRegistry.get(localId);
+    if (!entry || entry.tag !== 'Sequence') {
+      notes.push({ severity: 'warning', elementId: localId, message: `Sequence not found: ${localId}` });
+      return { type: 'sequence', id: localId, children: [] };
+    }
+    const n = entry.node;
+    const label = intlFromLabel(n);
+    return {
+      type: 'sequence',
+      id: mst(n, 'id') ?? localId,
+      isPage: mst(n, 'isPage') === 'true' || undefined,
+      moduleKind: (mst(n, 'moduleKind') ?? undefined) as SequenceConstruct['moduleKind'],
+      interviewerOnly: mst(n, 'interviewerOnly') === 'true' || undefined,
+      visibleWhen: mst(n, 'visibleWhen') ?? undefined,
+      label: Object.keys(label).length ? label : undefined,
+      children: kids(n, 'ControlConstructReference').map(ref =>
+        walkConstruct(urnToLocalId(kid(ref, 'URN')?.text ?? '')),
+      ),
+    };
+  }
+
+  function walkQ(localId: string): QuestionConstruct {
+    const entry = ccRegistry.get(localId);
+    if (!entry || entry.tag !== 'QuestionConstruct') {
+      notes.push({ severity: 'warning', elementId: localId, message: `QuestionConstruct not found: ${localId}` });
+      return { type: 'question', id: localId, variableRef: '', text: { en: '' }, responseDomain: { type: 'text' } };
+    }
+    const qcNode = entry.node;
+    const qId = mst(qcNode, 'id') ?? localId;
+    const qcVisibleWhen = mst(qcNode, 'visibleWhen');
+    const qcInterviewerOnly = mst(qcNode, 'interviewerOnly') === 'true';
+
+    const qiUrn = kid(kid(qcNode, 'QuestionReference'), 'URN')?.text ?? '';
+    const qi = qiRegistry.get(urnToLocalId(qiUrn));
+    if (!qi) {
+      notes.push({ severity: 'warning', elementId: qId, message: `QuestionItem not found: ${urnToLocalId(qiUrn)}` });
+      return { type: 'question', id: qId, variableRef: '', text: { en: '' }, responseDomain: { type: 'text' } };
+    }
+
+    const editsRaw = mst(qi, 'edits');
+    const tooltip = mst(qi, 'tooltip');
+    const instruction = intlFromDdiText(kid(qi, 'InstructionText'));
+
+    return {
+      type: 'question',
+      id: qId,
+      variableRef: mst(qi, 'variableRef') ?? '',
+      text: intlFromDdiText(kid(qi, 'QuestionText')),
+      instruction: Object.keys(instruction).length ? instruction : undefined,
+      tooltip: tooltip ? (JSON.parse(tooltip) as InternationalString) : undefined,
+      required: (() => { const r = mst(qi, 'required'); return r !== undefined ? r === 'true' : undefined; })(),
+      edits: editsRaw !== undefined ? (JSON.parse(editsRaw) as EditRule[]) : undefined,
+      visibleWhen: mst(qi, 'visibleWhen') ?? qcVisibleWhen ?? undefined,
+      interviewerOnly: (mst(qi, 'interviewerOnly') === 'true' || qcInterviewerOnly) || undefined,
+      responseDomain: parseRd(qi, qId, notes),
+    };
+  }
+
+  function walkIte(localId: string): IfThenElseConstruct {
+    const entry = ccRegistry.get(localId);
+    if (!entry || entry.tag !== 'IfThenElse') {
+      notes.push({ severity: 'warning', elementId: localId, message: `IfThenElse not found: ${localId}` });
+      return { type: 'ifThenElse', id: localId, condition: '', then: [] };
+    }
+    const n = entry.node;
+    const condition =
+      kid(kid(kid(n, 'IfCondition'), 'Command'), 'CommandContent')?.text ?? '';
+    const thenLocalId = urnToLocalId(kid(kid(n, 'ThenConstructReference'), 'URN')?.text ?? '');
+    const elseLocalId = urnToLocalId(kid(kid(n, 'ElseConstructReference'), 'URN')?.text ?? '');
+    return {
+      type: 'ifThenElse',
+      id: mst(n, 'id') ?? localId,
+      condition,
+      then: walkSeq(thenLocalId).children,
+      else: elseLocalId ? walkSeq(elseLocalId).children : undefined,
+    };
+  }
+
+  function walkLoop(localId: string): LoopConstruct {
+    const entry = ccRegistry.get(localId);
+    if (!entry || entry.tag !== 'Loop') {
+      notes.push({ severity: 'warning', elementId: localId, message: `Loop not found: ${localId}` });
+      return { type: 'loop', id: localId, loopVariable: 'i', children: [] };
+    }
+    const n = entry.node;
+    const bodyLocalId = urnToLocalId(
+      kid(kid(n, 'ControlConstructReference'), 'URN')?.text ?? '',
+    );
+    const label = intlFromLabel(n);
+    const itemLabelRaw = mst(n, 'itemLabel');
+    return {
+      type: 'loop',
+      id: mst(n, 'id') ?? localId,
+      loopVariable: mst(n, 'loopVariable') ?? 'i',
+      countVariableRef: mst(n, 'countVariableRef') ?? undefined,
+      loopWhile: mst(n, 'loopWhile') ?? undefined,
+      visibleWhen: mst(n, 'visibleWhen') ?? undefined,
+      itemLabel: itemLabelRaw ? (JSON.parse(itemLabelRaw) as InternationalString) : undefined,
+      label: Object.keys(label).length ? label : undefined,
+      children: walkSeq(bodyLocalId).children,
+    };
+  }
+
+  function walkComp(localId: string): ComputationConstruct {
+    const entry = ccRegistry.get(localId);
+    if (!entry || entry.tag !== 'ComputationItem') {
+      notes.push({ severity: 'warning', elementId: localId, message: `ComputationItem not found: ${localId}` });
+      return { type: 'computation', id: localId, targetVariableRef: '', expression: '' };
+    }
+    const n = entry.node;
+    return {
+      type: 'computation',
+      id: mst(n, 'id') ?? localId,
+      targetVariableRef: mst(n, 'targetVariableRef') ?? '',
+      expression: mst(n, 'expression') ?? '',
+    };
+  }
+
+  function walkStmt(localId: string): StatementConstruct {
+    const entry = ccRegistry.get(localId);
+    if (!entry || entry.tag !== 'StatementItem') {
+      notes.push({ severity: 'warning', elementId: localId, message: `StatementItem not found: ${localId}` });
+      return { type: 'statement', id: localId, text: { en: '' } };
+    }
+    const n = entry.node;
+    return {
+      type: 'statement',
+      id: mst(n, 'id') ?? localId,
+      text: intlFromDdiText(kid(n, 'DisplayText')),
+      visibleWhen: mst(n, 'visibleWhen') ?? undefined,
+      interviewerOnly: mst(n, 'interviewerOnly') === 'true' || undefined,
+    };
+  }
+
+  function walkConstruct(localId: string): ControlConstruct {
+    const entry = ccRegistry.get(localId);
+    if (!entry) {
+      notes.push({ severity: 'warning', elementId: localId, message: `Construct not found: ${localId}` });
+      return { type: 'statement', id: localId, text: { en: `[unresolved: ${localId}]` } };
+    }
+    switch (entry.tag) {
+      case 'Sequence': return walkSeq(localId);
+      case 'QuestionConstruct': return walkQ(localId);
+      case 'IfThenElse': return walkIte(localId);
+      case 'Loop': return walkLoop(localId);
+      case 'ComputationItem': return walkComp(localId);
+      case 'StatementItem': return walkStmt(localId);
+      default:
+        notes.push({ severity: 'info', elementId: localId, message: `Unknown construct tag: ${entry.tag}` });
+        return { type: 'statement', id: localId, text: { en: `[${entry.tag}]` } };
+    }
+  }
+
+  const sequence = rootLocalId
+    ? walkSeq(rootLocalId)
+    : { type: 'sequence' as const, id: 'seq.root', children: [] };
+
+  const instrument: Instrument = {
+    id: instrumentUrn,
+    version,
+    ddiProfile,
+    languages,
+    defaultLanguage,
+    metadata: {
+      title,
+      agency: agencyName,
+      description: Object.keys(description).length ? description : undefined,
+      created,
+    },
+    concepts,
+    universes,
+    categorySchemes,
+    variables,
+    prefillMappings,
+    sequence,
+    interviewer,
+  };
+
+  return {
+    instrument,
+    report: {
+      lossless: notes.filter(n => n.severity !== 'info').length === 0,
+      notes,
+    },
+  };
 }

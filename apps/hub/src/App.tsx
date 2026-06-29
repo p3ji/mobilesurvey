@@ -1,8 +1,21 @@
 /**
  * mobilesurvey hub — module selector home screen + Collector sub-view.
  */
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { blankInstrument, lfsInstrument, demoInstrument, BUNDLED_SURVEYS, type Instrument } from '@mobilesurvey/instrument-schema';
+import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
+import {
+  BarChart3,
+  Building2,
+  FileInput,
+  FlaskConical,
+  GraduationCap,
+  Headphones,
+  LayoutDashboard,
+  Layers,
+  Library,
+  PenLine,
+} from 'lucide-react';
+import logo from './assets/logo.png';
+import { blankInstrument, lfsInstrument, demoInstrument, BUNDLED_SURVEYS, redactResponses, piiVariableNames, type Instrument } from '@mobilesurvey/instrument-schema';
 import { migrate, type MigrateResult } from '@mobilesurvey/questionnaire-migrator';
 import {
   buildCatalog,
@@ -16,20 +29,30 @@ import {
   createSurvey,
   deleteSurvey,
   DESIGNER_URL,
+  RUNTIME_URL,
   designerLink,
   fetchAllInstruments,
+  fetchCases,
+  fetchInterviewers,
   fetchResponses,
+  fetchSurveyInstrument,
   fetchSurveyParadata,
   listSurveys,
   pingApi,
+  recordCaseOutcome,
   respondentLink,
+  assignCaseToInterviewer,
   setSurveyConfig,
   upsertSurvey,
+  type CaseDetail,
+  type CaseStatus,
   type InstrumentSummary,
+  type InterviewerRow,
   type ResponseRow,
   type SurveyParadataRow,
   type SurveySummary,
 } from './api.js';
+import { logAudit } from './audit.js';
 
 // ── helpers ───────────────────────────────────────────────────────────────────
 
@@ -75,15 +98,16 @@ const DEMO_SURVEYS: SurveySummary[] = [
 
 // ── Module definitions ────────────────────────────────────────────────────────
 
-type HubView = 'home' | 'collector' | 'searcher' | 'trainer' | 'migrator';
+type HubView = 'home' | 'collector' | 'searcher' | 'trainer' | 'migrator' | 'analyzer' | 'interviewer' | 'supervisor';
 
 interface ModuleDef {
   id: string;
-  icon: string;
+  icon: ReactNode;
   name: string;
   tagline: string;
   description: string;
   status: 'live' | 'coming-soon';
+  tag?: string;
   action?: () => void;
 }
 
@@ -251,6 +275,62 @@ function FieldCard({ field }: { field: FieldAnalysis }) {
             <span className="dash__bar-count">{count}</span>
           </div>
         ))}
+      </div>
+    </div>
+  );
+}
+
+// ── Question completion funnel ────────────────────────────────────────────────
+
+interface FunnelItem { id: string; varName: string; label: string; num: number; }
+
+function flattenQuestionsForFunnel(instrument: Instrument): FunnelItem[] {
+  const vars = new Map(instrument.variables.map((v) => [v.name, v]));
+  const results: FunnelItem[] = [];
+  let n = 0;
+  function walk(node: { type?: string; id?: string; variableRef?: string; children?: unknown[]; then?: unknown[]; else?: unknown[]; body?: unknown[] }) {
+    if (!node || typeof node !== 'object') return;
+    if (node.type === 'question') {
+      const variable = node.variableRef ? vars.get(node.variableRef) : undefined;
+      if (variable) {
+        n++;
+        const lbl = variable.label as Record<string, string> | undefined;
+        results.push({ id: node.id ?? '', varName: variable.name, num: n,
+          label: lbl ? (lbl.en ?? lbl.fr ?? Object.values(lbl)[0] ?? variable.name) : variable.name });
+      }
+    }
+    for (const arr of [node.children, node.then, node.else, node.body]) {
+      if (Array.isArray(arr)) for (const c of arr) walk(c as never);
+    }
+  }
+  walk(instrument.sequence as never);
+  return results;
+}
+
+function CompletionFunnel({ instrument, rows }: { instrument: Instrument; rows: ResponseRow[] }) {
+  const items = flattenQuestionsForFunnel(instrument);
+  if (items.length === 0 || rows.length === 0) return null;
+  const total = rows.length;
+  return (
+    <div className="dash__section">
+      <h4 className="dash__section-title">Question completion</h4>
+      <div className="dash__funnel">
+        {items.map((item) => {
+          const key = item.varName + '@';
+          const answered = rows.filter((r) => r.answersJson[key] !== undefined && r.answersJson[key] !== null && r.answersJson[key] !== '').length;
+          const pct = Math.round((answered / total) * 100);
+          const color = pct >= 80 ? '#22c55e' : pct >= 50 ? '#f59e0b' : '#ef4444';
+          return (
+            <div key={item.id} className="dash__funnel-row">
+              <span className="dash__funnel-num">Q{item.num}</span>
+              <span className="dash__funnel-label" title={item.label}>{item.label}</span>
+              <div className="dash__funnel-track">
+                <div className="dash__funnel-fill" style={{ width: `${pct}%`, background: color }} />
+              </div>
+              <span className="dash__funnel-pct" style={{ color }}>{pct}%</span>
+            </div>
+          );
+        })}
       </div>
     </div>
   );
@@ -444,11 +524,12 @@ function SubmissionRow({ row, events }: { row: ResponseRow; events: SurveyParada
 function CollectionDashboard({ surveyId }: { surveyId: string }) {
   const [rows, setRows] = useState<ResponseRow[] | null>(null);
   const [paradata, setParadata] = useState<SurveyParadataRow[] | null>(null);
+  const [instrument, setInstrument] = useState<Instrument | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    Promise.all([fetchResponses(surveyId), fetchSurveyParadata(surveyId)])
-      .then(([r, p]) => { setRows(r); setParadata(p); })
+    Promise.all([fetchResponses(surveyId), fetchSurveyParadata(surveyId), fetchSurveyInstrument(surveyId)])
+      .then(([r, p, inst]) => { setRows(r); setParadata(p); setInstrument(inst); })
       .catch(() => { setRows([]); setParadata([]); })
       .finally(() => setLoading(false));
   }, [surveyId]);
@@ -471,6 +552,51 @@ function CollectionDashboard({ surveyId }: { surveyId: string }) {
     if (!byRespondent.has(e.respondentId)) byRespondent.set(e.respondentId, []);
     byRespondent.get(e.respondentId)!.push(e);
   }
+
+  const buildResponsesCsv = (rowsToExport: ResponseRow[]) => {
+    const allKeys = new Set<string>();
+    for (const row of rowsToExport) for (const k of Object.keys(row.answersJson)) allKeys.add(k);
+    const answerCols = [...allKeys].sort();
+    const header = ['respondent_id', 'submitted_at', 'duration_ms', 'completed', ...answerCols];
+    const csvRows = rowsToExport.map((row) => [
+      row.respondentId, row.submittedAt, row.durationMs ?? '', String(row.completed),
+      ...answerCols.map((k) => row.answersJson[k] ?? ''),
+    ]);
+    return [header, ...csvRows]
+      .map((row) => row.map((v) => `"${String(v).replace(/"/g, '""')}"`).join(','))
+      .join('\n');
+  };
+
+  const exportResponsesCsv = () => {
+    if (!r.length) return;
+    const csv = buildResponsesCsv(r);
+    const url = URL.createObjectURL(new Blob([csv], { type: 'text/csv' }));
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `responses-${surveyId}-${new Date().toISOString().slice(0, 10)}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+    logAudit('responses.export', 'responses', surveyId, { count: r.length });
+  };
+
+  const exportRedactedCsv = () => {
+    if (!r.length || !instrument) return;
+    const redacted = r.map((row) => ({
+      ...row,
+      answersJson: redactResponses(row.answersJson, instrument),
+    }));
+    const csv = buildResponsesCsv(redacted);
+    const url = URL.createObjectURL(new Blob([csv], { type: 'text/csv' }));
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `responses-${surveyId}-redacted-${new Date().toISOString().slice(0, 10)}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+    logAudit('responses.export_redacted', 'responses', surveyId, {
+      count: r.length,
+      piiFields: [...piiVariableNames(instrument)],
+    });
+  };
 
   const exportCSV = () => {
     if (!p.length) return;
@@ -509,6 +635,8 @@ function CollectionDashboard({ surveyId }: { surveyId: string }) {
 
       <ResponseChart rows={r} />
 
+      {instrument && <CompletionFunnel instrument={instrument} rows={r} />}
+
       {surveyId === 'demo' ? (
         <DemoAnalyzer rows={r} />
       ) : analyzerFields.length > 0 && (
@@ -523,10 +651,21 @@ function CollectionDashboard({ surveyId }: { surveyId: string }) {
       <div className="dash__section">
         <div className="dash__section-head">
           <h4 className="dash__section-title">Recent submissions</h4>
-          <button type="button" className="btn" style={{ fontSize: 12, padding: '4px 10px' }}
-            onClick={exportCSV} disabled={p.length === 0}>
-            ↓ Export paradata CSV
-          </button>
+          <div style={{ display: 'flex', gap: 6 }}>
+            <button type="button" className="btn" style={{ fontSize: 12, padding: '4px 10px' }}
+              onClick={exportResponsesCsv} disabled={r.length === 0}>
+              ↓ Responses CSV
+            </button>
+            <button type="button" className="btn" style={{ fontSize: 12, padding: '4px 10px' }}
+              title="Replace PII-tagged variable values with [REDACTED]"
+              onClick={exportRedactedCsv} disabled={r.length === 0 || !instrument}>
+              ↓ Redacted CSV
+            </button>
+            <button type="button" className="btn" style={{ fontSize: 12, padding: '4px 10px' }}
+              onClick={exportCSV} disabled={p.length === 0}>
+              ↓ Paradata CSV
+            </button>
+          </div>
         </div>
         {total === 0 ? (
           <p className="dash__empty">No submissions yet.</p>
@@ -562,8 +701,12 @@ function SurveyCard({
 
   const patch = async (config: Parameters<typeof setSurveyConfig>[1]) => {
     setBusy(true);
-    try { await setSurveyConfig(survey.id, config); onChange(); }
-    finally { setBusy(false); }
+    try {
+      await setSurveyConfig(survey.id, config);
+      if (config.status === 'published') logAudit('survey.publish', 'survey', survey.id);
+      else if (config.status === 'draft') logAudit('survey.unpublish', 'survey', survey.id);
+      onChange();
+    } finally { setBusy(false); }
   };
 
   const copyLink = () => {
@@ -576,8 +719,11 @@ function SurveyCard({
   const remove = async () => {
     if (!confirm(`Delete "${survey.title}"? This cannot be undone.`)) return;
     setBusy(true);
-    try { await deleteSurvey(survey.id); onChange(); }
-    finally { setBusy(false); }
+    try {
+      await deleteSurvey(survey.id);
+      logAudit('survey.delete', 'survey', survey.id, { title: survey.title });
+      onChange();
+    } finally { setBusy(false); }
   };
 
   return (
@@ -690,6 +836,7 @@ function CollectorView({ onBack }: { onBack: () => void }) {
     setCreating(true);
     try {
       const id = await createSurvey(title, blankInstrument(title));
+      logAudit('survey.create', 'survey', id, { title });
       window.open(designerLink(id), '_blank', 'noopener');
       await refresh();
     } catch {
@@ -723,9 +870,11 @@ function CollectorView({ onBack }: { onBack: () => void }) {
     <div className="hub">
       <header className="hub__header">
         <div className="hub__brand">
-          <button type="button" className="hub__back" onClick={onBack}>← Modular Survey Tools</button>
+          <button type="button" className="hub__back" onClick={onBack}>
+            <img src={logo} alt="Back to home" className="hub__back-logo" />
+          </button>
           <strong>Collector</strong>
-          <span className="hub__sub">Manage surveys · monitor collection</span>
+          <span className="hub__sub">Manage surveys and track collection</span>
         </div>
         <div className="hub__header-right">
           {demoMode ? (
@@ -942,9 +1091,11 @@ function SearcherView({ onBack }: { onBack: () => void }) {
     <div className="hub">
       <header className="hub__header">
         <div className="hub__brand">
-          <button type="button" className="hub__back" onClick={onBack}>← Modular Survey Tools</button>
+          <button type="button" className="hub__back" onClick={onBack}>
+            <img src={logo} alt="Back to home" className="hub__back-logo" />
+          </button>
           <strong>Searcher</strong>
-          <span className="hub__sub">Discover · reuse · extend metadata</span>
+          <span className="hub__sub">Find and reuse questions across surveys</span>
         </div>
         <div className="hub__header-right">
           {!loading && (
@@ -1090,8 +1241,11 @@ function ModuleTile({ mod }: { mod: ModuleDef }) {
       <div className="module-tile__body">
         <div className="module-tile__head">
           <span className="module-tile__name">{mod.name}</span>
+          {mod.tag && (
+            <span className="module-tile__badge module-tile__badge--tag">{mod.tag}</span>
+          )}
           {mod.status === 'coming-soon' && (
-            <span className="module-tile__badge">Future feature</span>
+            <span className="module-tile__badge">Coming soon</span>
           )}
         </div>
         <p className="module-tile__tagline">{mod.tagline}</p>
@@ -1161,6 +1315,7 @@ function MigratorView({ onBack }: { onBack: () => void }) {
         },
       };
       const id = await createSurvey(finalTitle, updatedInstrument);
+      logAudit('survey.create', 'survey', id, { title: finalTitle, source: 'migrator' });
       setSaveState('done');
       window.open(designerLink(id), '_blank', 'noopener');
     } catch {
@@ -1213,9 +1368,11 @@ function MigratorView({ onBack }: { onBack: () => void }) {
     <div className="hub">
       <header className="hub__header">
         <div className="hub__brand">
-          <button type="button" className="hub__back" onClick={onBack}>← Modular Survey Tools</button>
+          <button type="button" className="hub__back" onClick={onBack}>
+            <img src={logo} alt="Back to home" className="hub__back-logo" />
+          </button>
           <strong>Migrator</strong>
-          <span className="hub__sub">Import questionnaires from text</span>
+          <span className="hub__sub">Turn a text questionnaire into a live survey</span>
         </div>
       </header>
 
@@ -1444,6 +1601,58 @@ PART I: Employment
   );
 }
 
+// ── Analyzer view ─────────────────────────────────────────────────────────────
+
+function AnalyzerView({ onBack }: { onBack: () => void }) {
+  const [surveys, setSurveys] = useState<SurveySummary[] | null>(null);
+  const [selected, setSelected] = useState<string | null>(null);
+
+  useEffect(() => {
+    listSurveys()
+      .then((list) => {
+        setSurveys(list);
+        const first = list.find((s) => s.responseCount > 0) ?? list[0];
+        if (first) setSelected(first.id);
+      })
+      .catch(() => setSurveys([]));
+  }, []);
+
+  return (
+    <div className="hub">
+      <header className="hub__header">
+        <div className="hub__brand">
+          <button type="button" className="hub__back" onClick={onBack}>
+            <img src={logo} alt="Back to home" className="hub__back-logo" />
+          </button>
+          <strong>Analyzer</strong>
+          <span className="hub__sub">Response quality and completion metrics</span>
+        </div>
+      </header>
+      <main className="hub__main">
+        {surveys === null ? (
+          <p className="hub__loading">Loading surveys…</p>
+        ) : surveys.length === 0 ? (
+          <p className="hub__empty">No surveys found. Create and collect responses in the Collector first.</p>
+        ) : (
+          <>
+            <div className="analyzer__tabs" role="tablist">
+              {surveys.map((s) => (
+                <button key={s.id} type="button" role="tab" aria-selected={selected === s.id}
+                  className={`analyzer__tab${selected === s.id ? ' analyzer__tab--active' : ''}`}
+                  onClick={() => setSelected(s.id)}>
+                  <span className="analyzer__tab-title">{s.title}</span>
+                  <span className="analyzer__tab-count">{s.responseCount}</span>
+                </button>
+              ))}
+            </div>
+            {selected && <CollectionDashboard surveyId={selected} />}
+          </>
+        )}
+      </main>
+    </div>
+  );
+}
+
 // ── Training hub ──────────────────────────────────────────────────────────────
 
 interface TrainingResource {
@@ -1479,8 +1688,11 @@ function TrainingView({ onBack }: { onBack: () => void }) {
           ← Back
         </button>
         <div className="hub__brand">
-          <strong className="hub__wordmark">Training Hub</strong>
-          <span className="hub__sub">Learn · explore · get started</span>
+          <img src={logo} alt="Modular Survey Tools" className="hub__logo" />
+          <div className="hub__brand-text">
+            <strong>Training Hub</strong>
+            <span className="hub__sub">Videos, guides, and resources</span>
+          </div>
         </div>
       </header>
 
@@ -1520,7 +1732,7 @@ function TrainingView({ onBack }: { onBack: () => void }) {
         </div>
 
         <p className="train__coming-soon">
-          More resources — written guides, walkthroughs, and worked examples — future feature.
+          Written guides, walkthroughs, and worked examples — coming soon.
         </p>
       </main>
     </div>
@@ -1533,89 +1745,100 @@ function HomePage({ onNavigate }: { onNavigate: (v: HubView) => void }) {
   const modules = useMemo((): ModuleDef[] => [
     {
       id: 'designer-pro',
-      icon: '⚙',
+      icon: <Layers size={22} />,
       name: 'Designer — Pro',
       tagline: 'Full-featured instrument authoring',
-      description: 'Opens a blank instrument. Use "Try a demo survey" above to load an example. Supports tree editing, conditional routing, variables, expressions, and flowchart view.',
+      description: 'Opens a blank instrument. Use "Try a demo survey" above to load an example. Tree editing, conditional routing, variables, expressions, and flowchart view.',
       status: 'live',
       action: () => window.open(`${DESIGNER_URL}/?mode=pro`, '_blank', 'noopener'),
     },
     {
       id: 'designer-easy',
-      icon: '✏',
+      icon: <PenLine size={22} />,
       name: 'Designer — Easy Mode',
-      tagline: 'Simple question-by-question editor',
-      description: 'Opens a blank instrument. Use "Try a demo survey" above to load an example. Focusing on questions, categories, and simple logic — best for quick questionnaire testing.',
+      tagline: 'Build a questionnaire question by question',
+      description: 'Opens a blank instrument. Use "Try a demo survey" above to load an example. Focused on questions, categories, and simple logic — good for quick questionnaire drafting.',
       status: 'live',
       action: () => window.open(`${DESIGNER_URL}/?mode=easy`, '_blank', 'noopener'),
     },
     {
-      id: 'designer-interviewer',
-      icon: '🎧',
-      name: 'Designer — Interviewer',
-      tagline: 'CATI · field interviewer · entry/exit modules',
-      description: 'Design surveys for telephone or field interviewers. Build entry modules (phone/address validation), exit modules (household phone enumeration for coverage weighting), and configure free navigation so interviewers can jump to any question.',
-      status: 'coming-soon',
-    },
-    {
-      id: 'designer-business',
-      icon: '🏢',
-      name: 'Designer — Business Collection',
-      tagline: 'Optimized for business data collection',
-      description: 'A form-first designer tuned for collecting data from businesses — structured inputs, validation rules, and integration with business registers.',
-      status: 'coming-soon',
-    },
-    {
       id: 'collector',
-      icon: '📋',
+      icon: <LayoutDashboard size={22} />,
       name: 'Collector',
-      tagline: 'Manage surveys · monitor collection',
+      tagline: 'Manage live surveys and track who\'s responding',
       description: 'Create and publish surveys, share respondent links, track collection status, and view the response dashboard for each active survey.',
       status: 'live',
       action: () => onNavigate('collector'),
     },
     {
       id: 'searcher',
-      icon: '🔍',
+      icon: <Library size={22} />,
       name: 'Searcher',
-      tagline: 'Search and reuse survey metadata',
-      description: 'Discover existing questions, variables, and code lists across all surveys. Add to the repo with new metadata sources.',
+      tagline: 'Find and reuse questions across every survey',
+      description: 'Search questions, variables, and code lists from all surveys by keyword. One click to add a match to a new instrument.',
       status: 'live',
       action: () => onNavigate('searcher'),
     },
     {
       id: 'migrator',
-      icon: '⇄',
+      icon: <FileInput size={22} />,
       name: 'Migrator',
-      tagline: 'Import questionnaires from text',
-      description: 'Paste or upload a plain-text questionnaire and convert it into a structured DDI instrument. The engine extracts questions, infers response types, and converts routing hints into skip logic.',
+      tag: 'Testing',
+      tagline: 'Turn a Word doc or text file into a live survey',
+      description: 'Paste or upload any plain-text questionnaire. The engine extracts questions, infers response types, and converts routing hints into skip logic.',
       status: 'live',
       action: () => onNavigate('migrator'),
     },
     {
-      id: 'analyzer',
-      icon: '📊',
-      name: 'Analyzer',
-      tagline: 'Descriptive stats · future: full analysis',
-      description: 'Explore collected data with descriptive statistics, frequency tables, and charts. Advanced statistical analysis — cross-tabs, regression — coming in a future release.',
+      id: 'trainer',
+      icon: <GraduationCap size={22} />,
+      name: 'Training Hub',
+      tagline: 'Videos and guides to get you started fast',
+      description: 'Video overviews, walkthroughs, and resources for learning Modular Survey Tools. Start with a 2-min intro, then explore from first survey to collection management.',
+      status: 'live',
+      action: () => onNavigate('trainer'),
+    },
+    {
+      id: 'interviewer',
+      icon: <Headphones size={22} />,
+      name: 'Interviewer Mode',
+      tagline: 'CATI case queue with call-back scheduling',
+      description: 'View assigned cases, launch telephone interviews, and record call outcomes (complete, call-back, refused, non-contact). Schedules call-backs with date, time, and notes.',
       status: 'coming-soon',
+    },
+    {
+      id: 'supervisor',
+      icon: <Layers size={22} />,
+      name: 'Supervisor Dashboard',
+      tagline: 'Monitor interviewer progress and assign cases',
+      description: 'See completion rates and outcome breakdowns by interviewer. Assign or reassign cases to balance workloads across your field team.',
+      status: 'coming-soon',
+    },
+    {
+      id: 'designer-business',
+      icon: <Building2 size={22} />,
+      name: 'Designer — Business Collection',
+      tagline: 'Structured forms for business data collection',
+      description: 'A form-first designer tuned for collecting data from businesses — structured inputs, validation rules, and integration with business registers.',
+      status: 'coming-soon',
+    },
+    {
+      id: 'analyzer',
+      icon: <BarChart3 size={22} />,
+      name: 'Analyzer',
+      tag: 'Testing',
+      tagline: 'Charts and tables for your collected data',
+      description: 'Completion funnels, frequency distributions, and field-level charts built from live responses. Export responses or paradata as CSV.',
+      status: 'live',
+      action: () => onNavigate('analyzer'),
     },
     {
       id: 'tester',
-      icon: '🤖',
+      icon: <FlaskConical size={22} />,
       name: 'Questionnaire Tester',
-      tagline: 'Automated end-to-end testing for any web questionnaire',
-      description: 'Walks every flow path automatically — clicking radio buttons, dropdowns, checkboxes, and searchable fields — and produces a report of typos, dead-end flows, routing errors, and differences between the designed instrument and the rendered questionnaire. Works with any web-based survey, not just this platform.',
+      tagline: 'Catch routing errors before respondents do',
+      description: 'Walks every path through a web survey automatically — catching dead ends, routing errors, and gaps between the designed instrument and the rendered form. Works on any survey platform.',
       status: 'coming-soon',
-    },
-    {
-      id: 'trainer',
-      icon: '🎓',
-      name: 'Training Hub',
-      tagline: 'Learn · explore · get started',
-      description: 'Video overviews, guides, and resources for learning Modular Survey Tools. Start with a ~2 min intro, then explore from first survey to advanced collection management.',
-      status: 'live',
-      action: () => onNavigate('trainer'),
     },
   ], [onNavigate]);
 
@@ -1623,22 +1846,370 @@ function HomePage({ onNavigate }: { onNavigate: (v: HubView) => void }) {
     <div className="hub">
       <header className="hub__header hub__header--home">
         <div className="hub__brand">
-          <strong className="hub__wordmark">Modular Survey Tools</strong>
-          <span className="hub__sub">Open survey platform</span>
+          <img src={logo} alt="Modular Survey Tools" className="hub__logo" />
+          <span className="hub__sub">Open-source survey platform</span>
         </div>
       </header>
 
       <main className="hub__main hub__main--home">
         <div className="hub__intro">
-          <h1>What would you like to do?</h1>
-          <p>Select a module to get started. Modules marked "Future feature" are on the roadmap.</p>
+          <h1>Design, collect, and analyze surveys — end to end.</h1>
+          <p>Pick a tool to get started, or try a demo survey below.</p>
         </div>
 
         <DemoSurveyPicker />
 
         <div className="module-grid">
-          {modules.map((m) => <ModuleTile key={m.id} mod={m} />)}
+          {modules.filter(m => m.status === 'live').map((m) => <ModuleTile key={m.id} mod={m} />)}
         </div>
+        <p className="module-section-label">On the roadmap</p>
+        <div className="module-grid module-grid--roadmap">
+          {modules.filter(m => m.status === 'coming-soon').map((m) => <ModuleTile key={m.id} mod={m} />)}
+        </div>
+      </main>
+    </div>
+  );
+}
+
+// ── CATI: Interviewer Mode ────────────────────────────────────────────────────
+
+const STATUS_LABELS: Record<CaseStatus, string> = {
+  new: 'New',
+  in_progress: 'In Progress',
+  complete: 'Complete',
+  callback: 'Callback',
+  refused: 'Refused',
+  non_contact: 'Non-contact',
+};
+const STATUS_COLORS: Record<CaseStatus, string> = {
+  new: '#3b82f6',
+  in_progress: '#f59e0b',
+  complete: '#10b981',
+  callback: '#8b5cf6',
+  refused: '#ef4444',
+  non_contact: '#6b7280',
+};
+const STATUS_ORDER: Record<CaseStatus, number> = {
+  callback: 0, new: 1, in_progress: 2, complete: 3, refused: 4, non_contact: 5,
+};
+
+function InterviewerView({ onBack }: { onBack: () => void }) {
+  const [interviewers, setInterviewers] = useState<InterviewerRow[]>([]);
+  const [selectedId, setSelectedId] = useState('');
+  const [cases, setCases] = useState<CaseDetail[]>([]);
+  const [surveyId, setSurveyId] = useState('lfs');
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [outcomeStatus, setOutcomeStatus] = useState<CaseStatus>('new');
+  const [callbackAt, setCallbackAt] = useState('');
+  const [callbackNote, setCallbackNote] = useState('');
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    fetchInterviewers()
+      .then((rows) => {
+        setInterviewers(rows);
+        if (rows.length > 0) setSelectedId(rows[0]!.id);
+      })
+      .catch(() => setError('Local API not reachable — run: pnpm --filter @mobilesurvey/api dev'))
+      .finally(() => setLoading(false));
+  }, []);
+
+  useEffect(() => {
+    if (!selectedId) return;
+    setLoading(true);
+    fetchCases(selectedId)
+      .then(setCases)
+      .catch(() => setError('Failed to load cases'))
+      .finally(() => setLoading(false));
+  }, [selectedId]);
+
+  async function saveOutcome(caseId: string) {
+    await recordCaseOutcome(caseId, {
+      status: outcomeStatus,
+      callbackAt: callbackAt ? new Date(callbackAt).getTime() : undefined,
+      callbackNote: callbackNote || undefined,
+    });
+    setEditingId(null);
+    const refreshed = await fetchCases(selectedId);
+    setCases(refreshed);
+  }
+
+  function openInterview(c: CaseDetail) {
+    const url = c.accessCode
+      ? `${RUNTIME_URL}/?survey=${encodeURIComponent(surveyId)}&code=${encodeURIComponent(c.accessCode)}`
+      : `${RUNTIME_URL}/?survey=${encodeURIComponent(surveyId)}`;
+    window.open(url, '_blank', 'noopener');
+  }
+
+  const sortedCases = [...cases].sort(
+    (a, b) => (STATUS_ORDER[a.status] ?? 9) - (STATUS_ORDER[b.status] ?? 9),
+  );
+
+  return (
+    <div className="hub">
+      <header className="hub__header">
+        <button onClick={onBack} className="hub__back">← Home</button>
+        <h1 style={{ margin: 0, fontSize: 20, fontWeight: 700 }}>Interviewer Mode</h1>
+      </header>
+      <main className="hub__main" style={{ maxWidth: 860, margin: '0 auto', padding: '24px 16px' }}>
+        {error && <p className="cati__error">{error}</p>}
+
+        <div className="cati__controls">
+          <label className="cati__label">Interviewer</label>
+          <select className="cati__select" value={selectedId} onChange={(e) => setSelectedId(e.target.value)}>
+            {interviewers.map((i) => (
+              <option key={i.id} value={i.id}>{i.name}</option>
+            ))}
+          </select>
+          <label className="cati__label">Survey</label>
+          <input
+            className="cati__select"
+            value={surveyId}
+            onChange={(e) => setSurveyId(e.target.value)}
+            placeholder="survey id (e.g. lfs)"
+            style={{ minWidth: 120 }}
+          />
+        </div>
+
+        {loading ? (
+          <p className="cati__empty">Loading cases…</p>
+        ) : sortedCases.length === 0 ? (
+          <p className="cati__empty">No cases assigned to this interviewer.</p>
+        ) : (
+          <div className="cati__list">
+            {sortedCases.map((c) => {
+              const cbDate = c.callbackAt ? new Date(c.callbackAt) : null;
+              const isEditing = editingId === c.id;
+              const contact = (c.fields.contact_name as string | undefined) || c.id;
+              const region = c.fields.region_code as string | undefined;
+              return (
+                <div key={c.id} className={`cati__case${c.status === 'callback' && cbDate ? ' cati__case--due' : ''}`}>
+                  <div className="cati__case-header">
+                    <span className="cati__case-id">{c.id}</span>
+                    <span className="cati__badge" style={{ background: STATUS_COLORS[c.status] ?? '#6b7280' }}>
+                      {STATUS_LABELS[c.status] ?? c.status}
+                    </span>
+                    <span className="cati__contact">{contact}{region ? ` · ${region}` : ''}</span>
+                    {cbDate && (
+                      <span className="cati__callback-time cati__callback-time--due">
+                        Callback: {cbDate.toLocaleDateString()} {cbDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                      </span>
+                    )}
+                  </div>
+                  {c.callbackNote && <p className="cati__note">{c.callbackNote}</p>}
+                  <div className="cati__actions">
+                    <button className="cati__btn cati__btn--primary" onClick={() => openInterview(c)}>
+                      ▶ Launch Interview
+                    </button>
+                    <button
+                      className="cati__btn"
+                      onClick={() => {
+                        if (isEditing) { setEditingId(null); return; }
+                        setEditingId(c.id);
+                        setOutcomeStatus(c.status);
+                        setCallbackAt(c.callbackAt ? new Date(c.callbackAt).toISOString().slice(0, 16) : '');
+                        setCallbackNote(c.callbackNote ?? '');
+                      }}
+                    >
+                      {isEditing ? 'Cancel' : 'Record Outcome'}
+                    </button>
+                  </div>
+                  {isEditing && (
+                    <div className="cati__outcome-form">
+                      <label className="cati__label">Outcome</label>
+                      <select
+                        className="cati__select"
+                        value={outcomeStatus}
+                        onChange={(e) => setOutcomeStatus(e.target.value as CaseStatus)}
+                      >
+                        {(Object.keys(STATUS_LABELS) as CaseStatus[]).map((s) => (
+                          <option key={s} value={s}>{STATUS_LABELS[s]}</option>
+                        ))}
+                      </select>
+                      {outcomeStatus === 'callback' && (
+                        <>
+                          <label className="cati__label">Callback date / time</label>
+                          <input
+                            type="datetime-local"
+                            className="cati__select"
+                            value={callbackAt}
+                            onChange={(e) => setCallbackAt(e.target.value)}
+                          />
+                          <label className="cati__label">Note</label>
+                          <textarea
+                            className="cati__textarea"
+                            value={callbackNote}
+                            rows={2}
+                            placeholder="e.g. Call back after 6 pm"
+                            onChange={(e) => setCallbackNote(e.target.value)}
+                          />
+                        </>
+                      )}
+                      <div>
+                        <button className="cati__btn cati__btn--primary" onClick={() => void saveOutcome(c.id)}>
+                          Save
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        )}
+      </main>
+    </div>
+  );
+}
+
+// ── CATI: Supervisor Dashboard ────────────────────────────────────────────────
+
+function SupervisorView({ onBack }: { onBack: () => void }) {
+  const [interviewers, setInterviewers] = useState<InterviewerRow[]>([]);
+  const [cases, setCases] = useState<CaseDetail[]>([]);
+  const [assignCaseId, setAssignCaseId] = useState('');
+  const [assignIntId, setAssignIntId] = useState('');
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  async function load() {
+    setLoading(true);
+    try {
+      const [ints, cs] = await Promise.all([fetchInterviewers(), fetchCases()]);
+      setInterviewers(ints);
+      setCases(cs);
+    } catch {
+      setError('Local API not reachable — run: pnpm --filter @mobilesurvey/api dev');
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  useEffect(() => { void load(); }, []);
+
+  async function doAssign() {
+    if (!assignCaseId || !assignIntId) return;
+    await assignCaseToInterviewer(assignCaseId, assignIntId);
+    setAssignCaseId('');
+    setAssignIntId('');
+    void load();
+  }
+
+  const totals = useMemo(() => {
+    const counts: Partial<Record<CaseStatus, number>> = {};
+    for (const c of cases) counts[c.status] = (counts[c.status] ?? 0) + 1;
+    return counts;
+  }, [cases]);
+
+  const byInterviewer = useMemo(() => {
+    const m = new Map<string, { int: InterviewerRow; counts: Partial<Record<CaseStatus, number>> }>();
+    for (const i of interviewers) m.set(i.id, { int: i, counts: {} });
+    for (const c of cases) {
+      if (c.interviewerId && m.has(c.interviewerId)) {
+        const entry = m.get(c.interviewerId)!;
+        entry.counts[c.status] = (entry.counts[c.status] ?? 0) + 1;
+      }
+    }
+    return [...m.values()];
+  }, [interviewers, cases]);
+
+  const STAT_KEYS: CaseStatus[] = ['new', 'in_progress', 'complete', 'callback', 'refused', 'non_contact'];
+
+  return (
+    <div className="hub">
+      <header className="hub__header">
+        <button onClick={onBack} className="hub__back">← Home</button>
+        <h1 style={{ margin: 0, fontSize: 20, fontWeight: 700 }}>Supervisor Dashboard</h1>
+      </header>
+      <main className="hub__main" style={{ maxWidth: 960, margin: '0 auto', padding: '24px 16px' }}>
+        {error && <p className="cati__error">{error}</p>}
+        {loading ? (
+          <p className="cati__empty">Loading…</p>
+        ) : (
+          <>
+            {/* Summary stats */}
+            <div className="cati__stats">
+              <div className="cati__stat">
+                <span className="cati__stat-val">{cases.length}</span>
+                <span className="cati__stat-label">Total</span>
+              </div>
+              {STAT_KEYS.map((k) => (
+                <div key={k} className="cati__stat">
+                  <span className="cati__stat-val" style={{ color: STATUS_COLORS[k] }}>
+                    {totals[k] ?? 0}
+                  </span>
+                  <span className="cati__stat-label">{STATUS_LABELS[k]}</span>
+                </div>
+              ))}
+            </div>
+
+            {/* Per-interviewer breakdown */}
+            <h2 className="cati__section-title">Interviewers</h2>
+            <table className="cati__table">
+              <thead>
+                <tr>
+                  <th>Interviewer</th>
+                  {STAT_KEYS.map((k) => <th key={k}>{STATUS_LABELS[k]}</th>)}
+                  <th>Completion rate</th>
+                </tr>
+              </thead>
+              <tbody>
+                {byInterviewer.map(({ int, counts }) => {
+                  const total = STAT_KEYS.reduce((s, k) => s + (counts[k] ?? 0), 0);
+                  const done = counts.complete ?? 0;
+                  const rate = total > 0 ? Math.round((done / total) * 100) : 0;
+                  return (
+                    <tr key={int.id}>
+                      <td style={{ fontWeight: 500 }}>{int.name}</td>
+                      {STAT_KEYS.map((k) => (
+                        <td key={k} style={{ color: (counts[k] ?? 0) > 0 ? STATUS_COLORS[k] : undefined, fontWeight: (counts[k] ?? 0) > 0 ? 600 : undefined }}>
+                          {counts[k] ?? 0}
+                        </td>
+                      ))}
+                      <td>{rate}%</td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+
+            {/* Case assignment */}
+            <h2 className="cati__section-title">Assign Case</h2>
+            <div className="cati__controls">
+              <label className="cati__label">Case</label>
+              <select
+                className="cati__select"
+                value={assignCaseId}
+                onChange={(e) => setAssignCaseId(e.target.value)}
+                style={{ minWidth: 220 }}
+              >
+                <option value="">Select a case…</option>
+                {cases.map((c) => (
+                  <option key={c.id} value={c.id}>
+                    {c.id} — {(c.fields.contact_name as string | undefined) ?? '?'} [{STATUS_LABELS[c.status] ?? c.status}]
+                  </option>
+                ))}
+              </select>
+              <label className="cati__label">Interviewer</label>
+              <select
+                className="cati__select"
+                value={assignIntId}
+                onChange={(e) => setAssignIntId(e.target.value)}
+              >
+                <option value="">Select interviewer…</option>
+                {interviewers.map((i) => <option key={i.id} value={i.id}>{i.name}</option>)}
+              </select>
+              <button
+                className="cati__btn cati__btn--primary"
+                disabled={!assignCaseId || !assignIntId}
+                onClick={() => void doAssign()}
+              >
+                Assign
+              </button>
+            </div>
+          </>
+        )}
       </main>
     </div>
   );
@@ -1652,5 +2223,8 @@ export function App() {
   if (view === 'searcher') return <SearcherView onBack={() => setView('home')} />;
   if (view === 'trainer') return <TrainingView onBack={() => setView('home')} />;
   if (view === 'migrator') return <MigratorView onBack={() => setView('home')} />;
+  if (view === 'analyzer') return <AnalyzerView onBack={() => setView('home')} />;
+  if (view === 'interviewer') return <InterviewerView onBack={() => setView('home')} />;
+  if (view === 'supervisor') return <SupervisorView onBack={() => setView('home')} />;
   return <HomePage onNavigate={setView} />;
 }

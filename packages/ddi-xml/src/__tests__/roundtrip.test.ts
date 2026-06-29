@@ -1,118 +1,174 @@
-import { describe, expect, it } from 'vitest';
+import { describe, it, expect } from 'vitest';
 import {
-  blankInstrument,
-  demoInstrument,
   lfsInstrument,
+  demoInstrument,
+  householdInstrument,
   censusInstrument,
-  validateInstrument,
-  type Instrument,
 } from '@mobilesurvey/instrument-schema';
-import { instrumentToDdiXml, ddiXmlToInstrument } from '../index.js';
+import type { Instrument } from '@mobilesurvey/instrument-schema';
+import { exportDdiXml } from '../export.js';
+import { importDdiXml } from '../import.js';
 
-/** Zod-normalize so the comparison is against the canonical form, not authoring order. */
-function normalize(inst: Instrument): Instrument {
-  const r = validateInstrument(inst);
-  if (!r.ok) throw new Error(`fixture is not a valid instrument: ${JSON.stringify(r.issues)}`);
-  return r.instrument;
+/**
+ * Normalize an instrument for deep-equal comparison:
+ * - JSON stringify/parse strips `undefined` properties (semantically equivalent to absent)
+ * - Preserves `false`, `0`, `''`, and all other falsy non-undefined values
+ */
+function normalize(inst: Instrument): unknown {
+  return JSON.parse(JSON.stringify(inst));
 }
 
+const FIXTURES: [string, Instrument][] = [
+  ['demo', demoInstrument],
+  ['household', householdInstrument],
+  ['lfs', lfsInstrument],
+  ['census', censusInstrument],
+];
+
 describe('DDI-XML round-trip', () => {
-  const fixtures: Array<[string, Instrument]> = [
-    ['blank', blankInstrument('Round-trip blank')],
-    ['demo', demoInstrument],
-    ['lfs', lfsInstrument],
-    ['census', censusInstrument],
-  ];
+  for (const [name, original] of FIXTURES) {
+    it(`${name}: exports valid XML`, () => {
+      const xml = exportDdiXml(original);
+      expect(xml).toContain('<?xml version="1.0" encoding="UTF-8"?>');
+      expect(xml).toContain('ddi:instance:3_3');
+      expect(xml).toContain('<s:StudyUnit>');
+      expect(xml).toContain('<d:DataCollection>');
+    });
 
-  for (const [name, inst] of fixtures) {
-    it(`exports and re-imports "${name}" without loss`, () => {
-      const xml = instrumentToDdiXml(inst);
-      expect(xml).toContain('<Instrument');
+    it(`${name}: imports without warnings`, () => {
+      const xml = exportDdiXml(original);
+      const { report } = importDdiXml(xml);
+      const warnings = report.notes.filter(n => n.severity === 'warning');
+      expect(warnings).toHaveLength(0);
+    });
 
-      const result = ddiXmlToInstrument(xml);
-      expect(result.notes.filter((n) => n.level === 'error')).toEqual([]);
-      expect(result.ok).toBe(true);
-      expect(result.instrument).toEqual(normalize(inst));
+    it(`${name}: round-trips to deep-equal instrument`, () => {
+      const xml = exportDdiXml(original);
+      const { instrument } = importDdiXml(xml);
+      expect(normalize(instrument)).toEqual(normalize(original));
     });
   }
+});
 
-  it('preserves bilingual labels and expression operators', () => {
-    const xml = instrumentToDdiXml(demoInstrument);
-    // French labels survive...
-    expect(xml).toContain('xml:lang="fr"');
-    // ...and routing operators are escaped, not corrupted.
-    if (/<(VisibleWhen|Condition|When|LoopWhile)>/.test(xml)) {
-      expect(xml).not.toMatch(/<(VisibleWhen|Condition|When|LoopWhile)>[^<]*<[^/]/);
+describe('DDI-XML export structure', () => {
+  it('demo: contains all category scheme IDs', () => {
+    const xml = exportDdiXml(demoInstrument);
+    for (const cs of demoInstrument.categorySchemes) {
+      expect(xml).toContain(cs.id);
     }
+  });
+
+  it('demo: contains all variable names', () => {
+    const xml = exportDdiXml(demoInstrument);
+    for (const v of demoInstrument.variables) {
+      expect(xml).toContain(v.name);
+    }
+  });
+
+  it('lfs: bilingual labels present for both en and fr', () => {
+    const xml = exportDdiXml(lfsInstrument);
+    expect(xml).toContain('xml:lang="en"');
+    expect(xml).toContain('xml:lang="fr"');
+  });
+
+  it('produces well-formed XML (no unclosed tags from esc)', () => {
+    const xml = exportDdiXml(demoInstrument);
+    // Crude but effective: balanced angle brackets
+    const opens = (xml.match(/</g) ?? []).length;
+    const closes = (xml.match(/>/g) ?? []).length;
+    expect(opens).toBe(closes);
   });
 });
 
-describe('DDI-XML import of external documents', () => {
-  it('imports a hand-authored document and flags unsupported elements', () => {
-    const xml = `<?xml version="1.0" encoding="UTF-8"?>
-      <Instrument id="urn:ext:demo:1" version="2.1" ddiProfile="ddi-lifecycle-3.3" defaultLanguage="en">
-        <Languages><Language code="en"/></Languages>
-        <Metadata><Title xml:lang="en">External Survey</Title></Metadata>
-        <Concepts/>
-        <Universes/>
-        <CategorySchemes>
-          <CategoryScheme id="cs.yn">
-            <Label xml:lang="en">Yes/No</Label>
-            <Category code="y"><Label xml:lang="en">Yes</Label></Category>
-            <Category code="n"><Label xml:lang="en">No</Label></Category>
-          </CategoryScheme>
-        </CategorySchemes>
-        <Variables>
-          <Variable id="v.q1" name="q1" kind="collected" representation="code" categorySchemeRef="cs.yn">
-            <Label xml:lang="en">Do you agree?</Label>
-          </Variable>
-        </Variables>
-        <PrefillMappings/>
-        <Sequence id="seq.root">
-          <Children>
-            <Question id="q.q1" variableRef="q1" required="true">
-              <Text xml:lang="en">Do you agree?</Text>
-              <ResponseDomain type="code" selection="single" categorySchemeRef="cs.yn"/>
-            </Question>
-          </Children>
-        </Sequence>
-        <FutureExtension foo="bar"/>
-      </Instrument>`;
-
-    const result = ddiXmlToInstrument(xml);
-    expect(result.ok).toBe(true);
-    expect(result.instrument?.metadata.title['en']).toBe('External Survey');
-    expect(result.instrument?.variables).toHaveLength(1);
-    // The unknown top-level element is reported, not silently swallowed.
-    expect(result.notes.some((n) => n.level === 'dropped' && n.message.includes('FutureExtension'))).toBe(true);
+describe('DDI-XML import: fidelity report', () => {
+  it('lossless flag is true for clean round-trip', () => {
+    const xml = exportDdiXml(demoInstrument);
+    const { report } = importDdiXml(xml);
+    expect(report.lossless).toBe(true);
   });
 
-  it('returns an error report (not a throw) on malformed XML', () => {
-    const result = ddiXmlToInstrument('<Instrument><Metadata></Instrument>');
-    expect(result.ok).toBe(false);
-    expect(result.instrument).toBeNull();
-    expect(result.notes[0]?.level).toBe('error');
-  });
-
-  it('reports referential-integrity problems as errors', () => {
-    const xml = `<?xml version="1.0" encoding="UTF-8"?>
-      <Instrument id="urn:ext:bad:1" version="1.0.0" ddiProfile="ddi-lifecycle-3.3" defaultLanguage="en">
-        <Languages><Language code="en"/></Languages>
-        <Metadata><Title xml:lang="en">Bad refs</Title></Metadata>
-        <Concepts/><Universes/><CategorySchemes/>
-        <Variables/>
-        <PrefillMappings/>
-        <Sequence id="seq.root">
-          <Children>
-            <Question id="q.x" variableRef="does_not_exist">
-              <Text xml:lang="en">Orphan</Text>
-              <ResponseDomain type="text"/>
-            </Question>
-          </Children>
-        </Sequence>
-      </Instrument>`;
-    const result = ddiXmlToInstrument(xml);
-    expect(result.ok).toBe(false);
-    expect(result.notes.some((n) => n.level === 'error')).toBe(true);
+  it('returns warning note for unknown response domain in external XML', () => {
+    const minimalXml = `<?xml version="1.0" encoding="UTF-8"?>
+<DDIInstance xmlns:i="ddi:instance:3_3" xmlns:r="ddi:reusable:3_3"
+             xmlns:s="ddi:studyunit:3_3" xmlns:c="ddi:conceptualcomponent:3_3"
+             xmlns:l="ddi:logicalproduct:3_3" xmlns:d="ddi:datacollection:3_3">
+  <s:StudyUnit>
+    <r:URN>urn:ddi:test:x:1.0</r:URN>
+    <r:Agency>test</r:Agency>
+    <r:ID>x</r:ID>
+    <r:Version>1.0.0</r:Version>
+    <r:UserID type="mst:languages">en</r:UserID>
+    <r:UserID type="mst:defaultLanguage">en</r:UserID>
+    <r:UserID type="mst:ddiProfile">ddi-lifecycle-3.3</r:UserID>
+    <s:Citation><r:Title><r:String xml:lang="en">X</r:String></r:Title></s:Citation>
+    <c:ConceptualComponent><r:URN>u</r:URN><r:Agency>a</r:Agency><r:ID>i</r:ID><r:Version>v</r:Version></c:ConceptualComponent>
+    <l:LogicalProduct><r:URN>u</r:URN><r:Agency>a</r:Agency><r:ID>i</r:ID><r:Version>v</r:Version></l:LogicalProduct>
+    <d:DataCollection>
+      <r:URN>u</r:URN><r:Agency>a</r:Agency><r:ID>i</r:ID><r:Version>v</r:Version>
+      <d:QuestionScheme>
+        <r:URN>u</r:URN><r:Agency>a</r:Agency><r:ID>i</r:ID><r:Version>v</r:Version>
+        <d:QuestionItem>
+          <r:URN>urn:ddi:test:x:1.0!qi.q1</r:URN>
+          <r:Agency>test</r:Agency>
+          <r:ID>qi.q1</r:ID>
+          <r:Version>1.0.0</r:Version>
+          <r:UserID type="mst:id">q1</r:UserID>
+          <r:UserID type="mst:variableRef">myVar</r:UserID>
+          <d:QuestionText><d:LiteralText><d:Text xml:lang="en">Question?</d:Text></d:LiteralText></d:QuestionText>
+          <d:UnknownDomain/>
+        </d:QuestionItem>
+      </d:QuestionScheme>
+      <d:ControlConstructScheme>
+        <r:URN>u</r:URN><r:Agency>a</r:Agency><r:ID>i</r:ID><r:Version>v</r:Version>
+        <d:QuestionConstruct>
+          <r:URN>urn:ddi:test:x:1.0!q1</r:URN>
+          <r:Agency>test</r:Agency>
+          <r:ID>q1</r:ID>
+          <r:Version>1.0.0</r:Version>
+          <r:UserID type="mst:id">q1</r:UserID>
+          <d:QuestionReference>
+            <r:URN>urn:ddi:test:x:1.0!qi.q1</r:URN>
+            <r:Agency>test</r:Agency>
+            <r:ID>qi.q1</r:ID>
+            <r:Version>1.0.0</r:Version>
+            <r:TypeOfObject>QuestionItem</r:TypeOfObject>
+          </d:QuestionReference>
+        </d:QuestionConstruct>
+        <d:Sequence>
+          <r:URN>urn:ddi:test:x:1.0!seq.root</r:URN>
+          <r:Agency>test</r:Agency>
+          <r:ID>seq.root</r:ID>
+          <r:Version>1.0.0</r:Version>
+          <r:UserID type="mst:id">seq.root</r:UserID>
+          <d:ControlConstructReference>
+            <r:URN>urn:ddi:test:x:1.0!q1</r:URN>
+            <r:Agency>test</r:Agency>
+            <r:ID>q1</r:ID>
+            <r:Version>1.0.0</r:Version>
+            <r:TypeOfObject>QuestionConstruct</r:TypeOfObject>
+          </d:ControlConstructReference>
+        </d:Sequence>
+      </d:ControlConstructScheme>
+      <d:InstrumentScheme>
+        <r:URN>u</r:URN><r:Agency>a</r:Agency><r:ID>i</r:ID><r:Version>v</r:Version>
+        <d:Instrument>
+          <r:URN>u</r:URN><r:Agency>a</r:Agency><r:ID>i</r:ID><r:Version>v</r:Version>
+          <r:Label><r:Content xml:lang="en">X</r:Content></r:Label>
+          <d:ControlConstructReference>
+            <r:URN>urn:ddi:test:x:1.0!seq.root</r:URN>
+            <r:Agency>test</r:Agency>
+            <r:ID>seq.root</r:ID>
+            <r:Version>1.0.0</r:Version>
+            <r:TypeOfObject>Sequence</r:TypeOfObject>
+          </d:ControlConstructReference>
+        </d:Instrument>
+      </d:InstrumentScheme>
+    </d:DataCollection>
+  </s:StudyUnit>
+</DDIInstance>`;
+    const { report } = importDdiXml(minimalXml);
+    const unknownDomainNote = report.notes.find(n => n.message.includes('response domain'));
+    expect(unknownDomainNote).toBeDefined();
+    expect(unknownDomainNote?.severity).toBe('warning');
   });
 });

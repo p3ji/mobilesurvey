@@ -301,6 +301,13 @@ export function PreviewPane() {
     return out;
   }, [result.items, pages]);
 
+  // Global sequential question number map — key → number (1-based).
+  const qNumMap = useMemo(() => {
+    const m = new Map<string, number>();
+    questionIndex.forEach((q) => m.set(q.key, q.num));
+    return m;
+  }, [questionIndex]);
+
   const jumpTo = (key: string, pageIdx: number) => {
     setIndexOpen(false);
     if (pageIdx !== currentPage) {
@@ -424,6 +431,7 @@ export function PreviewPane() {
 
             // markAll — dichotomous checkboxes, one variable per category.
             if (item.kind === 'markAll') {
+              const markAllNum = qNumMap.get(item.key);
               return (
                 <div
                   key={item.key}
@@ -431,7 +439,10 @@ export function PreviewPane() {
                   className="pv-question"
                   style={{ marginInlineStart: item.depth * 8 }}
                 >
-                  <p className="pv-label">{item.questionText}</p>
+                  <p className="pv-label">
+                    {markAllNum != null && <span className="pv-q-num">Q{markAllNum}.</span>}
+                    {item.questionText}
+                  </p>
                   {item.instruction && (
                     <p className="pv-instruction">{item.instruction}</p>
                   )}
@@ -475,6 +486,7 @@ export function PreviewPane() {
 
             // Grid (matrix) question.
             if (item.kind === 'grid') {
+              const gridNum = qNumMap.get(item.key);
               return (
                 <div
                   key={item.key}
@@ -482,7 +494,10 @@ export function PreviewPane() {
                   className="pv-question"
                   style={{ marginInlineStart: item.depth * 8 }}
                 >
-                  <p className="pv-label">{item.questionText}</p>
+                  <p className="pv-label">
+                    {gridNum != null && <span className="pv-q-num">Q{gridNum}.</span>}
+                    {item.questionText}
+                  </p>
                   {item.instruction && <p className="pv-instruction">{item.instruction}</p>}
                   <div className="pv-grid-wrapper">
                     <table className="pv-grid">
@@ -528,6 +543,7 @@ export function PreviewPane() {
             const isGroupDomain =
               item.construct.responseDomain.type === 'code' ||
               item.construct.responseDomain.type === 'boolean';
+            const qNum = qNumMap.get(item.key);
             return (
               <div
                 key={item.key}
@@ -540,6 +556,7 @@ export function PreviewPane() {
                   className="pv-label"
                   htmlFor={isGroupDomain ? undefined : inputId}
                 >
+                  {qNum != null && <span className="pv-q-num">Q{qNum}.</span>}
                   {item.text}
                   {item.construct.required ? (
                     <span aria-hidden="true" className="pv-req">

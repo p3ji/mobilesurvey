@@ -14,6 +14,37 @@ import { mkdirSync } from 'node:fs';
 import { dirname } from 'node:path';
 import { randomUUID } from 'node:crypto';
 
+export interface InterviewerRow {
+  id: string;
+  name: string;
+  email: string | null;
+}
+
+export type CaseStatus =
+  | 'new'
+  | 'in_progress'
+  | 'complete'
+  | 'callback'
+  | 'refused'
+  | 'non_contact';
+
+export interface CaseDetail extends CaseRow {
+  interviewerId: string | null;
+  callbackAt: number | null;
+  callbackNote: string | null;
+  accessCode: string | null;
+}
+
+export interface AuditRow {
+  id: number;
+  ts: number;
+  actor: string;
+  action: string;
+  entityType: string;
+  entityId: string | null;
+  payload: unknown;
+}
+
 export interface CaseRow {
   id: string;
   fields: Record<string, unknown>;
@@ -85,6 +116,15 @@ export class Store {
         type TEXT NOT NULL,
         payload_json TEXT
       );
+      CREATE TABLE IF NOT EXISTS audit_log (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        ts INTEGER NOT NULL,
+        actor TEXT NOT NULL DEFAULT 'anon',
+        action TEXT NOT NULL,
+        entity_type TEXT NOT NULL,
+        entity_id TEXT,
+        payload_json TEXT
+      );
       CREATE TABLE IF NOT EXISTS surveys (
         id TEXT PRIMARY KEY,
         title TEXT NOT NULL,
@@ -93,7 +133,21 @@ export class Store {
         status TEXT NOT NULL DEFAULT 'draft',
         updated_at INTEGER NOT NULL
       );
+      CREATE TABLE IF NOT EXISTS interviewers (
+        id TEXT PRIMARY KEY,
+        name TEXT NOT NULL,
+        email TEXT,
+        created_at INTEGER NOT NULL
+      );
     `);
+    // CATI columns: idempotent on SQLite ≥ 3.37 (Node 22+).
+    for (const col of [
+      `ALTER TABLE cases ADD COLUMN IF NOT EXISTS interviewer_id TEXT`,
+      `ALTER TABLE cases ADD COLUMN IF NOT EXISTS callback_at INTEGER`,
+      `ALTER TABLE cases ADD COLUMN IF NOT EXISTS callback_note TEXT`,
+    ]) {
+      try { this.db.exec(col); } catch { /* column already exists on older SQLite */ }
+    }
   }
 
   // ── Surveys (management hub) ────────────────────────────────────────────────
@@ -288,7 +342,114 @@ export class Store {
     }));
   }
 
+  // ── CATI: interviewers ───────────────────────────────────────────────────────
+
+  listInterviewers(): InterviewerRow[] {
+    return (
+      this.db.prepare(`SELECT id, name, email FROM interviewers ORDER BY name`).all() as Array<{
+        id: string;
+        name: string;
+        email: string | null;
+      }>
+    ).map((r) => ({ id: r.id, name: r.name, email: r.email }));
+  }
+
+  createInterviewer(id: string, name: string, email?: string): void {
+    this.db
+      .prepare(`INSERT OR IGNORE INTO interviewers (id, name, email, created_at) VALUES (?, ?, ?, ?)`)
+      .run(id, name, email ?? null, Date.now());
+  }
+
+  // ── CATI: cases (detailed) ───────────────────────────────────────────────────
+
+  listCasesDetailed(opts?: { interviewerId?: string }): CaseDetail[] {
+    const sql = opts?.interviewerId
+      ? `SELECT c.id, c.fields_json, c.status, c.interviewer_id, c.callback_at, c.callback_note, a.code
+         FROM cases c LEFT JOIN access_codes a ON a.case_id = c.id
+         WHERE c.interviewer_id = ? ORDER BY c.id`
+      : `SELECT c.id, c.fields_json, c.status, c.interviewer_id, c.callback_at, c.callback_note, a.code
+         FROM cases c LEFT JOIN access_codes a ON a.case_id = c.id ORDER BY c.id`;
+    type Row = {
+      id: string; fields_json: string; status: string; interviewer_id: string | null;
+      callback_at: number | null; callback_note: string | null; code: string | null;
+    };
+    const rows = opts?.interviewerId
+      ? (this.db.prepare(sql).all(opts.interviewerId) as Row[])
+      : (this.db.prepare(sql).all() as Row[]);
+    return rows.map((r) => ({
+      id: r.id,
+      fields: JSON.parse(r.fields_json),
+      status: r.status,
+      interviewerId: r.interviewer_id,
+      callbackAt: r.callback_at,
+      callbackNote: r.callback_note,
+      accessCode: r.code,
+    }));
+  }
+
+  assignCase(caseId: string, interviewerId: string): void {
+    this.db
+      .prepare(`UPDATE cases SET interviewer_id = ? WHERE id = ?`)
+      .run(interviewerId, caseId);
+  }
+
+  setCaseOutcome(
+    caseId: string,
+    status: string,
+    callbackAt?: number | null,
+    callbackNote?: string | null,
+  ): void {
+    this.db
+      .prepare(`UPDATE cases SET status = ?, callback_at = ?, callback_note = ? WHERE id = ?`)
+      .run(status, callbackAt ?? null, callbackNote ?? null, caseId);
+  }
+
   // ── Seed ────────────────────────────────────────────────────────────────────
+
+  // ── Audit log ───────────────────────────────────────────────────────────────
+
+  logAudit(
+    action: string,
+    entityType: string,
+    entityId: string | null,
+    payload?: unknown,
+    actor = 'anon',
+  ): void {
+    this.db
+      .prepare(
+        `INSERT INTO audit_log (ts, actor, action, entity_type, entity_id, payload_json)
+         VALUES (?, ?, ?, ?, ?, ?)`,
+      )
+      .run(Date.now(), actor, action, entityType, entityId, payload ? JSON.stringify(payload) : null);
+  }
+
+  listAuditLog(opts?: { entityId?: string; limit?: number }): AuditRow[] {
+    const limit = opts?.limit ?? 200;
+    const rows = opts?.entityId
+      ? (this.db
+          .prepare(
+            `SELECT * FROM audit_log WHERE entity_id = ? ORDER BY ts DESC LIMIT ?`,
+          )
+          .all(opts.entityId, limit) as Array<{
+            id: number; ts: number; actor: string; action: string;
+            entity_type: string; entity_id: string | null; payload_json: string | null;
+          }>)
+      : (this.db
+          .prepare(`SELECT * FROM audit_log ORDER BY ts DESC LIMIT ?`)
+          .all(limit) as Array<{
+            id: number; ts: number; actor: string; action: string;
+            entity_type: string; entity_id: string | null; payload_json: string | null;
+          }>);
+    return rows.map((r) => ({
+      id: r.id,
+      ts: r.ts,
+      actor: r.actor,
+      action: r.action,
+      entityType: r.entity_type,
+      entityId: r.entity_id,
+      payload: r.payload_json ? JSON.parse(r.payload_json) : null,
+    }));
+  }
 
   /** Seed demo cases + access codes if the table is empty (idempotent). */
   seed(): void {
@@ -317,5 +478,67 @@ export class Store {
       insertCase.run(c.id, JSON.stringify(c.fields));
       insertCode.run(c.code, c.id);
     }
+  }
+
+  /** Seed CATI demo data: 3 interviewers + 4 extra cases with mixed statuses. Idempotent. */
+  seedCati(): void {
+    const intCount = this.db.prepare(`SELECT COUNT(*) AS n FROM interviewers`).get() as { n: number };
+    if (intCount.n === 0) {
+      for (const [id, name, email] of [
+        ['int-001', 'Alice Nakamura', 'alice@example.org'],
+        ['int-002', 'Bob Okonkwo', 'bob@example.org'],
+        ['int-003', 'Chen Wei', 'chen@example.org'],
+      ] as [string, string, string][]) {
+        this.createInterviewer(id, name, email);
+      }
+    }
+
+    // Assign the original 2 seed cases to interviewers (no-op if already assigned).
+    this.db
+      .prepare(`UPDATE cases SET interviewer_id = ? WHERE id = ? AND interviewer_id IS NULL`)
+      .run('int-001', 'case-0001');
+    this.db
+      .prepare(`UPDATE cases SET interviewer_id = ? WHERE id = ? AND interviewer_id IS NULL`)
+      .run('int-003', 'case-0002');
+
+    const insertCase = this.db.prepare(
+      `INSERT OR IGNORE INTO cases (id, fields_json, status, interviewer_id) VALUES (?, ?, ?, ?)`,
+    );
+    const insertCode = this.db.prepare(
+      `INSERT OR IGNORE INTO access_codes (code, case_id) VALUES (?, ?)`,
+    );
+
+    const extras: Array<{
+      id: string; code: string; status: string; interviewerId: string;
+      fields: Record<string, unknown>;
+    }> = [
+      {
+        id: 'case-0003', code: 'GHI789', status: 'complete', interviewerId: 'int-001',
+        fields: { contact_name: 'Hiroshi Tanaka', region_code: 'BC', phone: '604-555-0101' },
+      },
+      {
+        id: 'case-0004', code: 'JKL012', status: 'callback', interviewerId: 'int-002',
+        fields: { contact_name: 'Sofia Petrova', region_code: 'AB', phone: '403-555-0202' },
+      },
+      {
+        id: 'case-0005', code: 'MNO345', status: 'refused', interviewerId: 'int-002',
+        fields: { contact_name: 'Omar Hassan', region_code: 'MB', phone: '204-555-0303' },
+      },
+      {
+        id: 'case-0006', code: 'PQR678', status: 'non_contact', interviewerId: 'int-003',
+        fields: { contact_name: 'Emma Williams', region_code: 'NS', phone: '902-555-0404' },
+      },
+    ];
+    for (const c of extras) {
+      insertCase.run(c.id, JSON.stringify(c.fields), c.status, c.interviewerId);
+      insertCode.run(c.code, c.id);
+    }
+
+    // Give case-0004 a callback time (1 week from DB creation, stored as static epoch).
+    this.db
+      .prepare(
+        `UPDATE cases SET callback_at = ?, callback_note = ? WHERE id = ? AND callback_at IS NULL`,
+      )
+      .run(1751500800000, 'Call back after 6 pm — respondent requested evening slot', 'case-0004');
   }
 }

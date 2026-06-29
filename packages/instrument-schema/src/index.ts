@@ -1,6 +1,7 @@
 export * from './types.js';
 export * from './zod.js';
 export * from './validate.js';
+export { redactResponses, piiVariableNames, PII_PLACEHOLDER } from './redaction.js';
 export { getInstrumentJsonSchema } from './jsonSchema.js';
 export { householdInstrument } from './examples/household.instrument.js';
 export { lfsInstrument } from './examples/lfs.instrument.js';

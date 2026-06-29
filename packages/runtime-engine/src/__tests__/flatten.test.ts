@@ -72,6 +72,69 @@ describe('flattenInstrument', () => {
     const intro = items.find((i) => i.kind === 'statement');
     expect(intro && 'text' in intro ? intro.text : '').toContain('Bonjour');
   });
+
+  it('ignores stale child responses when hhSize is 0', () => {
+    // Orphaned responses from a previous run must never surface as rendered items.
+    const responses: Record<string, unknown> = {
+      [instanceKey('hhSize', [])]: 0,
+      [instanceKey('memberName', [{ name: 'm', index: 1 }])]: 'Stale Alice',
+      [instanceKey('employerName', [{ name: 'm', index: 1 }, { name: 'e', index: 1 }])]: 'Stale Corp',
+    };
+    const { items } = flattenInstrument(householdInstrument, stateWith(responses));
+    expect(items.some((i) => i.kind === 'loopHeading')).toBe(false);
+  });
+
+  it('passes null and -1 (refused) values through nested rosters without throwing', () => {
+    const scope1 = [{ name: 'm', index: 1 }];
+    const scope1e1 = [{ name: 'm', index: 1 }, { name: 'e', index: 1 }];
+    const responses: Record<string, unknown> = {
+      [instanceKey('hhSize', [])]: 1,
+      [instanceKey('memberAge', scope1)]: 30,
+      [instanceKey('employerCount', scope1)]: 1,
+      [instanceKey('annualIncome', scope1e1)]: null,   // refused — null
+      [instanceKey('employerName', scope1e1)]: -1,      // refused — sentinel
+    };
+    expect(() => flattenInstrument(householdInstrument, stateWith(responses))).not.toThrow();
+    const { items } = flattenInstrument(householdInstrument, stateWith(responses));
+    const incomeQ = items.find(
+      (i) => i.kind === 'question' && i.instanceKey === instanceKey('annualIncome', scope1e1),
+    );
+    expect(incomeQ).toBeDefined();
+    // Value must pass through as-is; piping converts null→'' without crashing.
+    expect(incomeQ?.kind === 'question' ? incomeQ.value : 'wrong').toBeNull();
+  });
+
+  it('two-level nested roster emits only known item kinds (no phantom error nodes)', () => {
+    const responses: Record<string, unknown> = {
+      [instanceKey('hhSize', [])]: 2,
+      [instanceKey('employerCount', [{ name: 'm', index: 1 }])]: 2,
+      [instanceKey('employerCount', [{ name: 'm', index: 2 }])]: 1,
+    };
+    const { items } = flattenInstrument(householdInstrument, stateWith(responses));
+    const knownKinds = new Set([
+      'question', 'statement', 'section', 'pageBreak', 'loopHeading', 'grid', 'markAll',
+    ]);
+    expect(items.every((i) => knownKinds.has(i.kind))).toBe(true);
+    const memberHeadings = items.filter(
+      (i) => i.kind === 'loopHeading' && i.title.startsWith('Member'),
+    );
+    const employerHeadings = items.filter(
+      (i) => i.kind === 'loopHeading' && i.title.startsWith('Employer'),
+    );
+    expect(memberHeadings).toHaveLength(2);
+    expect(employerHeadings).toHaveLength(3); // 2 under member 1, 1 under member 2
+  });
+
+  it('nested roster flattens without error for an RTL language (Phase 9 fallback)', () => {
+    // householdInstrument has no Arabic strings; pick() falls back to 'en'. Must not throw.
+    const responses: Record<string, unknown> = {
+      [instanceKey('hhSize', [])]: 1,
+      [instanceKey('employerCount', [{ name: 'm', index: 1 }])]: 1,
+    };
+    expect(() => flattenInstrument(householdInstrument, stateWith(responses, 'ar'))).not.toThrow();
+    const { items } = flattenInstrument(householdInstrument, stateWith(responses, 'ar'));
+    expect(items.length).toBeGreaterThan(0);
+  });
 });
 
 describe('runtimeMachine', () => {

@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "description": "DDI-XML codec: import/export between the mobilesurvey Instrument model and a DDI-Lifecycle-flavoured XML serialization, with a per-import fidelity report.",
+  "description": "DDI-Lifecycle 3.3 XML codec: export Instrument to DDI-XML and import DDI-XML back with a fidelity report.",
   "main": "./src/index.ts",
   "types": "./src/index.ts",
   "exports": {

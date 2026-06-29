@@ -1,180 +1,167 @@
-/**
- * Tiny, dependency-free XML reader/writer.
- *
- * This is intentionally small and isolated: the codec's mapping layer (`export.ts` / `import.ts`)
- * only ever sees the `XmlElement` tree produced/consumed here, so this module can later be swapped
- * for a hardened third-party parser (e.g. for the full DDI-Lifecycle 3.3 / Codebook 2.5 adapter)
- * without touching the mapping logic.
- *
- * Scope: well-formed XML using elements, attributes, character data, CDATA, comments, the XML
- * declaration and DOCTYPE/PI prologs. Namespaces are treated as opaque prefixes on the tag name
- * (`xml:lang` is read verbatim). Mixed content is flattened: an element's direct character data is
- * collected into `.text`, and its element children into `.children`. The serializer never emits an
- * element with both meaningful text and children, so the round-trip stays loss-free for our model.
- */
+/** Minimal XML builder (template strings, no deps) and recursive-descent tokenizer. */
 
-export class DdiXmlError extends Error {}
+export function esc(s: string): string {
+  return s
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
 
-/** A parsed XML element. `text` holds this element's *direct* character data (not descendants'). */
-export interface XmlElement {
+export function el(
+  tag: string,
+  attrs: Record<string, string> = {},
+  ...children: string[]
+): string {
+  const a = Object.entries(attrs)
+    .filter(([, v]) => v !== '')
+    .map(([k, v]) => ` ${k}="${esc(v)}"`)
+    .join('');
+  const body = children.filter(Boolean).join('');
+  return body ? `<${tag}${a}>${body}</${tag}>` : `<${tag}${a}/>`;
+}
+
+/** Build a leaf element whose text content is escaped. */
+export function txt(tag: string, attrs: Record<string, string>, value: string): string {
+  const a = Object.entries(attrs)
+    .filter(([, v]) => v !== '')
+    .map(([k, v]) => ` ${k}="${esc(v)}"`)
+    .join('');
+  return `<${tag}${a}>${esc(value)}</${tag}>`;
+}
+
+// ---------------------------------------------------------------------------
+// Tokenizer
+// ---------------------------------------------------------------------------
+
+export interface XmlNode {
   tag: string;
+  localName: string;
+  prefix: string;
+  /** Attribute values with entity references resolved. */
   attrs: Record<string, string>;
-  children: XmlElement[];
-  /** Concatenated direct character data, with entities decoded. Empty for structural elements. */
+  children: XmlNode[];
+  /** Concatenated, trimmed text content (entities resolved). */
   text: string;
 }
 
-const NAMED_ENTITIES: Record<string, string> = {
-  amp: '&',
-  lt: '<',
-  gt: '>',
-  quot: '"',
-  apos: "'",
-};
+class Tokenizer {
+  private s: string;
+  private i = 0;
 
-function decodeEntities(s: string): string {
-  return s.replace(/&(#x?[0-9a-fA-F]+|[a-zA-Z][a-zA-Z0-9]*);/g, (whole, body: string) => {
-    if (body.charCodeAt(0) === 35 /* # */) {
-      const isHex = body[1] === 'x' || body[1] === 'X';
-      const code = isHex ? parseInt(body.slice(2), 16) : parseInt(body.slice(1), 10);
-      return Number.isFinite(code) ? String.fromCodePoint(code) : whole;
-    }
-    return NAMED_ENTITIES[body] ?? whole;
-  });
-}
+  constructor(s: string) { this.s = s; }
 
-/** Parse an XML document and return its root element. Throws `DdiXmlError` on malformed input. */
-export function parseXml(src: string): XmlElement {
-  let pos = 0;
-  const at = (p: number): string => src[p] ?? '';
-  const isNameChar = (ch: string): boolean => ch !== '' && !/[\s/>=]/.test(ch);
-
-  const fail = (msg: string): never => {
-    throw new DdiXmlError(`${msg} (offset ${pos})`);
-  };
-  const skipSpace = (): void => {
-    while (pos < src.length && /\s/.test(at(pos))) pos++;
-  };
-  const readName = (): string => {
-    const start = pos;
-    while (pos < src.length && isNameChar(at(pos))) pos++;
-    if (pos === start) fail('expected a name');
-    return src.slice(start, pos);
-  };
-  /** Skip whitespace, comments, processing instructions and `<!...>` declarations. */
-  const skipProlog = (): void => {
-    for (;;) {
-      skipSpace();
-      if (src.startsWith('<!--', pos)) {
-        const end = src.indexOf('-->', pos);
-        pos = end < 0 ? src.length : end + 3;
-      } else if (src.startsWith('<?', pos)) {
-        const end = src.indexOf('?>', pos);
-        pos = end < 0 ? src.length : end + 2;
-      } else if (src.startsWith('<!', pos)) {
-        const end = src.indexOf('>', pos);
-        pos = end < 0 ? src.length : end + 1;
-      } else {
-        return;
-      }
-    }
-  };
-
-  const parseElement = (): XmlElement => {
-    if (at(pos) !== '<') fail('expected "<"');
-    pos++; // consume '<'
-    const tag = readName();
-    const attrs: Record<string, string> = {};
-
-    for (;;) {
-      skipSpace();
-      const ch = at(pos);
-      if (ch === '/') {
-        if (at(pos + 1) !== '>') fail('expected "/>"');
-        pos += 2;
-        return { tag, attrs, children: [], text: '' };
-      }
-      if (ch === '>') {
-        pos++;
-        break;
-      }
-      if (ch === '') fail(`unexpected end of input in start tag <${tag}>`);
-      const name = readName();
-      skipSpace();
-      if (at(pos) !== '=') fail(`expected "=" after attribute "${name}"`);
-      pos++;
-      skipSpace();
-      const quote = at(pos);
-      if (quote !== '"' && quote !== "'") fail(`expected quote for attribute "${name}"`);
-      pos++;
-      const end = src.indexOf(quote, pos);
-      if (end < 0) fail(`unterminated attribute "${name}"`);
-      attrs[name] = decodeEntities(src.slice(pos, end));
-      pos = end + 1;
-    }
-
-    // Content: children + direct text, until the matching close tag.
-    const children: XmlElement[] = [];
-    let text = '';
-    for (;;) {
-      if (pos >= src.length) fail(`unexpected end of input inside <${tag}>`);
-      if (src.startsWith('</', pos)) {
-        pos += 2;
-        const closeName = readName();
-        skipSpace();
-        if (at(pos) !== '>') fail(`expected ">" in close tag </${closeName}>`);
-        pos++;
-        if (closeName !== tag) fail(`mismatched close tag </${closeName}> for <${tag}>`);
-        return { tag, attrs, children, text };
-      }
-      if (src.startsWith('<!--', pos)) {
-        const end = src.indexOf('-->', pos);
-        pos = end < 0 ? src.length : end + 3;
-        continue;
-      }
-      if (src.startsWith('<![CDATA[', pos)) {
-        const end = src.indexOf(']]>', pos);
-        text += end < 0 ? src.slice(pos + 9) : src.slice(pos + 9, end);
-        pos = end < 0 ? src.length : end + 3;
-        continue;
-      }
-      if (at(pos) === '<') {
-        children.push(parseElement());
-        continue;
-      }
-      const next = src.indexOf('<', pos);
-      const chunk = next < 0 ? src.slice(pos) : src.slice(pos, next);
-      text += decodeEntities(chunk);
-      pos = next < 0 ? src.length : next;
-    }
-  };
-
-  skipProlog();
-  if (at(pos) !== '<') fail('no root element found');
-  return parseElement();
-}
-
-function escapeText(s: string): string {
-  return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-}
-
-function escapeAttr(s: string): string {
-  return escapeText(s).replace(/"/g, '&quot;');
-}
-
-function stringifyElement(el: XmlElement, indent: string): string {
-  const attrs = Object.entries(el.attrs)
-    .map(([k, v]) => ` ${k}="${escapeAttr(v)}"`)
-    .join('');
-  if (el.children.length === 0) {
-    if (el.text === '') return `${indent}<${el.tag}${attrs}/>`;
-    return `${indent}<${el.tag}${attrs}>${escapeText(el.text)}</${el.tag}>`;
+  parse(): XmlNode {
+    this.skipProlog();
+    return this.parseElement();
   }
-  const inner = el.children.map((c) => stringifyElement(c, indent + '  ')).join('\n');
-  return `${indent}<${el.tag}${attrs}>\n${inner}\n${indent}</${el.tag}>`;
+
+  private at(n = 1): string { return this.s.slice(this.i, this.i + n); }
+
+  private skipWs(): void {
+    while (this.i < this.s.length && /\s/.test(this.s[this.i]!)) this.i++;
+  }
+
+  private skipProlog(): void {
+    this.skipWs();
+    while (this.at(2) === '<?' || this.at(4) === '<!--' || this.at(9) === '<!DOCTYPE') {
+      if (this.at(4) === '<!--') {
+        const end = this.s.indexOf('-->', this.i);
+        this.i = end < 0 ? this.s.length : end + 3;
+      } else if (this.at(9) === '<!DOCTYPE') {
+        let depth = 0;
+        while (this.i < this.s.length) {
+          const ch = this.s[this.i++];
+          if (ch === '[') depth++;
+          else if (ch === ']') depth--;
+          else if (ch === '>' && depth === 0) break;
+        }
+      } else {
+        const end = this.s.indexOf('?>', this.i);
+        this.i = end < 0 ? this.s.length : end + 2;
+      }
+      this.skipWs();
+    }
+  }
+
+  private parseElement(): XmlNode {
+    if (this.s[this.i] !== '<') throw new Error(`Expected '<' at pos ${this.i}`);
+    this.i++;
+    const tagStart = this.i;
+    while (this.i < this.s.length && !/[\s/>]/.test(this.s[this.i]!)) this.i++;
+    const tag = this.s.slice(tagStart, this.i);
+    const colon = tag.indexOf(':');
+    const prefix = colon >= 0 ? tag.slice(0, colon) : '';
+    const localName = colon >= 0 ? tag.slice(colon + 1) : tag;
+
+    const attrs: Record<string, string> = {};
+    this.skipWs();
+    while (this.i < this.s.length && this.s[this.i] !== '/' && this.s[this.i] !== '>') {
+      const nameStart = this.i;
+      while (this.i < this.s.length && !/[\s=/>]/.test(this.s[this.i]!)) this.i++;
+      const name = this.s.slice(nameStart, this.i);
+      this.skipWs();
+      if (this.s[this.i] !== '=') throw new Error(`Expected '=' at pos ${this.i}`);
+      this.i++;
+      this.skipWs();
+      const q = this.s[this.i];
+      if (q !== '"' && q !== "'") throw new Error(`Expected quote at pos ${this.i}`);
+      this.i++;
+      const valStart = this.i;
+      while (this.i < this.s.length && this.s[this.i] !== q) this.i++;
+      attrs[name] = this.unescape(this.s.slice(valStart, this.i));
+      this.i++;
+      this.skipWs();
+    }
+
+    const children: XmlNode[] = [];
+    let rawText = '';
+
+    if (this.s[this.i] === '/') {
+      this.i += 2; // '/>'
+    } else {
+      this.i++; // '>'
+      while (this.i < this.s.length) {
+        if (this.at(4) === '<!--') {
+          const end = this.s.indexOf('-->', this.i);
+          this.i = end < 0 ? this.s.length : end + 3;
+        } else if (this.at(9) === '<![CDATA[') {
+          const end = this.s.indexOf(']]>', this.i + 9);
+          rawText += end < 0 ? this.s.slice(this.i + 9) : this.s.slice(this.i + 9, end);
+          this.i = end < 0 ? this.s.length : end + 3;
+        } else if (this.at(2) === '</') {
+          this.i += 2;
+          while (this.i < this.s.length && this.s[this.i] !== '>') this.i++;
+          this.i++;
+          break;
+        } else if (this.s[this.i] === '<') {
+          children.push(this.parseElement());
+        } else {
+          const textStart = this.i;
+          while (this.i < this.s.length && this.s[this.i] !== '<') this.i++;
+          rawText += this.s.slice(textStart, this.i);
+        }
+      }
+    }
+
+    return {
+      tag, prefix, localName, attrs, children,
+      text: this.unescape(rawText).trim(),
+    };
+  }
+
+  private unescape(s: string): string {
+    return s
+      .replace(/&amp;/g, '&')
+      .replace(/&lt;/g, '<')
+      .replace(/&gt;/g, '>')
+      .replace(/&quot;/g, '"')
+      .replace(/&apos;/g, "'")
+      .replace(/&#(\d+);/g, (_, n: string) => String.fromCodePoint(Number(n)))
+      .replace(/&#x([0-9a-fA-F]+);/g, (_, h: string) => String.fromCodePoint(parseInt(h, 16)));
+  }
 }
 
-/** Serialize a root element to a pretty-printed XML document with a UTF-8 declaration. */
-export function serializeXml(root: XmlElement): string {
-  return `<?xml version="1.0" encoding="UTF-8"?>\n${stringifyElement(root, '')}\n`;
+export function parseXml(xml: string): XmlNode {
+  return new Tokenizer(xml).parse();
 }

@@ -278,6 +278,7 @@ export function App() {
 
   return (
     <div className="app">
+      <a className="skip-link" href="#eq-main">Skip to main content</a>
       {phase === 'gate' && loaded.requiresAccessCode && (
         <AccessGate onAuthenticate={authenticate} />
       )}
