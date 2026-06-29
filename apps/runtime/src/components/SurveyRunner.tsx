@@ -307,7 +307,7 @@ export function SurveyRunner({
   return (
     <div className="eq">
       <header className="eq__header">
-        <span className="eq__title">{pick(instrument.metadata.title, lang)}</span>
+        <h1 className="eq__title">{pick(instrument.metadata.title, lang)}</h1>
         {showSaved ? <span className="eq__saved">✓ Saved</span> : null}
         <span className="eq__case">{caseId}</span>
         <div className="eq__lang" role="group" aria-label="Language">
