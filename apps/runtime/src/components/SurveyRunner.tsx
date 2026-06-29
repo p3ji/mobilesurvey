@@ -340,7 +340,7 @@ export function SurveyRunner({
           {resumed && currentPage === initialPage ? 'Resumed · ' : ''}
           {lang === 'fr' ? 'Page' : 'Page'} {currentPage + 1}{' '}
           {lang === 'fr' ? 'de' : 'of'} {pages.length}
-          {totalQuestions > 0 && (
+          {totalQuestions > 0 && (questionsPerPage[currentPage] ?? 0) > 0 && (
             <> · Q{questionOffset + 1}–{Math.min(questionOffset + questionsPerPage[currentPage]!, totalQuestions)} of {totalQuestions}</>
           )}
         </span>
