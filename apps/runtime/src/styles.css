@@ -200,6 +200,9 @@ textarea {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  /* Rendered as <h1> for document structure; keep the inline visual unchanged. */
+  font-size: inherit;
+  margin: 0;
 }
 .eq__case {
   font-size: 12px;

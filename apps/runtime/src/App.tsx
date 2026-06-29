@@ -68,6 +68,8 @@ export function App() {
 
   const [backend, setBackend] = useState<Backend | null>(null);
   const [loaded, setLoaded] = useState<LoadedSurvey | null>(null);
+  // Set when an explicit ?survey=<id> matches neither a served nor a bundled survey.
+  const [notFoundId, setNotFoundId] = useState<string | null>(null);
   const surveyStartedAt = useRef<number | null>(null);
 
   // Notice banner text depends on whether the survey actually persists responses.
@@ -99,7 +101,15 @@ export function App() {
         };
       } else {
         // Fall back to a bundled instrument (exploration-only demos are never in Supabase).
-        const bundled = bundledSurvey(effectiveId) ?? bundledSurvey('lfs')!;
+        // A missing ?survey param falls back to the bundled lfs demo; an *explicit* but unknown
+        // id is a broken link — surface "not found" instead of silently serving the wrong survey.
+        const bundled = bundledSurvey(effectiveId);
+        if (!bundled) {
+          if (!active) return;
+          setBackend(b);
+          setNotFoundId(surveyId ?? effectiveId);
+          return;
+        }
         loadedSurvey = {
           instrument: bundled.instrument,
           requiresAccessCode: bundled.requiresAccessCode,
@@ -235,6 +245,23 @@ export function App() {
     // Re-enter: anonymous surveys auto-start again; code-gated return to the gate.
     setPhase('gate');
   };
+
+  if (notFoundId) {
+    return (
+      <div className="app">
+        <div className="gate">
+          <div className="gate__card">
+            <div className="gate__brand">Electronic Questionnaire</div>
+            <h1 className="gate__title" style={{ marginTop: 12 }}>Survey not found</h1>
+            <p className="gate__sub" style={{ marginTop: 8 }}>
+              We couldn’t find a survey for “{notFoundId}”. Please check the link from your invitation,
+              or contact whoever sent it to you.
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   if (!backend || !loaded) {
     return (
