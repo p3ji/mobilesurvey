@@ -5,6 +5,7 @@
   --ink-soft: #5b6b7b;
   --line: #d7dee6;
   --brand: #1f5fae;
+  --brand-dark: #174d8f;
   --brand-ink: #ffffff;
   --selected: #e6f0fb;
   --danger: #b3261e;
@@ -212,8 +213,11 @@ code {
   flex-direction: column;
   height: 100%;
 }
-.tabs__list {
+/* The collapse button lives outside Tabs.List (role="tablist" must only contain role="tab"
+   children); this row carries the layout/border/sticky styling the tablist itself used to. */
+.tabs__list-row {
   display: flex;
+  align-items: center;
   gap: 4px;
   padding: 8px 8px 0;
   border-bottom: 1px solid var(--line);
@@ -221,6 +225,11 @@ code {
   top: 0;
   background: var(--panel);
   z-index: 1;
+}
+.tabs__list {
+  display: flex;
+  gap: 4px;
+  min-width: 0;
 }
 .tabs__trigger {
   border: none;
@@ -277,7 +286,6 @@ code {
   color: var(--brand);
   min-width: 2.4em;
   flex-shrink: 0;
-  opacity: 0.75;
 }
 .tree__label {
   white-space: nowrap;
@@ -1630,13 +1638,13 @@ code {
 }
 .em-add-btn {
   font-size: 12px;
-  color: var(--brand);
+  color: var(--brand-dark);
   background: none;
   border: 1px dashed var(--brand);
   border-radius: 4px;
   padding: 3px 14px;
   cursor: pointer;
-  opacity: 0.6;
+  opacity: 0.85;
   transition: opacity 0.15s;
 }
 .em-add-btn:hover {

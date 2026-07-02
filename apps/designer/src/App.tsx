@@ -96,10 +96,12 @@ export default function App() {
             style={{ width: effectiveLeftW, overflow: leftCollapsed ? 'hidden' : undefined }}
           >
             <Tabs.Root defaultValue="structure" className="tabs">
-              <Tabs.List className="tabs__list" aria-label="Left panel">
-                <Tabs.Trigger className="tabs__trigger" value="structure">Structure</Tabs.Trigger>
-                <Tabs.Trigger className="tabs__trigger" value="variables">Variables</Tabs.Trigger>
-                <Tabs.Trigger className="tabs__trigger" value="library">Library</Tabs.Trigger>
+              <div className="tabs__list-row">
+                <Tabs.List className="tabs__list" aria-label="Left panel">
+                  <Tabs.Trigger className="tabs__trigger" value="structure">Structure</Tabs.Trigger>
+                  <Tabs.Trigger className="tabs__trigger" value="variables">Variables</Tabs.Trigger>
+                  <Tabs.Trigger className="tabs__trigger" value="library">Library</Tabs.Trigger>
+                </Tabs.List>
                 <button
                   type="button"
                   className="panel__collapse-btn"
@@ -109,7 +111,7 @@ export default function App() {
                 >
                   {leftCollapsed ? '▶' : '◀'}
                 </button>
-              </Tabs.List>
+              </div>
               <Tabs.Content value="structure" className="tabs__content">
                 <StructureTree />
               </Tabs.Content>
@@ -160,7 +162,7 @@ export default function App() {
             style={{ width: effectiveRightW, overflow: rightCollapsed ? 'hidden' : undefined }}
           >
             <Tabs.Root defaultValue="preview" className="tabs">
-              <Tabs.List className="tabs__list" aria-label="Right panel">
+              <div className="tabs__list-row">
                 <button
                   type="button"
                   className="panel__collapse-btn"
@@ -170,10 +172,12 @@ export default function App() {
                 >
                   {rightCollapsed ? '◀' : '▶'}
                 </button>
-                <Tabs.Trigger className="tabs__trigger" value="preview">Preview</Tabs.Trigger>
-                <Tabs.Trigger className="tabs__trigger" value="flow">Flow</Tabs.Trigger>
-                <Tabs.Trigger className="tabs__trigger" value="spec">JSON Spec</Tabs.Trigger>
-              </Tabs.List>
+                <Tabs.List className="tabs__list" aria-label="Right panel">
+                  <Tabs.Trigger className="tabs__trigger" value="preview">Preview</Tabs.Trigger>
+                  <Tabs.Trigger className="tabs__trigger" value="flow">Flow</Tabs.Trigger>
+                  <Tabs.Trigger className="tabs__trigger" value="spec">JSON Spec</Tabs.Trigger>
+                </Tabs.List>
+              </div>
               <Tabs.Content value="preview" className="tabs__content">
                 <PreviewPane />
               </Tabs.Content>

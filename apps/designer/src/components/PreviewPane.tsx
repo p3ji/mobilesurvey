@@ -42,13 +42,13 @@ function EditList({ edits }: { edits: FiredEdit[] }) {
   return (
     <ul className="pv-edits">
       {edits.map((e) => (
-        <li
-          key={e.id}
-          className={e.type === 'hard' ? 'pv-edit pv-edit--hard' : 'pv-edit pv-edit--soft'}
-          role={e.type === 'hard' ? 'alert' : 'status'}
-        >
-          {e.type === 'hard' ? '⛔ ' : '⚠ '}
-          {e.message}
+        // role lives on a nested span, not the <li>, so the <li>'s implicit `listitem` role stays
+        // intact (an explicit role on <li> breaks the <ul>'s list semantics for assistive tech).
+        <li key={e.id} className={e.type === 'hard' ? 'pv-edit pv-edit--hard' : 'pv-edit pv-edit--soft'}>
+          <span role={e.type === 'hard' ? 'alert' : 'status'}>
+            {e.type === 'hard' ? '⛔ ' : '⚠ '}
+            {e.message}
+          </span>
         </li>
       ))}
     </ul>

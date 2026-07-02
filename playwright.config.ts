@@ -1,9 +1,20 @@
+import { existsSync } from 'node:fs';
 import { defineConfig, devices } from '@playwright/test';
 
 /**
  * Playwright E2E test configuration for mobilesurvey.
  * Runs against the hub (Collector, Searcher, Designer).
  */
+
+// Some sandboxed environments pre-install a Chromium build under a fixed path that doesn't match
+// the exact revision @playwright/test expects, and `playwright install` isn't available there.
+// Only override when that known path exists, so this is a no-op wherever the pinned browser is
+// actually installed (e.g. a normal `playwright install` in CI).
+const SANDBOX_CHROMIUM = '/opt/pw-browsers/chromium';
+const chromiumLaunchOptions = existsSync(SANDBOX_CHROMIUM)
+  ? { executablePath: SANDBOX_CHROMIUM }
+  : undefined;
+
 export default defineConfig({
   testDir: './tests/e2e',
   fullyParallel: true,
@@ -29,7 +40,7 @@ export default defineConfig({
   projects: [
     {
       name: 'chromium',
-      use: { ...devices['Desktop Chrome'] },
+      use: { ...devices['Desktop Chrome'], launchOptions: chromiumLaunchOptions },
     },
     {
       name: 'firefox',
@@ -43,7 +54,7 @@ export default defineConfig({
     /* Test against mobile viewports */
     {
       name: 'Mobile Chrome',
-      use: { ...devices['Pixel 5'] },
+      use: { ...devices['Pixel 5'], launchOptions: chromiumLaunchOptions },
     },
     {
       name: 'Mobile Safari',
