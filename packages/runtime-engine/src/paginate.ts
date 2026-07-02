@@ -41,3 +41,21 @@ export function pageHasHardEdits(pageItems: RenderItem[]): boolean {
       item.firedEdits.some((e) => e.type === 'hard'),
   );
 }
+
+/**
+ * Assign 1-based, sequential question numbers across a paginated instrument: `question`,
+ * `markAll` and `grid` items are counted; every other kind is skipped. Shared so the designer
+ * preview, the designer's render mode, and the respondent runtime number questions identically.
+ */
+export function numberQuestions(pages: RenderItem[][]): Map<string, number> {
+  const numbers = new Map<string, number>();
+  let n = 0;
+  for (const page of pages) {
+    for (const item of page) {
+      if (item.kind === 'question' || item.kind === 'markAll' || item.kind === 'grid') {
+        numbers.set(item.key, ++n);
+      }
+    }
+  }
+  return numbers;
+}

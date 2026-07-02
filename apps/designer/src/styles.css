@@ -1115,57 +1115,6 @@ code {
   width: 100%;
   max-width: 560px;
 }
-.rapp__page-heading {
-  font-size: 20px;
-  font-weight: 700;
-  color: var(--brand);
-  margin: 0 0 20px;
-  padding-bottom: 10px;
-  border-bottom: 2px solid var(--brand);
-}
-.rapp__section-heading {
-  font-size: 15px;
-  font-weight: 700;
-  color: var(--ink-soft);
-  margin: 20px 0 10px;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-}
-.rapp__loop-heading {
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--brand);
-  margin: 16px 0 8px;
-  text-transform: uppercase;
-  letter-spacing: 0.03em;
-}
-.rapp__statement {
-  background: var(--selected);
-  border-left: 3px solid var(--brand);
-  padding: 12px 14px;
-  border-radius: 0 6px 6px 0;
-  margin-bottom: 20px;
-  font-size: 14px;
-  line-height: 1.5;
-}
-.rapp__question {
-  margin-bottom: 24px;
-}
-.rapp__q-text {
-  display: block;
-  font-weight: 600;
-  font-size: 15px;
-  margin-bottom: 8px;
-  line-height: 1.4;
-}
-.rapp__q-num {
-  display: inline-block;
-  min-width: 2.4em;
-  font-weight: 700;
-  color: var(--brand);
-  margin-inline-end: 4px;
-  font-variant-numeric: tabular-nums;
-}
 .rapp__nav {
   display: flex;
   align-items: center;

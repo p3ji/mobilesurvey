@@ -7,233 +7,17 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { useMachine } from '@xstate/react';
 import {
   flattenInstrument,
+  numberQuestions,
   pageHasHardEdits,
   paginate,
   pick,
   runtimeMachine,
-  type FiredEdit,
   type ParadataSink,
   type RuntimeState,
   type SampleUnit,
 } from '@mobilesurvey/runtime-engine';
-import type {
-  CategoryScheme,
-  Instrument,
-  LanguageCode,
-  ResponseDomain,
-} from '@mobilesurvey/instrument-schema';
-
-// ── helpers ──────────────────────────────────────────────────────────────────
-
-function schemeCategories(schemes: CategoryScheme[], ref: string) {
-  return schemes.find((s) => s.id === ref)?.categories ?? [];
-}
-
-function lbl(intl: Record<string, string> | undefined, lang: string): string {
-  if (!intl) return '';
-  return intl[lang] ?? Object.values(intl)[0] ?? '';
-}
-
-const RTL_LANGS = new Set(['ar', 'he', 'fa', 'ur']);
-
-function EditList({ edits, id }: { edits: FiredEdit[]; id?: string }) {
-  if (!edits.length) return null;
-  return (
-    <ul id={id} className="eq__edits">
-      {edits.map((e) => (
-        <li
-          key={e.id}
-          className={`eq__edit eq__edit--${e.type}`}
-          role={e.type === 'hard' ? 'alert' : 'status'}
-        >
-          {e.type === 'hard' ? '⛔ ' : '⚠ '}
-          {e.message}
-        </li>
-      ))}
-    </ul>
-  );
-}
-
-function Control({
-  domain,
-  inputId,
-  value,
-  instrument,
-  lang,
-  required,
-  hasError,
-  errorId,
-  onChange,
-}: {
-  domain: Exclude<ResponseDomain, { type: 'markAll' }>;
-  inputId: string;
-  value: unknown;
-  instrument: Instrument;
-  lang: string;
-  required?: boolean;
-  hasError?: boolean;
-  errorId?: string;
-  onChange: (v: unknown) => void;
-}) {
-  const ariaProps = {
-    'aria-required': required || undefined,
-    'aria-invalid': hasError || undefined,
-    'aria-describedby': hasError && errorId ? errorId : undefined,
-  };
-
-  switch (domain.type) {
-    case 'numeric':
-      return (
-        <input
-          id={inputId}
-          type="number"
-          inputMode="decimal"
-          value={value === undefined || value === null ? '' : String(value)}
-          min={domain.min}
-          max={domain.max}
-          {...ariaProps}
-          onChange={(e) => onChange(e.target.value === '' ? undefined : Number(e.target.value))}
-        />
-      );
-    case 'text':
-      return domain.multiline ? (
-        <textarea
-          id={inputId}
-          rows={3}
-          value={(value as string) ?? ''}
-          {...ariaProps}
-          onChange={(e) => onChange(e.target.value)}
-        />
-      ) : (
-        <input
-          id={inputId}
-          type="text"
-          maxLength={domain.maxLength}
-          value={(value as string) ?? ''}
-          {...ariaProps}
-          onChange={(e) => onChange(e.target.value)}
-        />
-      );
-    case 'boolean':
-      return (
-        <div
-          className="eq__radios"
-          role="radiogroup"
-          aria-labelledby={inputId}
-          aria-required={required || undefined}
-          aria-invalid={hasError || undefined}
-          aria-describedby={hasError && errorId ? errorId : undefined}
-        >
-          {[
-            { v: true, l: lang === 'fr' ? 'Oui' : 'Yes' },
-            { v: false, l: lang === 'fr' ? 'Non' : 'No' },
-          ].map((opt) => (
-            <label key={String(opt.v)} className="eq__radio">
-              <input
-                type="radio"
-                name={inputId}
-                checked={value === opt.v}
-                onChange={() => onChange(opt.v)}
-              />
-              {opt.l}
-            </label>
-          ))}
-        </div>
-      );
-    case 'datetime':
-      return (
-        <input
-          id={inputId}
-          type={domain.mode === 'datetime' ? 'datetime-local' : domain.mode}
-          value={(value as string) ?? ''}
-          {...ariaProps}
-          onChange={(e) => onChange(e.target.value)}
-        />
-      );
-    case 'file':
-      return (
-        <input
-          id={inputId}
-          type="file"
-          accept={domain.accept?.join(',')}
-          {...ariaProps}
-          onChange={() => onChange('(file selected)')}
-        />
-      );
-    case 'lookup': {
-      const opts = schemeCategories(instrument.categorySchemes, domain.categorySchemeRef);
-      const listId = `${inputId}-list`;
-      return (
-        <>
-          <input
-            id={inputId}
-            list={listId}
-            value={(value as string) ?? ''}
-            placeholder={lang === 'fr' ? 'Rechercher…' : 'Search…'}
-            {...ariaProps}
-            onChange={(e) => onChange(e.target.value)}
-          />
-          <datalist id={listId}>
-            {opts.map((c) => (
-              <option key={c.code} value={lbl(c.label, lang)} />
-            ))}
-          </datalist>
-        </>
-      );
-    }
-    case 'code': {
-      const opts = schemeCategories(instrument.categorySchemes, domain.categorySchemeRef);
-      if (domain.selection === 'multiple') {
-        const arr = Array.isArray(value) ? (value as string[]) : [];
-        return (
-          <div
-            className="eq__radios"
-            role="group"
-            aria-labelledby={inputId}
-            aria-required={required || undefined}
-            aria-invalid={hasError || undefined}
-            aria-describedby={hasError && errorId ? errorId : undefined}
-          >
-            {opts.map((c) => (
-              <label key={c.code} className="eq__radio">
-                <input
-                  type="checkbox"
-                  checked={arr.includes(c.code)}
-                  onChange={(e) =>
-                    onChange(e.target.checked ? [...arr, c.code] : arr.filter((x) => x !== c.code))
-                  }
-                />
-                {lbl(c.label, lang)}
-              </label>
-            ))}
-          </div>
-        );
-      }
-      return (
-        <div
-          className="eq__radios"
-          role="radiogroup"
-          aria-labelledby={inputId}
-          aria-required={required || undefined}
-          aria-invalid={hasError || undefined}
-          aria-describedby={hasError && errorId ? errorId : undefined}
-        >
-          {opts.map((c) => (
-            <label key={c.code} className="eq__radio">
-              <input
-                type="radio"
-                name={inputId}
-                checked={value === c.code}
-                onChange={() => onChange(c.code)}
-              />
-              {lbl(c.label, lang)}
-            </label>
-          ))}
-        </div>
-      );
-    }
-  }
-}
+import type { Instrument, LanguageCode } from '@mobilesurvey/instrument-schema';
+import { isRtl, QuestionPage } from '@mobilesurvey/respondent-view';
 
 // ── component ────────────────────────────────────────────────────────────────
 
@@ -270,7 +54,7 @@ export function SurveyRunner({
   });
 
   const lang = snapshot.context.state.language;
-  const dir = RTL_LANGS.has(lang) ? 'rtl' : 'ltr';
+  const dir = isRtl(lang) ? 'rtl' : 'ltr';
   const [currentPage, setCurrentPage] = useState(initialPage);
   const [showSaved, setShowSaved] = useState(false);
   const contentRef = useRef<HTMLDivElement>(null);
@@ -309,15 +93,7 @@ export function SurveyRunner({
     [questionsPerPage, currentPage],
   );
   const pageItems = pages[currentPage] ?? [];
-
-  // Attach a global question number to each question/markAll item on the current page.
-  const numberedPageItems = useMemo(() => {
-    let n = questionOffset;
-    return pageItems.map((item) => ({
-      item,
-      qNum: (item.kind === 'question' || item.kind === 'markAll' || item.kind === 'grid') ? ++n : null,
-    }));
-  }, [pageItems, questionOffset]);
+  const qNumbers = useMemo(() => numberQuestions(pages), [pages]);
 
   // Persist progress on every change so a reload / drop-out can resume.
   useEffect(() => {
@@ -410,160 +186,13 @@ export function SurveyRunner({
 
       <div id="eq-main" className="eq__content" ref={contentRef} tabIndex={-1}>
         <form onSubmit={(e) => e.preventDefault()}>
-          {numberedPageItems.map(({ item, qNum }) => {
-            if (item.kind === 'pageBreak') {
-              return item.title ? (
-                <h2 key={item.key} className="eq__page-heading">
-                  {item.title}
-                </h2>
-              ) : null;
-            }
-            if (item.kind === 'section') {
-              return (
-                <h3 key={item.key} className="eq__section-heading">
-                  {item.title}
-                </h3>
-              );
-            }
-            if (item.kind === 'loopHeading') {
-              return (
-                <div key={item.key} className="eq__loop-heading">
-                  {item.title}
-                </div>
-              );
-            }
-            if (item.kind === 'statement') {
-              return (
-                <div key={item.key} className="eq__statement">
-                  {item.text}
-                </div>
-              );
-            }
-            if (item.kind === 'markAll') {
-              const markAllHardEdit = item.firedEdits.some((e) => e.type === 'hard');
-              const markAllErrId = markAllHardEdit ? `${item.key}-err` : undefined;
-              return (
-                <div key={item.key} className="eq__question">
-                  <p className="eq__q-text">
-                    {qNum != null && <span className="eq__q-num">Q{qNum}.</span>}
-                    {item.questionText}
-                  </p>
-                  {item.instruction && <p className="eq__instruction">{item.instruction}</p>}
-                  <div
-                    className="eq__radios"
-                    role="group"
-                    aria-label={item.questionText}
-                    aria-invalid={markAllHardEdit || undefined}
-                    aria-describedby={markAllErrId}
-                  >
-                    {item.categories.map((cat) => (
-                      <label key={cat.code} className="eq__radio">
-                        <input
-                          type="checkbox"
-                          checked={cat.value === 1}
-                          onChange={(e) => answer(cat.instanceKey, e.target.checked ? 1 : 2)}
-                        />
-                        {cat.label}
-                      </label>
-                    ))}
-                  </div>
-                  <EditList edits={item.firedEdits} id={markAllErrId} />
-                </div>
-              );
-            }
-
-            if (item.kind === 'grid') {
-              const gridHardEdit = item.firedEdits.some((e) => e.type === 'hard');
-              const gridErrId = gridHardEdit ? `${item.key}-err` : undefined;
-              return (
-                <div key={item.key} className="eq__question">
-                  <p className="eq__q-text">
-                    {qNum != null && <span className="eq__q-num">Q{qNum}.</span>}
-                    {item.questionText}
-                  </p>
-                  {item.instruction && <p className="eq__instruction">{item.instruction}</p>}
-                  <div
-                    className="eq__grid-wrapper"
-                    aria-invalid={gridHardEdit || undefined}
-                    aria-describedby={gridErrId}
-                  >
-                    <table className="eq__grid">
-                      <thead>
-                        <tr>
-                          <th className="eq__grid__corner" />
-                          {item.columns.map((col) => (
-                            <th key={col.code} className="eq__grid__col-hdr">{col.label}</th>
-                          ))}
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {item.rows.map((row) => (
-                          <tr key={row.code} className="eq__grid__row">
-                            <td className="eq__grid__row-lbl">{row.label}</td>
-                            {item.columns.map((col) => (
-                              <td key={col.code} className="eq__grid__cell">
-                                <input
-                                  type="radio"
-                                  name={`${item.key}-${row.code}`}
-                                  aria-label={`${row.label}: ${col.label}`}
-                                  checked={row.value === col.code}
-                                  onChange={() => answer(row.instanceKey, col.code)}
-                                />
-                              </td>
-                            ))}
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                  <EditList edits={item.firedEdits} id={gridErrId} />
-                </div>
-              );
-            }
-
-            const inputId = `eq-ctrl-${item.key}`;
-            const isGroupDomain =
-              item.construct.responseDomain.type === 'code' ||
-              item.construct.responseDomain.type === 'boolean';
-            const hasHardEdit = item.firedEdits.some((e) => e.type === 'hard');
-            const errId = hasHardEdit ? `${inputId}-err` : undefined;
-            return (
-              <div key={item.key} className="eq__question">
-                <label
-                  id={inputId}
-                  className="eq__q-text"
-                  htmlFor={isGroupDomain ? undefined : inputId}
-                >
-                  {qNum != null && <span className="eq__q-num">Q{qNum}.</span>}
-                  {item.text}
-                  {item.construct.required && (
-                    <span aria-hidden="true" className="eq__req">
-                      {' '}
-                      *
-                    </span>
-                  )}
-                </label>
-                {item.instruction && <p className="eq__instruction">{item.instruction}</p>}
-                <Control
-                  domain={
-                    item.construct.responseDomain as Exclude<
-                      typeof item.construct.responseDomain,
-                      { type: 'markAll' }
-                    >
-                  }
-                  inputId={inputId}
-                  value={item.value}
-                  instrument={instrument}
-                  lang={lang}
-                  required={item.construct.required}
-                  hasError={hasHardEdit}
-                  errorId={errId}
-                  onChange={(v) => answer(item.instanceKey, v)}
-                />
-                <EditList edits={item.firedEdits} id={errId} />
-              </div>
-            );
-          })}
+          <QuestionPage
+            items={pageItems}
+            instrument={instrument}
+            lang={lang}
+            qNumbers={qNumbers}
+            onAnswer={answer}
+          />
         </form>
       </div>
 
