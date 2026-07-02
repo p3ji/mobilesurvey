@@ -140,13 +140,18 @@ export class Store {
         created_at INTEGER NOT NULL
       );
     `);
-    // CATI columns: idempotent on SQLite ≥ 3.37 (Node 22+).
-    for (const col of [
-      `ALTER TABLE cases ADD COLUMN IF NOT EXISTS interviewer_id TEXT`,
-      `ALTER TABLE cases ADD COLUMN IF NOT EXISTS callback_at INTEGER`,
-      `ALTER TABLE cases ADD COLUMN IF NOT EXISTS callback_note TEXT`,
-    ]) {
-      try { this.db.exec(col); } catch { /* column already exists on older SQLite */ }
+    // CATI columns. SQLite has no `ADD COLUMN IF NOT EXISTS`, so probe PRAGMA table_info and
+    // alter only what's missing — idempotent for both fresh and pre-Phase-11 databases.
+    const caseCols = new Set(
+      (this.db.prepare(`PRAGMA table_info(cases)`).all() as { name: string }[]).map((c) => c.name),
+    );
+    const catiCols: Array<[name: string, type: string]> = [
+      ['interviewer_id', 'TEXT'],
+      ['callback_at', 'INTEGER'],
+      ['callback_note', 'TEXT'],
+    ];
+    for (const [name, type] of catiCols) {
+      if (!caseCols.has(name)) this.db.exec(`ALTER TABLE cases ADD COLUMN ${name} ${type}`);
     }
   }
 
