@@ -29,7 +29,7 @@ function InterviewerConfigEditor() {
 
   return (
     <div className="inspector iv-config">
-      <h3>Interviewer Mode Configuration</h3>
+      <h2>Interviewer Mode Configuration</h2>
       <p className="hint">
         Configure CATI (phone) or field-interviewer settings. Use the Module Map on the left to
         add an <strong>Entry module</strong> (phone/address validation) and an <strong>Exit
@@ -37,7 +37,7 @@ function InterviewerConfigEditor() {
       </p>
 
       <div className="subpanel">
-        <h4>Settings</h4>
+        <h3>Settings</h3>
         <label className="checkbox">
           <input
             type="checkbox"
@@ -57,7 +57,7 @@ function InterviewerConfigEditor() {
       </div>
 
       <div className="subpanel">
-        <h4>Module references</h4>
+        <h3>Module references</h3>
         <Field label="Entry module ID" hint="Auto-set when you create an entry module via the Module Map.">
           {(id) => (
             <input
@@ -83,7 +83,7 @@ function InterviewerConfigEditor() {
       </div>
 
       <div className="subpanel">
-        <h4>How interviewer mode works</h4>
+        <h3>How interviewer mode works</h3>
         <ul className="iv-config__list">
           <li>
             <strong>Entry module</strong> — runs before the main survey. Collects phone confirmation

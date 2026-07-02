@@ -162,7 +162,7 @@ export function Toolbar({
         <a href={getHubUrl()} className="toolbar__home" title="Return to survey hub">
           <strong>Modular Survey Tools</strong>
         </a>
-        <span className="toolbar__title">{pick(instrument.metadata.title as Record<string, string>, language)}</span>
+        <h1 className="toolbar__title">{pick(instrument.metadata.title as Record<string, string>, language)}</h1>
       </div>
 
       <div className="toolbar__group" role="group" aria-label="Language">

@@ -87,7 +87,7 @@ function ResponseDomainEditor({
 
   return (
     <div className="subpanel">
-      <h4>Response domain</h4>
+      <h3>Response domain</h3>
       <Field label="Type">
         {(id) => (
           <select
@@ -327,7 +327,7 @@ function EditsEditor({
   return (
     <div className="subpanel">
       <div className="subpanel__head">
-        <h4>Validation edits</h4>
+        <h3>Validation edits</h3>
         <button type="button" onClick={addEdit}>
           + Add edit
         </button>
@@ -666,7 +666,7 @@ function SchemeEditor({ schemeId, instrument }: { schemeId: string; instrument: 
       <p className="hint">ID: <code>{scheme.id}</code></p>
       <div className="subpanel">
         <div className="subpanel__head">
-          <h4>Categories ({scheme.categories.length})</h4>
+          <h3>Categories ({scheme.categories.length})</h3>
           <button
             type="button"
             onClick={() =>
@@ -826,7 +826,7 @@ export function Inspector() {
   if (scheme) {
     return (
       <div className="inspector">
-        <h3>Code List · <code>{scheme.id}</code></h3>
+        <h2>Code List · <code>{scheme.id}</code></h2>
         <SchemeEditor schemeId={scheme.id} instrument={instrument} />
       </div>
     );
@@ -836,7 +836,7 @@ export function Inspector() {
   if (variable) {
     return (
       <div className="inspector">
-        <h3>Variable · {variable.name}</h3>
+        <h2>Variable · {variable.name}</h2>
         <VariableEditor variable={variable} instrument={instrument} />
       </div>
     );
@@ -849,10 +849,10 @@ export function Inspector() {
 
   return (
     <div className="inspector">
-      <h3>
+      <h2>
         {qNum != null && <span className="inspector__qnum">Q{qNum}</span>}
         {node.type} · <code>{node.id}</code>
-      </h3>
+      </h2>
       <ConstructEditor node={node} instrument={instrument} />
     </div>
   );

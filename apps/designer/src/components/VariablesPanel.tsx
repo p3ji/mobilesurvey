@@ -47,7 +47,7 @@ export function VariablesPanel() {
     <div className="varpanel">
       {/* ── Variables ──────────────────────────────────────────────────── */}
       <div className="subpanel__head">
-        <h3>Variables</h3>
+        <h2>Variables</h2>
         <button type="button" onClick={addVariable}>
           + Variable
         </button>
@@ -69,7 +69,7 @@ export function VariablesPanel() {
 
       {/* ── Category Schemes (Code Lists) ──────────────────────────────── */}
       <div className="subpanel__head">
-        <h3>Code Lists</h3>
+        <h2>Code Lists</h2>
         <button type="button" onClick={addScheme}>
           + Scheme
         </button>
@@ -103,7 +103,7 @@ export function VariablesPanel() {
 
       {/* ── Pre-fill mappings ──────────────────────────────────────────── */}
       <div className="subpanel__head">
-        <h3>Pre-fill mappings</h3>
+        <h2>Pre-fill mappings</h2>
         <button type="button" onClick={addMapping}>
           + Mapping
         </button>

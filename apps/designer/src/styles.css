@@ -120,6 +120,10 @@ code {
 }
 .toolbar__title {
   color: var(--ink-soft);
+  /* Rendered as <h1> for document structure; keep the inline visual unchanged. */
+  font-size: inherit;
+  font-weight: inherit;
+  margin: 0;
 }
 .toolbar__group {
   display: flex;
@@ -407,8 +411,9 @@ code {
   padding: 14px;
   max-width: 640px;
 }
-.inspector h3 {
+.inspector h2 {
   margin-top: 0;
+  font-size: 1.17em;
   display: flex;
   align-items: baseline;
   gap: 8px;
@@ -435,8 +440,9 @@ code {
   justify-content: space-between;
   margin-bottom: 8px;
 }
-.subpanel h4 {
+.subpanel h3 {
   margin: 0 0 8px;
+  font-size: 1em;
 }
 .edit-card {
   border: 1px dashed var(--line);
@@ -449,6 +455,10 @@ code {
 .varpanel {
   display: flex;
   flex-direction: column;
+}
+.varpanel h2 {
+  margin: 0;
+  font-size: 1.17em;
 }
 .varlist {
   list-style: none;
