@@ -28,6 +28,11 @@ interface LoadedSurvey {
   requiresAccessCode: boolean;
   /** Whether responses are persisted to the backend (false = exploration-only). */
   collectsData: boolean;
+  /**
+   * True for bundled teaching demos (registry-driven) — gates the Completion screen's
+   * response/paradata/debug inspection panel. Real (user-created) surveys stay clean.
+   */
+  isDemo: boolean;
   /** undefined = no notice; present = show banner on every page */
   notice?: { kind: 'demo-no-save' | 'demo-saves'; text: string };
 }
@@ -86,6 +91,9 @@ export function App() {
       // No ?survey param falls back to the bundled Household & Employment demo.
       const effectiveId = surveyId ?? 'lfs';
       const collects = surveyCollectsData(effectiveId);
+      // Registry-driven: bundled demos keep the Completion inspection panel, even when the
+      // demo row is served from the backend rather than loaded from the bundle.
+      const isDemo = bundledSurvey(effectiveId) !== undefined;
       // Exploration-only surveys get a mock backend so nothing reaches Supabase.
       const b = await createBackend({ collectsData: collects });
 
@@ -97,6 +105,7 @@ export function App() {
           requiresAccessCode: served.requiresAccessCode,
           surveyId: effectiveId,
           collectsData: collects,
+          isDemo,
           notice: noticeFor(collects),
         };
       } else {
@@ -115,6 +124,7 @@ export function App() {
           requiresAccessCode: bundled.requiresAccessCode,
           surveyId: effectiveId,
           collectsData: collects,
+          isDemo,
           notice: noticeFor(collects),
         };
         // Seed the survey row (FK for responses) only for data-collecting surveys.
@@ -299,7 +309,7 @@ export function App() {
       )}
 
       {phase === 'done' && done && (
-        <Completion responses={done.responses} paradata={done.paradata} saved={done.saved} saveError={done.saveError} onRestart={restart} />
+        <Completion responses={done.responses} paradata={done.paradata} saved={done.saved} saveError={done.saveError} showDebug={loaded.isDemo} onRestart={restart} />
       )}
     </div>
   );
