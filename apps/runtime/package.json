@@ -13,6 +13,7 @@
   "dependencies": {
     "@mobilesurvey/expression-engine": "workspace:*",
     "@mobilesurvey/instrument-schema": "workspace:*",
+    "@mobilesurvey/respondent-view": "workspace:*",
     "@mobilesurvey/runtime-engine": "workspace:*",
     "@supabase/supabase-js": "^2.108.2",
     "@xstate/react": "^5.0.2",

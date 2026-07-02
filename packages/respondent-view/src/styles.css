@@ -1,0 +1,163 @@
+/**
+ * Question-rendering body styles shared by all three respondent-facing surfaces (the production
+ * runtime, the designer live preview, and the designer's render mode). This covers the markup
+ * produced by `QuestionPage`/`Control`/`EditList` only — headers, nav, progress bars and other
+ * per-app chrome stay in each app's own stylesheet.
+ *
+ * Relies on CSS custom properties (--brand, --danger, --line, --selected, --ink-soft, --hard-bg,
+ * --warn-bg, --warn, --radius, ...) already defined at :root by each consuming app.
+ */
+
+.eq__q-num {
+  display: inline-block;
+  min-width: 2.4em;
+  font-weight: 700;
+  color: var(--brand);
+  margin-inline-end: 6px;
+  font-variant-numeric: tabular-nums;
+}
+.eq__page-heading {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--brand);
+  margin: 8px 0 22px;
+  padding-bottom: 10px;
+  border-bottom: 2px solid var(--brand);
+}
+.eq__section-heading {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--ink-soft);
+  margin: 22px 0 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.eq__loop-heading {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--brand);
+  margin: 18px 0 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+.eq__statement {
+  background: var(--selected);
+  border-left: 3px solid var(--brand);
+  padding: 12px 14px;
+  border-radius: 0 6px 6px 0;
+  margin-bottom: 22px;
+  line-height: 1.5;
+}
+.eq__question {
+  margin-bottom: 26px;
+}
+.eq__q-text {
+  display: block;
+  font-weight: 600;
+  font-size: 16px;
+  margin-bottom: 8px;
+  line-height: 1.4;
+}
+.eq__req {
+  color: var(--danger);
+}
+.eq__instruction {
+  color: var(--ink-soft);
+  font-size: 14px;
+  margin: 0 0 8px;
+}
+.eq__radios {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+/* grid / matrix question */
+.eq__grid-wrapper {
+  overflow-x: auto;
+  margin: 8px 0;
+}
+.eq__grid {
+  border-collapse: collapse;
+  width: 100%;
+  font-size: 15px;
+}
+.eq__grid__corner {
+  min-width: 120px;
+}
+.eq__grid__col-hdr {
+  text-align: center;
+  font-weight: 600;
+  font-size: 13px;
+  color: var(--ink-soft, #666);
+  padding: 6px 10px;
+  border-bottom: 2px solid var(--line, #e0e0e0);
+  white-space: nowrap;
+}
+.eq__grid__row {
+  border-bottom: 1px solid var(--line, #e0e0e0);
+}
+.eq__grid__row:last-child {
+  border-bottom: none;
+}
+.eq__grid__row:nth-child(even) {
+  background: var(--selected, #f5f8ff);
+}
+.eq__grid__row-lbl {
+  padding: 10px 12px 10px 0;
+  font-size: 15px;
+  vertical-align: middle;
+}
+.eq__grid__cell {
+  text-align: center;
+  padding: 8px 10px;
+  vertical-align: middle;
+}
+.eq__grid__cell input[type="radio"] {
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+  accent-color: var(--brand, #1f5fae);
+}
+.eq__radio {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  cursor: pointer;
+}
+.eq__radio:hover {
+  border-color: var(--brand);
+  background: var(--selected);
+}
+.eq__radio input {
+  width: auto;
+}
+.eq__edits {
+  list-style: none;
+  margin: 10px 0 0;
+  padding: 0;
+}
+.eq__edit {
+  padding: 8px 10px;
+  border-radius: 6px;
+  font-size: 14px;
+  margin-top: 6px;
+}
+.eq__edit--hard {
+  background: var(--hard-bg);
+  color: var(--danger);
+}
+.eq__edit--soft {
+  background: var(--warn-bg);
+  color: var(--warn);
+}
+
+/* ── aria-invalid styling ────────────────────────────────────────────────── */
+input[aria-invalid="true"],
+textarea[aria-invalid="true"],
+select[aria-invalid="true"] {
+  border-color: var(--danger);
+  outline-color: var(--danger);
+}

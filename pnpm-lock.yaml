@@ -63,6 +63,9 @@ importers:
       '@mobilesurvey/metadata-registry':
         specifier: workspace:*
         version: link:../../packages/metadata-registry
+      '@mobilesurvey/respondent-view':
+        specifier: workspace:*
+        version: link:../../packages/respondent-view
       '@mobilesurvey/runtime-engine':
         specifier: workspace:*
         version: link:../../packages/runtime-engine
@@ -158,6 +161,9 @@ importers:
       '@mobilesurvey/instrument-schema':
         specifier: workspace:*
         version: link:../../packages/instrument-schema
+      '@mobilesurvey/respondent-view':
+        specifier: workspace:*
+        version: link:../../packages/respondent-view
       '@mobilesurvey/runtime-engine':
         specifier: workspace:*
         version: link:../../packages/runtime-engine
@@ -272,6 +278,28 @@ importers:
         specifier: workspace:*
         version: link:../instrument-schema
     devDependencies:
+      typescript:
+        specifier: ^5.6.3
+        version: 5.9.3
+      vitest:
+        specifier: ^3.2.6
+        version: 3.2.6(@types/node@22.20.0)
+
+  packages/respondent-view:
+    dependencies:
+      '@mobilesurvey/instrument-schema':
+        specifier: workspace:*
+        version: link:../instrument-schema
+      '@mobilesurvey/runtime-engine':
+        specifier: workspace:*
+        version: link:../runtime-engine
+      react:
+        specifier: ^18.3.1
+        version: 18.3.1
+    devDependencies:
+      '@types/react':
+        specifier: ^18.3.18
+        version: 18.3.31
       typescript:
         specifier: ^5.6.3
         version: 5.9.3

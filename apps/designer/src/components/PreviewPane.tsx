@@ -1,18 +1,28 @@
 /**
  * Mobile-framed runtime preview. Features:
  * - Question index panel: click any Q to jump to it (navigates page if needed).
- * - Page navigation: Previous / Next when the instrument has `isPage` sequences.
+ * - Page navigation: Previous / Next when the instrument has `isPage` sequences. Deliberately
+ *   NOT gated on hard edits — an author previewing should be able to click through freely to see
+ *   later pages, unlike the respondent runtime (which blocks forward navigation on hard edits).
  * - markAll: renders dichotomous checkboxes, each storing to its own variable key.
  * - All existing question types, edits, piping, language toggle.
+ *
+ * Pagination and question numbering are shared with the respondent runtime and the designer's
+ * render mode (`@mobilesurvey/runtime-engine`'s `paginate`/`numberQuestions`) so page-splitting and
+ * numbering can never drift between the three. The visual rendering below stays local: this preview
+ * is deliberately compact for its 380px mobile device mockup, unlike the full-page runtime/render
+ * views, so it keeps its own `pv-*` styling rather than sharing `@mobilesurvey/respondent-view`'s
+ * `eq__*` components (which are sized for a full-page respondent experience).
  */
 import { useEffect, useMemo, useState } from 'react';
 import { useMachine } from '@xstate/react';
 import {
   collectEdits,
   flattenInstrument,
+  numberQuestions,
+  paginate,
   runtimeMachine,
   type FiredEdit,
-  type RenderItem,
 } from '@mobilesurvey/runtime-engine';
 import type { CategoryScheme, Instrument, ResponseDomain } from '@mobilesurvey/instrument-schema';
 import { useDesigner } from '../store/instrumentStore.js';
@@ -193,27 +203,6 @@ function Control({
   }
 }
 
-/** Split a flat item list into pages at `pageBreak` markers. */
-function groupIntoPages(items: RenderItem[]): { pages: RenderItem[][]; hasPaging: boolean } {
-  const pages: RenderItem[][] = [];
-  let current: RenderItem[] = [];
-  let hasPaging = false;
-
-  for (const item of items) {
-    if (item.kind === 'pageBreak') {
-      hasPaging = true;
-      if (current.length > 0) pages.push(current);
-      current = [item]; // pageBreak becomes the header of its page
-    } else {
-      current.push(item);
-    }
-  }
-  if (current.length > 0) pages.push(current);
-  if (pages.length === 0) pages.push([]);
-
-  return { pages, hasPaging };
-}
-
 export function PreviewPane() {
   const instrument = useDesigner((s) => s.instrument);
   const language = useDesigner((s) => s.language);
@@ -235,8 +224,9 @@ export function PreviewPane() {
     [instrument, snapshot.context.state],
   );
 
-  const { pages, hasPaging } = useMemo(() => groupIntoPages(result.items), [result.items]);
+  const { pages, hasPaging } = useMemo(() => paginate(result.items), [result.items]);
   const totals = collectEdits(result);
+  const qNumMap = useMemo(() => numberQuestions(pages), [pages]);
 
   // Clamp currentPage when page count shrinks.
   useEffect(() => {
@@ -253,13 +243,12 @@ export function PreviewPane() {
     }
   }, [pendingScroll, currentPage]);
 
-  // Build flat question index across ALL pages.
+  // Build flat question index across ALL pages (uses the shared numbering, so it can never
+  // disagree with the numbers shown next to each question below).
   const questionIndex = useMemo(() => {
-    // Map each item key → page index.
     const pageOf = new Map<string, number>();
     pages.forEach((pg, pi) => pg.forEach((item) => pageOf.set(item.key, pi)));
 
-    let n = 0;
     const out: Array<{
       num: number;
       key: string;
@@ -269,44 +258,16 @@ export function PreviewPane() {
     }> = [];
 
     for (const item of result.items) {
+      const num = qNumMap.get(item.key);
+      if (num == null) continue;
       if (item.kind === 'question') {
-        n++;
-        out.push({
-          num: n,
-          key: item.key,
-          varRef: item.construct.variableRef,
-          label: item.text,
-          pageIdx: pageOf.get(item.key) ?? 0,
-        });
-      } else if (item.kind === 'markAll') {
-        n++;
-        out.push({
-          num: n,
-          key: item.key,
-          varRef: item.variablePrefix + '_*',
-          label: item.questionText,
-          pageIdx: pageOf.get(item.key) ?? 0,
-        });
-      } else if (item.kind === 'grid') {
-        n++;
-        out.push({
-          num: n,
-          key: item.key,
-          varRef: item.variablePrefix + '_*',
-          label: item.questionText,
-          pageIdx: pageOf.get(item.key) ?? 0,
-        });
+        out.push({ num, key: item.key, varRef: item.construct.variableRef, label: item.text, pageIdx: pageOf.get(item.key) ?? 0 });
+      } else if (item.kind === 'markAll' || item.kind === 'grid') {
+        out.push({ num, key: item.key, varRef: item.variablePrefix + '_*', label: item.questionText, pageIdx: pageOf.get(item.key) ?? 0 });
       }
     }
     return out;
-  }, [result.items, pages]);
-
-  // Global sequential question number map — key → number (1-based).
-  const qNumMap = useMemo(() => {
-    const m = new Map<string, number>();
-    questionIndex.forEach((q) => m.set(q.key, q.num));
-    return m;
-  }, [questionIndex]);
+  }, [result.items, pages, qNumMap]);
 
   const jumpTo = (key: string, pageIdx: number) => {
     setIndexOpen(false);
