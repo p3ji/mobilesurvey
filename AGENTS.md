@@ -121,6 +121,7 @@ The agent uses this table to route updates to the correct files.
 - **Decision (2026-06-29):** Phases 8, 9, and 10 complete. Next: Phase 11 (Interviewer Mode GA).
 - **Decision (2026-06-29):** Phase 11 complete. CATI is an on-prem/local-API feature — no Supabase schema required. Hub CATI views fall back to the local Hono API (http://localhost:8787). 169 tests pass.
 - **Playwright QA (2026-06-29):** Browser-driven sweep of hub/runtime/designer found + fixed three respondent-facing runtime bugs (zero-question Q-range, unknown-`?survey` not-found state, missing survey `<h1>`); see Open Bugs. Engine behaviours (required/edits/i18n/resume/rosters) verified correct.
+- **Decision (2026-07-02):** Worked the enterprise-adoption-plan honesty-section gaps one at a time (designer heading-order — PR #9; automated `axe-core` a11y sweep — PR #10; both above). For the remaining three: **10k-concurrent load test** — user chose "document approach only, don't run it" (no staging Supabase project available to safely target); see new `docs/load-test-plan.md` for the k6 harness sketch, target scenario, and prerequisites. **SOC 2 compliance/governance program** — user chose to skip; it's a business/organizational process (external auditors, access-review policies), not a coding task. **DDI-XML validation against a real external agency file** — user chose to skip; no real external file available and no public sample was substituted. None of these three are done; do not report them as complete.
 
 ## Do NOT
 - Commit secrets (`.env`) or large build artifacts.
