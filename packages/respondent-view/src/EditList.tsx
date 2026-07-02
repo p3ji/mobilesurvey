@@ -6,13 +6,15 @@ export function EditList({ edits, id }: { edits: FiredEdit[]; id?: string }) {
   return (
     <ul id={id} className="eq__edits">
       {edits.map((e) => (
-        <li
-          key={e.id}
-          className={`eq__edit eq__edit--${e.type}`}
-          role={e.type === 'hard' ? 'alert' : 'status'}
-        >
-          {e.type === 'hard' ? '⛔ ' : '⚠ '}
-          {e.message}
+        // The alert/status role is on a nested <span>, not the <li> itself: an explicit role on
+        // <li> overrides its implicit `listitem` role, which breaks the <ul>'s list semantics for
+        // assistive tech (axe-core's `list` rule). The nested span still gets announced as a live
+        // region — role placement doesn't need to be the list item itself for that to work.
+        <li key={e.id} className={`eq__edit eq__edit--${e.type}`}>
+          <span role={e.type === 'hard' ? 'alert' : 'status'}>
+            {e.type === 'hard' ? '⛔ ' : '⚠ '}
+            {e.message}
+          </span>
         </li>
       ))}
     </ul>

@@ -447,11 +447,12 @@ code { font-family: var(--mono); font-size: 0.88em; }
 .sr-filter__count {
   font-size: 11px;
   font-weight: 700;
-  background: rgba(0,0,0,0.12);
+  background: var(--selected);
+  color: var(--brand);
   border-radius: 999px;
   padding: 1px 6px;
 }
-.sr-filter--active .sr-filter__count { background: rgba(255,255,255,0.25); }
+.sr-filter--active .sr-filter__count { background: rgba(0,0,0,0.3); color: #ffffff; }
 
 .sr-count { margin: 0 0 10px; font-size: 13px; color: var(--ink-soft); }
 

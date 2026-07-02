@@ -68,14 +68,14 @@ export function Completion({
                   {copied ? '✓ Copied' : '⎘ Copy JSON'}
                 </button>
               </div>
-              <pre className="done__json">{json}</pre>
+              <pre className="done__json" tabIndex={0}>{json}</pre>
             </div>
 
             <div className="done__section">
               <div className="done__section-head">
                 <strong>Paradata trail ({paradata.length} events)</strong>
               </div>
-              <div className="done__paradata">
+              <div className="done__paradata" tabIndex={0}>
                 {paradata.map((e, i) => (
                   <div key={i} className="done__pd-row">
                     <span className="done__pd-type">{e.type}</span>
