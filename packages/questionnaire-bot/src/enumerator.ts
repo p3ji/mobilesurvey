@@ -108,6 +108,11 @@ function isItemAnswered(item: RenderItem, responses: Record<string, unknown>): b
   if (item.kind === 'question') return responses[item.instanceKey] !== undefined;
   if (item.kind === 'markAll') return item.categories.every((c) => responses[c.instanceKey] !== undefined);
   if (item.kind === 'grid') return item.rows.every((r) => responses[r.instanceKey] !== undefined);
+  if (item.kind === 'table')
+    return item.cells
+      .flat()
+      .filter((c) => !c.disabled && !c.computed)
+      .every((c) => responses[c.instanceKey] !== undefined);
   return true; // sections, statements, headings, pageBreaks need no answer
 }
 
@@ -259,6 +264,26 @@ function generateCandidates(
     return [{ answers, steps }];
   }
 
+  if (item.kind === 'table') {
+    const fill = item.min ?? 1;
+    const answers: Record<string, unknown> = {};
+    const steps: AnswerStep[] = [];
+    for (const cell of item.cells.flat()) {
+      if (cell.disabled || cell.computed) continue;
+      if (answers[cell.instanceKey] === undefined) {
+        answers[cell.instanceKey] = fill;
+        steps.push({
+          instanceKey: cell.instanceKey,
+          variableRef: cell.instanceKey.split('@')[0] ?? cell.instanceKey,
+          value: fill,
+          domainType: 'table',
+          isRoutingVar: false,
+        });
+      }
+    }
+    return [{ answers, steps }];
+  }
+
   return [{ answers: {}, steps: [] }];
 }
 
@@ -354,6 +379,8 @@ function getFallbackKey(item: RenderItem): string {
   if (item.kind === 'question') return item.instanceKey;
   if (item.kind === 'markAll') return item.categories[0]?.instanceKey ?? '';
   if (item.kind === 'grid') return item.rows[0]?.instanceKey ?? '';
+  if (item.kind === 'table')
+    return item.cells.flat().find((c) => !c.disabled && !c.computed)?.instanceKey ?? '';
   return '';
 }
 

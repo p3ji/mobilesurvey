@@ -17,14 +17,28 @@ export function instanceKey(name: string, scope: Scope): string {
 }
 
 /**
+ * Synthetic table totals: names like `SALES_TOT_val` that are never stored, but resolve on
+ * read as the sum of their contributing cell variable names. Registered by `flattenInstrument`
+ * from `table` response domains, so any expression (edits, routing, piping) can reference a
+ * table total regardless of document order.
+ */
+export interface SyntheticTotal {
+  /** Base (unscoped) names of the input cells this total sums. */
+  cellNames: string[];
+}
+export type SyntheticTotals = Map<string, SyntheticTotal>;
+
+/**
  * Build an {@link EvalContext} for evaluating expressions/piping at a scope. Resolution order:
- * loop index → stored answer at this/ancestor scope → derived variable (lazy compute) → sample.
+ * loop index → stored answer at this/ancestor scope → synthetic table total → derived variable
+ * (lazy compute) → sample.
  */
 export function makeContext(
   instrument: Instrument,
   responses: Record<string, unknown>,
   sample: Record<string, unknown>,
   scope: Scope,
+  synthetic?: SyntheticTotals,
 ): EvalContext {
   const inProgress = new Set<string>();
 
@@ -37,6 +51,29 @@ export function makeContext(
     for (let k = scope.length; k >= 0; k--) {
       const key = instanceKey(name, scope.slice(0, k));
       if (Object.prototype.hasOwnProperty.call(responses, key)) return responses[key];
+    }
+
+    // 2b. Synthetic table total — sum of contributing cells, computed on read.
+    //     All-blank contributors yield undefined so `isAnswered()` reports unanswered.
+    const syn = synthetic?.get(name);
+    if (syn && !inProgress.has(name)) {
+      inProgress.add(name);
+      try {
+        let any = false;
+        let total = 0;
+        for (const cell of syn.cellNames) {
+          const v = resolve(cell);
+          if (v === undefined || v === null || v === '') continue;
+          const n = typeof v === 'number' ? v : Number(v);
+          if (Number.isFinite(n)) {
+            any = true;
+            total += n;
+          }
+        }
+        return any ? total : undefined;
+      } finally {
+        inProgress.delete(name);
+      }
     }
 
     // 3. Derived variable — compute lazily (guarded against cycles).

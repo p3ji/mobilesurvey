@@ -118,6 +118,104 @@
   cursor: pointer;
   accent-color: var(--brand, #1f5fae);
 }
+
+/* Establishment data table (spreadsheet-style numeric entry) */
+.eq__table-wrapper {
+  overflow-x: auto;
+  margin: 8px 0;
+  border: 1px solid var(--line, #e0e0e0);
+  border-radius: var(--radius, 6px);
+}
+.eq__table {
+  border-collapse: collapse;
+  width: 100%;
+  font-variant-numeric: tabular-nums;
+}
+.eq__table__unit {
+  caption-side: top;
+  text-align: end;
+  font-size: 12px;
+  font-style: italic;
+  color: var(--ink-soft, #666);
+  padding: 6px 10px 4px;
+}
+.eq__table__corner {
+  min-width: 140px;
+  position: sticky;
+  inset-inline-start: 0;
+  background: var(--selected, #f5f8ff);
+  z-index: 1;
+}
+.eq__table__col-hdr {
+  text-align: center;
+  font-weight: 600;
+  font-size: 13px;
+  color: var(--ink-soft, #666);
+  padding: 8px 10px;
+  border-bottom: 2px solid var(--line, #e0e0e0);
+  border-inline-start: 1px solid var(--line, #e0e0e0);
+  background: var(--selected, #f5f8ff);
+  position: sticky;
+  top: 0;
+}
+.eq__table__col-hdr--total {
+  color: var(--brand, #1f5fae);
+}
+.eq__table__row-lbl {
+  text-align: start;
+  font-weight: 400;
+  font-size: 14px;
+  padding: 6px 12px;
+  vertical-align: middle;
+  border-bottom: 1px solid var(--line, #e0e0e0);
+  position: sticky;
+  inset-inline-start: 0;
+  background: var(--bg, #fff);
+  z-index: 1;
+}
+.eq__table__row-lbl--total {
+  font-weight: 700;
+  color: var(--brand, #1f5fae);
+  background: var(--selected, #f5f8ff);
+}
+.eq__table__cell {
+  text-align: end;
+  padding: 3px 4px;
+  vertical-align: middle;
+  border-bottom: 1px solid var(--line, #e0e0e0);
+  border-inline-start: 1px solid var(--line, #e0e0e0);
+  min-width: 90px;
+}
+.eq__table__input {
+  width: 90px;
+  padding: 6px 8px;
+  border: 1px solid var(--line, #ccc);
+  border-radius: 4px;
+  font-size: 14px;
+  text-align: end;
+  font-variant-numeric: tabular-nums;
+}
+.eq__table__input:focus {
+  outline: 2px solid var(--brand, #1f5fae);
+  outline-offset: -1px;
+}
+.eq__table__cell--computed {
+  font-weight: 700;
+  color: var(--brand, #1f5fae);
+  background: var(--selected, #f5f8ff);
+  padding: 6px 12px;
+}
+.eq__table__cell--disabled {
+  background: repeating-linear-gradient(
+    45deg,
+    var(--line, #e8e8e8),
+    var(--line, #e8e8e8) 3px,
+    transparent 3px,
+    transparent 8px
+  );
+  color: var(--ink-soft, #999);
+  text-align: center;
+}
 .eq__radio {
   display: flex;
   align-items: center;

@@ -42,6 +42,8 @@ function domainText(d: ResponseDomain): string {
       return `Mark all that apply → variables ${d.variablePrefix}_*`;
     case 'grid':
       return `Grid (rows: ${d.rowSchemeRef}, cols: ${d.colSchemeRef}) → variables ${d.variablePrefix}_*`;
+    case 'table':
+      return `Data table (rows: ${d.rowSchemeRef}, cols: ${d.colSchemeRef}${d.totalRow ? ', +total row' : ''}${d.totalCol ? ', +total col' : ''}) → variables ${d.variablePrefix}_*_*`;
   }
 }
 

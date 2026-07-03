@@ -126,7 +126,39 @@ export type ResponseDomain =
       rowSchemeRef: Id;
       colSchemeRef: Id;
       variablePrefix: string;
+    }
+  | {
+      /**
+       * Establishment data table: rows from `rowSchemeRef` × columns from `colSchemeRef`,
+       * every cell a numeric entry. Auto-generates one numeric variable per enabled cell:
+       * `{variablePrefix}_{rowCode}_{colCode}`. When `totalRow`/`totalCol` are set, computed
+       * total cells are derived live (never stored) and are referenceable in expressions and
+       * piping as `{variablePrefix}_{rowCode}_TOT`, `{variablePrefix}_TOT_{colCode}` and
+       * `{variablePrefix}_TOT_TOT` (`TOT` is a reserved code — see `TABLE_TOTAL_CODE`).
+       * Group subtotals ("Total – Spirits" … "Total – Wines") are modeled as one table per
+       * group, each with its own total row.
+       */
+      type: 'table';
+      rowSchemeRef: Id;
+      colSchemeRef: Id;
+      variablePrefix: string;
+      /** Unit caption shown with the table, e.g. "thousands of dollars". */
+      unit?: InternationalString;
+      /** Decimal places for entry/formatting of cells (default 0). */
+      decimals?: number;
+      /** Optional bounds applied to every input cell. */
+      min?: number;
+      max?: number;
+      /** Append a computed "Total" row (column sums). */
+      totalRow?: boolean;
+      /** Append a computed "Total" column (row sums). */
+      totalCol?: boolean;
+      /** Cells that cannot be answered, as "ROWCODE:COLCODE". */
+      disabledCells?: string[];
     };
+
+/** Reserved category code for computed total row/column cells in `table` response domains. */
+export const TABLE_TOTAL_CODE = 'TOT' as const;
 
 /** Hard edits block progression; soft edits warn but allow a confirmed override. */
 export type EditType = 'hard' | 'soft';

@@ -73,6 +73,10 @@ export function buildRegistry(
       const rd = node.responseDomain;
       if (rd.type === 'code' || rd.type === 'lookup') bump(schemeUsage, rd.categorySchemeRef);
       if (rd.type === 'markAll') bump(schemeUsage, rd.categorySchemeRef);
+      if (rd.type === 'grid' || rd.type === 'table') {
+        bump(schemeUsage, rd.rowSchemeRef);
+        bump(schemeUsage, rd.colSchemeRef);
+      }
     }
   }
 

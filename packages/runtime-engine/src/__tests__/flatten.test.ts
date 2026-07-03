@@ -112,7 +112,7 @@ describe('flattenInstrument', () => {
     };
     const { items } = flattenInstrument(householdInstrument, stateWith(responses));
     const knownKinds = new Set([
-      'question', 'statement', 'section', 'pageBreak', 'loopHeading', 'grid', 'markAll',
+      'question', 'statement', 'section', 'pageBreak', 'loopHeading', 'grid', 'markAll', 'table',
     ]);
     expect(items.every((i) => knownKinds.has(i.kind))).toBe(true);
     const memberHeadings = items.filter(

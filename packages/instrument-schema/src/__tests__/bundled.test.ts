@@ -3,9 +3,10 @@ import { BUNDLED_SURVEYS, bundledSurvey, surveyCollectsData } from '../bundled.j
 import { validateInstrument } from '../validate.js';
 
 describe('bundled survey registry', () => {
-  it('exposes the lfs and demo aliases', () => {
+  it('exposes the lfs, demo, and bizdemo aliases', () => {
     expect(bundledSurvey('lfs')?.title).toBe('Household & Employment Survey');
     expect(bundledSurvey('demo')?.title).toBe('Feature Demo Survey');
+    expect(bundledSurvey('bizdemo')?.title).toBe('Business Operations Report (Demo)');
   });
 
   it('every bundled instrument is schema-valid', () => {
@@ -18,6 +19,11 @@ describe('bundled survey registry', () => {
     it('is false for the exploration-only Household & Employment survey', () => {
       expect(surveyCollectsData('lfs')).toBe(false);
       expect(bundledSurvey('lfs')?.collectsData).toBe(false);
+    });
+
+    it('is false for the exploration-only Business Operations Report demo', () => {
+      expect(surveyCollectsData('bizdemo')).toBe(false);
+      expect(bundledSurvey('bizdemo')?.collectsData).toBe(false);
     });
 
     it('is true for the live Feature Demo survey', () => {

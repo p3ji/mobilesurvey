@@ -14,6 +14,7 @@
 import type { Instrument } from './types.js';
 import { lfsInstrument } from './examples/lfs.instrument.js';
 import { demoInstrument } from './examples/demo.instrument.js';
+import { bizdemoInstrument } from './examples/bizdemo.instrument.js';
 
 export interface BundledSurvey {
   /** Short alias used in `?survey=<id>` URLs and as the Supabase row id. */
@@ -39,6 +40,13 @@ export const BUNDLED_SURVEYS: BundledSurvey[] = [
     instrument: demoInstrument,
     requiresAccessCode: false,
     collectsData: true,
+  },
+  {
+    id: 'bizdemo',
+    title: 'Business Operations Report (Demo)',
+    instrument: bizdemoInstrument,
+    requiresAccessCode: false,
+    collectsData: false,
   },
 ];
 

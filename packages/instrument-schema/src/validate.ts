@@ -3,6 +3,7 @@
  * checks that Zod alone cannot express (e.g. "every `variableRef` names a declared variable").
  */
 import { instrumentSchema } from './zod.js';
+import { TABLE_TOTAL_CODE } from './types.js';
 import type {
   ControlConstruct,
   Instrument,
@@ -51,6 +52,8 @@ export function checkReferences(instrument: Instrument): ValidationIssue[] {
   const issues: ValidationIssue[] = [];
   const variableNames = new Set(instrument.variables.map((v) => v.name));
   const schemeIds = new Set(instrument.categorySchemes.map((s) => s.id));
+  const schemeById = new Map(instrument.categorySchemes.map((s) => [s.id, s]));
+  const seenPrefixes = new Map<string, string>(); // variablePrefix -> first path using it
 
   // Duplicate variable names.
   const seen = new Set<string>();
@@ -85,6 +88,85 @@ export function checkReferences(instrument: Instrument): ValidationIssue[] {
           path: `${path}.responseDomain.categorySchemeRef`,
           message: `Unknown category scheme "${rd.categorySchemeRef}"`,
         });
+      }
+      if (rd.type === 'grid' || rd.type === 'table') {
+        for (const [refKey, ref] of [
+          ['rowSchemeRef', rd.rowSchemeRef],
+          ['colSchemeRef', rd.colSchemeRef],
+        ] as const) {
+          if (!schemeIds.has(ref)) {
+            issues.push({
+              path: `${path}.responseDomain.${refKey}`,
+              message: `Unknown category scheme "${ref}"`,
+            });
+          }
+        }
+        const prior = seenPrefixes.get(rd.variablePrefix);
+        if (prior) {
+          issues.push({
+            path: `${path}.responseDomain.variablePrefix`,
+            message: `variablePrefix "${rd.variablePrefix}" is already used at ${prior}; generated variable names would collide`,
+          });
+        } else {
+          seenPrefixes.set(rd.variablePrefix, path);
+        }
+      }
+      if (rd.type === 'markAll') {
+        const prior = seenPrefixes.get(rd.variablePrefix);
+        if (prior) {
+          issues.push({
+            path: `${path}.responseDomain.variablePrefix`,
+            message: `variablePrefix "${rd.variablePrefix}" is already used at ${prior}; generated variable names would collide`,
+          });
+        } else {
+          seenPrefixes.set(rd.variablePrefix, path);
+        }
+      }
+      if (rd.type === 'table') {
+        const rowScheme = schemeById.get(rd.rowSchemeRef);
+        const colScheme = schemeById.get(rd.colSchemeRef);
+        const rowCodes = new Set(rowScheme?.categories.map((c) => c.code) ?? []);
+        const colCodes = new Set(colScheme?.categories.map((c) => c.code) ?? []);
+        for (const cell of rd.disabledCells ?? []) {
+          const [rowCode, colCode] = cell.split(':');
+          if (rowScheme && !rowCodes.has(rowCode!)) {
+            issues.push({
+              path: `${path}.responseDomain.disabledCells`,
+              message: `Disabled cell "${cell}" names unknown row code "${rowCode}"`,
+            });
+          }
+          if (colScheme && !colCodes.has(colCode!)) {
+            issues.push({
+              path: `${path}.responseDomain.disabledCells`,
+              message: `Disabled cell "${cell}" names unknown column code "${colCode}"`,
+            });
+          }
+        }
+        if (rd.totalRow && rowCodes.has(TABLE_TOTAL_CODE)) {
+          issues.push({
+            path: `${path}.responseDomain.rowSchemeRef`,
+            message: `Row scheme "${rd.rowSchemeRef}" uses reserved code "${TABLE_TOTAL_CODE}" while totalRow is enabled`,
+          });
+        }
+        if (rd.totalCol && colCodes.has(TABLE_TOTAL_CODE)) {
+          issues.push({
+            path: `${path}.responseDomain.colSchemeRef`,
+            message: `Column scheme "${rd.colSchemeRef}" uses reserved code "${TABLE_TOTAL_CODE}" while totalCol is enabled`,
+          });
+        }
+        for (const [schemeName, scheme] of [
+          ['row', rowScheme],
+          ['col', colScheme],
+        ] as const) {
+          for (const c of scheme?.categories ?? []) {
+            if (c.code.includes('_')) {
+              issues.push({
+                path: `${path}.responseDomain.${schemeName}SchemeRef`,
+                message: `Category code "${c.code}" contains "_", which makes generated cell variable names ambiguous`,
+              });
+            }
+          }
+        }
       }
     }
     if (node.type === 'loop') {

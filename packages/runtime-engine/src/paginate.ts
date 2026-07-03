@@ -37,22 +37,31 @@ export function paginate(items: RenderItem[]): PaginateResult {
 export function pageHasHardEdits(pageItems: RenderItem[]): boolean {
   return pageItems.some(
     (item) =>
-      (item.kind === 'question' || item.kind === 'markAll' || item.kind === 'grid') &&
+      (item.kind === 'question' ||
+        item.kind === 'markAll' ||
+        item.kind === 'grid' ||
+        item.kind === 'table') &&
       item.firedEdits.some((e) => e.type === 'hard'),
   );
 }
 
 /**
  * Assign 1-based, sequential question numbers across a paginated instrument: `question`,
- * `markAll` and `grid` items are counted; every other kind is skipped. Shared so the designer
- * preview, the designer's render mode, and the respondent runtime number questions identically.
+ * `markAll`, `grid` and `table` items are counted; every other kind is skipped. Shared so the
+ * designer preview, the designer's render mode, and the respondent runtime number questions
+ * identically.
  */
 export function numberQuestions(pages: RenderItem[][]): Map<string, number> {
   const numbers = new Map<string, number>();
   let n = 0;
   for (const page of pages) {
     for (const item of page) {
-      if (item.kind === 'question' || item.kind === 'markAll' || item.kind === 'grid') {
+      if (
+        item.kind === 'question' ||
+        item.kind === 'markAll' ||
+        item.kind === 'grid' ||
+        item.kind === 'table'
+      ) {
         numbers.set(item.key, ++n);
       }
     }

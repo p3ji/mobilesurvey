@@ -81,7 +81,7 @@ export function SurveyRunner({
 
   // Count questions per page for global sequential numbering.
   const questionsPerPage = useMemo(
-    () => pages.map((p) => p.filter((i) => i.kind === 'question' || i.kind === 'markAll' || i.kind === 'grid').length),
+    () => pages.map((p) => p.filter((i) => i.kind === 'question' || i.kind === 'markAll' || i.kind === 'grid' || i.kind === 'table').length),
     [pages],
   );
   const totalQuestions = useMemo(

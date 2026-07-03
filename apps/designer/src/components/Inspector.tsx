@@ -72,6 +72,7 @@ function ResponseDomainEditor({
   schemes: CategoryScheme[];
   onChange: (d: ResponseDomain) => void;
 }) {
+  const languages = useDesigner((s) => s.instrument.languages);
   const firstScheme = schemes[0]?.id ?? '';
   const defaults: Record<ResponseDomain['type'], ResponseDomain> = {
     code: { type: 'code', categorySchemeRef: firstScheme, selection: 'single' },
@@ -83,6 +84,13 @@ function ResponseDomainEditor({
     lookup: { type: 'lookup', categorySchemeRef: firstScheme },
     markAll: { type: 'markAll', categorySchemeRef: firstScheme, variablePrefix: 'Q' },
     grid: { type: 'grid', rowSchemeRef: firstScheme, colSchemeRef: firstScheme, variablePrefix: 'G' },
+    table: {
+      type: 'table',
+      rowSchemeRef: firstScheme,
+      colSchemeRef: firstScheme,
+      variablePrefix: 'T01',
+      totalRow: true,
+    },
   };
 
   return (
@@ -301,6 +309,164 @@ function ResponseDomainEditor({
                 .join(', ') ?? '—'}
             </p>
           )}
+        </>
+      )}
+
+      {domain.type === 'table' && (
+        <>
+          <Field label="Row scheme (line items)">
+            {(id) => (
+              <select
+                id={id}
+                value={domain.rowSchemeRef}
+                onChange={(e) => onChange({ ...domain, rowSchemeRef: e.target.value })}
+              >
+                <option value="">— select —</option>
+                {schemes.map((s) => (
+                  <option key={s.id} value={s.id}>{s.id}</option>
+                ))}
+              </select>
+            )}
+          </Field>
+          <Field label="Column scheme">
+            {(id) => (
+              <select
+                id={id}
+                value={domain.colSchemeRef}
+                onChange={(e) => onChange({ ...domain, colSchemeRef: e.target.value })}
+              >
+                <option value="">— select —</option>
+                {schemes.map((s) => (
+                  <option key={s.id} value={s.id}>{s.id}</option>
+                ))}
+              </select>
+            )}
+          </Field>
+          <Field
+            label="Variable prefix"
+            hint="Generates prefix_row_col per cell (numeric). Totals: prefix_row_TOT, prefix_TOT_col, prefix_TOT_TOT are referenceable in edits and piping."
+          >
+            {(id) => (
+              <input
+                id={id}
+                type="text"
+                value={domain.variablePrefix}
+                placeholder="T01"
+                onChange={(e) => onChange({ ...domain, variablePrefix: e.target.value })}
+              />
+            )}
+          </Field>
+          <IntlStringField
+            label="Unit caption"
+            value={domain.unit}
+            languages={languages}
+            onChange={(v) =>
+              onChange({ ...domain, unit: Object.values(v).some(Boolean) ? v : undefined })
+            }
+          />
+          <div className="row">
+            <Field label="Min">
+              {(id) => (
+                <input
+                  id={id}
+                  type="number"
+                  value={domain.min ?? ''}
+                  onChange={(e) => onChange({ ...domain, min: e.target.value === '' ? undefined : Number(e.target.value) })}
+                />
+              )}
+            </Field>
+            <Field label="Max">
+              {(id) => (
+                <input
+                  id={id}
+                  type="number"
+                  value={domain.max ?? ''}
+                  onChange={(e) => onChange({ ...domain, max: e.target.value === '' ? undefined : Number(e.target.value) })}
+                />
+              )}
+            </Field>
+            <Field label="Decimals">
+              {(id) => (
+                <input
+                  id={id}
+                  type="number"
+                  value={domain.decimals ?? ''}
+                  onChange={(e) => onChange({ ...domain, decimals: e.target.value === '' ? undefined : Number(e.target.value) })}
+                />
+              )}
+            </Field>
+          </div>
+          <label className="checkbox">
+            <input
+              type="checkbox"
+              checked={domain.totalRow ?? false}
+              onChange={(e) => onChange({ ...domain, totalRow: e.target.checked || undefined })}
+            />
+            Computed “Total” row (column sums)
+          </label>
+          <label className="checkbox">
+            <input
+              type="checkbox"
+              checked={domain.totalCol ?? false}
+              onChange={(e) => onChange({ ...domain, totalCol: e.target.checked || undefined })}
+            />
+            Computed “Total” column (row sums)
+          </label>
+          <Field
+            label="Disabled cells"
+            hint="One ROWCODE:COLCODE per line — cells shown shaded and never enterable."
+          >
+            {(id) => (
+              <textarea
+                id={id}
+                rows={3}
+                value={(domain.disabledCells ?? []).join('\n')}
+                placeholder="other:vol"
+                onChange={(e) => {
+                  const cells = e.target.value
+                    .split('\n')
+                    .map((l) => l.trim())
+                    .filter(Boolean);
+                  onChange({ ...domain, disabledCells: cells.length ? cells : undefined });
+                }}
+              />
+            )}
+          </Field>
+          {(() => {
+            const rowScheme = schemes.find((s) => s.id === domain.rowSchemeRef);
+            const colScheme = schemes.find((s) => s.id === domain.colSchemeRef);
+            const rowCodes = new Set(rowScheme?.categories.map((c) => c.code) ?? []);
+            const colCodes = new Set(colScheme?.categories.map((c) => c.code) ?? []);
+            const bad = (domain.disabledCells ?? []).filter((cell) => {
+              const [r, c] = cell.split(':');
+              return !rowCodes.has(r ?? '') || !colCodes.has(c ?? '');
+            });
+            const sample =
+              rowScheme && colScheme && domain.variablePrefix
+                ? rowScheme.categories
+                    .slice(0, 2)
+                    .flatMap((r) =>
+                      colScheme.categories
+                        .slice(0, 2)
+                        .map((c) => `${domain.variablePrefix}_${r.code}_${c.code}`),
+                    )
+                : [];
+            return (
+              <>
+                {bad.length > 0 && (
+                  <p className="hint hint--warn">
+                    Unknown row/column codes in disabled cells: {bad.join(', ')}
+                  </p>
+                )}
+                {sample.length > 0 && (
+                  <p className="hint">
+                    Generated: {sample.join(', ')}… — model group subtotals (“Total – Spirits”)
+                    as one table per group.
+                  </p>
+                )}
+              </>
+            );
+          })()}
         </>
       )}
     </div>

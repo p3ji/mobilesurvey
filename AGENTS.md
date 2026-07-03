@@ -68,6 +68,13 @@
    - Hub `InterviewerView`: case queue sorted by callback urgency, launch interview, record outcome, schedule callback.
    - Hub `SupervisorView`: aggregate stats strip, per-interviewer breakdown table, case assignment panel.
    - Both tiles promoted to live on home screen. CATI is local-API-only (on-prem feature, not Supabase).
+10. **Phase 12 DONE (2026-07-03):** Establishment forms (business/organization data collection).
+   - New `table` response domain in `packages/instrument-schema` (rows × cols of numeric cells, per-cell vars `{prefix}_{row}_{col}`, unit caption, min/max/decimals, computed `totalRow`/`totalCol`, `disabledCells`). Modeled on three StatCan establishment questionnaires.
+   - Synthetic table totals (`{p}_{row}_TOT`, `{p}_TOT_{col}`, `{p}_TOT_TOT`) resolve compute-on-read in `runtime-engine/scope.ts` — referenceable from any edit/piping/routing expression **regardless of document order** (backward references work); never stored in responses.
+   - Spreadsheet renderer `respondent-view/TableQuestion.tsx`: live totals, shaded disabled cells, paste-from-Excel (TSV block fill from anchor cell; `$1,234`/`(500)` cleaning); ARIA row+col labels, RTL-safe.
+   - Designer: Inspector table editor (schemes, unit, totals, disabled cells, generated-names hint), compact PreviewPane table, PDF-spec + HTML-export rendering; DDI-XML round-trip via `d:GridDomain` + `mst:rdType=table`.
+   - Bundled demo `bizdemo` ("Business Operations Report (Demo)", `collectsData: false`) — hard balance edit in Section 2 referencing the Section 3 table total. Hub "Designer — Business Collection" tile flipped to live (Testing badge).
+   - Group subtotals ("Total – Spirits") are modeled as **one table per group**, not per-row subtotal schema.
 
 ## Conventions & gotchas
 - Keep this file short; put goals/backlog/decisions in the Brain note, not here.
@@ -99,6 +106,8 @@ The agent uses this table to route updates to the correct files.
 
 ## Open Bugs
 *(Log bugs here as discovered; mark resolved with date)*
+- **(2026-07-03, OPEN)** **Authored edits on `grid` and `markAll` questions never evaluate**: `flatten.ts` emits `firedEdits: []` for both kinds, so a hard/soft edit attached to a grid or mark-all question silently does nothing (`pageHasHardEdits`'s grid/markAll checks are dead code). Found while implementing the `table` domain, which evaluates its edits correctly. Fix: evaluate `q.edits` in the grid/markAll flatten branches the same way the table branch does.
+- **(2026-07-03, RESOLVED same day)** DDI-XML codec dropped `Variable.isPII` on export/import (flag silently lost on round-trip). Surfaced by the `bizdemo` round-trip test — first bundled fixture using `isPII`. Fixed: `mst('isPII')` in `ddi-xml` export.ts/import.ts.
 - **(2026-06-26, RESOLVED)** Server-side **session persistence + resume was completely broken** for every collecting survey. The session key was built from `instrument.id` (the DDI urn, e.g. `urn:ddi:mobilesurvey:demo:1.0`), so `sessions.survey_id`/`paradata.survey_id` got the urn — but `surveys.id` is the short alias (`demo`), so the FK failed (`POST /sessions` → 409). Responses survived only because `submitResponse` used the alias. Fix: the runtime session key now uses the survey alias (`surveys.id`); verified — `sessions` now persists with `survey_id='demo'` and resume works.
 - **(2026-06-26, RESOLVED 2026-06-29)** **Paradata never collected in prod:** anon `INSERT` on `paradata` was blocked by missing RLS policy + sequence permission. Fixed in Supabase dashboard: `CREATE POLICY "anon_insert_paradata"` + `GRANT USAGE, SELECT ON SEQUENCE paradata_id_seq TO anon`. Live INSERT test confirmed — paradata collection is fully active in production.
 - **(2026-06-26, RESOLVED)** `lfs` (Household & Employment) was seeded into Supabase by the hub + runtime and collected real responses — contradicting the intent (and on-screen copy) that only the Feature Demo survey collects data. Root cause: seeding/persistence ignored the exploration-only flag. Fix: all bundled-survey persistence now routes through a `collectsData` registry in `packages/instrument-schema`; exploration-only surveys run entirely on local mocks (verified — no responses/sessions/paradata writes). The stale `lfs` row left in Supabase is inert (a deliberate test case; nothing writes to it).

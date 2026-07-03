@@ -7,6 +7,7 @@ import type { Instrument } from '@mobilesurvey/instrument-schema';
 import type { RenderItem } from '@mobilesurvey/runtime-engine';
 import { Control } from './Control.jsx';
 import { EditList } from './EditList.jsx';
+import { TableQuestion } from './TableQuestion.jsx';
 
 export function QuestionPage({
   items,
@@ -99,6 +100,18 @@ export function QuestionPage({
               </div>
               <EditList edits={item.firedEdits} id={markAllErrId} />
             </div>
+          );
+        }
+
+        if (item.kind === 'table') {
+          return (
+            <TableQuestion
+              key={item.key}
+              item={item}
+              qNum={qNum}
+              wrapperId={idFor?.(item.key)}
+              onAnswer={onAnswer}
+            />
           );
         }
 

@@ -160,6 +160,26 @@ function parseRd(qiNode: XmlNode, qid: string, notes: FidelityNote[]): ResponseD
 
   const gridDom = kid(qiNode, 'GridDomain');
   if (gridDom) {
+    if (mst(gridDom, 'rdType') === 'table') {
+      const unit = mst(gridDom, 'unit');
+      const decimals = mst(gridDom, 'decimals');
+      const min = mst(gridDom, 'min');
+      const max = mst(gridDom, 'max');
+      const disabledCells = mst(gridDom, 'disabledCells');
+      return {
+        type: 'table',
+        rowSchemeRef: mst(gridDom, 'rowSchemeRef') ?? '',
+        colSchemeRef: mst(gridDom, 'colSchemeRef') ?? '',
+        variablePrefix: mst(gridDom, 'variablePrefix') ?? '',
+        unit: unit ? (JSON.parse(unit) as InternationalString) : undefined,
+        decimals: decimals != null ? Number(decimals) : undefined,
+        min: min != null ? Number(min) : undefined,
+        max: max != null ? Number(max) : undefined,
+        totalRow: mst(gridDom, 'totalRow') === 'true' || undefined,
+        totalCol: mst(gridDom, 'totalCol') === 'true' || undefined,
+        disabledCells: disabledCells ? (JSON.parse(disabledCells) as string[]) : undefined,
+      };
+    }
     return {
       type: 'grid',
       rowSchemeRef: mst(gridDom, 'rowSchemeRef') ?? '',
@@ -298,6 +318,7 @@ export function importDdiXml(xml: string): ImportResult {
       categorySchemeRef,
       compute: mst(vNode, 'compute') ?? undefined,
       interviewerOnly: mst(vNode, 'interviewerOnly') === 'true' || undefined,
+      isPII: mst(vNode, 'isPII') === 'true' || undefined,
       conceptRef: conceptRefNode ? rid(conceptRefNode) : undefined,
     };
   });

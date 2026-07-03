@@ -179,6 +179,22 @@ function rdEl(ctx: Ctx, rd: ResponseDomain): string {
         mst('colSchemeRef', rd.colSchemeRef),
         mst('variablePrefix', rd.variablePrefix),
       );
+    case 'table':
+      return el(
+        'd:GridDomain',
+        {},
+        mst('rdType', 'table'),
+        mst('rowSchemeRef', rd.rowSchemeRef),
+        mst('colSchemeRef', rd.colSchemeRef),
+        mst('variablePrefix', rd.variablePrefix),
+        rd.unit ? mst('unit', JSON.stringify(rd.unit)) : '',
+        rd.decimals != null ? mst('decimals', String(rd.decimals)) : '',
+        rd.min != null ? mst('min', String(rd.min)) : '',
+        rd.max != null ? mst('max', String(rd.max)) : '',
+        rd.totalRow ? mst('totalRow', 'true') : '',
+        rd.totalCol ? mst('totalCol', 'true') : '',
+        rd.disabledCells?.length ? mst('disabledCells', JSON.stringify(rd.disabledCells)) : '',
+      );
   }
 }
 
@@ -400,6 +416,7 @@ function renderVar(ctx: Ctx, v: Variable): string {
     mst('kind', v.kind),
     v.compute ? mst('compute', v.compute) : '',
     v.interviewerOnly ? mst('interviewerOnly', 'true') : '',
+    v.isPII ? mst('isPII', 'true') : '',
     v.conceptRef
       ? el(
           'l:ConceptReference',

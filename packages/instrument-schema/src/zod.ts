@@ -112,6 +112,21 @@ export const responseDomainSchema = z.discriminatedUnion('type', [
     colSchemeRef: idSchema,
     variablePrefix: z.string().min(1, 'variablePrefix is required'),
   }),
+  z.object({
+    type: z.literal('table'),
+    rowSchemeRef: idSchema,
+    colSchemeRef: idSchema,
+    variablePrefix: z.string().min(1, 'variablePrefix is required'),
+    unit: internationalStringSchema.optional(),
+    decimals: z.number().int().min(0).optional(),
+    min: z.number().optional(),
+    max: z.number().optional(),
+    totalRow: z.boolean().optional(),
+    totalCol: z.boolean().optional(),
+    disabledCells: z
+      .array(z.string().regex(/^[^:]+:[^:]+$/, 'Use ROWCODE:COLCODE'))
+      .optional(),
+  }),
 ]);
 
 export const editTypeSchema = z.enum(['hard', 'soft']);

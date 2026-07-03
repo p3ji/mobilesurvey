@@ -264,6 +264,8 @@ export function PreviewPane() {
         out.push({ num, key: item.key, varRef: item.construct.variableRef, label: item.text, pageIdx: pageOf.get(item.key) ?? 0 });
       } else if (item.kind === 'markAll' || item.kind === 'grid') {
         out.push({ num, key: item.key, varRef: item.variablePrefix + '_*', label: item.questionText, pageIdx: pageOf.get(item.key) ?? 0 });
+      } else if (item.kind === 'table') {
+        out.push({ num, key: item.key, varRef: item.variablePrefix + '_*_*', label: item.questionText, pageIdx: pageOf.get(item.key) ?? 0 });
       }
     }
     return out;
@@ -494,6 +496,82 @@ export function PreviewPane() {
                   <p className="pv-markall-vars">
                     Variables: {item.rows.map((r) => r.instanceKey.split('@')[0]).join(', ')}
                   </p>
+                  <EditList edits={item.firedEdits} />
+                </div>
+              );
+            }
+
+            if (item.kind === 'table') {
+              const tblNum = qNumMap.get(item.key);
+              const decimals = item.decimals ?? 0;
+              return (
+                <div
+                  key={item.key}
+                  id={`pv-q-${item.key}`}
+                  className="pv-question"
+                  style={{ marginInlineStart: item.depth * 8 }}
+                >
+                  <p className="pv-label">
+                    {tblNum != null && <span className="pv-q-num">Q{tblNum}.</span>}
+                    {item.questionText}
+                  </p>
+                  {item.instruction && <p className="pv-instruction">{item.instruction}</p>}
+                  {item.unit && <p className="pv-table-unit">{item.unit}</p>}
+                  <div className="pv-grid-wrapper">
+                    <table className="pv-grid pv-table">
+                      <thead>
+                        <tr>
+                          <th className="pv-grid__corner" />
+                          {item.columns.map((col) => (
+                            <th key={col.code} className="pv-grid__col-hdr">{col.label}</th>
+                          ))}
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {item.rows.map((row, rowIdx) => (
+                          <tr key={row.code} className="pv-grid__row">
+                            <td className={row.isTotal ? 'pv-grid__row-lbl pv-table__lbl--total' : 'pv-grid__row-lbl'}>
+                              {row.label}
+                            </td>
+                            {item.columns.map((col, colIdx) => {
+                              const cell = item.cells[rowIdx]?.[colIdx];
+                              if (!cell) return <td key={col.code} />;
+                              if (cell.computed) {
+                                return (
+                                  <td key={col.code} className="pv-grid__cell pv-table__cell--computed">
+                                    {cell.value !== undefined ? cell.value.toFixed(decimals) : ''}
+                                  </td>
+                                );
+                              }
+                              if (cell.disabled) {
+                                return (
+                                  <td key={col.code} className="pv-grid__cell pv-table__cell--disabled">—</td>
+                                );
+                              }
+                              return (
+                                <td key={col.code} className="pv-grid__cell">
+                                  <input
+                                    type="number"
+                                    className="pv-table__input"
+                                    aria-label={`${row.label}, ${col.label}`}
+                                    value={cell.value ?? ''}
+                                    onChange={(e) =>
+                                      send({
+                                        type: 'ANSWER',
+                                        instanceKey: cell.instanceKey,
+                                        value: e.target.value === '' ? undefined : Number(e.target.value),
+                                      })
+                                    }
+                                  />
+                                </td>
+                              );
+                            })}
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                  <p className="pv-markall-vars">Variables: {item.variablePrefix}_row_col (+ _TOT totals)</p>
                   <EditList edits={item.firedEdits} />
                 </div>
               );

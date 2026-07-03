@@ -1818,9 +1818,11 @@ function HomePage({ onNavigate }: { onNavigate: (v: HubView) => void }) {
       id: 'designer-business',
       icon: <Building2 size={22} />,
       name: 'Designer — Business Collection',
+      tag: 'Testing',
       tagline: 'Structured forms for business data collection',
-      description: 'A form-first designer tuned for collecting data from businesses — structured inputs, validation rules, and integration with business registers.',
-      status: 'coming-soon',
+      description: 'A form-first designer for establishment surveys — numeric data tables with live totals, paste-from-Excel entry, balance edits across sections, and a demo modeled on a real statistical-agency operations report.',
+      status: 'live',
+      action: () => window.open(`${DESIGNER_URL}/?survey=bizdemo&mode=pro`, '_blank', 'noopener'),
     },
     {
       id: 'analyzer',

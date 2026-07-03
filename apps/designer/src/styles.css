@@ -845,6 +845,42 @@ code {
   margin: 6px 0 0;
   word-break: break-all;
 }
+/* establishment data table (compact preview) */
+.pv-table-unit {
+  font-size: 10px;
+  font-style: italic;
+  color: var(--ink-soft);
+  text-align: end;
+  margin: 0 0 4px;
+}
+.pv-table__input {
+  width: 56px;
+  padding: 3px 4px;
+  font-size: 11px;
+  text-align: end;
+  border: 1px solid var(--line);
+  border-radius: 3px;
+  font-variant-numeric: tabular-nums;
+}
+.pv-table__cell--computed {
+  font-weight: 700;
+  font-size: 11px;
+  color: var(--brand);
+  background: var(--selected);
+  text-align: end;
+  padding-inline-end: 8px;
+  font-variant-numeric: tabular-nums;
+}
+.pv-table__cell--disabled {
+  color: var(--ink-soft);
+  background: var(--line);
+  text-align: center;
+  opacity: 0.6;
+}
+.pv-table__lbl--total {
+  font-weight: 700;
+  color: var(--brand);
+}
 /* grid / matrix question */
 .pv-grid-wrapper {
   overflow-x: auto;

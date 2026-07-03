@@ -35,6 +35,17 @@ export interface GridRow {
   value: string | undefined;
 }
 
+/** One cell inside a `table` render item (indexed as `cells[rowIdx][colIdx]`). */
+export interface TableCell {
+  /** Storage key for input cells (`PREFIX_ROW_COL@scope`); synthetic total name for computed cells. */
+  instanceKey: string;
+  value: number | undefined;
+  /** Authored as non-enterable: shown shaded, never answered. */
+  disabled: boolean;
+  /** Computed total cell — read-only, value recomputed live. */
+  computed: boolean;
+}
+
 /**
  * A flattened, render-ready item. The designer preview maps these straight onto components; the
  * future runtime EQ paginates over them.
@@ -87,6 +98,32 @@ export type RenderItem =
       instruction?: string;
       rows: GridRow[];
       columns: { code: string; label: string }[];
+      firedEdits: FiredEdit[];
+      depth: number;
+    }
+  | {
+      /**
+       * Establishment data table: rows × columns of numeric entry cells, one variable per
+       * enabled cell (`{prefix}_{row}_{col}`), with optional computed total row/column
+       * (row/col code `TOT`). Counts as one question for numbering.
+       */
+      kind: 'table';
+      key: string;
+      constructId: string;
+      variablePrefix: string;
+      questionText: string;
+      instruction?: string;
+      /** Localized unit caption, e.g. "thousands of dollars". */
+      unit?: string;
+      decimals?: number;
+      min?: number;
+      max?: number;
+      required?: boolean;
+      /** Includes the appended total row/col (code `TOT`, `isTotal: true`) when enabled. */
+      rows: { code: string; label: string; isTotal?: boolean }[];
+      columns: { code: string; label: string; isTotal?: boolean }[];
+      /** Aligned with `rows` × `columns`. */
+      cells: TableCell[][];
       firedEdits: FiredEdit[];
       depth: number;
     };

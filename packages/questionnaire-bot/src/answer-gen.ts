@@ -108,6 +108,7 @@ export function generateValues(
     case 'file':
     case 'markAll':
     case 'grid':
+    case 'table':
       // Handled separately in the enumerator; not enumerable via domain values alone.
       return [];
   }

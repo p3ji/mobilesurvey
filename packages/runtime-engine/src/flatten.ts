@@ -6,6 +6,7 @@
  * Pure: it clones the response map so derived/computation writes never mutate the input.
  */
 import { evaluate, parse, type EvalContext } from '@mobilesurvey/expression-engine';
+import { TABLE_TOTAL_CODE } from '@mobilesurvey/instrument-schema';
 import type {
   ControlConstruct,
   EditRule,
@@ -14,12 +15,17 @@ import type {
   QuestionConstruct,
 } from '@mobilesurvey/instrument-schema';
 import { localizePiped, pick } from './piping.js';
-import { instanceKey, makeContext } from './scope.js';
-import type { FiredEdit, RenderItem, RuntimeState, Scope } from './types.js';
+import { instanceKey, makeContext, type SyntheticTotals } from './scope.js';
+import type { FiredEdit, RenderItem, RuntimeState, Scope, TableCell } from './types.js';
 
 const REQUIRED_MESSAGE: Record<string, string> = {
   en: 'This field is required.',
   fr: 'Ce champ est obligatoire.',
+};
+
+const TOTAL_LABEL: Record<string, string> = {
+  en: 'Total',
+  fr: 'Total',
 };
 
 function cond(src: string | undefined, ctx: EvalContext): boolean {
@@ -78,13 +84,72 @@ export interface FlattenResult {
   computed: Record<string, unknown>;
 }
 
+/**
+ * Register every table domain's synthetic total names (`P_row_TOT`, `P_TOT_col`, `P_TOT_TOT`)
+ * with the enabled input cells they sum. Totals are always referenceable from expressions,
+ * regardless of whether the table displays them (`totalRow`/`totalCol` govern display only).
+ */
+function buildSyntheticTotals(instrument: Instrument): SyntheticTotals {
+  const map: SyntheticTotals = new Map();
+  const visitAll = (nodes: ControlConstruct[]): void => {
+    for (const node of nodes) {
+      switch (node.type) {
+        case 'sequence':
+        case 'loop':
+          visitAll(node.children);
+          break;
+        case 'ifThenElse':
+          visitAll(node.then);
+          visitAll(node.else ?? []);
+          break;
+        case 'question': {
+          const rd = node.responseDomain;
+          if (rd.type !== 'table') break;
+          const rowCodes = (
+            instrument.categorySchemes.find((s) => s.id === rd.rowSchemeRef)?.categories ?? []
+          ).map((c) => c.code);
+          const colCodes = (
+            instrument.categorySchemes.find((s) => s.id === rd.colSchemeRef)?.categories ?? []
+          ).map((c) => c.code);
+          const disabled = new Set(rd.disabledCells ?? []);
+          const p = rd.variablePrefix;
+          const all: string[] = [];
+          for (const r of rowCodes) {
+            const rowCells: string[] = [];
+            for (const c of colCodes) {
+              if (disabled.has(`${r}:${c}`)) continue;
+              const cell = `${p}_${r}_${c}`;
+              rowCells.push(cell);
+              all.push(cell);
+            }
+            map.set(`${p}_${r}_${TABLE_TOTAL_CODE}`, { cellNames: rowCells });
+          }
+          for (const c of colCodes) {
+            const colCells = rowCodes
+              .filter((r) => !disabled.has(`${r}:${c}`))
+              .map((r) => `${p}_${r}_${c}`);
+            map.set(`${p}_${TABLE_TOTAL_CODE}_${c}`, { cellNames: colCells });
+          }
+          map.set(`${p}_${TABLE_TOTAL_CODE}_${TABLE_TOTAL_CODE}`, { cellNames: all });
+          break;
+        }
+        default:
+          break;
+      }
+    }
+  };
+  visitAll([instrument.sequence]);
+  return map;
+}
+
 export function flattenInstrument(instrument: Instrument, state: RuntimeState): FlattenResult {
   const responses: Record<string, unknown> = { ...state.responses };
   const { sample, language } = state;
   const items: RenderItem[] = [];
+  const synthetic = buildSyntheticTotals(instrument);
 
   const visit = (node: ControlConstruct, scope: Scope, depth: number): void => {
-    const ctx = makeContext(instrument, responses, sample, scope);
+    const ctx = makeContext(instrument, responses, sample, scope, synthetic);
 
     switch (node.type) {
       case 'sequence': {
@@ -156,6 +221,76 @@ export function flattenInstrument(instrument: Instrument, state: RuntimeState): 
           return;
         }
 
+        // table: establishment data table — one numeric variable per enabled cell
+        // (variablePrefix_rowCode_colCode); computed totals resolve via synthetic names.
+        if (q.responseDomain.type === 'table') {
+          const domain = q.responseDomain;
+          const rowScheme = instrument.categorySchemes.find((s) => s.id === domain.rowSchemeRef);
+          const colScheme = instrument.categorySchemes.find((s) => s.id === domain.colSchemeRef);
+          const disabled = new Set(domain.disabledCells ?? []);
+          const totalLabel = TOTAL_LABEL[language] ?? TOTAL_LABEL.en!;
+          const baseRows = (rowScheme?.categories ?? []).map((cat) => ({
+            code: cat.code,
+            label: pick(cat.label, language),
+          }));
+          const baseCols = (colScheme?.categories ?? []).map((cat) => ({
+            code: cat.code,
+            label: pick(cat.label, language),
+          }));
+          const rows = domain.totalRow
+            ? [...baseRows, { code: TABLE_TOTAL_CODE, label: totalLabel, isTotal: true }]
+            : baseRows;
+          const columns = domain.totalCol
+            ? [...baseCols, { code: TABLE_TOTAL_CODE, label: totalLabel, isTotal: true }]
+            : baseCols;
+          let anyAnswered = false;
+          const cells: TableCell[][] = rows.map((row) =>
+            columns.map((col) => {
+              const name = `${domain.variablePrefix}_${row.code}_${col.code}`;
+              if (('isTotal' in row && row.isTotal) || ('isTotal' in col && col.isTotal)) {
+                const raw = ctx.resolve(name);
+                const n = typeof raw === 'number' ? raw : Number(raw);
+                return {
+                  instanceKey: instanceKey(name, scope),
+                  value: raw !== undefined && Number.isFinite(n) ? n : undefined,
+                  disabled: false,
+                  computed: true,
+                };
+              }
+              const iKey = instanceKey(name, scope);
+              if (disabled.has(`${row.code}:${col.code}`)) {
+                return { instanceKey: iKey, value: undefined, disabled: true, computed: false };
+              }
+              const raw = responses[iKey];
+              const n = typeof raw === 'number' ? raw : Number(raw);
+              const value = !isEmpty(raw) && Number.isFinite(n) ? n : undefined;
+              if (value !== undefined) anyAnswered = true;
+              return { instanceKey: iKey, value, disabled: false, computed: false };
+            }),
+          );
+          items.push({
+            kind: 'table',
+            key: `${q.id}@${scopeSuffix}`,
+            constructId: q.id,
+            variablePrefix: domain.variablePrefix,
+            questionText: localizePiped(q.text, language, ctx),
+            instruction: q.instruction ? localizePiped(q.instruction, language, ctx) : undefined,
+            unit: domain.unit ? pick(domain.unit, language) : undefined,
+            decimals: domain.decimals,
+            min: domain.min,
+            max: domain.max,
+            required: q.required,
+            rows,
+            columns,
+            cells,
+            // required = at least one enabled input cell answered; a sentinel value stands in
+            // for the scalar `value` so evalEdits' required check fires only when all-blank.
+            firedEdits: evalEdits(q.edits, q.required, anyAnswered ? 1 : '', ctx, language),
+            depth,
+          });
+          return;
+        }
+
         // markAll: each category becomes its own dichotomous variable.
         if (q.responseDomain.type === 'markAll') {
           const domain = q.responseDomain;
@@ -209,7 +344,7 @@ export function flattenInstrument(instrument: Instrument, state: RuntimeState): 
         const count = loopCount(node.countVariableRef, ctx);
         for (let i = 1; i <= count; i++) {
           const childScope: Scope = [...scope, { name: node.loopVariable, index: i }];
-          const childCtx = makeContext(instrument, responses, sample, childScope);
+          const childCtx = makeContext(instrument, responses, sample, childScope, synthetic);
           items.push({
             kind: 'loopHeading',
             key: `${node.id}#${i}@${scope.map((s) => s.index).join('.')}`,
@@ -245,7 +380,7 @@ export function collectEdits(result: FlattenResult): { hard: number; soft: numbe
   let hard = 0;
   let soft = 0;
   for (const item of result.items) {
-    if (item.kind !== 'question') continue;
+    if (item.kind !== 'question' && item.kind !== 'table') continue;
     for (const edit of item.firedEdits) {
       if (edit.type === 'hard') hard++;
       else soft++;

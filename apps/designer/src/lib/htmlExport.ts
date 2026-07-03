@@ -125,6 +125,40 @@ function domainHtml(domain: ResponseDomain, instrument: Instrument, lang: string
       }).join('');
       return `<table class="resp-grid"><thead><tr><th></th>${headerCells}</tr></thead><tbody>${bodyRows}</tbody></table>`;
     }
+    case 'table': {
+      const rowScheme = instrument.categorySchemes.find((s) => s.id === domain.rowSchemeRef);
+      const colScheme = instrument.categorySchemes.find((s) => s.id === domain.colSchemeRef);
+      const rows = rowScheme?.categories ?? [];
+      const cols = colScheme?.categories ?? [];
+      if (!rows.length || !cols.length) return `<div class="resp-open">(table: rows=${esc(domain.rowSchemeRef)}, cols=${esc(domain.colSchemeRef)})</div>`;
+      const disabled = new Set(domain.disabledCells ?? []);
+      const unitLine = domain.unit
+        ? `<div class="resp-open" style="text-align:right;font-style:italic">${esc(lbl(domain.unit as Record<string, string>, lang))}</div>`
+        : '';
+      const headerCells = [
+        ...cols.map((c) => `<th>${esc(lbl(c.label as Record<string, string>, lang))}</th>`),
+        ...(domain.totalCol ? ['<th>Total</th>'] : []),
+      ].join('');
+      const bodyRows = rows.map((r) => {
+        const cells = [
+          ...cols.map((c) =>
+            disabled.has(`${r.code}:${c.code}`)
+              ? `<td style="background:#eee;text-align:center">—</td>`
+              : `<td style="text-align:center">▭</td>`,
+          ),
+          ...(domain.totalCol ? [`<td style="text-align:center">Σ</td>`] : []),
+        ].join('');
+        return `<tr><td><strong>${esc(lbl(r.label as Record<string, string>, lang))}</strong></td>${cells}</tr>`;
+      });
+      if (domain.totalRow) {
+        const totCells = [
+          ...cols.map(() => `<td style="text-align:center">Σ</td>`),
+          ...(domain.totalCol ? [`<td style="text-align:center">Σ</td>`] : []),
+        ].join('');
+        bodyRows.push(`<tr><td><strong>Total</strong></td>${totCells}</tr>`);
+      }
+      return `${unitLine}<table class="resp-grid"><thead><tr><th></th>${headerCells}</tr></thead><tbody>${bodyRows.join('')}</tbody></table>`;
+    }
   }
 }
 
