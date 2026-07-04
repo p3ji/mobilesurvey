@@ -69,15 +69,21 @@ function detectSectionHeader(line: string): string | null {
   return null;
 }
 
-function detectQuestion(line: string): { number: string; text: string } | null {
+// Dotted leader lines from paper forms ("Net sales ..........") are numeric entry items.
+const DOT_LEADER_RE = /\s*[.…]{4,}\s*$/;
+
+function detectQuestion(line: string): { number: string; text: string; dotLeader?: boolean } | null {
   const m = line.match(QUESTION_RE);
   if (!m) return null;
   const n = parseInt((m[1] ?? '0').split('.')[0] ?? '0');
   if (n > 999) return null;
-  const text = (m[2] ?? '').trim();
+  let text = (m[2] ?? '').trim();
+  const dotLeader = DOT_LEADER_RE.test(text);
+  if (dotLeader) text = text.replace(DOT_LEADER_RE, '').trim();
   // Short texts without '?' are almost certainly option labels, not questions
-  if (!text.includes('?') && text.length < 30) return null;
-  return { number: m[1] ?? '', text };
+  if (!text.includes('?') && text.length < 30 && !dotLeader) return null;
+  if (text.length < 3) return null;
+  return { number: m[1] ?? '', text, ...(dotLeader ? { dotLeader: true } : {}) };
 }
 
 function extractSkipFromLabel(raw: string): { label: string; skipTo?: string } {
@@ -114,6 +120,8 @@ function detectOption(line: string, inOptions: boolean): ParsedOption | null {
   const numM = line.match(OPTION_NUM_RE);
   if (numM) {
     const rawLabel = numM[2] ?? '';
+    // Dotted leaders mark numeric line items on paper forms, not options.
+    if (DOT_LEADER_RE.test(rawLabel)) return null;
     if (rawLabel.length > 0 && rawLabel.length < 120 && (inOptions || !rawLabel.includes('?'))) {
       const { label, skipTo } = extractSkipFromLabel(rawLabel);
       if (label) return { code: numM[1] ?? '', label, skipTo };
@@ -203,7 +211,9 @@ export function parseQuestionnaire(text: string): ParsedQuestionnaire {
 
   function finalizeQuestion() {
     if (!currentQuestion) return;
-    currentQuestion.type = inferQuestionType(currentQuestion);
+    if (currentQuestion.type === 'unknown') {
+      currentQuestion.type = inferQuestionType(currentQuestion);
+    }
     // Extract numeric bounds from text/instruction
     if (currentQuestion.type === 'numeric') {
       const src = [currentQuestion.text, currentQuestion.instruction].filter(Boolean).join(' ');
@@ -243,7 +253,8 @@ export function parseQuestionnaire(text: string): ParsedQuestionnaire {
     if (state === 'IN_OPTIONS') {
       const optMatch = detectOption(line, true);
       if (optMatch) {
-        currentQuestion!.options!.push(optMatch);
+        if (!currentQuestion!.options) currentQuestion!.options = [];
+        currentQuestion!.options.push(optMatch);
         continue;
       }
       const skipMatch = detectSkipLogic(line);
@@ -270,9 +281,10 @@ export function parseQuestionnaire(text: string): ParsedQuestionnaire {
         number: qMatch.number,
         normalizedNumber: normalizeNumber(qMatch.number),
         text: qMatch.text,
-        type: 'unknown',
+        // A dotted leader marks a fill-in amount cell on paper forms.
+        type: qMatch.dotLeader ? 'numeric' : 'unknown',
       };
-      state = 'IN_QUESTION';
+      state = qMatch.dotLeader ? 'IN_OPTIONS' : 'IN_QUESTION';
       continue;
     }
 

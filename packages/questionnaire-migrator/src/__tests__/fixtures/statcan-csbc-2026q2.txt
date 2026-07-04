@@ -1,0 +1,821 @@
+Canadian Survey on Business Conditions,
+second quarter of 2026
+Business or organization information
+1. Which of the following categories best describes this business or
+organization?
+Government agency
+Private sector business
+Non-profit organization
+Who does this organization primarily serve?
+Households or individuals
+e.g., child and youth services, community food services, food bank,
+women’s shelter, community housing services, emergency relief
+services, religious organization, grant and giving services, social
+advocacy group, arts and recreation group
+Businesses
+e.g., business association, chamber of commerce, condominium
+association, environmental support or protection services, group
+benefit carriers (pensions, health, medical)
+Don’t know
+2. In what year was this business or organization first established?
+Please provide the year this business or organization first began operations.
+Year business or organization was first established:
+OR
+Don’t know
+Approximately how long ago was this business or organization first
+established?
+2 years ago or less
+Established in 2026, 2025, or 2024.
+3 to 10 years ago
+Established in 2016 to 2023.
+11 to 20 years ago
+Established in 2006 to 2015.
+More than 20 years ago
+Established in 2005 or earlier.
+Don’t know
+3. Over the last 12 months, which of the following international
+activities did this business or organization conduct?
+Select all that apply.
+Export or sell goods outside of Canada
+Include both intermediate and final goods.
+Export or sell services outside of Canada
+Include services delivered virtually and in person.
+e.g., software, cloud services, legal services, environmental services,
+architectural services, digital advertising
+Make investments outside of Canada
+Sell goods to businesses or organizations in Canada who then resold
+them outside of Canada
+Import or buy goods from outside of Canada
+Include both intermediate and final goods.
+Import or buy services from outside of Canada
+Include services received virtually and in person.
+e.g., software, cloud services, legal services, environmental services,
+architectural services, digital advertising
+Relocate any business or organizational activities or employees from
+another country into Canada
+Exclude temporary foreign workers.
+Relocate any business or organizational activities or employees from
+Canada to another country
+Engage in other international business or organizational activities
+OR
+None of the above
+4. Over the next three months, how are each of the following
+expected to change for this business or organization?
+Exclude seasonal factors or conditions.
+Number of employees
+Increase
+Stay about the same
+Decrease
+Not applicable
+Don’t know
+Vacant positions
+Increase
+Stay about the same
+Decrease
+Not applicable
+Don’t know
+Sales of goods or services offered by this business or organization
+Increase
+Stay about the same
+Decrease
+Not applicable
+Don’t know
+Selling price of goods or services offered by this business or organization
+Increase
+Stay about the same
+Decrease
+Not applicable
+Don’t know
+Demand for goods or services offered by this business or organization
+Increase
+Stay about the same
+Decrease
+Not applicable
+Don’t know
+Imports of goods or services
+Increase
+Stay about the same
+Decrease
+Not applicable
+Don’t know
+Exports of goods or services
+Increase
+Stay about the same
+Decrease
+Not applicable
+Don’t know
+Operating income
+Increase
+Stay about the same
+Decrease
+Not applicable
+Don’t know
+Operating expenses
+Increase
+Stay about the same
+Decrease
+Not applicable
+Don’t know
+Profitability
+Increase
+Stay about the same
+Decrease
+Not applicable
+Don’t know
+Cash reserves
+Increase
+Stay about the same
+Decrease
+Not applicable
+Don’t know
+Capital expenditures
+e.g., machinery, equipment
+Increase
+Stay about the same
+Decrease
+Not applicable
+Don’t know
+Training expenditures
+Increase
+Stay about the same
+Decrease
+Not applicable
+Don’t know
+Marketing and advertising budget
+Increase
+Stay about the same
+Decrease
+Not applicable
+Don’t know
+Expenditures in research and development
+Increase
+Stay about the same
+Decrease
+Not applicable
+Don’t know
+Online sales 
+Increase
+Stay about the same
+Decrease
+Not applicable
+Don’t know
+Business or organization obstacles
+5. Over the next three months, which of the following are expected
+to be obstacles for this business or organization?
+Select all that apply.
+Shortage of labour force
+Recruiting skilled employees
+Retaining skilled employees
+Shortage of space or equipment
+Cost of inputs
+An input is an economic resource used in a firm’s production process.
+e.g., labour, capital, energy and raw materials
+Costs in real estate, leasing or property taxes
+Inflation
+Interest rates and debt costs
+e.g., borrowing fees, interest payments
+Difficulty acquiring inputs, products or supplies from within Canada
+Difficulty acquiring inputs, products or supplies from abroad
+Maintaining inventory levels
+Insufficient demand for goods or services offered
+Fluctuations in consumer demand
+Attracting new or returning customers
+Lack of financial resources
+Technological limitations
+Regulatory constraints
+Cost of insurance
+Transportation costs
+Obtaining financing
+Increasing competition 
+Challenges related to exporting or selling goods and services to
+customers in other provinces or territories
+Challenges related to exporting or selling goods and services outside of
+Canada
+Maintaining sufficient cash flow or managing debt
+Attract local investment
+Attract foreign direct investment
+Other obstacle
+Specify other obstacle:
+OR
+None of the above
+Flow condition: If at least two obstacles are selected in Q5, go to Q6.
+Otherwise, go to Q7.
+Display condition: Display in Q6 the obstacles selected in Q5.
+6. Of the obstacles selected in the previous question, which
+obstacle is expected to be the most challenging over the next three
+months?
+Shortage of labour force
+Recruiting skilled employees
+Retaining skilled employees
+Shortage of space or equipment
+Cost of inputs 
+An input is an economic resource used in a firm’s production process.
+e.g., labour, capital, energy and raw materials
+Costs in real estate, leasing or property taxes
+Inflation
+Interest rates and debt costs
+e.g., borrowing fees, interest payments
+Difficulty acquiring inputs, products or supplies from within Canada
+Difficulty acquiring inputs, products or supplies from abroad
+Maintaining inventory levels
+Insufficient demand for goods or services offered
+Fluctuations in consumer demand
+Attracting new or returning customers
+Lack of financial resources
+Technological limitations
+Regulatory constraints
+Cost of insurance
+Transportation costs
+Obtaining financing
+Increasing competition 
+Challenges related to exporting or selling goods and services to
+customers in other provinces or territories
+Challenges related to exporting or selling goods and services outside of
+Canada
+Maintaining sufficient cash flow or managing debt
+Attract local investment
+Attract foreign direct investment
+Other obstacle
+Flow condition: If “Cost of inputs” is selected in Q5, go to Q7. Otherwise, go
+to Q8.
+7. Over the next three months, which of the following costs of
+inputs are expected to be obstacles for this business or
+organization?
+Select all that apply.
+Cost of labour
+Cost of capital
+Cost of energy
+Cost of raw materials
+OR
+Don’t know
+Flow condition: If “Difficulty acquiring inputs, products or supplies from
+within Canada”, “Difficulty acquiring inputs, products or supplies from
+abroad”, or “Maintaining inventory levels” is selected in Q5, go to Q8.
+Otherwise, go to Q11.
+Display condition: If “Difficulty acquiring inputs, products or supplies from
+within Canada”, “Difficulty acquiring inputs, products or supplies from
+abroad”, or “Maintaining inventory levels” is selected in Q5, display in Q8.
+Supply chain challenges
+8. How long does this business or organization expect the following
+to continue to be an obstacle?
+Difficulty acquiring inputs, products or supplies from within Canada
+Less than 3 months
+3 months to less than 6 months
+6 months to less than 12 months
+12 months or more
+Don’t know
+Difficulty acquiring inputs, products or supplies from abroad
+Less than 3 months
+3 months to less than 6 months
+6 months to less than 12 months
+12 months or more
+Don’t know
+Maintaining inventory levels
+Less than 3 months
+3 months to less than 6 months
+6 months to less than 12 months
+12 months or more
+Don’t know
+9. Over the last three months, how have supply chain challenges
+experienced by this business or organization changed?
+Supply chain challenges include difficulty acquiring inputs, products or
+supplies from within Canada or abroad and difficulty maintaining inventory
+levels.
+Exclude seasonal factors or conditions.
+Supply chain challenges have worsened
+Which of the following factors have contributed to these challenges?
+Select all that apply.
+Increased prices of inputs, products or supplies
+Increased delays in deliveries of inputs, products or supplies
+Supply shortages resulted in fewer inputs, products or supplies
+being available
+Supply shortages resulted in no inputs, products or supplies
+available
+Other factor
+Specify other factor:
+OR
+Don’t know
+Supply chain challenges have remained about the same
+Supply chain challenges have improved
+10. Over the next three months, how does this business or
+organization expect supply chain challenges to change?
+Supply chain challenges include difficulty acquiring inputs, products or
+supplies from within Canada or abroad and difficulty maintaining inventory
+levels.
+Exclude seasonal factors or conditions.
+Supply chain challenges are expected to worsen
+Supply chain challenges are expected to remain about the same
+Supply chain challenges are expected to improve
+Flow condition: If “Government agency” was selected in Q1, go to Q12.
+Otherwise, go to Q11.
+Display condition: If “Non-profit organization” is selected in Q1, do not
+display “Transfer the business” or “Sell the business” in Q11.
+Expectations for the next year
+11. Over the next 12 months, does this business or organization
+plan to do any of the following?
+Select all that apply.
+Expand current location of this business or organization
+Expand operations of this business or organization internationally
+Expand operations of this business or organization into a new province
+or territory within Canada
+Move operations of this business or organization to another location
+within the province or territory
+Move operations of this business or organization to another province or
+territory within Canada entirely
+Expand this business or organization to other locations within the same
+province or territory
+Expand this business or organization without increasing physical space
+i.e., hiring more staff who will work remotely, or expanding online sales
+capacity
+Restructure this business or organization
+Restructuring involves changing the financial, operational, legal or other
+structures of the business or organization to make it more efficient or
+more profitable.
+Acquire other businesses, organizations or franchises
+Invest in other businesses or organizations
+Merge with other businesses or organizations
+Reduce the physical space of this business or organization
+Scale down operations of this business or organization to within a single
+province or territory within Canada
+Transfer the business
+Sell the business
+OR
+Close the business or organization
+OR
+Don’t know
+OR
+None of the above
+Flow condition: If “Export or sell goods outside of Canada” or “Export or sell
+services outside of Canada” was selected in Q3, go to Q12. Otherwise, go to
+Q13.
+Trade
+12. Over the last 12 months, what percentage of this business’ or
+organization’s sales were made directly to clients or customers in
+the United States?
+Provide your best estimate rounded to the nearest percentage.
+Percentage of sales made directly to clients or customers in the United
+States:
+OR
+Don’t know
+Flow condition: If “Import or buy goods from outside of Canada” or “Import
+or buy services from outside of Canada” was selected in Q3, go to Q13.
+Otherwise, go to Q14.
+13. Over the last 12 months, what percentage of this business’ or
+organization’s purchases were made directly from suppliers in the
+United States?
+Provide your best estimate rounded to the nearest percentage.
+Percentage of purchases made directly from suppliers in the United States:
+OR
+Don’t know
+14. Over the next 12 months, what is the expected impact for each
+of the following on this business or organization?
+If tariffs are not relevant to this business or organization, please select “No
+impact”.
+U.S. tariffs on goods sold by businesses in Canada
+Major negative impact
+Minor negative impact
+No impact
+Minor positive impact
+Major positive impact
+Don’t know
+Canadian tariffs on goods purchased from businesses in the U.S.
+Major negative impact
+Minor negative impact
+No impact
+Minor positive impact
+Major positive impact
+Don’t know
+The elimination of trade barriers between provinces or territories
+Major negative impact
+Minor negative impact
+No impact
+Minor positive impact
+Major positive impact
+Don’t know
+15. Over the next 12 months, does this business or organization
+plan to take any of the following actions as a result of any tariffs
+applied by the United States on goods sold from Canada?
+Select all that apply.
+Seek alternative customers outside the United States 
+Seek alternative suppliers outside the United States 
+Increase domestic sourcing
+Increase efforts to sell to customers in Canada
+Delay major investments or expenditures
+Delay Canadian investment or expansion plans
+Acquire or partner with United States-based businesses as a beachhead
+strategy
+Explore trade-related financial tools
+e.g., currency hedging, insurance
+Establish operations in the United States
+Increase inventory or stockpiled goods
+Invest in technology improvements 
+e.g., technology adoption, automation
+Lay off employees
+Hire employees
+Raise prices of goods or services
+Lower prices of goods or services
+Other action
+Specify other action:
+OR
+None of the above
+OR
+Don’t know
+Flow condition: If the percentage of sales made directly to clients or
+customers in the United States reported in Q12 was greater than 0, go to
+Q16. Otherwise, go to Q17.
+16. Over the last 12 months, has this business or organization sold
+any goods to the United States that were subject to any tariffs?
+Yes
+No
+Don’t know
+Flow condition: If the percentage of purchases made directly from suppliers
+in the United States reported in Q13 was greater than 0, go to Q17.
+Otherwise, go to Q18.
+17. Over the last 12 months, has this business or organization
+purchased any goods from the United States that were subject to
+any tariffs?
+Yes
+No
+Don’t know
+18. Over the last 12 months, has this business or organization
+passed on any increases in its costs due to tariffs to its customers?
+Include both indirect cost increases and direct cost increases due to tariffs.
+Yes
+No
+This business or organization has not experienced any cost increases due
+to tariffs
+Don’t know
+19. Over the next 12 months, how likely is this business or
+organization to pass on cost increases due to tariffs to its
+customers?
+Include both indirect cost increases and direct cost increases due to tariffs.
+Very likely
+Somewhat likely
+Somewhat unlikely
+Very unlikely
+This business or organization does not expect any cost increases due to
+tariffs
+Don't know
+Canadian goods and services
+20. Over the last 12 months, has this business or organization
+changed its marketing practices to promote Canadian goods and
+services?
+e.g., labeling products that are either “Canadian”, “Made in Canada” or are
+a “Product of Canada”
+Yes
+No
+Don’t know
+21. Over the last 12 months, has this business or organization
+experienced an increase in sales of Canadian goods and services?
+e.g., products that are either “Canadian”, “Made in Canada” or are a
+“Product of Canada”
+Yes
+No
+Don’t know
+Natural disasters and extreme weather
+events
+22. Is this business or organization concerned about the impact of
+natural disasters and extreme weather events or of climate change
+on the future of its activities?
+Natural disasters and extreme weather events include flooding, sea level
+rise, windstorms, tornadoes, wildfires, winter storms, blizzards, hurricanes,
+extreme heat events, extreme smoke, prolonged poor air quality,
+earthquakes, and similar types of events.
+Yes
+No
+Don’t know
+23.  Which of the following is this business or organization currently
+insured for?
+Select all that apply.
+Insurance for natural disaster-related flooding damage
+e.g., overland flooding, storm surge, torrential rainwater accumulation
+Insurance for wildfire damage
+OR
+None of the above
+OR
+Don't know 
+24. Over the last 12 months, has this business or organization made
+an insurance claim related to natural disasters or weather-related
+events?
+Natural disasters and extreme weather events include flooding, sea level
+rise, windstorms, tornadoes, wildfires, winter storms, blizzards, hurricanes,
+extreme heat events, extreme smoke, prolonged poor air quality,
+earthquakes, and similar types of events.
+Yes
+No
+Don’t know
+Carbon markets and carbon dioxide removal
+credits
+25. Over the next 12 months, to what extent is this business or
+organization likely to trade credits on carbon markets?
+A carbon market allows individuals and companies to buy and sell carbon
+credits to offset greenhouse gas emissions. These markets operate either as
+compliance systems (such as government-run large-emitter trading
+systems) or as voluntary platforms.
+Exclude fuel charges or provincial carbon reduction initiatives.
+Carbon markets are not relevant to this business or organization
+Very likely
+Somewhat likely
+Somewhat unlikely
+Very unlikely
+Don’t know
+Flow condition: If “Very likely” or “Somewhat likely” was selected in Q25, go
+to Q26. Otherwise, go to Q28.
+26. Is this business or organization considering purchasing
+technology-enabled carbon dioxide removal (CDR) credits before
+the end of 2030? 
+CDR credits represent a specific amount of carbon dioxide that has been
+removed from the atmosphere. Technology-enabled CDR includes direct air
+capture, biomass carbon removal with storage, and enhanced
+mineralization. Technology-enabled CDR is distinct from nature-based CDR
+(e.g., afforestation, wetland restoration).
+Yes
+No
+Don’t know
+Flow condition: If “Yes” was selected in Q26, go to Q27. Otherwise, go to
+Q28.
+27.  Are any of the following barriers for this business or
+organization in purchasing technology-enabled carbon dioxide
+removal (CDR) credits before the end of 2030?
+Select all that apply.
+Price
+Availability of high-quality credits
+Uncertainty about the role of CDR in addressing emissions
+Uncertainty around credit quality
+Challenges in comparing credits across different standards
+Lack of information about how to purchase technology-enabled CDR
+credits
+Uncertain policy outlook
+Other barrier
+Specify other barrier:
+OR
+None of the above
+OR
+Don’t know
+Defence and cybersecurity
+Flow condition: If the business or organization is in the Manufacturing
+sector (NAICS 31-33), Wholesale trade sector (NAICS 41), Transportation
+sector (NAICS 48), or Professional, scientific and technical services sector
+(NAICS 54), go to Q28. Otherwise, go to Q29.
+28. Over the last 12 months, did this business or organization
+manufacture any defence goods or provide any defence services? 
+Defence goods or services may include ammunition and firearms;
+maintenance, repair or overhaul of military aircrafts, naval ships, combat
+vehicles and their related components; military systems deployed in space
+and space launch vehicles; communications and navigation systems;
+simulation systems for military aircraft, naval ships and combat vehicles;
+and troop support and training.
+Yes
+No
+Don’t know
+Flow condition: If the business or organization is in the Wholesale trade
+sector (NAICS 41), Information and cultural industries sector (NAICS 51), or
+Professional, scientific and technical services sector (NAICS 54), go to Q29.
+Otherwise, go to Q31.
+29. Over the last 12 months, did this business or organization
+manufacture any cybersecurity goods or provide any cybersecurity
+services? 
+Cybersecurity goods or services may include cybersecurity solutions based
+on a single package of services; compliance audits; program development;
+risk management; industrial control system; data acquisition; encryption;
+cybersecurity infrastructure services; penetration testing and threat
+assessments; cyberspace threat monitoring; forensics and the investigation
+of cyber attacks; and cybersecurity training.
+Yes
+No
+Don’t know
+Flow condition: If “Yes” was selected in Q28 or “Yes” was selected in Q29, go
+to Q30. Otherwise, go to Q31.
+30. Over the next 12 months, does this business or organization
+plan to expand its defence and cybersecurity goods or services?  
+Include increases in the volume of sales and the range of products or
+services offered.
+Yes
+No
+Don’t know
+Flow condition: If “No” was selected in Q28 or “No” was selected in Q29, go
+to Q31. Otherwise, go to Q32.
+31. Over the next 12 months, does this business or organization
+plan to sell or provide defence or cybersecurity goods or services? 
+Yes
+No
+Don’t know
+Flow condition: If “Yes” was selected in Q28 or “Yes” was selected in Q29 or
+“Yes” was selected in Q31, go to Q32. Otherwise, go to Q33.
+32. Over the next 12 months, does this business or organization
+plan to take any of the following actions related to government
+procurement in defence or cybersecurity? 
+Select all that apply.
+Fulfill a previously awarded government contract
+Submit a proposal or bid on a government contract
+Supply defence or cybersecurity goods or services to other businesses
+which have government contracts for defence or cybersecurity goods 
+OR
+None of the above
+OR
+Don't know 
+Artificial intelligence
+33. Over the last 12 months, did this business or organization use
+artificial intelligence (AI) in producing goods or delivering services?
+e.g., machine learning, virtual agents, voice recognition
+Yes
+What type of AI applications did this business or organization use in
+producing goods or delivering services?
+Select all that apply.
+Machine learning
+Natural language processing
+Virtual agents or chat bots
+Speech or voice recognition using AI
+Recommendation systems based on AI
+Large language models
+Text analytics using AI
+Data analytics using AI
+Neural networks
+Augmented reality
+Decision making systems based on AI
+Deep learning
+Image or pattern recognition
+Machine or computer vision
+Robotics process automation
+Biometrics
+Marketing automation using AI
+Other type
+Specify other type:    
+OR
+Don’t know
+No
+Don’t know
+Flow condition: If “Yes” was selected in Q33, go to Q34. Otherwise, go to
+Q35.
+34. Has the use of AI led this business or organization to make any
+of the following changes?
+Select all that apply.
+Train existing employees
+Train existing executives
+Hire employees with AI-related skills
+Use external consultants or vendors
+OR
+None of the above
+OR
+Don't know 
+35. Are any of the following a barrier that limits this business’ or
+organization’s use of AI?
+Select all that apply.
+Cost
+Lack of skilled workers
+Data limitations
+Cybersecurity or privacy concerns
+Uncertainty about benefits
+Regulatory concerns
+OR
+Not relevant to this business or organization
+OR
+None of the above
+OR
+Don’t know
+Liquidity
+36. Does this business or organization have the cash or liquid assets
+required to operate for the next three months? 
+Yes
+No
+Will this business or organization be able to acquire the cash or liquid
+assets required?
+Yes
+No 
+Don’t know 
+Don’t know
+Debt
+37. Over the next three months, does this business or organization
+plan to apply to a financial institution for a new line of credit, a new
+term loan, a new non-residential mortgage or refinancing of an
+existing non-residential mortgage?
+Include commercial mortgages.
+Exclude residential mortgages.
+Yes
+What are the intended uses of this funding?
+Select all that apply.
+Refinancing of existing debt
+Non-residential investments 
+e.g., machinery, equipment, R&D
+Current expenditure
+Business expansion
+Financing the acquisition of another business
+Other use
+Specify other use:    
+OR
+Don’t know
+No
+Does this business or organization have the ability to take on more
+debt?
+Answer based on this business’ or organization’s ability, even if there
+are no plans to take on more debt.
+Yes
+No
+For which of the following reasons is this business or
+organization unable to take on more debt?
+Select all that apply.
+Cash flow
+Lack of confidence or uncertainty in future sales
+Request would be turned down
+Too difficult or time consuming to apply
+Interest rates are unfavourable
+Payment terms are unfavourable
+Credit rating
+Other reason
+Specify other reason: 
+OR
+Not applicable
+OR
+Don’t know
+Don’t know
+Don’t know
+Future outlook
+38. Over the next 12 months, what is the future outlook for this
+business or organization? 
+Very optimistic
+Somewhat optimistic
+Somewhat pessimistic
+Very pessimistic
+Don’t know
+Flow condition: If “Private sector business” was selected in Q1, go to Q39.
+Otherwise, go to “Contact Person”.
+Ownership
+(i) The groups identified within the following questions are included in order
+to gain a better understanding of businesses owned by members of various
+communities across Canada.
+39.  What percentage of this business or organization is owned by
+each of the following groups?
+Provide your best estimate rounded to the nearest percentage.
+If the business or organization is not owned by anyone that falls under that
+group, please enter “0”.
+a. What percentage of this business or organization is owned by women?
+Percentage owned by women:
+OR
+Prefer not to say
+OR
+Don’t know
+b. What percentage of this business or organization is owned by First
+Nations, Métis or Inuit peoples?
+Percentage owned by First Nations, Métis or Inuit peoples:
+OR
+Prefer not to say
+OR
+Don’t know
+c. What percentage of this business or organization is owned by immigrants
+to Canada?
+Percentage owned by immigrants to Canada:
+OR
+Prefer not to say
+OR
+Don’t know
+d. What percentage of this business or organization is owned by persons
+with a disability?
+Include visible and non-visible disabilities.
+Percentage owned by persons with a disability:
+OR
+Prefer not to say
+OR
+Don’t know
+e. What percentage of this business or organization is owned by Two-
+Spirited, lesbian, gay, bisexual, transgender, or queer (2SLGBTQ+) people?
+Percentage owned by 2SLGBTQ+ people:
+OR
+Prefer not to say
+OR
+Don’t know
+f. What percentage of this business or organization is owned by members of
+visible minorities?
+A member of a visible minority in Canada may be defined as someone (other
+than an Indigenous person) who is non-white in colour or race, regardless of
+place of birth.
+Percentage owned by members of visible minorities:
+OR
+Prefer not to say
+OR
+Don’t know
+Flow condition: If more than 50% of this business or organization is owned
+by members of visible minorities, go to Q40. Otherwise, go to “Contact
+person”.
+40. It was indicated that at least 51 % of this business or
+organization is owned by members of visible minorities. Please
+select the categories that describe the owner or owners.
+Select all that apply.
+South Asian
+e.g., East Indian, Pakistani, Sri Lankan
+Chinese
+Black
+Filipino
+Latin American
+Arab
+Southeast Asian
+e.g., Vietnamese, Cambodian, Laotian, Thai
+West Asian
+e.g., Afghan, Iranian
+Korean
+Japanese
+Other group
+Specify other group:
+OR
+Prefer not to say
+Date modified:
+2026-04-01

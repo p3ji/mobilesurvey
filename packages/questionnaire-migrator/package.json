@@ -14,7 +14,8 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "@mobilesurvey/instrument-schema": "workspace:*"
+    "@mobilesurvey/instrument-schema": "workspace:*",
+    "@mobilesurvey/expression-engine": "workspace:*"
   },
   "devDependencies": {
     "typescript": "^5.6.3",
