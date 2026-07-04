@@ -1263,19 +1263,32 @@ function MigratorView({ onBack }: { onBack: () => void }) {
   const [agencyInput, setAgencyInput] = useState('');
   const [result, setResult] = useState<MigrateResult | null>(null);
   const [busy, setBusy] = useState(false);
+  const [extracting, setExtracting] = useState(false);
   const [saveState, setSaveState] = useState<'idle' | 'saving' | 'done' | 'error'>('idle');
   const fileRef = useRef<HTMLInputElement>(null);
 
   function handleFile(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
+    e.target.value = '';
     if (!file) return;
+
+    if (file.type === 'application/pdf' || /\.pdf$/i.test(file.name)) {
+      setExtracting(true);
+      file
+        .arrayBuffer()
+        .then((buf) => import('./pdf.js').then((m) => m.extractPdfText(buf)))
+        .then((text) => setRawText(text))
+        .catch((err) => alert(`Could not read PDF: ${err instanceof Error ? err.message : String(err)}`))
+        .finally(() => setExtracting(false));
+      return;
+    }
+
     const reader = new FileReader();
     reader.onload = (ev) => {
       const text = ev.target?.result;
       if (typeof text === 'string') setRawText(text);
     };
     reader.readAsText(file);
-    e.target.value = '';
   }
 
   function handleConvert() {
@@ -1336,30 +1349,32 @@ function MigratorView({ onBack }: { onBack: () => void }) {
     URL.revokeObjectURL(url);
   }
 
-  // Gather question rows from all sections for the preview table
+  // Gather question rows from all pages for the preview table
   const previewRows = useMemo(() => {
     if (!result) return [];
-    const rows: { num: string; text: string; type: string; options: number; skipRules: number }[] = [];
-    // Re-parse with the same text to get the raw IR for display
-    // (result.sections gives us the summary — we reconstruct from the instrument variables)
+    const rows: { num: string; text: string; type: string; routed: boolean }[] = [];
     let qIdx = 0;
-    for (const vars of (result?.instrument?.variables ?? [])) {
-      qIdx++;
-      rows.push({
-        num: String(qIdx),
-        text: vars.label.en ?? '',
-        type: vars.representation === 'code'
-          ? 'Single choice'
-          : vars.representation === 'boolean'
-            ? 'Yes / No'
-            : vars.representation === 'numeric'
-              ? 'Numeric'
-              : vars.representation === 'datetime'
-                ? 'Date'
-                : 'Open text',
-        options: 0,
-        skipRules: 0,
-      });
+    for (const page of result.instrument.sequence.children) {
+      if (page.type !== 'sequence') continue;
+      for (const node of page.children) {
+        if (node.type !== 'question') continue;
+        qIdx++;
+        const dom = node.responseDomain;
+        rows.push({
+          num: String(qIdx),
+          text: node.text.en ?? '',
+          type: dom.type === 'code'
+            ? (dom.selection === 'multiple' ? 'Multiple choice' : 'Single choice')
+            : dom.type === 'boolean'
+              ? 'Yes / No'
+              : dom.type === 'numeric'
+                ? 'Numeric'
+                : dom.type === 'datetime'
+                  ? 'Date'
+                  : 'Open text',
+          routed: Boolean(node.visibleWhen),
+        });
+      }
     }
     return rows;
   }, [result]);
@@ -1379,9 +1394,12 @@ function MigratorView({ onBack }: { onBack: () => void }) {
       <main className="hub__main migr__main">
         <div className="migr__intro">
           <p>
-            Paste a plain-text questionnaire below (or upload a <code>.txt</code> file).
-            The engine extracts questions, infers response types, and converts routing hints into
-            skip logic — producing an instrument JSON you can open directly in the Designer.
+            Paste a plain-text questionnaire below, or upload a <code>.txt</code> or{' '}
+            <code>.pdf</code> file. The engine extracts questions, infers response types, and
+            converts routing hints into skip logic — producing an instrument JSON you can open
+            directly in the Designer. Statistics Canada electronic questionnaires (with
+            &ldquo;Flow condition&rdquo; routing, matrix grids and nested follow-ups) are
+            detected and parsed natively.
           </p>
         </div>
 
@@ -1418,14 +1436,15 @@ function MigratorView({ onBack }: { onBack: () => void }) {
                   type="button"
                   className="btn"
                   style={{ fontSize: 12, padding: '3px 10px' }}
+                  disabled={extracting}
                   onClick={() => fileRef.current?.click()}
                 >
-                  ⬆ Upload .txt
+                  {extracting ? 'Reading PDF…' : '⬆ Upload .txt / .pdf'}
                 </button>
                 <input
                   ref={fileRef}
                   type="file"
-                  accept=".txt,.text,text/plain"
+                  accept=".txt,.text,.pdf,text/plain,application/pdf"
                   style={{ display: 'none' }}
                   onChange={handleFile}
                 />
@@ -1469,7 +1488,8 @@ function MigratorView({ onBack }: { onBack: () => void }) {
                 <p>Converted survey will appear here.</p>
                 <p className="migr__empty-hint">
                   Supported: numbered questions, option lists, section headers,<br />
-                  Yes/No routing ("If Yes → Skip to Q5"), date / numeric hints.
+                  Yes/No routing ("If Yes → Skip to Q5"), date / numeric hints,<br />
+                  and Statistics Canada electronic questionnaires (PDF or text).
                 </p>
               </div>
             )}
@@ -1492,6 +1512,12 @@ function MigratorView({ onBack }: { onBack: () => void }) {
                   <span className="migr__stat">
                     <strong>{result.sectionCount}</strong> section{result.sectionCount === 1 ? '' : 's'}
                   </span>
+                  {result.format === 'statcan-eq' && (
+                    <>
+                      <span className="migr__stat-sep">·</span>
+                      <span className="migr__stat">StatCan EQ format</span>
+                    </>
+                  )}
                   {result.sections.filter(s => s.title).map((s, i) => (
                     <span key={i} className="migr__stat-section">{s.title}</span>
                   ))}
@@ -1522,7 +1548,10 @@ function MigratorView({ onBack }: { onBack: () => void }) {
                         <tr key={i} className="migr__tr">
                           <td className="migr__td migr__td--num">{row.num}</td>
                           <td className="migr__td migr__td--text" title={row.text}>{row.text}</td>
-                          <td className="migr__td migr__td--type">{row.type}</td>
+                          <td className="migr__td migr__td--type">
+                            {row.type}
+                            {row.routed && <span title="Has skip logic (visibleWhen)"> ⑂</span>}
+                          </td>
                         </tr>
                       ))}
                     </tbody>
@@ -1593,6 +1622,15 @@ _____ years`}</pre>
 Section 1: Background
 PART I: Employment
 --- Demographics ---`}</pre>
+            </div>
+            <div className="migr__hint-col">
+              <strong>StatCan EQ (auto-detected)</strong>
+              <pre className="migr__hint-pre">{`1. Question text …
+Option (bare lines)
+Select all that apply.
+Flow condition: If "X" is
+selected in Q5, go to Q7.
+Otherwise, go to Q8.`}</pre>
             </div>
           </div>
         </details>
