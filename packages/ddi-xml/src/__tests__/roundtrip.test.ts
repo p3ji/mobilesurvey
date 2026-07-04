@@ -4,7 +4,7 @@ import {
   demoInstrument,
   householdInstrument,
   censusInstrument,
-  bizdemoInstrument,
+  fsepInstrument,
 } from '@mobilesurvey/instrument-schema';
 import type { Instrument } from '@mobilesurvey/instrument-schema';
 import { exportDdiXml } from '../export.js';
@@ -24,7 +24,7 @@ const FIXTURES: [string, Instrument][] = [
   ['household', householdInstrument],
   ['lfs', lfsInstrument],
   ['census', censusInstrument],
-  ['bizdemo', bizdemoInstrument],
+  ['fsep', fsepInstrument],
 ];
 
 describe('DDI-XML round-trip', () => {

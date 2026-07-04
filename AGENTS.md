@@ -73,8 +73,9 @@
    - Synthetic table totals (`{p}_{row}_TOT`, `{p}_TOT_{col}`, `{p}_TOT_TOT`) resolve compute-on-read in `runtime-engine/scope.ts` — referenceable from any edit/piping/routing expression **regardless of document order** (backward references work); never stored in responses.
    - Spreadsheet renderer `respondent-view/TableQuestion.tsx`: live totals, shaded disabled cells, paste-from-Excel (TSV block fill from anchor cell; `$1,234`/`(500)` cleaning); ARIA row+col labels, RTL-safe.
    - Designer: Inspector table editor (schemes, unit, totals, disabled cells, generated-names hint), compact PreviewPane table, PDF-spec + HTML-export rendering; DDI-XML round-trip via `d:GridDomain` + `mst:rdType=table`.
-   - Bundled demo `bizdemo` ("Business Operations Report (Demo)", `collectsData: false`) — hard balance edit in Section 2 referencing the Section 3 table total. Hub "Designer — Business Collection" tile flipped to live (Testing badge).
+   - Bundled demo `fsep` ("Federal Science Expenditures and Personnel (Demo)", `collectsData: false`) — modeled on Statistics Canada's real FSEP questionnaire (survey 4212): R&D/RSA expenditure tables split by performer with a 10/9-cell disabled-cell footprint, an FTE personnel table, a Section 3A(ii) sources-of-funds hard balance edit referencing the Section 1 table totals, and a 13-region expenditure table with a soft cross-section edit. Simplified to one reference year (real survey covers three). Hub "Designer — Business Collection" tile flipped to live (Testing badge).
    - Group subtotals ("Total – Spirits") are modeled as **one table per group**, not per-row subtotal schema.
+   - *(2026-07-03, later)* Swapped the placeholder Liquor-Authority-styled `bizdemo` content for a build modeled on the real FSEP survey (source: `image/4212_Q1_V28-eng.pdf`, user-provided) — renamed id/export/file throughout (`bizdemo` → `fsep`, `bizdemoInstrument` → `fsepInstrument`) since the hub tile is generic ("Designer — Business Collection") and FSEP was one of the three original exemplars for this feature.
 
 ## Conventions & gotchas
 - Keep this file short; put goals/backlog/decisions in the Brain note, not here.

@@ -3,7 +3,7 @@
  * earlier sections), required semantics, edit gating, numbering, and loop scoping.
  */
 import { describe, it, expect } from 'vitest';
-import { bizdemoInstrument, type Instrument } from '@mobilesurvey/instrument-schema';
+import { fsepInstrument, type Instrument } from '@mobilesurvey/instrument-schema';
 import { flattenInstrument, collectEdits } from '../flatten.js';
 import { paginate, pageHasHardEdits, numberQuestions } from '../paginate.js';
 import { instanceKey } from '../scope.js';
@@ -15,102 +15,111 @@ function stateWith(responses: Record<string, unknown>, language = 'en'): Runtime
   return { responses, sample: {}, language };
 }
 
-function salesTable(items: RenderItem[]): TableItem {
-  const t = items.find((i) => i.kind === 'table' && i.variablePrefix === 'SALES');
-  if (!t || t.kind !== 'table') throw new Error('SALES table not found');
+function tableByPrefix(items: RenderItem[], prefix: string): TableItem {
+  const t = items.find((i) => i.kind === 'table' && i.variablePrefix === prefix);
+  if (!t || t.kind !== 'table') throw new Error(`${prefix} table not found`);
   return t;
 }
 
-describe('table flattening (bizdemo)', () => {
-  it('emits a table item with a total row, aligned cells, and the disabled cell marked', () => {
-    const { items } = flattenInstrument(bizdemoInstrument, stateWith({}));
-    const t = salesTable(items);
-    expect(t.rows.map((r) => r.code)).toEqual(['spirits', 'wine', 'beer', 'other', 'TOT']);
-    expect(t.rows[4]!.isTotal).toBe(true);
-    expect(t.columns.map((c) => c.code)).toEqual(['vol', 'val']);
-    expect(t.cells).toHaveLength(5);
-    expect(t.cells.every((row) => row.length === 2)).toBe(true);
-    // disabledCells: ['other:vol'] — row index 3, col index 0
-    expect(t.cells[3]![0]!.disabled).toBe(true);
-    expect(t.cells[3]![1]!.disabled).toBe(false);
-    // total row cells are computed
-    expect(t.cells[4]!.every((c) => c.computed)).toBe(true);
-    expect(t.unit).toBe('in thousands');
+describe('table flattening (FSEP)', () => {
+  it('emits the R&D table with a total row/col, aligned cells, and disabled cells marked', () => {
+    const { items } = flattenInstrument(fsepInstrument, stateWith({}));
+    const t = tableByPrefix(items, 'RD');
+    expect(t.rows.map((r) => r.code)).toEqual(['inhouse', 'contracts', 'grants', 'fellows', 'admin', 'capital', 'TOT']);
+    expect(t.rows[6]!.isTotal).toBe(true);
+    expect(t.columns.map((c) => c.code)).toEqual(['intra', 'be', 'he', 'np', 'gov', 'fp', 'TOT']);
+    expect(t.columns[6]!.isTotal).toBe(true);
+    expect(t.cells).toHaveLength(7);
+    expect(t.cells.every((row) => row.length === 7)).toBe(true);
+    // 'inhouse' row: only the 'intra' cell is enabled (in-house R&D is intramural-only).
+    expect(t.cells[0]![0]!.disabled).toBe(false);
+    expect(t.cells[0]![1]!.disabled).toBe(true); // be
+    expect(t.cells[0]![5]!.disabled).toBe(true); // fp
+    // 'contracts' row: 'intra' is disabled (contracts are extramural-only).
+    expect(t.cells[1]![0]!.disabled).toBe(true);
+    expect(t.cells[1]![1]!.disabled).toBe(false); // be
+    // Total row/col cells are computed.
+    expect(t.cells[6]!.every((c) => c.computed)).toBe(true);
+    expect(t.cells.every((row) => row[6]!.computed)).toBe(true);
+    expect(t.unit).toBe('CAN$ ’000');
   });
 
-  it('computes column totals live and leaves all-blank totals undefined', () => {
-    const empty = salesTable(flattenInstrument(bizdemoInstrument, stateWith({})).items);
-    expect(empty.cells[4]![1]!.value).toBeUndefined();
+  it('computes row/col/grand totals live, respecting disabled cells, and leaves all-blank totals undefined', () => {
+    const empty = tableByPrefix(flattenInstrument(fsepInstrument, stateWith({})).items, 'RD');
+    expect(empty.cells[6]![6]!.value).toBeUndefined();
 
     const responses = {
-      [instanceKey('SALES_spirits_val', [])]: 100,
-      [instanceKey('SALES_wine_val', [])]: 50,
+      [instanceKey('RD_inhouse_intra', [])]: 100,
+      [instanceKey('RD_contracts_be', [])]: 50,
     };
-    const t = salesTable(flattenInstrument(bizdemoInstrument, stateWith(responses)).items);
-    expect(t.cells[4]![1]!.value).toBe(150); // SALES_TOT_val
-    expect(t.cells[4]![0]!.value).toBeUndefined(); // vol column untouched
+    const t = tableByPrefix(flattenInstrument(fsepInstrument, stateWith(responses)).items, 'RD');
+    expect(t.cells[0]![6]!.value).toBe(100); // inhouse row total (only intra contributes)
+    expect(t.cells[1]![6]!.value).toBe(50); // contracts row total (only be contributes)
+    expect(t.cells[6]![6]!.value).toBe(150); // grand total
+    expect(t.cells[2]![6]!.value).toBeUndefined(); // grants row untouched
   });
 
-  it('fires the BACKWARD-reference balance edit: revGross (Section 2) vs SALES_TOT_val (Section 3)', () => {
+  it('fires the BACKWARD-reference hard balance edit: sources of funds (Section 3A) vs S&T totals (Section 1)', () => {
     const mismatch = {
-      [instanceKey('revGross', [])]: 100,
-      [instanceKey('SALES_spirits_val', [])]: 150,
+      [instanceKey('RD_inhouse_intra', [])]: 100,
+      [instanceKey('RSA_inhouse_intra', [])]: 50,
+      [instanceKey('deptBudget', [])]: 100,
     };
-    const { items } = flattenInstrument(bizdemoInstrument, stateWith(mismatch));
-    const revQ = items.find((i) => i.kind === 'question' && i.construct.id === 'q.revGross');
-    expect(revQ?.kind === 'question' ? revQ.firedEdits.some((e) => e.id === 'edit.revGross.balance') : false).toBe(true);
+    const { items } = flattenInstrument(fsepInstrument, stateWith(mismatch));
+    const otherFundsQ = items.find((i) => i.kind === 'question' && i.construct.id === 'q.otherFunds');
+    expect(otherFundsQ?.kind === 'question' ? otherFundsQ.firedEdits.some((e) => e.id === 'edit.funds.balance') : false).toBe(true);
 
-    const balanced = {
-      [instanceKey('revGross', [])]: 150,
-      [instanceKey('SALES_spirits_val', [])]: 150,
-    };
-    const { items: ok } = flattenInstrument(bizdemoInstrument, stateWith(balanced));
-    const revOk = ok.find((i) => i.kind === 'question' && i.construct.id === 'q.revGross');
-    expect(revOk?.kind === 'question' ? revOk.firedEdits.some((e) => e.id === 'edit.revGross.balance') : true).toBe(false);
+    const balanced = { ...mismatch, [instanceKey('otherFunds', [])]: 50 }; // 100 + 50 = RD 100 + RSA 50
+    const { items: ok } = flattenInstrument(fsepInstrument, stateWith(balanced));
+    const otherFundsOk = ok.find((i) => i.kind === 'question' && i.construct.id === 'q.otherFunds');
+    expect(otherFundsOk?.kind === 'question' ? otherFundsOk.firedEdits.some((e) => e.id === 'edit.funds.balance') : true).toBe(false);
   });
 
-  it('does not fire the balance edit while the table is still empty (isAnswered guard)', () => {
+  it('does not fire the balance edit while the R&D/RSA tables are still empty (isAnswered guard)', () => {
     const { items } = flattenInstrument(
-      bizdemoInstrument,
-      stateWith({ [instanceKey('revGross', [])]: 100 }),
+      fsepInstrument,
+      stateWith({ [instanceKey('deptBudget', [])]: 100 }),
     );
-    const revQ = items.find((i) => i.kind === 'question' && i.construct.id === 'q.revGross');
-    expect(revQ?.kind === 'question' ? revQ.firedEdits.some((e) => e.id === 'edit.revGross.balance') : true).toBe(false);
+    const otherFundsQ = items.find((i) => i.kind === 'question' && i.construct.id === 'q.otherFunds');
+    expect(otherFundsQ?.kind === 'question' ? otherFundsQ.firedEdits.some((e) => e.id === 'edit.funds.balance') : true).toBe(false);
   });
 
-  it('required table: hard edit when all cells blank, cleared once any cell is answered', () => {
-    const empty = salesTable(flattenInstrument(bizdemoInstrument, stateWith({})).items);
+  it('required table: hard edit when all cells blank, cleared once any enabled cell is answered', () => {
+    const empty = tableByPrefix(flattenInstrument(fsepInstrument, stateWith({})).items, 'RD');
     expect(empty.firedEdits.some((e) => e.id === '__required__' && e.type === 'hard')).toBe(true);
 
-    const t = salesTable(
+    const t = tableByPrefix(
       flattenInstrument(
-        bizdemoInstrument,
-        stateWith({ [instanceKey('SALES_beer_vol', [])]: 5 }),
+        fsepInstrument,
+        stateWith({ [instanceKey('RD_inhouse_intra', [])]: 5 }),
       ).items,
+      'RD',
     );
     expect(t.firedEdits.some((e) => e.id === '__required__')).toBe(false);
   });
 
-  it('fires the soft large-value edit and counts it via collectEdits', () => {
-    const result = flattenInstrument(
-      bizdemoInstrument,
-      stateWith({ [instanceKey('SALES_spirits_val', [])]: 200000 }),
-    );
-    const t = salesTable(result.items);
-    expect(t.firedEdits.some((e) => e.id === 'edit.sales.large' && e.type === 'soft')).toBe(true);
+  it('fires the soft cross-section region-check edit and counts it via collectEdits', () => {
+    const responses = {
+      [instanceKey('RD_inhouse_intra', [])]: 100,
+      [instanceKey('REG_nl_curRd', [])]: 40,
+      [instanceKey('REG_pe_curRd', [])]: 20,
+    };
+    const result = flattenInstrument(fsepInstrument, stateWith(responses));
+    const t = tableByPrefix(result.items, 'REG');
+    expect(t.firedEdits.some((e) => e.id === 'edit.region.check' && e.type === 'soft')).toBe(true);
     expect(collectEdits(result).soft).toBeGreaterThanOrEqual(1);
   });
 
   it('gates navigation via pageHasHardEdits and counts each table once in numberQuestions', () => {
-    const { items } = flattenInstrument(bizdemoInstrument, stateWith({}));
+    const { items } = flattenInstrument(fsepInstrument, stateWith({}));
     const { pages } = paginate(items);
-    const salesPage = pages.find((p) => p.some((i) => i.kind === 'table'))!;
-    expect(pageHasHardEdits(salesPage)).toBe(true); // required SALES table is empty
+    const section1Page = pages.find((p) => p.some((i) => i.kind === 'table' && i.variablePrefix === 'RD'))!;
+    expect(pageHasHardEdits(section1Page)).toBe(true); // required RD/RSA tables are empty
 
     const nums = numberQuestions(pages);
     const tableKeys = items.filter((i) => i.kind === 'table').map((i) => i.key);
-    expect(tableKeys).toHaveLength(2); // SALES + PURCH
-    expect(new Set(tableKeys.map((k) => nums.get(k))).size).toBe(2);
+    expect(tableKeys).toHaveLength(4); // RD + RSA + FTE (personnel) + REG (region)
+    expect(new Set(tableKeys.map((k) => nums.get(k))).size).toBe(4);
   });
 });
 

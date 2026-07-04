@@ -1820,9 +1820,9 @@ function HomePage({ onNavigate }: { onNavigate: (v: HubView) => void }) {
       name: 'Designer — Business Collection',
       tag: 'Testing',
       tagline: 'Structured forms for business data collection',
-      description: 'A form-first designer for establishment surveys — numeric data tables with live totals, paste-from-Excel entry, balance edits across sections, and a demo modeled on a real statistical-agency operations report.',
+      description: "A form-first designer for establishment surveys — numeric data tables with live totals, paste-from-Excel entry, balance edits across sections, and a demo modeled on Statistics Canada's Federal Science Expenditures and Personnel (FSEP) questionnaire.",
       status: 'live',
-      action: () => window.open(`${DESIGNER_URL}/?survey=bizdemo&mode=pro`, '_blank', 'noopener'),
+      action: () => window.open(`${DESIGNER_URL}/?survey=fsep&mode=pro`, '_blank', 'noopener'),
     },
     {
       id: 'analyzer',

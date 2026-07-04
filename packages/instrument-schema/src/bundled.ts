@@ -14,7 +14,7 @@
 import type { Instrument } from './types.js';
 import { lfsInstrument } from './examples/lfs.instrument.js';
 import { demoInstrument } from './examples/demo.instrument.js';
-import { bizdemoInstrument } from './examples/bizdemo.instrument.js';
+import { fsepInstrument } from './examples/fsep.instrument.js';
 
 export interface BundledSurvey {
   /** Short alias used in `?survey=<id>` URLs and as the Supabase row id. */
@@ -42,9 +42,9 @@ export const BUNDLED_SURVEYS: BundledSurvey[] = [
     collectsData: true,
   },
   {
-    id: 'bizdemo',
-    title: 'Business Operations Report (Demo)',
-    instrument: bizdemoInstrument,
+    id: 'fsep',
+    title: 'Federal Science Expenditures and Personnel (Demo)',
+    instrument: fsepInstrument,
     requiresAccessCode: false,
     collectsData: false,
   },
