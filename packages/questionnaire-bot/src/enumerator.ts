@@ -179,6 +179,11 @@ function generateCandidates(
       values = options.rosterCounts;
     } else if (mode === 'canonical') {
       values = generateValues(domain, instrument, 'canonical');
+    } else if (mode === 'boundary') {
+      // Boundary strategy targets validation-rule testing on every field, not just
+      // routing variables — edit rules commonly live on non-branching questions
+      // (e.g. an NPS score or age field that never affects visibility).
+      values = generateValues(domain, instrument, 'boundary');
     } else if (isRouting) {
       values = generateValues(domain, instrument, mode);
     } else {

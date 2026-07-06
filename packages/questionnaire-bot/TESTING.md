@@ -135,6 +135,71 @@ Your feedback helps us improve.
 
 ---
 
+## Findings from Running the Bot Against These Fixtures
+
+Running `enumeratePaths` against `testErrorsInstrument` and `specMismatchInstrument`
+(see `src/__tests__/test-instruments.test.ts`) surfaced one real defect and confirmed
+several capabilities/gaps:
+
+### Fixed: `boundary` strategy ignored non-routing fields
+
+**Before**: `generateCandidates` only applied boundary/edge-case values to variables
+that also appeared in a routing/visibility expression. Since edit rules (hard/soft)
+typically live on fields that do **not** affect routing — e.g. `nps` and
+`soft_edit_triggered` in `testErrorsInstrument` — the `boundary` strategy silently
+fell back to canonical values for exactly the fields it exists to stress-test. A
+`--strategy boundary` run would never have exercised the NPS hard-edit range or the
+age soft-edit threshold.
+
+**Fix**: `boundary` mode now generates boundary values for every question, not just
+routing variables (`enumerator.ts`, `generateCandidates`).
+
+### Known limitation: BFS strategies under-sample deep conditional fields under a low `maxPaths`
+
+`all-paths` and `boundary` are implemented as strict FIFO BFS over the answer tree.
+Shorter paths (ones that skip a conditionally-visible question) complete before
+longer ones, so a low `maxPaths` cap can systematically miss boundary values on a
+field that sits behind an `ifThenElse`. In `testErrorsInstrument`, `nps` is only
+visible when `satisfaction != "very_dissatisfied"` — one level deeper than
+`soft_edit_triggered`, which is unconditional. At `maxPaths: 100`, boundary
+coverage reliably reaches every boundary value of `soft_edit_triggered` but misses
+`nps`'s max/max+1 values entirely; raising `maxPaths` to `5000` reaches full coverage.
+
+**Practical guidance**: when targeting validation rules on deeply-conditional
+fields, either raise `maxPaths` well above the default, or prefer the `coverage`
+strategy (greedy, targets specific variable×value pairs directly rather than
+enumerating breadth-first).
+
+### Confirmed: dead-end/unreachable branches don't stall enumeration
+
+`testErrorsInstrument` includes an `ifThenElse` gated on `$has_account == "maybe"` —
+a value that doesn't exist in the `cs.yesno` scheme, so the branch is structurally
+unreachable. `enumeratePaths` correctly never produces a scenario that answers
+`dead_end_question`, and every generated scenario still completes normally (the
+enumerator doesn't get stuck trying to satisfy an impossible condition). Detecting
+*that a branch is unreachable* (as opposed to *never taking it*) would need an
+explicit "unreachable code" schema lint — the enumerator currently just skips what
+it can't reach, silently.
+
+### Confirmed gap: text/spec content is invisible to Phase A
+
+Phase A operates purely on the schema's structural shape (paths, routing, edit
+*conditions*). It has no notion of text quality or content correctness, so:
+- The `acount` / `experiance` typos in `testErrorsInstrument` are undetectable —
+  nothing inspects `label`/`text` strings for spelling.
+- The `specMismatchInstrument` rating scale (schema defines 4 categories, but the
+  question text promises "1=poor, 5=excellent") is undetectable — nothing
+  cross-checks free text against the `categorySchemes` it references.
+- One category of spec mismatch **is** schema-detectable without a browser: in
+  `specMismatchInstrument`, `purchase_intent` asks a yes/no question but its
+  `responseDomain` wires up `cs.products` (codes `A`/`B`) instead of a yes/no
+  scheme. `enumeratePaths` shows every generated answer for that variable is `'A'`
+  or `'B'` — a text-vs-domain consistency lint could flag this today, entirely
+  offline, as a Phase A/C feature. Text-drift and option-vs-design-doc mismatches
+  remain Phase B/D (browser + external doc comparison) territory.
+
+---
+
 ## Bot Testing Checklist
 
 The bot should:
