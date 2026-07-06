@@ -15,7 +15,7 @@ import {
   PenLine,
 } from 'lucide-react';
 import logo from './assets/logo.png';
-import { blankInstrument, lfsInstrument, demoInstrument, BUNDLED_SURVEYS, redactResponses, piiVariableNames, type Instrument } from '@mobilesurvey/instrument-schema';
+import { blankInstrument, lfsInstrument, demoInstrument, fsepInstrument, BUNDLED_SURVEYS, redactResponses, piiVariableNames, type Instrument } from '@mobilesurvey/instrument-schema';
 import { migrate, type MigrateResult } from '@mobilesurvey/questionnaire-migrator';
 import {
   buildCatalog,
@@ -82,6 +82,15 @@ const DEMO_SURVEYS: SurveySummary[] = [
     requiresAccessCode: true,
     status: 'published',
     questionCount: countQuestions(lfsInstrument),
+    updatedAt: 0,
+    responseCount: 0,
+  },
+  {
+    id: 'fsep',
+    title: 'Federal Science Expenditures and Personnel (Demo)',
+    requiresAccessCode: false,
+    status: 'published',
+    questionCount: countQuestions(fsepInstrument),
     updatedAt: 0,
     responseCount: 0,
   },
@@ -951,6 +960,7 @@ function CollectorView({ onBack }: { onBack: () => void }) {
 const BUILTIN: InstrumentSummary[] = [
   { id: lfsInstrument.id, title: 'Household & Employment Survey', instrument: lfsInstrument },
   { id: demoInstrument.id, title: 'Feature Demo Survey', instrument: demoInstrument },
+  { id: fsepInstrument.id, title: 'Federal Science Expenditures and Personnel (Demo)', instrument: fsepInstrument },
 ];
 
 const TYPE_LABELS: Record<ComponentType | 'all', string> = {
@@ -1173,8 +1183,9 @@ function SearcherView({ onBack }: { onBack: () => void }) {
 // ── Demo survey picker ────────────────────────────────────────────────────────
 
 const DEMO_OPTIONS = [
-  { id: 'lfs',  label: 'Household & Employment Survey', live: false },
-  { id: 'demo', label: 'Feature Demo Survey',            live: true  },
+  { id: 'lfs',   label: 'Household & Employment Survey',                         live: false },
+  { id: 'fsep',  label: 'Federal Science Expenditures and Personnel (Demo)',     live: false },
+  { id: 'demo',  label: 'Feature Demo Survey',                                   live: true  },
 ];
 
 function DemoSurveyPicker() {
@@ -1186,7 +1197,7 @@ function DemoSurveyPicker() {
         <p className="demo-picker__sub">
           Load a bundled survey into the designer to explore its features.
           Only the <strong>Feature Demo Survey</strong> is connected to live data collection — responses are saved to the Collector dashboard.
-          The Household &amp; Employment Survey is for designer exploration only.
+          The Household &amp; Employment and FSEP surveys are for designer exploration only.
         </p>
       </div>
       <div className="demo-picker__options">
