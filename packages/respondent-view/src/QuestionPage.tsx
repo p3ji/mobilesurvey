@@ -183,7 +183,15 @@ export function QuestionPage({
             className="eq__question"
             style={{ marginInlineStart: item.depth * 8 }}
           >
-            <label id={inputId} className="eq__q-text" htmlFor={isGroupDomain ? undefined : inputId}>
+            {/* Group domains (code/boolean) reference this label via the group's
+                aria-labelledby, so it needs its own id; other domains associate via
+                htmlFor pointing at the control's id instead — giving the label the same
+                id as the control in that case would be a duplicate DOM id. */}
+            <label
+              id={isGroupDomain ? inputId : undefined}
+              className="eq__q-text"
+              htmlFor={isGroupDomain ? undefined : inputId}
+            >
               {qNum != null && <span className="eq__q-num">Q{qNum}.</span>}
               {item.text}
               {item.construct.required && (

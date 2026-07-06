@@ -16,7 +16,8 @@
   "dependencies": {
     "@mobilesurvey/expression-engine": "workspace:*",
     "@mobilesurvey/instrument-schema": "workspace:*",
-    "@mobilesurvey/runtime-engine": "workspace:*"
+    "@mobilesurvey/runtime-engine": "workspace:*",
+    "playwright": "^1.48.0"
   },
   "devDependencies": {
     "typescript": "^5.6.3",

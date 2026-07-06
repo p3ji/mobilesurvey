@@ -19,19 +19,37 @@ Works with any web-based questionnaire, not just surveys built with mobilesurvey
 - **Path enumerator**: Given an instrument schema, enumerate all reachable paths
 - **Answer generator**: Produce test values for each response domain
 - **Coverage strategies**: all-paths, coverage (greedy), boundary
-- **Status**: 47 tests, typecheck clean, ready for browser driver
+- **Status**: 66 tests, typecheck clean
 
-### Phase B 🚧 IN PROGRESS
-- Browser automation with Playwright
-- Schema→DOM element mapping
-- Rendered vs expected assertions
-- HTML report generation
+### Phase B ✅ COMPLETE (core loop)
+- **`BrowserDriver`**: generic Playwright interaction primitives (fill text/numeric/date,
+  select-radio/checkbox-set by visible label, aria-label targeting for grid/markAll cells,
+  Next/Back navigation with a mobilesurvey-specific fast path + generic text-match fallback,
+  passive console/pageerror/requestfailed capture)
+- **`schema-adapter.ts`**: resolves a Scenario's `AnswerStep`s to concrete locator strategies by
+  re-flattening the instrument at each step (handles roster scoping, conditional visibility,
+  markAll/grid sub-items)
+- **`runScenario`/`runScenarios`**: drives one or many Scenarios end-to-end against a live
+  respondent-runtime URL, tracking page boundaries via `flattenInstrument`+`paginate` in lockstep
+  with the browser
+- **`buildReport`/`formatReportText`**: structured JSON + plain-text issue summary
+  (`DEAD_END`, `STEP_FAILED`, `FATAL_ERROR`, `CONSOLE_ERROR`)
+- **Status**: 85 tests total (12 are real-Chromium integration tests against a static fixture
+  mirroring respondent-view's actual markup — not mocks); typecheck clean
+- **Found and fixed a real bug while building this**: `QuestionPage.tsx` assigned the same `id`
+  to both a question's `<label>` and its form control for every non-group domain (text/numeric/
+  datetime/lookup/file) — invalid duplicate DOM ids, caught by Playwright's strict-mode locator
+  matching. Fixed in `packages/respondent-view/src/QuestionPage.tsx`.
+- **Not yet built**: HTML report with screenshots, `--url`/`--schema` CLI entry point, running
+  against a live dev server end-to-end (tests use a static fixture, not `apps/runtime` itself)
 
 ### Phase C 🔮 FUTURE
-- Full assertion engine (text drift detection, edit rule validation)
+- Full assertion engine (text-drift detection comparing schema text to rendered DOM text,
+  edit-rule firing validation against the rendered UI, not just the schema)
 - N-wise path enumeration
 - Multi-language testing
 - Discovery mode (schema-agnostic, works on external questionnaires)
+- CLI entry point + HTML report with screenshots
 
 ### Phase D 🔮 FUTURE
 - LLM-based element classifier (optional, for robust detection)
@@ -85,6 +103,38 @@ scenario-3: 19 Qs, 4 pages, ✓
 | `coverage` (default) | Medium-to-large surveys, practical testing | Linear in routing variables |
 | `boundary` | Validation rule testing (edge cases) | Linear; uses min/max/invalid values |
 | `n-wise` | (Stub) N-way combinations | TBD |
+
+### Phase B: Drive a Live Survey in a Browser
+
+```typescript
+import { enumeratePaths, runScenarios, buildReport, formatReportText } from '@mobilesurvey/questionnaire-bot';
+import { demoInstrument } from '@mobilesurvey/instrument-schema';
+
+const scenarios = enumeratePaths(demoInstrument, { strategy: 'coverage' });
+
+const results = await runScenarios(demoInstrument, scenarios, {
+  url: 'http://localhost:5174/?survey=demo',
+  headless: true,
+});
+
+const report = buildReport(results);
+console.log(formatReportText(report));
+```
+
+**Output**:
+```
+Questionnaire Bot Report: 4/4 scenarios completed (0 issues, 8213ms)
+No issues found.
+```
+
+Each `ScenarioRunResult` records, per step: which locator strategy was used, whether the
+interaction succeeded, and any console/page errors captured during that scenario's run. A
+scenario that never reaches the completion screen (`.done__title`) is reported as a `DEAD_END`
+issue — this is the browser-driven counterpart to Phase A's structural dead-end detection.
+
+**Note**: `runScenarios` launches one shared Chromium instance and reuses it across scenarios
+(faster than relaunching per scenario). Pass an explicit `browser` in `RunOptions` to reuse a
+browser you've already launched elsewhere (e.g. across multiple survey URLs in one CI job).
 
 ---
 
