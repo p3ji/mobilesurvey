@@ -167,6 +167,17 @@ describe('markAll firedEdits (regression: previously hardcoded to [])', () => {
     expect(m.firedEdits.some((e) => e.id === '__required__')).toBe(false);
   });
 
+  it('still fires the required edit when a box was toggled off (touched but unchecked)', () => {
+    // markAll writes an explicit "unchecked" sentinel (2) the moment a checkbox is toggled,
+    // unlike grid which only ever writes on selection. A box that was checked then unchecked
+    // must NOT count as "answered" -- regression guard for treating any non-blank cell
+    // (checked OR explicitly-unchecked) as satisfying "required".
+    const m = markAllItem(
+      flattenInstrument(instrument, stateWith({ [instanceKey('M_other1', [])]: 2 })).items,
+    );
+    expect(m.firedEdits.some((e) => e.id === '__required__' && e.type === 'hard')).toBe(true);
+  });
+
   it('fires the authored exclusivity edit when "none" is checked alongside another option', () => {
     const responses = {
       [instanceKey('M_none', [])]: 1,

@@ -6,7 +6,7 @@
  * Pure: it clones the response map so derived/computation writes never mutate the input.
  */
 import { evaluate, parse, type EvalContext } from '@mobilesurvey/expression-engine';
-import { TABLE_TOTAL_CODE } from '@mobilesurvey/instrument-schema';
+import { DICHOTOMOUS_CODES, TABLE_TOTAL_CODE } from '@mobilesurvey/instrument-schema';
 import type {
   ControlConstruct,
   EditRule,
@@ -89,7 +89,13 @@ export interface FlattenResult {
  * with the enabled input cells they sum. Totals are always referenceable from expressions,
  * regardless of whether the table displays them (`totalRow`/`totalCol` govern display only).
  */
-function buildSyntheticTotals(instrument: Instrument): SyntheticTotals {
+/**
+ * Builds the synthetic-total registry for an instrument's `table` questions. Exported so
+ * consumers that need to evaluate expressions/rules outside a full `flattenInstrument` pass
+ * (e.g. the Validator re-running edits/rules over stored responses) can pass it to
+ * `makeContext` and get the same `{prefix}_{row}_TOT` / `_TOT_{col}` / `_TOT_TOT` resolution.
+ */
+export function buildSyntheticTotals(instrument: Instrument): SyntheticTotals {
   const map: SyntheticTotals = new Map();
   const visitAll = (nodes: ControlConstruct[]): void => {
     for (const node of nodes) {
@@ -303,7 +309,11 @@ export function flattenInstrument(instrument: Instrument, state: RuntimeState): 
           const categories = cats.map((cat) => {
             const iKey = instanceKey(`${domain.variablePrefix}_${cat.code}`, scope);
             const value = responses[iKey] as number | undefined;
-            if (!isEmpty(value)) anyChecked = true;
+            // Unlike grid (which only ever writes on selection), markAll writes an explicit
+            // "unchecked" sentinel (DICHOTOMOUS_CODES.NO) the moment a checkbox is toggled off,
+            // so `!isEmpty(value)` alone would treat "touched then unchecked" as an answer.
+            // "Checked" means value === YES specifically.
+            if (value === DICHOTOMOUS_CODES.YES) anyChecked = true;
             return { code: cat.code, label: pick(cat.label, language), instanceKey: iKey, value };
           });
           items.push({
