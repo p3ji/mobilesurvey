@@ -206,6 +206,7 @@ export function flattenInstrument(instrument: Instrument, state: RuntimeState): 
             code: cat.code,
             label: pick(cat.label, language),
           }));
+          const anyRowAnswered = rows.some((r) => !isEmpty(r.value));
           items.push({
             kind: 'grid',
             key: `${q.id}@${scopeSuffix}`,
@@ -215,7 +216,9 @@ export function flattenInstrument(instrument: Instrument, state: RuntimeState): 
             instruction: q.instruction ? localizePiped(q.instruction, language, ctx) : undefined,
             rows,
             columns,
-            firedEdits: [],
+            // required = at least one row answered; a sentinel value stands in for the scalar
+            // `value` so evalEdits' required check fires only when every row is blank.
+            firedEdits: evalEdits(q.edits, q.required, anyRowAnswered ? 1 : '', ctx, language),
             depth,
           });
           return;
@@ -296,6 +299,13 @@ export function flattenInstrument(instrument: Instrument, state: RuntimeState): 
           const domain = q.responseDomain;
           const scheme = instrument.categorySchemes.find((s) => s.id === domain.categorySchemeRef);
           const cats = scheme?.categories ?? [];
+          let anyChecked = false;
+          const categories = cats.map((cat) => {
+            const iKey = instanceKey(`${domain.variablePrefix}_${cat.code}`, scope);
+            const value = responses[iKey] as number | undefined;
+            if (!isEmpty(value)) anyChecked = true;
+            return { code: cat.code, label: pick(cat.label, language), instanceKey: iKey, value };
+          });
           items.push({
             kind: 'markAll',
             key: `${q.id}@${scopeSuffix}`,
@@ -303,16 +313,10 @@ export function flattenInstrument(instrument: Instrument, state: RuntimeState): 
             variablePrefix: domain.variablePrefix,
             questionText: localizePiped(q.text, language, ctx),
             instruction: q.instruction ? localizePiped(q.instruction, language, ctx) : undefined,
-            categories: cats.map((cat) => {
-              const iKey = instanceKey(`${domain.variablePrefix}_${cat.code}`, scope);
-              return {
-                code: cat.code,
-                label: pick(cat.label, language),
-                instanceKey: iKey,
-                value: responses[iKey] as number | undefined,
-              };
-            }),
-            firedEdits: [],
+            categories,
+            // required = at least one category checked; a sentinel value stands in for the
+            // scalar `value` so evalEdits' required check fires only when none are checked.
+            firedEdits: evalEdits(q.edits, q.required, anyChecked ? 1 : '', ctx, language),
             depth,
           });
           return;
