@@ -233,6 +233,106 @@ create policy "anon select" on audit_log for select to anon using (true);
 > **Paradata note (Phase 7 bug):** The `paradata` anon-insert policy was the missing piece causing
 > `POST /paradata` → 401 in production. Applying the block above resolves it.
 
+### 9b. Validator tables (required before using the Validator module)
+
+The Validator hub tile (`apps/hub/src/ValidatorView.tsx` / `validatorApi.ts`) persists runs,
+flags, dispositions, corrections, and analyst-authored rules to Supabase. These tables don't
+exist yet in a fresh Supabase project — apply this once (Dashboard → SQL Editor → New query)
+before running validation from the hub, or `executeValidationRun` will fail with a
+"relation does not exist" error.
+
+```sql
+create table if not exists validation_runs (
+  id text primary key,
+  survey_id text not null,
+  started_at timestamptz not null,
+  config_json jsonb not null,
+  summary_json jsonb not null
+);
+alter table if exists validation_runs enable row level security;
+create policy "anon insert" on validation_runs for insert to anon with check (true);
+create policy "anon select" on validation_runs for select to anon using (true);
+
+create table if not exists validation_flags (
+  id text primary key,
+  run_id text not null,
+  survey_id text not null,
+  response_id text not null,
+  respondent_id text not null,
+  variable_name text,
+  instance_key text,
+  check_kind text not null,
+  check_id text not null,
+  severity text not null,
+  message text not null,
+  observed_json jsonb,
+  expected text,
+  suspicion double precision not null,
+  impact double precision not null,
+  score double precision not null,
+  status text not null default 'open',
+  disposition_json jsonb
+);
+alter table if exists validation_flags enable row level security;
+create policy "anon insert" on validation_flags for insert to anon with check (true);
+create policy "anon select" on validation_flags for select to anon using (true);
+create policy "anon update" on validation_flags for update to anon using (true);
+
+create table if not exists validation_corrections (
+  id text primary key,
+  survey_id text not null,
+  response_id text not null,
+  instance_key text not null,
+  old_value_json jsonb,
+  new_value_json jsonb,
+  reason text not null,
+  flag_id text,
+  decided_by text not null,
+  decided_at timestamptz not null
+);
+alter table if exists validation_corrections enable row level security;
+create policy "anon insert" on validation_corrections for insert to anon with check (true);
+create policy "anon select" on validation_corrections for select to anon using (true);
+
+create table if not exists validator_rules (
+  id text primary key,
+  survey_id text not null,
+  name text not null,
+  when_expr text not null,
+  message text not null,
+  severity text not null,
+  variable_name text,
+  source text not null,
+  source_flag_id text,
+  active boolean not null default true,
+  created_at timestamptz not null
+);
+alter table if exists validator_rules enable row level security;
+create policy "anon insert" on validator_rules for insert to anon with check (true);
+create policy "anon select" on validator_rules for select to anon using (true);
+create policy "anon update" on validator_rules for update to anon using (true);
+
+-- Suppression memory (accepted/suppressed flags shouldn't resurrect next run unless the
+-- value changed). No composite primary key -- instance_key is nullable for record-level
+-- flags, and Postgres disallows NULL in primary-key columns; a plain identity id plus a
+-- lookup index is simpler and sufficient (duplicate rows here are harmless).
+create table if not exists validation_suppressions (
+  id bigint generated always as identity primary key,
+  survey_id text not null,
+  response_id text not null,
+  check_id text not null,
+  instance_key text,
+  accepted_value_json jsonb,
+  flag_id text not null,
+  created_at timestamptz not null
+);
+create index if not exists validation_suppressions_lookup
+  on validation_suppressions (survey_id, response_id, check_id, instance_key);
+alter table if exists validation_suppressions enable row level security;
+create policy "anon insert" on validation_suppressions for insert to anon with check (true);
+create policy "anon select" on validation_suppressions for select to anon using (true);
+```
+
 ---
 
 ## Security notes

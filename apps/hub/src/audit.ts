@@ -30,11 +30,15 @@ export type AuditAction =
   | 'responses.export_redacted'
   | 'paradata.export'
   | 'ddi.import'
-  | 'ddi.export';
+  | 'ddi.export'
+  | 'validator.run'
+  | 'validator.disposition'
+  | 'validator.rule_created'
+  | 'validator.rule_toggled';
 
 export function logAudit(
   action: AuditAction,
-  entityType: 'survey' | 'responses' | 'paradata',
+  entityType: 'survey' | 'responses' | 'paradata' | 'validator',
   entityId: string,
   payload?: Record<string, unknown>,
 ): void {

@@ -13,10 +13,19 @@ import {
   Layers,
   Library,
   PenLine,
+  ShieldCheck,
 } from 'lucide-react';
 import logo from './assets/logo.png';
-import { blankInstrument, lfsInstrument, demoInstrument, fsepInstrument, BUNDLED_SURVEYS, redactResponses, piiVariableNames, type Instrument } from '@mobilesurvey/instrument-schema';
+import { blankInstrument, lfsInstrument, demoInstrument, fsepInstrument, BUNDLED_SURVEYS, redactResponses, piiVariableNames, surveyCollectsData, type Instrument } from '@mobilesurvey/instrument-schema';
 import { migrate, type MigrateResult } from '@mobilesurvey/questionnaire-migrator';
+import { compile } from '@mobilesurvey/expression-engine';
+import type {
+  CheckKind,
+  Disposition,
+  DispositionAction,
+  ValidationRun,
+  ValidatorRule,
+} from '@mobilesurvey/validation-engine';
 import {
   buildCatalog,
   buildSearchIndex,
@@ -53,6 +62,18 @@ import {
   type SurveySummary,
 } from './api.js';
 import { logAudit } from './audit.js';
+import {
+  executeValidationRun,
+  fetchFlagRowsForRun,
+  fetchRules,
+  fetchRunsForSurvey,
+  saveDisposition,
+  saveRule,
+  setRuleActive,
+  validatorConfigured,
+  type FlagRow,
+  type FlagStatus,
+} from './validatorApi.js';
 
 // ── helpers ───────────────────────────────────────────────────────────────────
 
@@ -107,7 +128,7 @@ const DEMO_SURVEYS: SurveySummary[] = [
 
 // ── Module definitions ────────────────────────────────────────────────────────
 
-type HubView = 'home' | 'collector' | 'searcher' | 'trainer' | 'migrator' | 'analyzer' | 'interviewer' | 'supervisor';
+type HubView = 'home' | 'collector' | 'searcher' | 'trainer' | 'migrator' | 'analyzer' | 'interviewer' | 'supervisor' | 'validator';
 
 interface ModuleDef {
   id: string;
@@ -1788,6 +1809,490 @@ function TrainingView({ onBack }: { onBack: () => void }) {
   );
 }
 
+// ── Validator ─────────────────────────────────────────────────────────────────
+// See docs/validator-plan.md for the design this implements.
+
+const SEVERITY_COLORS: Record<string, string> = { fatal: 'var(--danger)', query: 'var(--warn)' };
+const STATUS_LABELS_VAL: Record<FlagStatus, string> = {
+  open: 'Open',
+  accepted: 'Accepted',
+  corrected: 'Corrected',
+  follow_up: 'Follow-up',
+  suppressed: 'Suppressed',
+};
+const CHECK_KIND_LABELS: Record<CheckKind, string> = {
+  metadata: 'Metadata',
+  'instrument-edit': 'Edit',
+  rule: 'Rule',
+  stat: 'Statistical',
+  confront: 'Confrontation',
+  llm: 'AI-assisted',
+};
+
+function statusForAction(action: DispositionAction): FlagStatus {
+  if (action === 'accept') return 'accepted';
+  if (action === 'correct') return 'corrected';
+  if (action === 'follow-up') return 'follow_up';
+  return 'suppressed';
+}
+
+/** Supabase errors are plain PostgrestError objects, not Error instances -- `e instanceof
+ * Error` misses them and `String(e)` collapses to "[object Object]". Handle both shapes. */
+function errorMessage(e: unknown): string {
+  if (e instanceof Error) return e.message;
+  if (e && typeof e === 'object' && 'message' in e && typeof (e as { message: unknown }).message === 'string') {
+    return (e as { message: string }).message;
+  }
+  return String(e);
+}
+
+function RunSummaryStrip({ summary }: { summary: ValidationRun['summary'] }) {
+  return (
+    <div className="val__summary">
+      <div className="val__summary-kpi">
+        <span className="val__summary-value">{summary.responsesAnalyzed}</span>
+        <span className="val__summary-label">Responses analyzed</span>
+      </div>
+      <div className="val__summary-kpi">
+        <span className="val__summary-value" style={{ color: 'var(--danger)' }}>{summary.fatalCount}</span>
+        <span className="val__summary-label">Fatal</span>
+      </div>
+      <div className="val__summary-kpi">
+        <span className="val__summary-value" style={{ color: 'var(--warn)' }}>{summary.queryCount}</span>
+        <span className="val__summary-label">Query</span>
+      </div>
+      {summary.missingness.length > 0 && (
+        <div className="val__summary-note">
+          ⚠ {summary.missingness.length} variable(s) with high item-nonresponse: {summary.missingness.map((m) => `${m.variableName} (${Math.round((1 - m.observedRate) * 100)}% blank)`).join(', ')}
+        </div>
+      )}
+      {summary.skipped.length > 0 && (
+        <details className="val__summary-skipped">
+          <summary>{summary.skipped.length} check(s) skipped</summary>
+          <ul>
+            {summary.skipped.map((s, i) => <li key={i}>{s.checkId} — {s.reason}</li>)}
+          </ul>
+        </details>
+      )}
+    </div>
+  );
+}
+
+function FlagDetailPanel({
+  row,
+  onDisposition,
+  onClose,
+}: {
+  row: FlagRow;
+  onDisposition: (row: FlagRow, action: DispositionAction, reason: string, correctedValue?: unknown) => Promise<void>;
+  onClose: () => void;
+}) {
+  const [action, setAction] = useState<DispositionAction | null>(null);
+  const [reason, setReason] = useState('');
+  const [correctedText, setCorrectedText] = useState('');
+  const [saving, setSaving] = useState(false);
+  const { flag, status, disposition } = row;
+
+  async function save() {
+    if (!action || !reason.trim()) return;
+    setSaving(true);
+    try {
+      let correctedValue: unknown;
+      if (action === 'correct') {
+        correctedValue = typeof flag.observed === 'number' ? Number(correctedText) : correctedText;
+      }
+      await onDisposition(row, action, reason.trim(), correctedValue);
+      setAction(null);
+      setReason('');
+      setCorrectedText('');
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  return (
+    <div className="val__detail">
+      <div className="val__detail-head">
+        <span className="val__badge" style={{ background: SEVERITY_COLORS[flag.severity] }}>{flag.severity}</span>
+        <span className="val__detail-check">{flag.checkId}</span>
+        <button type="button" className="hub__back" onClick={onClose}>✕</button>
+      </div>
+      <p className="val__detail-message">{flag.message}</p>
+      <dl className="val__detail-fields">
+        <dt>Variable</dt><dd>{flag.variableName ?? '—'}</dd>
+        <dt>Observed</dt><dd>{flag.observed === undefined ? '—' : JSON.stringify(flag.observed)}</dd>
+        {flag.expected && <><dt>Expected</dt><dd>{flag.expected}</dd></>}
+        <dt>Respondent</dt><dd>{flag.respondentId}</dd>
+        <dt>Score</dt><dd>{flag.score.toFixed(2)} (suspicion {flag.suspicion.toFixed(2)} × impact {flag.impact.toFixed(2)})</dd>
+        <dt>Status</dt><dd>{STATUS_LABELS_VAL[status]}</dd>
+      </dl>
+
+      {disposition && (
+        <p className="val__detail-prior">
+          Previously <strong>{disposition.action}</strong> by {disposition.decidedBy}: “{disposition.reason}”
+        </p>
+      )}
+
+      {!action ? (
+        <div className="val__detail-actions">
+          <button type="button" className="btn" onClick={() => setAction('accept')}>Accept</button>
+          <button type="button" className="btn" onClick={() => setAction('correct')}>Correct</button>
+          <button type="button" className="btn" onClick={() => setAction('follow-up')}>Follow-up</button>
+          <button type="button" className="btn" onClick={() => setAction('suppress')}>Suppress</button>
+        </div>
+      ) : (
+        <div className="val__detail-form">
+          {action === 'correct' && (
+            <>
+              <label className="cati__label">Corrected value</label>
+              <input className="cati__select" value={correctedText} onChange={(e) => setCorrectedText(e.target.value)} />
+            </>
+          )}
+          <label className="cati__label">Reason (required)</label>
+          <textarea
+            className="cati__textarea"
+            rows={2}
+            value={reason}
+            onChange={(e) => setReason(e.target.value)}
+            placeholder="Why is this the right disposition?"
+          />
+          <div style={{ display: 'flex', gap: 6 }}>
+            <button type="button" className="btn btn--primary" disabled={saving || !reason.trim()} onClick={() => void save()}>
+              {saving ? 'Saving…' : `Save (${action})`}
+            </button>
+            <button type="button" className="btn" onClick={() => setAction(null)}>Cancel</button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function RulesManager({
+  surveyId,
+  rules,
+  onRuleAdded,
+  onRuleToggled,
+}: {
+  surveyId: string;
+  rules: ValidatorRule[];
+  onRuleAdded: (r: ValidatorRule) => void;
+  onRuleToggled: (r: ValidatorRule) => void;
+}) {
+  const [showForm, setShowForm] = useState(false);
+  const [name, setName] = useState('');
+  const [when, setWhen] = useState('');
+  const [message, setMessage] = useState('');
+  const [severity, setSeverity] = useState<'fatal' | 'query'>('query');
+  const [variableName, setVariableName] = useState('');
+  const [formError, setFormError] = useState<string | null>(null);
+  const [saving, setSaving] = useState(false);
+
+  async function submit() {
+    setFormError(null);
+    if (!name.trim() || !message.trim() || !when.trim()) {
+      setFormError('Name, condition, and message are all required.');
+      return;
+    }
+    const compiled = compile(when);
+    if (!compiled.ok) {
+      setFormError(`Expression error: ${compiled.error}`);
+      return;
+    }
+    setSaving(true);
+    try {
+      const rule = await saveRule({
+        surveyId, name: name.trim(), when: when.trim(), message: message.trim(),
+        severity, variableName: variableName.trim() || null, source: 'authored',
+      });
+      onRuleAdded(rule);
+      setName(''); setWhen(''); setMessage(''); setVariableName(''); setShowForm(false);
+    } catch (e) {
+      setFormError(errorMessage(e));
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  return (
+    <div className="val__rules dash__section">
+      <div className="dash__section-head">
+        <h4 className="dash__section-title">Validator rules</h4>
+        <button type="button" className="btn" style={{ fontSize: 12, padding: '4px 10px' }} onClick={() => setShowForm((v) => !v)}>
+          {showForm ? 'Cancel' : '+ Add rule'}
+        </button>
+      </div>
+
+      {showForm && (
+        <div className="val__rule-form">
+          <label className="cati__label">Name</label>
+          <input className="cati__select" value={name} onChange={(e) => setName(e.target.value)} placeholder="e.g. Revenue sanity check" />
+          <label className="cati__label">Condition (fires when true)</label>
+          <input className="cati__select" style={{ fontFamily: 'var(--mono)' }} value={when}
+            onChange={(e) => setWhen(e.target.value)} placeholder="isAnswered($revenue) && $revenue > 1000000" />
+          <label className="cati__label">Message</label>
+          <input className="cati__select" value={message} onChange={(e) => setMessage(e.target.value)} placeholder="Revenue exceeds $1M — please confirm." />
+          <label className="cati__label">Severity</label>
+          <select className="cati__select" value={severity} onChange={(e) => setSeverity(e.target.value as 'fatal' | 'query')}>
+            <option value="query">Query (soft)</option>
+            <option value="fatal">Fatal (hard)</option>
+          </select>
+          <label className="cati__label">Primary variable (optional)</label>
+          <input className="cati__select" value={variableName} onChange={(e) => setVariableName(e.target.value)} placeholder="revenue" />
+          {formError && <p className="val__error">{formError}</p>}
+          <div>
+            <button type="button" className="btn btn--primary" disabled={saving} onClick={() => void submit()}>
+              {saving ? 'Saving…' : 'Save rule'}
+            </button>
+          </div>
+        </div>
+      )}
+
+      {rules.length === 0 ? (
+        <p className="dash__empty">No validator rules yet.</p>
+      ) : (
+        <div className="val__rule-list">
+          {rules.map((r) => (
+            <div key={r.id} className={`val__rule-row${r.active ? '' : ' val__rule-row--inactive'}`}>
+              <span className="val__badge" style={{ background: SEVERITY_COLORS[r.severity] }}>{r.severity}</span>
+              <span className="val__rule-name">{r.name}</span>
+              <code className="val__rule-when">{r.when}</code>
+              <span className="val__rule-source">{r.source}</span>
+              <button type="button" className="btn" style={{ fontSize: 11, padding: '2px 8px' }}
+                onClick={() => void setRuleActive(r.id, surveyId, !r.active).then(() => onRuleToggled({ ...r, active: !r.active }))}>
+                {r.active ? 'Deactivate' : 'Activate'}
+              </button>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function ValidatorView({ onBack }: { onBack: () => void }) {
+  const [surveys, setSurveys] = useState<SurveySummary[] | null>(null);
+  const [selectedSurveyId, setSelectedSurveyId] = useState<string | null>(null);
+  const [instrument, setInstrument] = useState<Instrument | null>(null);
+  const [run, setRun] = useState<ValidationRun | null>(null);
+  const [runHistory, setRunHistory] = useState<ValidationRun[]>([]);
+  const [flagRows, setFlagRows] = useState<FlagRow[]>([]);
+  const [rules, setRules] = useState<ValidatorRule[]>([]);
+  const [running, setRunning] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [selectedFlagId, setSelectedFlagId] = useState<string | null>(null);
+  const [filterSeverity, setFilterSeverity] = useState<'all' | 'fatal' | 'query'>('all');
+  const [filterStatus, setFilterStatus] = useState<'all' | FlagStatus>('open');
+  const [filterKind, setFilterKind] = useState<'all' | CheckKind>('all');
+
+  useEffect(() => {
+    if (!validatorConfigured()) { setSurveys([]); return; }
+    listSurveys()
+      .then((list) => {
+        const collecting = list.filter((s) => surveyCollectsData(s.id));
+        setSurveys(collecting);
+        if (collecting.length > 0) setSelectedSurveyId(collecting[0]!.id);
+      })
+      .catch(() => setSurveys([]));
+  }, []);
+
+  const loadRun = useCallback(async (runId: string, meta?: ValidationRun) => {
+    const rows = await fetchFlagRowsForRun(runId);
+    setFlagRows(rows);
+    setRun(meta ?? null);
+    setSelectedFlagId(null);
+  }, []);
+
+  useEffect(() => {
+    if (!selectedSurveyId) return;
+    setInstrument(null);
+    setRun(null);
+    setFlagRows([]);
+    setError(null);
+    setLoading(true);
+    // Instrument load is critical (blocks "Run validation" if it fails). Runs/rules are
+    // allowed to fail soft: a fresh Supabase project won't have the Validator tables until
+    // DEPLOYMENT.md §9b's SQL is applied, but the survey/instrument picker should still work.
+    fetchSurveyInstrument(selectedSurveyId)
+      .then(setInstrument)
+      .catch((e) => setError(errorMessage(e)))
+      .finally(() => setLoading(false));
+    Promise.all([fetchRunsForSurvey(selectedSurveyId), fetchRules(selectedSurveyId)])
+      .then(async ([runs, ruleList]) => {
+        setRunHistory(runs);
+        setRules(ruleList);
+        if (runs.length > 0) await loadRun(runs[0]!.id, runs[0]!);
+      })
+      .catch(() => {
+        setRunHistory([]);
+        setRules([]);
+      });
+  }, [selectedSurveyId, loadRun]);
+
+  async function handleRunValidation() {
+    if (!instrument || !selectedSurveyId) return;
+    setRunning(true);
+    setError(null);
+    try {
+      const result = await executeValidationRun(instrument, selectedSurveyId);
+      setRun(result.run);
+      setRunHistory((prev) => [result.run, ...prev]);
+      await loadRun(result.run.id, result.run);
+    } catch (e) {
+      setError(errorMessage(e));
+    } finally {
+      setRunning(false);
+    }
+  }
+
+  async function handleDisposition(
+    row: FlagRow,
+    action: DispositionAction,
+    reason: string,
+    correctedValue?: unknown,
+  ) {
+    if (!selectedSurveyId) return;
+    const disposition: Disposition = {
+      flagId: row.flag.id,
+      action,
+      reason,
+      correctedValue,
+      decidedBy: 'analyst',
+      decidedAt: new Date().toISOString(),
+    };
+    await saveDisposition(selectedSurveyId, row.flag, disposition);
+    setFlagRows((prev) =>
+      prev.map((fr) => (fr.flag.id === row.flag.id ? { ...fr, status: statusForAction(action), disposition } : fr)),
+    );
+  }
+
+  const filteredRows = flagRows.filter((fr) => {
+    if (filterSeverity !== 'all' && fr.flag.severity !== filterSeverity) return false;
+    if (filterStatus !== 'all' && fr.status !== filterStatus) return false;
+    if (filterKind !== 'all' && fr.flag.checkKind !== filterKind) return false;
+    return true;
+  });
+  const selectedRow = flagRows.find((fr) => fr.flag.id === selectedFlagId) ?? null;
+
+  return (
+    <div className="hub">
+      <header className="hub__header">
+        <button type="button" className="hub__back" onClick={onBack}>← Home</button>
+        <div className="hub__brand">
+          <strong>Validator</strong>
+          <span className="hub__sub">Flag, confront, and correct collected data</span>
+        </div>
+      </header>
+      <main className="hub__main">
+        {surveys === null ? (
+          <p className="hub__loading">Loading surveys…</p>
+        ) : !validatorConfigured() ? (
+          <p className="hub__empty">Validator requires Supabase to be configured (VITE_SUPABASE_URL / VITE_SUPABASE_ANON_KEY).</p>
+        ) : surveys.length === 0 ? (
+          <p className="hub__empty">No surveys are collecting data yet. Publish a survey in the Collector first.</p>
+        ) : (
+          <>
+            <div className="val__toolbar">
+              <select
+                className="cati__select"
+                value={selectedSurveyId ?? ''}
+                onChange={(e) => setSelectedSurveyId(e.target.value)}
+              >
+                {surveys.map((s) => (
+                  <option key={s.id} value={s.id}>{s.title} ({s.responseCount})</option>
+                ))}
+              </select>
+              <button type="button" className="btn btn--primary" disabled={running || !instrument} onClick={() => void handleRunValidation()}>
+                {running ? 'Running…' : '▶ Run validation'}
+              </button>
+              {runHistory.length > 1 && (
+                <select
+                  className="cati__select"
+                  value={run?.id ?? ''}
+                  onChange={(e) => void loadRun(e.target.value, runHistory.find((r) => r.id === e.target.value))}
+                >
+                  {runHistory.map((r) => (
+                    <option key={r.id} value={r.id}>
+                      {new Date(r.startedAt).toLocaleString()} — {r.summary.flagCount} flags
+                    </option>
+                  ))}
+                </select>
+              )}
+            </div>
+
+            {error && <p className="val__error">{error}</p>}
+            {loading && <p className="hub__loading">Loading…</p>}
+
+            {run ? (
+              <>
+                <RunSummaryStrip summary={run.summary} />
+                <div className="val__body">
+                  <div className="val__queue-col">
+                    <div className="val__filters">
+                      <select className="cati__select" value={filterSeverity} onChange={(e) => setFilterSeverity(e.target.value as typeof filterSeverity)}>
+                        <option value="all">All severities</option>
+                        <option value="fatal">Fatal only</option>
+                        <option value="query">Query only</option>
+                      </select>
+                      <select className="cati__select" value={filterStatus} onChange={(e) => setFilterStatus(e.target.value as typeof filterStatus)}>
+                        <option value="all">All statuses</option>
+                        {(Object.keys(STATUS_LABELS_VAL) as FlagStatus[]).map((s) => (
+                          <option key={s} value={s}>{STATUS_LABELS_VAL[s]}</option>
+                        ))}
+                      </select>
+                      <select className="cati__select" value={filterKind} onChange={(e) => setFilterKind(e.target.value as typeof filterKind)}>
+                        <option value="all">All check kinds</option>
+                        {(Object.keys(CHECK_KIND_LABELS) as CheckKind[]).map((k) => (
+                          <option key={k} value={k}>{CHECK_KIND_LABELS[k]}</option>
+                        ))}
+                      </select>
+                    </div>
+                    {filteredRows.length === 0 ? (
+                      <p className="dash__empty">No flags match these filters.</p>
+                    ) : (
+                      <div className="val__queue">
+                        {filteredRows.map((fr) => (
+                          <button
+                            key={fr.flag.id}
+                            type="button"
+                            className={`val__queue-row${selectedFlagId === fr.flag.id ? ' val__queue-row--selected' : ''}`}
+                            onClick={() => setSelectedFlagId(fr.flag.id)}
+                          >
+                            <span className="val__badge" style={{ background: SEVERITY_COLORS[fr.flag.severity] }}>{fr.flag.severity}</span>
+                            <span className="val__queue-score">{fr.flag.score.toFixed(2)}</span>
+                            <span className="val__queue-var">{fr.flag.variableName ?? fr.flag.respondentId}</span>
+                            <span className="val__queue-msg">{fr.flag.message}</span>
+                            <span className="val__queue-status">{STATUS_LABELS_VAL[fr.status]}</span>
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                  {selectedRow && (
+                    <FlagDetailPanel row={selectedRow} onDisposition={handleDisposition} onClose={() => setSelectedFlagId(null)} />
+                  )}
+                </div>
+              </>
+            ) : !loading && (
+              <p className="dash__empty">No validation runs yet for this survey — click "Run validation" to start.</p>
+            )}
+
+            {selectedSurveyId && (
+              <RulesManager
+                surveyId={selectedSurveyId}
+                rules={rules}
+                onRuleAdded={(r) => setRules((prev) => [r, ...prev])}
+                onRuleToggled={(r) => setRules((prev) => prev.map((x) => (x.id === r.id ? r : x)))}
+              />
+            )}
+          </>
+        )}
+      </main>
+    </div>
+  );
+}
+
 // ── Home page ─────────────────────────────────────────────────────────────────
 
 function HomePage({ onNavigate }: { onNavigate: (v: HubView) => void }) {
@@ -1882,6 +2387,16 @@ function HomePage({ onNavigate }: { onNavigate: (v: HubView) => void }) {
       description: 'Completion funnels, frequency distributions, and field-level charts built from live responses. Export responses or paradata as CSV.',
       status: 'live',
       action: () => onNavigate('analyzer'),
+    },
+    {
+      id: 'validator',
+      icon: <ShieldCheck size={22} />,
+      name: 'Validator',
+      tag: 'Testing',
+      tagline: 'Flag, confront, and correct collected data',
+      description: 'Post-collection data editing: metadata-derived checks, re-run of collection-time edits, robust statistical outliers, and analyst-authored rules — scored and prioritized into one triage queue.',
+      status: 'live',
+      action: () => onNavigate('validator'),
     },
     {
       id: 'tester',
@@ -2277,5 +2792,6 @@ export function App() {
   if (view === 'analyzer') return <AnalyzerView onBack={() => setView('home')} />;
   if (view === 'interviewer') return <InterviewerView onBack={() => setView('home')} />;
   if (view === 'supervisor') return <SupervisorView onBack={() => setView('home')} />;
+  if (view === 'validator') return <ValidatorView onBack={() => setView('home')} />;
   return <HomePage onNavigate={setView} />;
 }

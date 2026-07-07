@@ -11,9 +11,11 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@mobilesurvey/expression-engine": "workspace:*",
     "@mobilesurvey/instrument-schema": "workspace:*",
     "@mobilesurvey/metadata-registry": "workspace:*",
     "@mobilesurvey/questionnaire-migrator": "workspace:*",
+    "@mobilesurvey/validation-engine": "workspace:*",
     "@supabase/supabase-js": "^2.108.2",
     "lucide-react": "^1.21.0",
     "pdfjs-dist": "^6.1.200",

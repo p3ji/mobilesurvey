@@ -118,6 +118,9 @@ importers:
 
   apps/hub:
     dependencies:
+      '@mobilesurvey/expression-engine':
+        specifier: workspace:*
+        version: link:../../packages/expression-engine
       '@mobilesurvey/instrument-schema':
         specifier: workspace:*
         version: link:../../packages/instrument-schema
@@ -127,6 +130,9 @@ importers:
       '@mobilesurvey/questionnaire-migrator':
         specifier: workspace:*
         version: link:../../packages/questionnaire-migrator
+      '@mobilesurvey/validation-engine':
+        specifier: workspace:*
+        version: link:../../packages/validation-engine
       '@supabase/supabase-js':
         specifier: ^2.108.2
         version: 2.108.2
