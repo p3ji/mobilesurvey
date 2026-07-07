@@ -20,6 +20,8 @@ export interface RunOptions {
   actionTimeoutMs?: number;
   /** Reuse an existing Browser instance instead of launching a new one per scenario. */
   browser?: Browser;
+  /** Capture screenshots for failed steps and completion (for HTML report). */
+  captureScreenshots?: boolean;
 }
 
 export interface StepResult {
@@ -27,6 +29,7 @@ export interface StepResult {
   strategy: LocatorStrategy;
   ok: boolean;
   error?: string;
+  screenshotBase64?: string;
 }
 
 export interface ScenarioRunResult {
@@ -34,6 +37,7 @@ export interface ScenarioRunResult {
   stepResults: StepResult[];
   /** True once `.done__title` (the runtime's completion screen) appeared. */
   reachedCompletion: boolean;
+  completionScreenshot?: string;
   consoleErrors: DriverError[];
   durationMs: number;
   /** Set if the run failed outside of any individual step (e.g. navigation failure). */
@@ -150,12 +154,19 @@ export async function runScenario(
         await applyStrategy(driver, strategy);
         stepResults.push({ step, strategy, ok: strategy.kind !== 'skip' });
       } catch (err) {
-        stepResults.push({
+        const result: StepResult = {
           step,
           strategy,
           ok: false,
           error: err instanceof Error ? err.message : String(err),
-        });
+        };
+        if (options.captureScreenshots) {
+          const screenshot = await page.screenshot({ path: undefined }).catch(() => undefined);
+          if (screenshot) {
+            result.screenshotBase64 = screenshot.toString('base64');
+          }
+        }
+        stepResults.push(result);
       }
 
       responses[step.instanceKey] = step.value;
@@ -173,10 +184,19 @@ export async function runScenario(
       if (reachedCompletion) break;
     }
 
+    let completionScreenshot: string | undefined;
+    if (options.captureScreenshots && reachedCompletion) {
+      const screenshot = await page.screenshot({ path: undefined }).catch(() => undefined);
+      if (screenshot) {
+        completionScreenshot = screenshot.toString('base64');
+      }
+    }
+
     return {
       scenario,
       stepResults,
       reachedCompletion,
+      completionScreenshot,
       consoleErrors: driver.errors,
       durationMs: Date.now() - start,
     };

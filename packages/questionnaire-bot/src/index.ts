@@ -29,6 +29,7 @@ export {
 export {
   buildReport,
   formatReportText,
+  formatReportHtml,
   type Report,
   type Issue,
   type IssueKind,
