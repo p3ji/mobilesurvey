@@ -13,3 +13,24 @@ export {
   collectRosterCountVariables,
   enumeratePaths,
 } from './enumerator.js';
+
+export { BrowserDriver, type DriverError } from './browser-driver.js';
+
+export { resolveStep, type LocatorStrategy, type ResolvedStep } from './schema-adapter.js';
+
+export {
+  runScenario,
+  runScenarios,
+  type RunOptions,
+  type StepResult,
+  type ScenarioRunResult,
+} from './runner.js';
+
+export {
+  buildReport,
+  formatReportText,
+  formatReportHtml,
+  type Report,
+  type Issue,
+  type IssueKind,
+} from './reporter.js';
