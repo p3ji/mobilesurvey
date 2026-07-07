@@ -125,6 +125,25 @@ export class BrowserDriver {
     await locator.selectOption(value);
   }
 
+  /**
+   * Click whatever single element a caller-supplied CSS selector resolves to. Used by discovery
+   * mode, which (unlike schema-guided mode) resolves its own selectors from a DOM scan rather
+   * than from label text, so it has no need for `selectRadioByLabel`'s label matching.
+   */
+  async clickSelector(selector: string): Promise<void> {
+    const locator = this.page.locator(selector);
+    await locator.waitFor({ state: 'visible' });
+    await locator.click();
+  }
+
+  /** Set the checked state of a checkbox/radio located by an arbitrary CSS selector. */
+  async setChecked(selector: string, checked: boolean): Promise<void> {
+    const locator = this.page.locator(selector);
+    await locator.waitFor({ state: 'visible' });
+    const isChecked = await locator.isChecked().catch(() => false);
+    if (isChecked !== checked) await locator.click();
+  }
+
   // ── navigation ────────────────────────────────────────────────────────────
 
   /**

@@ -34,3 +34,30 @@ export {
   type Issue,
   type IssueKind,
 } from './reporter.js';
+
+// ── Discovery mode: schema-free testing of non-mobilesurvey web questionnaires ─────────────
+
+export type {
+  DiscoveredFieldKind,
+  DiscoveredOption,
+  DiscoveredField,
+  DiscoveredPage,
+  DiscoveryIssueKind,
+  DiscoveryIssue,
+  DiscoveryPageVisit,
+  DiscoveryRunResult,
+  FieldClassifier,
+} from './discovery/types.js';
+
+export { scanPage } from './discovery/scanner.js';
+
+export { generateDiscoveryValue } from './discovery/value-gen.js';
+
+export { runDiscoverySession, type DiscoveryRunOptions } from './discovery/runner.js';
+
+export {
+  buildDiscoveryReport,
+  formatDiscoveryReportText,
+  formatDiscoveryReportHtml,
+  type DiscoveryReport,
+} from './discovery/reporter.js';
