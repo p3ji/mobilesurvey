@@ -4,10 +4,13 @@ The respondent app is the **Electronic Questionnaire (EQ)** — the survey as a 
 experiences it. It loads a questionnaire built in the [authoring tool](authoring-tool.md), lets a
 respondent answer it page by page, saves progress automatically, and submits the responses.
 
-> Open it with `pnpm --filter @mobilesurvey/runtime dev` (→ <http://localhost:5174>).
+You typically reach it via the [hub](hub.md) (click "Collector" → select a survey and launch it) or
+access it directly via:
+- Local dev: `pnpm --filter @mobilesurvey/runtime dev` (→ <http://localhost:5174>)
+- Production: respondent links from the hub are of the form `https://p3ji.github.io/mobilesurvey/respondent/?survey=<id>`
 
 This manual is written for two audiences: **respondents** (how to fill it in) and **survey
-operators** (how the access-code, resume, and paradata behaviour works).
+operators** (how access codes, resume, and paradata behavior work).
 
 ## Contents
 1. [Signing in with an access code](#signing-in-with-an-access-code)
@@ -82,39 +85,50 @@ Your saved progress is cleared once you successfully submit.
 
 On the last page, the **Next** button becomes **Submit ✓**. Clicking it:
 
-- records your responses for the session, and
+- records your responses to the survey's backend (Supabase for production surveys), and
 - shows a **confirmation screen** with:
   - a **✓ Survey submitted** message,
   - **Response data** — your answers in structured (data-schema) form, with a **⎘ Copy JSON**
     button,
   - a **Paradata trail** — the log of what happened during the session (see below),
-  - **↺ Start a new session** to return to the access-code screen.
+  - **↺ Start a new session** to return to the access-code or home screen.
 
-> In this demo, responses are collected **in the browser session only** — they are **not sent to or
-> stored on any server**. The confirmation screen simply shows what *would* be transmitted.
+> **Demo surveys** use local mock storage and do not persist responses to the server (your data is
+> kept in the browser only). Real surveys deployed from the hub persist responses to the Collector
+> dashboard for review and analysis.
 
 ---
 
 ## For survey operators
 
-This section explains the operational behaviour behind the respondent experience. In this iteration
-these are backed by **mock** implementations; a real deployment swaps them for live services
-without changing the questionnaire or the UI.
+This section explains the operational behaviour behind the respondent experience.
 
-### Access codes (CMS)
-The code is exchanged for a **case** and its **pre-fill data** via a Collection Management System
-(CMS) client. The mock recognises `ABC123` → case-0001 and `DEF456` → case-0002, each with a name
-and region that pre-fill the instrument. A real CMS validates single/multi-use codes server-side
-and returns the case's sample data.
+### Access codes (CMS) and anonymous launch
+
+Surveys are launched in two ways:
+
+1. **Access code (code-gated surveys):** The respondent enters a code that is validated against a
+   Collection Management System (CMS). The code resolves to a **case** and its **pre-fill data**
+   (e.g. respondent name, contact details, region), which populate the instrument before the survey
+   starts. Demo codes `ABC123` and `DEF456` are built-in examples.
+
+2. **Anonymous (open surveys):** No access code is required. The respondent starts immediately with
+   a stable browser-based ID (stored in `localStorage`) that allows resume even without a code.
+
+Both flows support pre-fill (if pre-fill mappings are defined in the instrument) and save/resume.
 
 ### Resume / session persistence
-After every change, the app saves the current **responses plus the page position** to a session
-store, keyed by the case. Re-entering the same code restores that state. On submit the session is
-cleared. The demo store uses the browser's `localStorage` with light obfuscation — **production must
-use real encryption** (e.g. WebCrypto AES-GCM keyed by the session token).
 
-### Paradata
-The app emits a **paradata trail** — an audit log of respondent behaviour — including:
+After every answer change, the app saves the current **responses plus page position** to the session
+store, keyed by the respondent ID (either from the code or the anonymous ID). Returning with the
+same code/ID restores that saved state. On submit, the session is cleared.
+
+- **Demo surveys:** Use browser `localStorage` (local-only; survives browser close but not device loss).
+- **Production surveys:** Use Supabase (cloud-backed; survives everything, encrypted in transit/at rest).
+
+### Paradata (audit trail)
+
+The app emits a **paradata trail** — a timestamped log of respondent behaviour:
 
 | Event | When |
 | --- | --- |
@@ -124,14 +138,28 @@ The app emits a **paradata trail** — an audit log of respondent behaviour — 
 | `page_complete` | The final page is finished |
 | `submit` | The survey is submitted |
 
-The completion screen displays the buffered trail. A real deployment would stream these to a
-paradata sink for monitoring response quality, drop-off, and timing.
+For **production surveys**, paradata is streamed to Supabase (`paradata` table) for monitoring
+response quality, drop-off rates, and timing. The completion screen displays a summary of the trail.
+For **demo surveys**, the trail is shown locally only.
 
-### Status round-trip
-The app reports case status back to the CMS — `started`, `resumed`, and `completed` — so collection
-progress can be tracked centrally.
+### Accessibility (WCAG 2.1 AA, RTL)
+
+The respondent app supports:
+
+- **WCAG 2.1 AA** — screen readers (NVDA, JAWS, VoiceOver), keyboard-only navigation, high-contrast
+  mode, focus indicators.
+- **RTL (right-to-left) surveys** — Arabic, Hebrew, and other RTL languages render with correct
+  text directionality and logical-property CSS.
+- **Multi-language surveys** — language toggle at the top right; respondent answers are preserved
+  when switching languages.
 
 ### Which questionnaire is served?
-In this prototype the app runs the bundled "Household & Employment Survey" instrument. In a full
-deployment the case/CMS determines which instrument to serve, and instruments are produced by the
-[authoring tool](authoring-tool.md).
+
+When launched from the hub (via a respondent link), the app loads the instrument specified in the
+URL (`?survey=<id>`). The `id` can be:
+
+- A **bundled demo** (e.g. `lfs` for Household & Employment Survey, `demo` for Feature Demo)
+- A **user-created survey** persisted in the hub's database
+
+Instruments are authored in the [authoring tool](authoring-tool.md) and published via the hub's
+Collector module.

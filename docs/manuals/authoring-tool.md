@@ -1,12 +1,17 @@
 # Authoring Tool — User Manual
 
 The authoring tool (the **designer**) is where you build a questionnaire from scratch: structure,
-questions, answer types, skip logic, validation, variables, and translations. Everything you build
-is a single validated *instrument*, previewed live and exportable as JSON.
+questions, answer types, routing logic, validation, variables, and translations. Everything you build
+is a single validated *instrument*, previewed live and exported as JSON.
 
-> Open it with `pnpm --filter @mobilesurvey/designer dev` (→ <http://localhost:5173>) or use the
-> hosted build at <https://p3ji.github.io/mobilesurvey/>. The tool opens on a sample
-> "Household & Employment Survey" so you have something to explore immediately.
+The designer is part of the **Modular Survey Tools** suite. You reach it from the hub's home screen
+(click "Designer — Pro" or "Designer — Easy Mode") or open it directly via:
+- Local dev: `pnpm --filter @mobilesurvey/designer dev` (→ <http://localhost:5173>)
+- Hosted: <https://p3ji.github.io/mobilesurvey/> → select a Designer module
+
+The tool opens on a blank instrument (or loads an existing survey if opened from the hub with
+`?survey=<id>`). You can always return to the hub by clicking the **Modular Survey Tools** link
+at the top left.
 
 ## Contents
 1. [The screen at a glance](#the-screen-at-a-glance)
@@ -43,11 +48,25 @@ The basic loop is: **select something on the left → edit it in the centre → 
 
 ## The toolbar
 
+- **Modular Survey Tools** (left, clickable link) — return to the hub home screen.
 - **Title** — the instrument's title, in the current language.
 - **Language pills (EN / FR …)** — switch the editing/preview language. All label fields and the
-  preview follow this toggle. (Add or remove languages by editing the instrument JSON; the default
-  instrument is bilingual EN/FR.)
-- **↶ Undo / ↷ Redo** — step backward/forward through your edits (50 steps of history).
+  preview follow this toggle. (Add or remove languages by editing the instrument; the default
+  template is bilingual EN/FR.)
+- **↶ Undo / ↷ Redo** — step backward/forward through your edits.
+- **Pro Mode / Easy Mode ▾** — switch between two authoring interfaces:
+  - **Pro Mode:** Three-column layout (Structure tree, Inspector, Preview/JSON). Full control over
+    all constructs and properties.
+  - **Easy Mode:** Question-by-question card interface. Simpler for linear surveys; focuses on
+    questions and routing. (Pages and advanced constructs like rosters are only editable in Pro Mode.)
+- **💾 Save** — if the instrument was opened from the hub (via `?survey=<id>`), this button saves
+  your edits back to the hub's database. (Unsaved changes are persistent in your browser session.)
+- **Export ▾** — export the instrument in multiple formats:
+  - **⬇ HTML Questionnaire** — a static HTML preview, suitable for printing or sharing.
+  - **⬇ Instrument JSON** — the raw JSON file; import this into another designer instance.
+  - **⬇ JSON Schema** — the instrument's JSON Schema (for validation elsewhere).
+  - **🖨 PDF Spec** — a formal specification (pages, questions, edit rules, variable dictionary).
+- **? Help** — open this manual in a new tab.
 - **▶ Render** — launch the full respondent experience in this window (see
   [Render mode](#render-mode)).
 
@@ -132,6 +151,20 @@ ones:
 
 See [Rosters](#rosters-repeating-blocks).
 
+### Section / Page — Interviewer module kind
+
+For **CATI (interviewer-assisted) surveys**, you can designate a page/section as:
+
+- **standard section/page** (default) — part of the main survey flow.
+- **Entry — pre-interview validation** — runs *before* the main survey. Typically: confirm the
+  respondent's phone number, address, or sample data. Hidden in self-administered mode.
+- **Main — core survey content** — the standard setting.
+- **Exit — post-interview housekeeping** — runs *after* the main survey completes. Typically:
+  household roster or follow-up scheduling. Hidden in self-administered mode.
+
+Only one entry and one exit section are supported per instrument. The **Interviewer Mode** panel
+(in the toolbar's mode dropdown, Pro Mode only) lets you preview and configure these sections.
+
 ---
 
 ## Question response types
@@ -148,6 +181,7 @@ Set a question's **Response domain → Type**. Options:
 | **file** | File chooser | Accepted types (JSON) |
 | **lookup** | Search-as-you-type from a code list | Category scheme |
 | **markAll** | "Mark all that apply" checkboxes | Category scheme, Variable prefix |
+| **table** | Spreadsheet-like grid of numeric cells | Row/column count, unit caption, min/max/decimals per cell, disabled cells, computed totals |
 
 ### markAll (DDI-compliant "mark all that apply")
 
@@ -283,21 +317,24 @@ build.
 
 ## The JSON Spec panel
 
-The **JSON Spec** tab is the instrument's data, with validation and import/export.
+The **JSON Spec** tab displays the instrument's complete JSON, with validation and import/export tools.
 
 - **Validation status** — a green "✓ Instrument is valid" banner, or a red list of issues with the
   exact path and message (e.g. a question pointing at a missing variable, or a code question with no
   category scheme). This validates **live** as you edit, catching broken references immediately.
-- **⬇ Download instrument.json** — save the instrument to a file.
+- **⬇ Download instrument.json** — save the instrument to a file (also available via the **Export ▾**
+  menu in the toolbar).
 - **⬇ JSON Schema** — download the generated JSON Schema (for validating instruments elsewhere).
-- **Import instrument JSON** — expand the section, paste an `instrument.json`, and **Validate &
-  load**. Invalid JSON or a failing instrument shows precise errors; a valid one replaces the
-  current document.
-- **Live JSON** — the full instrument, always reflecting the current state.
+- **Import instrument JSON** — load an existing instrument from a JSON file. Click the input area,
+  paste JSON or upload a file, and click **Validate & load**. If valid, it replaces the current
+  document; if invalid, you'll see precise error messages.
+- **Live JSON** — the full instrument, always reflecting the current state. Copy/paste to share or
+  archive.
 
-> Import/export is how you save your work, hand an instrument to the respondent app, or move it
-> between machines. There's no server — your work lives in the browser session until you download
-> it.
+> **Saving your work:** If you opened this designer from the hub (via a "Designer" module link or
+> with `?survey=<id>`), click the **Save** button in the toolbar to persist your edits to the hub's
+> database. Otherwise, download the instrument JSON regularly to avoid losing work if your browser
+> session closes or refreshes.
 
 ---
 
