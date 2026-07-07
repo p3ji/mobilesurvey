@@ -11,6 +11,12 @@ import { demoInstrument } from '@mobilesurvey/instrument-schema';
 import { enumeratePaths } from './enumerator.js';
 import { runScenarios } from './runner.js';
 import { buildReport, formatReportText, formatReportHtml } from './reporter.js';
+import { runDiscoverySession } from './discovery/runner.js';
+import {
+  buildDiscoveryReport,
+  formatDiscoveryReportText,
+  formatDiscoveryReportHtml,
+} from './discovery/reporter.js';
 
 interface CliOptions {
   url: string;
@@ -22,6 +28,7 @@ interface CliOptions {
   output?: string;
   headless?: boolean;
   screenshots?: boolean;
+  discovery?: boolean;
 }
 
 function parseArgs(): CliOptions {
@@ -52,6 +59,8 @@ function parseArgs(): CliOptions {
       opts.headless = false;
     } else if (arg === '--screenshots') {
       opts.screenshots = true;
+    } else if (arg === '--discovery') {
+      opts.discovery = true;
     } else if (arg === '--help' || arg === '-h') {
       printHelp();
       process.exit(0);
@@ -75,15 +84,18 @@ Usage:
   questionnaire-bot --url <url> [options]
 
 Options:
-  --url <url>              URL of the respondent runtime (required)
-  --instrument <name>      Instrument to test (default: demo)
-  --strategy <strategy>    Coverage strategy: all-paths, coverage, boundary (default: coverage)
-  --language <lang>        Language code (default: en)
-  --max-paths <n>          Maximum paths to enumerate (default: 200 for coverage, 50 for boundary)
+  --url <url>              URL of the questionnaire (required)
+  --instrument <name>      Instrument to test (default: demo; ignored with --discovery)
+  --strategy <strategy>    Coverage strategy: all-paths, coverage, boundary (default: coverage; ignored with --discovery)
+  --language <lang>        Language code (default: en; ignored with --discovery)
+  --max-paths <n>          Maximum paths to enumerate (default: 200 for coverage, 50 for boundary; ignored with --discovery)
   --report <format>        Report format: json, text, html (default: text)
   --output <file>          Output file (default: stdout for text/json, report.html for html)
-  --screenshots            Capture screenshots for failed steps and completion
+  --screenshots            Capture screenshots for failed steps/pages and completion
   --no-headless            Run browser in headed mode
+  --discovery              Schema-free mode: infer form structure from the live DOM instead of
+                            an Instrument. Use this for any web questionnaire that isn't a
+                            mobilesurvey survey (or to test one without its schema).
   --help, -h               Show this help message
 
 Examples:
@@ -95,20 +107,38 @@ Examples:
 
   # Comprehensive testing with all-paths strategy
   questionnaire-bot --url http://localhost:5174/?survey=demo --strategy all-paths --max-paths 1000 --report html --screenshots
+
+  # Discovery mode against an arbitrary (non-mobilesurvey) web questionnaire
+  questionnaire-bot --url https://example.com/survey --discovery --report html --screenshots
 `);
 }
 
-async function main(): Promise<void> {
-  const opts = parseArgs();
+async function runDiscoveryMode(opts: CliOptions): Promise<{ output: string; hasIssues: boolean }> {
+  console.log('Discovery mode: no schema, inferring form structure from the live DOM...');
+  const result = await runDiscoverySession({
+    url: opts.url,
+    headless: opts.headless,
+    captureScreenshots: opts.screenshots,
+  });
 
-  console.log(`Questionnaire Bot v1.0.0`);
-  console.log(`Connecting to: ${opts.url}`);
-  console.log(`Strategy: ${opts.strategy}, Report: ${opts.report}`);
+  const report = buildDiscoveryReport(result);
+  console.log(`Visited ${report.pagesVisited} page(s), reached end: ${report.reachedEnd}`);
 
+  let output: string;
+  if (opts.report === 'json') {
+    output = JSON.stringify(report, null, 2);
+  } else if (opts.report === 'html') {
+    output = formatDiscoveryReportHtml(report, result);
+  } else {
+    output = formatDiscoveryReportText(report);
+  }
+  return { output, hasIssues: report.issues.length > 0 };
+}
+
+async function runSchemaGuidedMode(opts: CliOptions): Promise<{ output: string; hasIssues: boolean }> {
   // For now, we use the demo instrument bundled in the schema.
   // A real CLI would support loading from files or other instruments.
   const instrument = demoInstrument;
-
   const language = (opts.language ?? 'en') as any;
 
   console.log(`Enumerating paths...`);
@@ -128,7 +158,6 @@ async function main(): Promise<void> {
 
   const report = buildReport(results);
   let output: string;
-
   if (opts.report === 'json') {
     output = JSON.stringify(report, null, 2);
   } else if (opts.report === 'html') {
@@ -136,6 +165,17 @@ async function main(): Promise<void> {
   } else {
     output = formatReportText(report);
   }
+  return { output, hasIssues: report.issues.length > 0 };
+}
+
+async function main(): Promise<void> {
+  const opts = parseArgs();
+
+  console.log(`Questionnaire Bot v1.0.0`);
+  console.log(`Connecting to: ${opts.url}`);
+  console.log(opts.discovery ? `Mode: discovery, Report: ${opts.report}` : `Strategy: ${opts.strategy}, Report: ${opts.report}`);
+
+  const { output, hasIssues } = opts.discovery ? await runDiscoveryMode(opts) : await runSchemaGuidedMode(opts);
 
   // Write output
   if (opts.output) {
@@ -151,7 +191,7 @@ async function main(): Promise<void> {
   }
 
   // Exit with appropriate code
-  process.exit(report.issues.length > 0 ? 1 : 0);
+  process.exit(hasIssues ? 1 : 0);
 }
 
 main().catch((err) => {
