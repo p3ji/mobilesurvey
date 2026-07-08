@@ -345,6 +345,18 @@ alter table if exists variable_annotations enable row level security;
 create policy "anon insert" on variable_annotations for insert to anon with check (true);
 create policy "anon select" on variable_annotations for select to anon using (true);
 create policy "anon update" on variable_annotations for update to anon using (true);
+
+-- RLS policies alone are NOT sufficient -- Postgres also requires a base table-level GRANT for
+-- the anon role (RLS only narrows rows once a GRANT already allows the operation). The other
+-- tables in this file inherit their GRANTs from the project's original default-privileges setup;
+-- these six new tables didn't, and produced "permission denied for table X" until this was run.
+grant select, insert, update on validation_runs to anon;
+grant select, insert, update on validation_flags to anon;
+grant select, insert, update on validation_corrections to anon;
+grant select, insert, update on validator_rules to anon;
+grant select, insert on validation_suppressions to anon;
+grant usage, select on sequence validation_suppressions_id_seq to anon;
+grant select, insert, update on variable_annotations to anon;
 ```
 
 ---
