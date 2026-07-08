@@ -331,6 +331,20 @@ create index if not exists validation_suppressions_lookup
 alter table if exists validation_suppressions enable row level security;
 create policy "anon insert" on validation_suppressions for insert to anon with check (true);
 create policy "anon select" on validation_suppressions for select to anon using (true);
+
+-- Variable annotations: free-text domain knowledge, independent of any run (docs/validator-plan.md §8.1).
+create table if not exists variable_annotations (
+  survey_id text not null,
+  variable_name text not null,
+  note text not null,
+  author text not null,
+  updated_at timestamptz not null,
+  primary key (survey_id, variable_name)
+);
+alter table if exists variable_annotations enable row level security;
+create policy "anon insert" on variable_annotations for insert to anon with check (true);
+create policy "anon select" on variable_annotations for select to anon using (true);
+create policy "anon update" on variable_annotations for update to anon using (true);
 ```
 
 ---

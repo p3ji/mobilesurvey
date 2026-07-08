@@ -19,12 +19,14 @@ import logo from './assets/logo.png';
 import { blankInstrument, lfsInstrument, demoInstrument, fsepInstrument, BUNDLED_SURVEYS, redactResponses, piiVariableNames, surveyCollectsData, type Instrument } from '@mobilesurvey/instrument-schema';
 import { migrate, type MigrateResult } from '@mobilesurvey/questionnaire-migrator';
 import { compile } from '@mobilesurvey/expression-engine';
+import { walkQuestions } from '@mobilesurvey/validation-engine';
 import type {
   CheckKind,
   Disposition,
   DispositionAction,
   ValidationRun,
   ValidatorRule,
+  VariableAnnotation,
 } from '@mobilesurvey/validation-engine';
 import {
   buildCatalog,
@@ -64,9 +66,11 @@ import {
 import { logAudit } from './audit.js';
 import {
   executeValidationRun,
+  fetchAnnotations,
   fetchFlagRowsForRun,
   fetchRules,
   fetchRunsForSurvey,
+  saveAnnotation,
   saveDisposition,
   saveRule,
   setRuleActive,
@@ -1880,10 +1884,12 @@ function RunSummaryStrip({ summary }: { summary: ValidationRun['summary'] }) {
 
 function FlagDetailPanel({
   row,
+  annotation,
   onDisposition,
   onClose,
 }: {
   row: FlagRow;
+  annotation?: VariableAnnotation;
   onDisposition: (row: FlagRow, action: DispositionAction, reason: string, correctedValue?: unknown) => Promise<void>;
   onClose: () => void;
 }) {
@@ -1926,6 +1932,13 @@ function FlagDetailPanel({
         <dt>Score</dt><dd>{flag.score.toFixed(2)} (suspicion {flag.suspicion.toFixed(2)} × impact {flag.impact.toFixed(2)})</dd>
         <dt>Status</dt><dd>{STATUS_LABELS_VAL[status]}</dd>
       </dl>
+
+      {annotation && (
+        <p className="val__detail-annotation">
+          📝 <strong>{annotation.variableName}</strong>: {annotation.note}
+          <span className="val__detail-annotation-hint"> (edit in Variable annotations below)</span>
+        </p>
+      )}
 
       {disposition && (
         <p className="val__detail-prior">
@@ -2070,6 +2083,110 @@ function RulesManager({
   );
 }
 
+/** Variable names an annotation/flag can attach to: scalar questions by variableRef; grid/
+ * markAll/table questions by variablePrefix (same grouping editRerun.ts uses for their flags). */
+function annotatableVariableNames(instrument: Instrument): string[] {
+  const names = new Set<string>();
+  walkQuestions(instrument, (q) => {
+    const rd = q.responseDomain;
+    if (rd.type === 'grid' || rd.type === 'markAll' || rd.type === 'table') names.add(rd.variablePrefix);
+    else names.add(q.variableRef);
+  });
+  return [...names].sort();
+}
+
+function AnnotationsPanel({
+  surveyId,
+  instrument,
+  annotations,
+  onSaved,
+}: {
+  surveyId: string;
+  instrument: Instrument;
+  annotations: VariableAnnotation[];
+  onSaved: (a: VariableAnnotation) => void;
+}) {
+  const names = useMemo(() => annotatableVariableNames(instrument), [instrument]);
+  const byName = new Map(annotations.map((a) => [a.variableName, a]));
+  const [editingName, setEditingName] = useState<string | null>(null);
+  const [draft, setDraft] = useState('');
+  const [saving, setSaving] = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
+
+  async function save(name: string) {
+    setSaving(true);
+    setSaveError(null);
+    try {
+      const annotation: VariableAnnotation = {
+        surveyId,
+        variableName: name,
+        note: draft.trim(),
+        author: 'analyst',
+        updatedAt: new Date().toISOString(),
+      };
+      await saveAnnotation(annotation);
+      onSaved(annotation);
+      setEditingName(null);
+    } catch (e) {
+      setSaveError(errorMessage(e));
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  return (
+    <div className="val__annotations dash__section">
+      <div className="dash__section-head">
+        <h4 className="dash__section-title">Variable annotations</h4>
+      </div>
+      <p className="dash__empty" style={{ marginBottom: 6 }}>
+        Free-text domain knowledge attached to a variable — shown alongside flags on that variable during review.
+      </p>
+      <div className="val__annotation-list">
+        {names.map((name) => {
+          const existing = byName.get(name);
+          const isEditing = editingName === name;
+          return (
+            <div key={name} className="val__annotation-row">
+              <code className="val__annotation-name">{name}</code>
+              {isEditing ? (
+                <div className="val__annotation-edit">
+                  <textarea
+                    className="cati__textarea"
+                    rows={2}
+                    value={draft}
+                    onChange={(e) => setDraft(e.target.value)}
+                    placeholder="e.g. Values rarely drop >30% YoY unless a program sunsets."
+                  />
+                  {saveError && <p className="val__error" style={{ margin: 0 }}>{saveError}</p>}
+                  <div style={{ display: 'flex', gap: 6 }}>
+                    <button type="button" className="btn btn--primary" disabled={saving} onClick={() => void save(name)}>
+                      {saving ? 'Saving…' : 'Save'}
+                    </button>
+                    <button type="button" className="btn" onClick={() => { setEditingName(null); setSaveError(null); }}>Cancel</button>
+                  </div>
+                </div>
+              ) : (
+                <>
+                  <span className="val__annotation-note">{existing?.note || '—'}</span>
+                  <button
+                    type="button"
+                    className="btn"
+                    style={{ fontSize: 11, padding: '2px 8px' }}
+                    onClick={() => { setEditingName(name); setDraft(existing?.note ?? ''); setSaveError(null); }}
+                  >
+                    {existing ? 'Edit' : '+ Add note'}
+                  </button>
+                </>
+              )}
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
 function ValidatorView({ onBack }: { onBack: () => void }) {
   const [surveys, setSurveys] = useState<SurveySummary[] | null>(null);
   const [selectedSurveyId, setSelectedSurveyId] = useState<string | null>(null);
@@ -2078,6 +2195,7 @@ function ValidatorView({ onBack }: { onBack: () => void }) {
   const [runHistory, setRunHistory] = useState<ValidationRun[]>([]);
   const [flagRows, setFlagRows] = useState<FlagRow[]>([]);
   const [rules, setRules] = useState<ValidatorRule[]>([]);
+  const [annotations, setAnnotations] = useState<VariableAnnotation[]>([]);
   const [running, setRunning] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -2118,15 +2236,17 @@ function ValidatorView({ onBack }: { onBack: () => void }) {
       .then(setInstrument)
       .catch((e) => setError(errorMessage(e)))
       .finally(() => setLoading(false));
-    Promise.all([fetchRunsForSurvey(selectedSurveyId), fetchRules(selectedSurveyId)])
-      .then(async ([runs, ruleList]) => {
+    Promise.all([fetchRunsForSurvey(selectedSurveyId), fetchRules(selectedSurveyId), fetchAnnotations(selectedSurveyId)])
+      .then(async ([runs, ruleList, annotationList]) => {
         setRunHistory(runs);
         setRules(ruleList);
+        setAnnotations(annotationList);
         if (runs.length > 0) await loadRun(runs[0]!.id, runs[0]!);
       })
       .catch(() => {
         setRunHistory([]);
         setRules([]);
+        setAnnotations([]);
       });
   }, [selectedSurveyId, loadRun]);
 
@@ -2270,7 +2390,12 @@ function ValidatorView({ onBack }: { onBack: () => void }) {
                     )}
                   </div>
                   {selectedRow && (
-                    <FlagDetailPanel row={selectedRow} onDisposition={handleDisposition} onClose={() => setSelectedFlagId(null)} />
+                    <FlagDetailPanel
+                      row={selectedRow}
+                      annotation={selectedRow.flag.variableName ? annotations.find((a) => a.variableName === selectedRow.flag.variableName) : undefined}
+                      onDisposition={handleDisposition}
+                      onClose={() => setSelectedFlagId(null)}
+                    />
                   )}
                 </div>
               </>
@@ -2284,6 +2409,15 @@ function ValidatorView({ onBack }: { onBack: () => void }) {
                 rules={rules}
                 onRuleAdded={(r) => setRules((prev) => [r, ...prev])}
                 onRuleToggled={(r) => setRules((prev) => prev.map((x) => (x.id === r.id ? r : x)))}
+              />
+            )}
+
+            {selectedSurveyId && instrument && (
+              <AnnotationsPanel
+                surveyId={selectedSurveyId}
+                instrument={instrument}
+                annotations={annotations}
+                onSaved={(a) => setAnnotations((prev) => [...prev.filter((x) => x.variableName !== a.variableName), a])}
               />
             )}
           </>

@@ -19,6 +19,7 @@ import {
   type ValidationRun,
   type ValidatorResponse,
   type ValidatorRule,
+  type VariableAnnotation,
 } from '@mobilesurvey/validation-engine';
 import { fetchResponses, type ResponseRow } from './api.js';
 import { logAudit } from './audit.js';
@@ -343,4 +344,35 @@ export async function setRuleActive(ruleId: string, surveyId: string, active: bo
   const { error } = await sb().from('validator_rules').update({ active }).eq('id', ruleId);
   if (error) throw error;
   logAudit('validator.rule_toggled', 'validator', surveyId, { ruleId, active });
+}
+
+// ── Variable annotations ───────────────────────────────────────────────────────
+// Free-text domain knowledge attached to a variable, independent of any run. Kept in its own
+// table (not the instrument) so it evolves post-publication without touching DDI export --
+// see docs/validator-plan.md §6.1 and §8.1.
+
+export async function fetchAnnotations(surveyId: string): Promise<VariableAnnotation[]> {
+  const { data, error } = await sb()
+    .from('variable_annotations')
+    .select('survey_id, variable_name, note, author, updated_at')
+    .eq('survey_id', surveyId);
+  if (error) throw error;
+  return (data ?? []).map((r: { survey_id: string; variable_name: string; note: string; author: string; updated_at: string }) => ({
+    surveyId: r.survey_id,
+    variableName: r.variable_name,
+    note: r.note,
+    author: r.author,
+    updatedAt: r.updated_at,
+  }));
+}
+
+export async function saveAnnotation(annotation: VariableAnnotation): Promise<void> {
+  const { error } = await sb().from('variable_annotations').upsert({
+    survey_id: annotation.surveyId,
+    variable_name: annotation.variableName,
+    note: annotation.note,
+    author: annotation.author,
+    updated_at: annotation.updatedAt,
+  }, { onConflict: 'survey_id,variable_name' });
+  if (error) throw error;
 }
