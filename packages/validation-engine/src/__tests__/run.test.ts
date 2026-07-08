@@ -3,7 +3,7 @@ import { instanceKey } from '@mobilesurvey/runtime-engine';
 import { runValidation } from '../run.js';
 import { applyCorrections } from '../corrections.js';
 import { fixtureInstrument } from './fixtures.js';
-import type { Correction, ValidatorResponse, ValidatorRule } from '../types.js';
+import type { Correction, ReferenceDataset, ValidatorResponse, ValidatorRule } from '../types.js';
 
 function resp(id: string, answers: Record<string, unknown>): ValidatorResponse {
   return { id, respondentId: `p-${id}`, submittedAt: '2026-07-06T00:00:00Z', durationMs: 120000, completed: true, answers };
@@ -112,5 +112,63 @@ describe('runValidation (orchestrator)', () => {
       responses,
     });
     expect(result.run.summary.skipped.some((s) => s.checkId === 'mad:revenue')).toBe(true);
+  });
+
+  it('wires reference-dataset confrontation (V2) into the flag queue and gap summary', () => {
+    const dataset: ReferenceDataset = {
+      id: 'ds1',
+      surveyId: 's1',
+      name: 'Admin file',
+      keyVariable: 'notes',
+      keyColumn: 'biz_id',
+      columns: ['biz_id', 'revenue_admin'],
+      rows: [
+        { biz_id: 'A1', revenue_admin: 100 },
+        { biz_id: 'NEVER-MATCHED', revenue_admin: 999 },
+      ],
+      uploadedAt: '2026-07-06T00:00:00Z',
+    };
+    const responses = [
+      resp('r1', { [instanceKey('notes', [])]: 'A1', [instanceKey('revenue', [])]: 5000 }), // mismatch
+    ];
+    const result = runValidation({
+      runId: 'run1',
+      surveyId: 's1',
+      startedAt: '2026-07-06T00:00:00Z',
+      instrument: fixtureInstrument,
+      responses,
+      referenceDatasets: [{
+        dataset,
+        mappings: [{ id: 'map1', datasetId: 'ds1', surveyExpr: '$revenue', refColumn: 'revenue_admin', severity: 'query', label: 'Revenue check' }],
+      }],
+    });
+
+    expect(result.flags.some((f) => f.checkId === 'confront:map1' && f.checkKind === 'confront')).toBe(true);
+    expect(result.run.summary.confrontationGaps).toEqual([
+      { direction: 'reference-only', datasetId: 'ds1', keyValue: 'NEVER-MATCHED' },
+    ]);
+  });
+
+  it('does not run confrontation when config.confrontation is false', () => {
+    const dataset: ReferenceDataset = {
+      id: 'ds1', surveyId: 's1', name: 'Admin file', keyVariable: 'notes', keyColumn: 'biz_id',
+      columns: ['biz_id', 'revenue_admin'], rows: [{ biz_id: 'A1', revenue_admin: 100 }],
+      uploadedAt: '2026-07-06T00:00:00Z',
+    };
+    const responses = [resp('r1', { [instanceKey('notes', [])]: 'A1', [instanceKey('revenue', [])]: 5000 })];
+    const result = runValidation({
+      runId: 'run1',
+      surveyId: 's1',
+      startedAt: '2026-07-06T00:00:00Z',
+      instrument: fixtureInstrument,
+      responses,
+      referenceDatasets: [{
+        dataset,
+        mappings: [{ id: 'map1', datasetId: 'ds1', surveyExpr: '$revenue', refColumn: 'revenue_admin', severity: 'query', label: 'Revenue check' }],
+      }],
+      config: { confrontation: false },
+    });
+    expect(result.flags.some((f) => f.checkKind === 'confront')).toBe(false);
+    expect(result.run.summary.confrontationGaps).toEqual([]);
   });
 });

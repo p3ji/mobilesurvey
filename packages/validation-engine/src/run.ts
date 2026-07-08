@@ -12,6 +12,7 @@ import type { Instrument } from '@mobilesurvey/instrument-schema';
 import { buildFieldRegistry, runMetadataChecks } from './metadataChecks.js';
 import { runInstrumentEditRerun } from './editRerun.js';
 import { runValidatorRules } from './ruleRunner.js';
+import { runConfrontationChecks } from './confront.js';
 import {
   computeMissingness,
   runDuplicateChecks,
@@ -24,7 +25,10 @@ import {
   DEFAULT_CHECK_CONFIG,
   type CheckConfig,
   type CheckKind,
+  type ConfrontationGap,
+  type ConfrontationMapping,
   type DraftFlag,
+  type ReferenceDataset,
   type RunResult,
   type RunSummary,
   type Suppression,
@@ -44,6 +48,8 @@ export interface RunValidationInput {
   paradata?: ValidatorParadataEvent[];
   rules?: ValidatorRule[];
   suppressions?: Suppression[];
+  /** V2: each entry confronts `responses` against one uploaded reference dataset. */
+  referenceDatasets?: { dataset: ReferenceDataset; mappings: ConfrontationMapping[] }[];
   config?: Partial<CheckConfig>;
 }
 
@@ -88,6 +94,15 @@ export function runValidation(input: RunValidationInput): RunResult {
     draft.push(...runStraightLineChecks(instrument, responses));
   }
 
+  const confrontationGaps: ConfrontationGap[] = [];
+  if (config.confrontation && input.referenceDatasets) {
+    for (const { dataset, mappings } of input.referenceDatasets) {
+      const result = runConfrontationChecks(instrument, responses, dataset, mappings);
+      draft.push(...result.flags);
+      confrontationGaps.push(...result.gaps);
+    }
+  }
+
   const flags = finalizeFlags(draft, input.runId, responses, suppressions);
   const missingness = config.stats ? computeMissingness(instrument, responses) : [];
 
@@ -108,6 +123,7 @@ export function runValidation(input: RunValidationInput): RunResult {
     byCheckKind,
     skipped,
     missingness,
+    confrontationGaps,
   };
 
   return {

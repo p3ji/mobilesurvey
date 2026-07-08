@@ -359,6 +359,43 @@ grant usage, select on sequence validation_suppressions_id_seq to anon;
 grant select, insert, update on variable_annotations to anon;
 ```
 
+### 9c. Reference datasets & confrontation mappings (V2, required before using cross-source confrontation)
+
+```sql
+create table if not exists reference_datasets (
+  id text primary key,
+  survey_id text not null,
+  name text not null,
+  key_variable text not null,
+  key_column text not null,
+  columns_json jsonb not null,
+  rows_json jsonb not null,
+  uploaded_at timestamptz not null
+);
+alter table if exists reference_datasets enable row level security;
+create policy "anon insert" on reference_datasets for insert to anon with check (true);
+create policy "anon select" on reference_datasets for select to anon using (true);
+create policy "anon delete" on reference_datasets for delete to anon using (true);
+grant select, insert, delete on reference_datasets to anon;
+
+create table if not exists confrontation_mappings (
+  id text primary key,
+  dataset_id text not null references reference_datasets(id) on delete cascade,
+  survey_expr text not null,
+  ref_column text not null,
+  transform_expr text,
+  tolerance_pct double precision,
+  tolerance_abs double precision,
+  severity text not null,
+  label text not null
+);
+alter table if exists confrontation_mappings enable row level security;
+create policy "anon insert" on confrontation_mappings for insert to anon with check (true);
+create policy "anon select" on confrontation_mappings for select to anon using (true);
+create policy "anon delete" on confrontation_mappings for delete to anon using (true);
+grant select, insert, delete on confrontation_mappings to anon;
+```
+
 ---
 
 ## Security notes

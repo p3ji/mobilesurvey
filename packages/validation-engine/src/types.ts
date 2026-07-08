@@ -134,6 +134,8 @@ export interface CheckConfig {
   instrumentEdits: boolean;
   rules: boolean;
   stats: boolean;
+  /** L4 cross-source confrontation — only runs when reference datasets are actually supplied. */
+  confrontation: boolean;
   /** MAD modified z-score threshold for numeric outliers (default 3.5). */
   outlierThreshold: number;
   /** Minimum observed (non-blank) values before a variable's outlier check runs (default 8). */
@@ -147,10 +149,63 @@ export const DEFAULT_CHECK_CONFIG: CheckConfig = {
   instrumentEdits: true,
   rules: true,
   stats: true,
+  confrontation: true,
   outlierThreshold: 3.5,
   outlierMinObservations: 8,
   speederMs: 60_000,
 };
+
+/**
+ * Level 4 (V2) — a user-uploaded reference dataset to confront survey responses against.
+ * Entity resolution is explicitly out of scope: the user supplies the exact join key on both
+ * sides. See docs/validator-plan.md §5.4.
+ */
+export interface ReferenceDataset {
+  id: string;
+  surveyId: string;
+  name: string;
+  /** Survey variable holding the join key (e.g. a business/case id). */
+  keyVariable: string;
+  /** Reference column holding the same join key. */
+  keyColumn: string;
+  columns: string[];
+  rows: Record<string, unknown>[];
+  uploadedAt: string;
+}
+
+/**
+ * One comparison within a reference dataset. Both sides are expressions (not a bespoke mapping
+ * mini-language) so unit conversions and derived comparisons (survey sum vs. one reference
+ * column) fall out for free from the expression engine already used everywhere else.
+ */
+export interface ConfrontationMapping {
+  id: string;
+  datasetId: string;
+  /** Expression over survey variables, e.g. '$revGross' or '$RD_TOT_TOT + $RSA_TOT_TOT'. */
+  surveyExpr: string;
+  refColumn: string;
+  /** Expression over $ref (the raw reference column value), e.g. '$ref / 1000' for unit alignment. */
+  transform?: string;
+  /** Relative tolerance (e.g. 0.1 = 10%). */
+  tolerancePct?: number;
+  /** Absolute tolerance. Passes if within EITHER tolerance when both are set. */
+  toleranceAbs?: number;
+  severity: Severity;
+  /** Human label, e.g. 'Revenue vs. CRA admin file'. */
+  label: string;
+}
+
+/**
+ * A coverage gap from confrontation — a key present on only one side. Not a `ValidationFlag`:
+ * "in reference, not in survey" has no respondent to attach to (mirrors MissingnessEntry's
+ * reasoning). "in survey, not in reference" DOES have a respondent and is a normal flag instead
+ * (checkId `confront-unmatched:{datasetId}`) — only the reverse direction lands here.
+ */
+export interface ConfrontationGap {
+  direction: 'survey-only' | 'reference-only';
+  datasetId: string;
+  keyValue: string;
+}
 
 /**
  * A variable with a high item-nonresponse rate. Deliberately NOT a `ValidationFlag` — it
@@ -173,6 +228,7 @@ export interface RunSummary {
   /** Checks that were skipped and why (e.g. "too few observations") — no silent truncation. */
   skipped: { checkId: string; reason: string }[];
   missingness: MissingnessEntry[];
+  confrontationGaps: ConfrontationGap[];
 }
 
 export interface ValidationRun {

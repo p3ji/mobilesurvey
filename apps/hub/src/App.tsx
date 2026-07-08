@@ -22,8 +22,10 @@ import { compile } from '@mobilesurvey/expression-engine';
 import { walkQuestions } from '@mobilesurvey/validation-engine';
 import type {
   CheckKind,
+  ConfrontationMapping,
   Disposition,
   DispositionAction,
+  ReferenceDataset,
   ValidationRun,
   ValidatorRule,
   VariableAnnotation,
@@ -65,15 +67,20 @@ import {
 } from './api.js';
 import { logAudit } from './audit.js';
 import {
+  deleteConfrontationMapping,
+  deleteReferenceDataset,
   executeValidationRun,
   fetchAnnotations,
   fetchFlagRowsForRun,
+  fetchReferenceDatasetsWithMappings,
   fetchRules,
   fetchRunsForSurvey,
   saveAnnotation,
+  saveConfrontationMapping,
   saveDisposition,
   saveRule,
   setRuleActive,
+  uploadReferenceDataset,
   validatorConfigured,
   type FlagRow,
   type FlagStatus,
@@ -1870,6 +1877,14 @@ function RunSummaryStrip({ summary }: { summary: ValidationRun['summary'] }) {
           ⚠ {summary.missingness.length} variable(s) with high item-nonresponse: {summary.missingness.map((m) => `${m.variableName} (${Math.round((1 - m.observedRate) * 100)}% blank)`).join(', ')}
         </div>
       )}
+      {/* summary_json rows persisted before confrontationGaps existed won't have the field --
+          default to [] so old runs (pre-V2) still render instead of crashing the panel. */}
+      {(summary.confrontationGaps ?? []).length > 0 && (
+        <div className="val__summary-note">
+          🔗 {summary.confrontationGaps.length} reference-dataset coverage gap(s): {summary.confrontationGaps.slice(0, 5).map((g) => `"${g.keyValue}" in reference only`).join(', ')}
+          {summary.confrontationGaps.length > 5 ? `, +${summary.confrontationGaps.length - 5} more` : ''}
+        </div>
+      )}
       {summary.skipped.length > 0 && (
         <details className="val__summary-skipped">
           <summary>{summary.skipped.length} check(s) skipped</summary>
@@ -2083,6 +2098,293 @@ function RulesManager({
   );
 }
 
+// ── Reference datasets (V2 confrontation) ──────────────────────────────────────
+
+/** Minimal RFC4180 CSV parser (quoted fields, embedded commas/quotes, CRLF) -- no external
+ * dependency needed at the scale a reference-dataset upload is expected to be. */
+function parseCsv(text: string): { headers: string[]; rows: Record<string, string>[] } {
+  const table: string[][] = [];
+  let row: string[] = [];
+  let field = '';
+  let inQuotes = false;
+  let i = 0;
+  while (i < text.length) {
+    const c = text[i];
+    if (inQuotes) {
+      if (c === '"') {
+        if (text[i + 1] === '"') { field += '"'; i += 2; continue; }
+        inQuotes = false; i += 1; continue;
+      }
+      field += c; i += 1; continue;
+    }
+    if (c === '"') { inQuotes = true; i += 1; continue; }
+    if (c === ',') { row.push(field); field = ''; i += 1; continue; }
+    if (c === '\r') { i += 1; continue; }
+    if (c === '\n') { row.push(field); table.push(row); row = []; field = ''; i += 1; continue; }
+    field += c; i += 1;
+  }
+  if (field.length > 0 || row.length > 0) { row.push(field); table.push(row); }
+  const nonEmpty = table.filter((r) => r.length > 1 || (r.length === 1 && r[0] !== ''));
+  const [headers, ...dataRows] = nonEmpty;
+  if (!headers) return { headers: [], rows: [] };
+  const rows = dataRows.map((r) => {
+    const obj: Record<string, string> = {};
+    headers.forEach((h, idx) => { obj[h] = r[idx] ?? ''; });
+    return obj;
+  });
+  return { headers, rows };
+}
+
+function ReferenceDatasetCard({
+  dataset,
+  mappings,
+  onChanged,
+}: {
+  dataset: ReferenceDataset;
+  mappings: ConfrontationMapping[];
+  onChanged: () => void;
+}) {
+  const [showForm, setShowForm] = useState(false);
+  const [surveyExpr, setSurveyExpr] = useState('');
+  const [refColumn, setRefColumn] = useState(dataset.columns[0] ?? '');
+  const [transform, setTransform] = useState('');
+  const [tolerancePct, setTolerancePct] = useState('');
+  const [toleranceAbs, setToleranceAbs] = useState('');
+  const [severity, setSeverity] = useState<'fatal' | 'query'>('query');
+  const [label, setLabel] = useState('');
+  const [formError, setFormError] = useState<string | null>(null);
+  const [saving, setSaving] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+
+  async function submit() {
+    setFormError(null);
+    if (!surveyExpr.trim() || !label.trim()) { setFormError('Survey expression and label are required.'); return; }
+    const compiledExpr = compile(surveyExpr);
+    if (!compiledExpr.ok) { setFormError(`Survey expression error: ${compiledExpr.error}`); return; }
+    if (transform.trim()) {
+      const compiledTransform = compile(transform);
+      if (!compiledTransform.ok) { setFormError(`Transform expression error: ${compiledTransform.error}`); return; }
+    }
+    setSaving(true);
+    try {
+      await saveConfrontationMapping({
+        datasetId: dataset.id,
+        surveyExpr: surveyExpr.trim(),
+        refColumn,
+        transform: transform.trim() || undefined,
+        tolerancePct: tolerancePct.trim() ? Number(tolerancePct) : undefined,
+        toleranceAbs: toleranceAbs.trim() ? Number(toleranceAbs) : undefined,
+        severity,
+        label: label.trim(),
+      });
+      setSurveyExpr(''); setTransform(''); setTolerancePct(''); setToleranceAbs(''); setLabel('');
+      setShowForm(false);
+      onChanged();
+    } catch (e) {
+      setFormError(errorMessage(e));
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  async function removeDataset() {
+    setDeleting(true);
+    try {
+      await deleteReferenceDataset(dataset.id);
+      onChanged();
+    } finally {
+      setDeleting(false);
+    }
+  }
+
+  return (
+    <div className="val__dataset-card">
+      <div className="val__dataset-head">
+        <strong>{dataset.name}</strong>
+        <span className="val__dataset-meta">{dataset.rows.length} rows · key: {dataset.keyVariable} ↔ {dataset.keyColumn}</span>
+        <button type="button" className="btn btn--danger" style={{ fontSize: 11, padding: '2px 8px' }} disabled={deleting} onClick={() => void removeDataset()}>
+          {deleting ? 'Deleting…' : 'Delete'}
+        </button>
+      </div>
+
+      {mappings.length === 0 ? (
+        <p className="dash__empty">No mappings yet.</p>
+      ) : (
+        <div className="val__mapping-list">
+          {mappings.map((m) => (
+            <div key={m.id} className="val__mapping-row">
+              <span className="val__badge" style={{ background: SEVERITY_COLORS[m.severity] }}>{m.severity}</span>
+              <span className="val__mapping-label">{m.label}</span>
+              <code className="val__mapping-expr">{m.surveyExpr} ↔ {m.refColumn}{m.transform ? ` (${m.transform})` : ''}</code>
+              <button
+                type="button"
+                className="btn"
+                style={{ fontSize: 11, padding: '2px 8px' }}
+                onClick={() => void deleteConfrontationMapping(m.id).then(onChanged)}
+              >
+                Remove
+              </button>
+            </div>
+          ))}
+        </div>
+      )}
+
+      <button type="button" className="btn" style={{ fontSize: 12, padding: '4px 10px' }} onClick={() => setShowForm((v) => !v)}>
+        {showForm ? 'Cancel' : '+ Add mapping'}
+      </button>
+
+      {showForm && (
+        <div className="val__mapping-form">
+          <label className="cati__label">Label</label>
+          <input className="cati__select" value={label} onChange={(e) => setLabel(e.target.value)} placeholder="Revenue vs. admin file" />
+          <label className="cati__label">Survey expression</label>
+          <input
+            className="cati__select"
+            style={{ fontFamily: 'var(--mono)' }}
+            value={surveyExpr}
+            onChange={(e) => setSurveyExpr(e.target.value)}
+            placeholder="$revGross or $RD_TOT_TOT + $RSA_TOT_TOT"
+          />
+          <label className="cati__label">Reference column</label>
+          <select className="cati__select" value={refColumn} onChange={(e) => setRefColumn(e.target.value)}>
+            {dataset.columns.map((c) => <option key={c} value={c}>{c}</option>)}
+          </select>
+          <label className="cati__label">Transform (optional — use $ref for the raw reference value)</label>
+          <input
+            className="cati__select"
+            style={{ fontFamily: 'var(--mono)' }}
+            value={transform}
+            onChange={(e) => setTransform(e.target.value)}
+            placeholder="$ref / 1000"
+          />
+          <div style={{ display: 'flex', gap: 8 }}>
+            <div>
+              <label className="cati__label">Tolerance %</label>
+              <input className="cati__select" type="number" value={tolerancePct} onChange={(e) => setTolerancePct(e.target.value)} placeholder="0.1" />
+            </div>
+            <div>
+              <label className="cati__label">Tolerance (absolute)</label>
+              <input className="cati__select" type="number" value={toleranceAbs} onChange={(e) => setToleranceAbs(e.target.value)} placeholder="500" />
+            </div>
+          </div>
+          <label className="cati__label">Severity</label>
+          <select className="cati__select" value={severity} onChange={(e) => setSeverity(e.target.value as 'fatal' | 'query')}>
+            <option value="query">Query (soft)</option>
+            <option value="fatal">Fatal (hard)</option>
+          </select>
+          {formError && <p className="val__error">{formError}</p>}
+          <div>
+            <button type="button" className="btn btn--primary" disabled={saving} onClick={() => void submit()}>
+              {saving ? 'Saving…' : 'Save mapping'}
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function ReferenceDatasetsPanel({
+  surveyId,
+  instrument,
+  datasets,
+  onChanged,
+}: {
+  surveyId: string;
+  instrument: Instrument;
+  datasets: { dataset: ReferenceDataset; mappings: ConfrontationMapping[] }[];
+  onChanged: () => void;
+}) {
+  const [parsed, setParsed] = useState<{ headers: string[]; rows: Record<string, string>[] } | null>(null);
+  const [name, setName] = useState('');
+  const [keyVariable, setKeyVariable] = useState('');
+  const [keyColumn, setKeyColumn] = useState('');
+  const [uploading, setUploading] = useState(false);
+  const [uploadError, setUploadError] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const collectedVarNames = useMemo(
+    () => instrument.variables.filter((v) => v.kind === 'collected').map((v) => v.name),
+    [instrument],
+  );
+
+  function handleFile(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      const result = parseCsv(String(reader.result ?? ''));
+      setParsed(result);
+      if (result.headers.length > 0) setKeyColumn(result.headers[0]!);
+      if (!name.trim()) setName(file.name.replace(/\.csv$/i, ''));
+    };
+    reader.readAsText(file);
+  }
+
+  async function handleUpload() {
+    if (!parsed || !name.trim() || !keyVariable || !keyColumn) return;
+    setUploading(true);
+    setUploadError(null);
+    try {
+      await uploadReferenceDataset({
+        surveyId, name: name.trim(), keyVariable, keyColumn, columns: parsed.headers, rows: parsed.rows,
+      });
+      setParsed(null); setName(''); setKeyVariable(''); setKeyColumn('');
+      if (fileInputRef.current) fileInputRef.current.value = '';
+      onChanged();
+    } catch (e) {
+      setUploadError(errorMessage(e));
+    } finally {
+      setUploading(false);
+    }
+  }
+
+  return (
+    <div className="val__confront dash__section">
+      <div className="dash__section-head">
+        <h4 className="dash__section-title">Reference datasets (confrontation)</h4>
+      </div>
+      <p className="dash__empty" style={{ marginBottom: 6 }}>
+        Upload a CSV to confront survey values against an external source — exact-match join only; entity resolution is out of scope.
+      </p>
+
+      <div className="val__confront-upload">
+        <input ref={fileInputRef} type="file" accept=".csv,text/csv" onChange={handleFile} />
+        {parsed && (
+          <div className="val__confront-upload-form">
+            <label className="cati__label">Dataset name</label>
+            <input className="cati__select" value={name} onChange={(e) => setName(e.target.value)} />
+            <label className="cati__label">Survey key variable</label>
+            <select className="cati__select" value={keyVariable} onChange={(e) => setKeyVariable(e.target.value)}>
+              <option value="">— select —</option>
+              {collectedVarNames.map((n) => <option key={n} value={n}>{n}</option>)}
+            </select>
+            <label className="cati__label">Reference key column</label>
+            <select className="cati__select" value={keyColumn} onChange={(e) => setKeyColumn(e.target.value)}>
+              {parsed.headers.map((h) => <option key={h} value={h}>{h}</option>)}
+            </select>
+            <p className="dash__empty">{parsed.rows.length} rows · columns: {parsed.headers.join(', ')}</p>
+            {uploadError && <p className="val__error">{uploadError}</p>}
+            <button type="button" className="btn btn--primary" disabled={uploading || !name.trim() || !keyVariable} onClick={() => void handleUpload()}>
+              {uploading ? 'Uploading…' : 'Upload dataset'}
+            </button>
+          </div>
+        )}
+      </div>
+
+      {datasets.length === 0 ? (
+        <p className="dash__empty">No reference datasets uploaded yet.</p>
+      ) : (
+        <div className="val__dataset-list">
+          {datasets.map(({ dataset, mappings }) => (
+            <ReferenceDatasetCard key={dataset.id} dataset={dataset} mappings={mappings} onChanged={onChanged} />
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
 /** Variable names an annotation/flag can attach to: scalar questions by variableRef; grid/
  * markAll/table questions by variablePrefix (same grouping editRerun.ts uses for their flags). */
 function annotatableVariableNames(instrument: Instrument): string[] {
@@ -2196,6 +2498,7 @@ function ValidatorView({ onBack }: { onBack: () => void }) {
   const [flagRows, setFlagRows] = useState<FlagRow[]>([]);
   const [rules, setRules] = useState<ValidatorRule[]>([]);
   const [annotations, setAnnotations] = useState<VariableAnnotation[]>([]);
+  const [referenceDatasets, setReferenceDatasets] = useState<{ dataset: ReferenceDataset; mappings: ConfrontationMapping[] }[]>([]);
   const [running, setRunning] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -2236,19 +2539,35 @@ function ValidatorView({ onBack }: { onBack: () => void }) {
       .then(setInstrument)
       .catch((e) => setError(errorMessage(e)))
       .finally(() => setLoading(false));
-    Promise.all([fetchRunsForSurvey(selectedSurveyId), fetchRules(selectedSurveyId), fetchAnnotations(selectedSurveyId)])
-      .then(async ([runs, ruleList, annotationList]) => {
+    Promise.all([
+      fetchRunsForSurvey(selectedSurveyId),
+      fetchRules(selectedSurveyId),
+      fetchAnnotations(selectedSurveyId),
+      fetchReferenceDatasetsWithMappings(selectedSurveyId),
+    ])
+      .then(async ([runs, ruleList, annotationList, datasets]) => {
         setRunHistory(runs);
         setRules(ruleList);
         setAnnotations(annotationList);
+        setReferenceDatasets(datasets);
         if (runs.length > 0) await loadRun(runs[0]!.id, runs[0]!);
       })
       .catch(() => {
         setRunHistory([]);
         setRules([]);
         setAnnotations([]);
+        setReferenceDatasets([]);
       });
   }, [selectedSurveyId, loadRun]);
+
+  const refreshReferenceDatasets = useCallback(async () => {
+    if (!selectedSurveyId) return;
+    try {
+      setReferenceDatasets(await fetchReferenceDatasetsWithMappings(selectedSurveyId));
+    } catch {
+      // Table may not exist yet (pre-migration) -- leave the current (possibly empty) list as-is.
+    }
+  }, [selectedSurveyId]);
 
   async function handleRunValidation() {
     if (!instrument || !selectedSurveyId) return;
@@ -2418,6 +2737,15 @@ function ValidatorView({ onBack }: { onBack: () => void }) {
                 instrument={instrument}
                 annotations={annotations}
                 onSaved={(a) => setAnnotations((prev) => [...prev.filter((x) => x.variableName !== a.variableName), a])}
+              />
+            )}
+
+            {selectedSurveyId && instrument && (
+              <ReferenceDatasetsPanel
+                surveyId={selectedSurveyId}
+                instrument={instrument}
+                datasets={referenceDatasets}
+                onChanged={() => void refreshReferenceDatasets()}
               />
             )}
           </>

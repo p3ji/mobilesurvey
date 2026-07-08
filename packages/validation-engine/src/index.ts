@@ -15,6 +15,7 @@ export {
   runStraightLineChecks,
   computeMissingness,
 } from './statChecks.js';
+export { runConfrontationChecks } from './confront.js';
 export { applyCorrections } from './corrections.js';
 export { computeImpact, finalizeFlags } from './score.js';
 export { runValidation, type RunValidationInput } from './run.js';

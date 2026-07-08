@@ -12,8 +12,10 @@ import {
   applyCorrections,
   runValidation,
   type CheckConfig,
+  type ConfrontationMapping,
   type Correction,
   type Disposition,
+  type ReferenceDataset,
   type Suppression,
   type ValidationFlag,
   type ValidationRun,
@@ -136,6 +138,10 @@ export async function executeValidationRun(
     fetchSuppressions(surveyId),
     fetchCorrections(surveyId),
   ]);
+  // Confrontation (V2) is optional and additive -- a survey with no reference datasets uploaded
+  // (or a pre-V2-migration project where reference_datasets doesn't exist yet) must not block
+  // the core run. Fail soft to an empty list rather than throwing, unlike the V1 tables above.
+  const referenceDatasets = await fetchReferenceDatasetsWithMappings(surveyId).catch(() => []);
   const edited = applyCorrections(toResponses(rawRows), corrections);
 
   const runId = `vr-${Date.now().toString(36)}`;
@@ -147,6 +153,7 @@ export async function executeValidationRun(
     responses: edited,
     rules,
     suppressions,
+    referenceDatasets,
     config,
   });
 
@@ -374,5 +381,114 @@ export async function saveAnnotation(annotation: VariableAnnotation): Promise<vo
     author: annotation.author,
     updated_at: annotation.updatedAt,
   }, { onConflict: 'survey_id,variable_name' });
+  if (error) throw error;
+}
+
+// ── Reference datasets & confrontation mappings (V2) ──────────────────────────
+// See docs/validator-plan.md §5.4. Entity resolution is explicitly out of scope: the user
+// supplies the exact join key on both sides via keyVariable/keyColumn.
+
+export async function fetchReferenceDatasets(surveyId: string): Promise<ReferenceDataset[]> {
+  const { data, error } = await sb()
+    .from('reference_datasets')
+    .select('id, survey_id, name, key_variable, key_column, columns_json, rows_json, uploaded_at')
+    .eq('survey_id', surveyId)
+    .order('uploaded_at', { ascending: false });
+  if (error) throw error;
+  return (data ?? []).map((r: {
+    id: string; survey_id: string; name: string; key_variable: string; key_column: string;
+    columns_json: string[]; rows_json: Record<string, unknown>[]; uploaded_at: string;
+  }) => ({
+    id: r.id,
+    surveyId: r.survey_id,
+    name: r.name,
+    keyVariable: r.key_variable,
+    keyColumn: r.key_column,
+    columns: r.columns_json,
+    rows: r.rows_json,
+    uploadedAt: r.uploaded_at,
+  }));
+}
+
+export async function fetchConfrontationMappings(datasetId: string): Promise<ConfrontationMapping[]> {
+  const { data, error } = await sb()
+    .from('confrontation_mappings')
+    .select('*')
+    .eq('dataset_id', datasetId);
+  if (error) throw error;
+  return (data ?? []).map((r: {
+    id: string; dataset_id: string; survey_expr: string; ref_column: string; transform_expr: string | null;
+    tolerance_pct: number | null; tolerance_abs: number | null; severity: 'fatal' | 'query'; label: string;
+  }) => ({
+    id: r.id,
+    datasetId: r.dataset_id,
+    surveyExpr: r.survey_expr,
+    refColumn: r.ref_column,
+    transform: r.transform_expr ?? undefined,
+    tolerancePct: r.tolerance_pct ?? undefined,
+    toleranceAbs: r.tolerance_abs ?? undefined,
+    severity: r.severity,
+    label: r.label,
+  }));
+}
+
+/** Fetches every reference dataset for a survey along with its mappings, ready to pass as
+ * `runValidation`'s `referenceDatasets` input. */
+export async function fetchReferenceDatasetsWithMappings(
+  surveyId: string,
+): Promise<{ dataset: ReferenceDataset; mappings: ConfrontationMapping[] }[]> {
+  const datasets = await fetchReferenceDatasets(surveyId);
+  return Promise.all(
+    datasets.map(async (dataset) => ({ dataset, mappings: await fetchConfrontationMappings(dataset.id) })),
+  );
+}
+
+export async function uploadReferenceDataset(input: {
+  surveyId: string;
+  name: string;
+  keyVariable: string;
+  keyColumn: string;
+  columns: string[];
+  rows: Record<string, unknown>[];
+}): Promise<ReferenceDataset> {
+  const dataset: ReferenceDataset = { ...input, id: `refds-${Date.now().toString(36)}`, uploadedAt: new Date().toISOString() };
+  const { error } = await sb().from('reference_datasets').insert({
+    id: dataset.id,
+    survey_id: dataset.surveyId,
+    name: dataset.name,
+    key_variable: dataset.keyVariable,
+    key_column: dataset.keyColumn,
+    columns_json: dataset.columns,
+    rows_json: dataset.rows,
+    uploaded_at: dataset.uploadedAt,
+  });
+  if (error) throw error;
+  return dataset;
+}
+
+export async function deleteReferenceDataset(id: string): Promise<void> {
+  const { error } = await sb().from('reference_datasets').delete().eq('id', id);
+  if (error) throw error;
+}
+
+export async function saveConfrontationMapping(input: Omit<ConfrontationMapping, 'id'>): Promise<ConfrontationMapping> {
+  const mapping: ConfrontationMapping = { ...input, id: `cmap-${Date.now().toString(36)}` };
+  const { error } = await sb().from('confrontation_mappings').insert({
+    id: mapping.id,
+    dataset_id: mapping.datasetId,
+    survey_expr: mapping.surveyExpr,
+    ref_column: mapping.refColumn,
+    transform_expr: mapping.transform ?? null,
+    tolerance_pct: mapping.tolerancePct ?? null,
+    tolerance_abs: mapping.toleranceAbs ?? null,
+    severity: mapping.severity,
+    label: mapping.label,
+  });
+  if (error) throw error;
+  return mapping;
+}
+
+export async function deleteConfrontationMapping(id: string): Promise<void> {
+  const { error } = await sb().from('confrontation_mappings').delete().eq('id', id);
   if (error) throw error;
 }
