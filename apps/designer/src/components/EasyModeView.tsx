@@ -68,6 +68,8 @@ function domainLabel(rd: ResponseDomain): string {
     case 'file':    return 'File upload';
     case 'lookup':  return 'Lookup';
     case 'markAll': return 'Mark all that apply';
+    case 'grid':    return 'Grid';
+    case 'table':   return 'Data table';
     default:        return 'Unknown';
   }
 }
