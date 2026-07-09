@@ -1269,6 +1269,11 @@ code { font-family: var(--mono); font-size: 0.88em; }
   max-width: 420px;
 }
 
+.val__detail-llm { display: flex; flex-direction: column; gap: 6px; }
+.val__detail-explanation { font-size: 12px; background: var(--bg); border: 1px solid var(--line); border-radius: 6px; padding: 8px 10px; margin: 0; font-style: italic; }
+.val__llm-drafts { display: flex; flex-direction: column; gap: 6px; margin-top: 4px; }
+.val__llm-draft { display: flex; align-items: center; gap: 8px; padding: 6px 10px; border: 1px solid var(--line); border-radius: var(--radius); font-size: 12px; }
+
 @media (max-width: 760px) {
   .val__body { grid-template-columns: 1fr; }
   .val__detail { position: static; }

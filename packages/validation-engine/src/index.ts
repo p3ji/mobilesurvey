@@ -19,3 +19,10 @@ export { runConfrontationChecks } from './confront.js';
 export { applyCorrections } from './corrections.js';
 export { computeImpact, finalizeFlags } from './score.js';
 export { runValidation, type RunValidationInput } from './run.js';
+export { draftRuleFromDisposition, type RuleDraft } from './elicit.js';
+export {
+  buildRuleDraftPrompt,
+  parseLlmRuleDrafts,
+  buildFlagExplanationPrompt,
+  type LlmRuleDraftCandidate,
+} from './llm.js';

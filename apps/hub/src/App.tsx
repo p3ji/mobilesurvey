@@ -19,17 +19,20 @@ import logo from './assets/logo.png';
 import { blankInstrument, lfsInstrument, demoInstrument, fsepInstrument, BUNDLED_SURVEYS, redactResponses, piiVariableNames, surveyCollectsData, type Instrument } from '@mobilesurvey/instrument-schema';
 import { migrate, type MigrateResult } from '@mobilesurvey/questionnaire-migrator';
 import { compile } from '@mobilesurvey/expression-engine';
-import { walkQuestions } from '@mobilesurvey/validation-engine';
+import { draftRuleFromDisposition, walkQuestions } from '@mobilesurvey/validation-engine';
 import type {
   CheckKind,
   ConfrontationMapping,
   Disposition,
   DispositionAction,
+  LlmRuleDraftCandidate,
   ReferenceDataset,
+  RuleDraft,
   ValidationRun,
   ValidatorRule,
   VariableAnnotation,
 } from '@mobilesurvey/validation-engine';
+import { draftRulesFromAnnotation, explainFlag, llmConfigured } from './validatorLlm.js';
 import {
   buildCatalog,
   buildSearchIndex,
@@ -1899,19 +1902,28 @@ function RunSummaryStrip({ summary }: { summary: ValidationRun['summary'] }) {
 
 function FlagDetailPanel({
   row,
+  allFlags,
+  instrument,
   annotation,
   onDisposition,
+  onDraftRule,
   onClose,
 }: {
   row: FlagRow;
+  allFlags: FlagRow[];
+  instrument: Instrument;
   annotation?: VariableAnnotation;
   onDisposition: (row: FlagRow, action: DispositionAction, reason: string, correctedValue?: unknown) => Promise<void>;
+  onDraftRule: (draft: RuleDraft | LlmRuleDraftCandidate) => void;
   onClose: () => void;
 }) {
   const [action, setAction] = useState<DispositionAction | null>(null);
   const [reason, setReason] = useState('');
   const [correctedText, setCorrectedText] = useState('');
   const [saving, setSaving] = useState(false);
+  const [explanation, setExplanation] = useState<string | null>(null);
+  const [explaining, setExplaining] = useState(false);
+  const [explainError, setExplainError] = useState<string | null>(null);
   const { flag, status, disposition } = row;
 
   async function save() {
@@ -1930,6 +1942,23 @@ function FlagDetailPanel({
       setSaving(false);
     }
   }
+
+  async function handleExplain() {
+    setExplaining(true);
+    setExplainError(null);
+    try {
+      const similarPastDispositions = allFlags
+        .filter((fr) => fr.flag.checkId === flag.checkId && fr.flag.id !== flag.id && fr.disposition)
+        .map((fr) => ({ reason: fr.disposition!.reason, action: fr.disposition!.action }));
+      setExplanation(await explainFlag(instrument, flag, annotation?.note, similarPastDispositions));
+    } catch (e) {
+      setExplainError(errorMessage(e));
+    } finally {
+      setExplaining(false);
+    }
+  }
+
+  const ruleDraft = disposition ? draftRuleFromDisposition(flag, disposition, instrument) : null;
 
   return (
     <div className="val__detail">
@@ -1959,6 +1988,22 @@ function FlagDetailPanel({
         <p className="val__detail-prior">
           Previously <strong>{disposition.action}</strong> by {disposition.decidedBy}: “{disposition.reason}”
         </p>
+      )}
+
+      {ruleDraft && (
+        <button type="button" className="btn" onClick={() => onDraftRule(ruleDraft)}>
+          🔧 Generalize into a rule
+        </button>
+      )}
+
+      {llmConfigured() && (
+        <div className="val__detail-llm">
+          <button type="button" className="btn" disabled={explaining} onClick={() => void handleExplain()}>
+            {explaining ? '🤖 Thinking…' : '🤖 Explain this flag'}
+          </button>
+          {explainError && <p className="val__error">{explainError}</p>}
+          {explanation && <p className="val__detail-explanation">{explanation}</p>}
+        </div>
       )}
 
       {!action ? (
@@ -1996,14 +2041,30 @@ function FlagDetailPanel({
   );
 }
 
+/** A generalized rule condition ready to drop into RulesManager's add-rule form — either
+ * mechanically elicited from a disposition (source 'elicited') or LLM-drafted (source 'llm'). */
+export interface RulePrefill {
+  when: string;
+  message: string;
+  severity: 'fatal' | 'query';
+  variableName?: string | null;
+  source: 'elicited' | 'llm';
+  sourceFlagId?: string;
+  hint?: string;
+}
+
 function RulesManager({
   surveyId,
   rules,
+  prefill,
+  onPrefillConsumed,
   onRuleAdded,
   onRuleToggled,
 }: {
   surveyId: string;
   rules: ValidatorRule[];
+  prefill?: RulePrefill | null;
+  onPrefillConsumed?: () => void;
   onRuleAdded: (r: ValidatorRule) => void;
   onRuleToggled: (r: ValidatorRule) => void;
 }) {
@@ -2013,8 +2074,25 @@ function RulesManager({
   const [message, setMessage] = useState('');
   const [severity, setSeverity] = useState<'fatal' | 'query'>('query');
   const [variableName, setVariableName] = useState('');
+  const [source, setSource] = useState<ValidatorRule['source']>('authored');
+  const [sourceFlagId, setSourceFlagId] = useState<string | undefined>(undefined);
+  const [prefillHint, setPrefillHint] = useState<string | null>(null);
   const [formError, setFormError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
+
+  useEffect(() => {
+    if (!prefill) return;
+    setWhen(prefill.when);
+    setMessage(prefill.message);
+    setSeverity(prefill.severity);
+    setVariableName(prefill.variableName ?? '');
+    setSource(prefill.source);
+    setSourceFlagId(prefill.sourceFlagId);
+    setPrefillHint(prefill.hint ?? null);
+    setName(prefill.source === 'llm' ? 'LLM-drafted rule' : 'Generalized rule');
+    setShowForm(true);
+    onPrefillConsumed?.();
+  }, [prefill, onPrefillConsumed]);
 
   async function submit() {
     setFormError(null);
@@ -2031,10 +2109,12 @@ function RulesManager({
     try {
       const rule = await saveRule({
         surveyId, name: name.trim(), when: when.trim(), message: message.trim(),
-        severity, variableName: variableName.trim() || null, source: 'authored',
+        severity, variableName: variableName.trim() || null, source, sourceFlagId,
       });
       onRuleAdded(rule);
-      setName(''); setWhen(''); setMessage(''); setVariableName(''); setShowForm(false);
+      setName(''); setWhen(''); setMessage(''); setVariableName('');
+      setSource('authored'); setSourceFlagId(undefined); setPrefillHint(null);
+      setShowForm(false);
     } catch (e) {
       setFormError(errorMessage(e));
     } finally {
@@ -2046,13 +2126,25 @@ function RulesManager({
     <div className="val__rules dash__section">
       <div className="dash__section-head">
         <h4 className="dash__section-title">Validator rules</h4>
-        <button type="button" className="btn" style={{ fontSize: 12, padding: '4px 10px' }} onClick={() => setShowForm((v) => !v)}>
+        <button
+          type="button"
+          className="btn"
+          style={{ fontSize: 12, padding: '4px 10px' }}
+          onClick={() => {
+            if (showForm) { setSource('authored'); setSourceFlagId(undefined); setPrefillHint(null); }
+            setShowForm((v) => !v);
+          }}
+        >
           {showForm ? 'Cancel' : '+ Add rule'}
         </button>
       </div>
 
       {showForm && (
         <div className="val__rule-form">
+          {prefillHint && <p className="val__detail-annotation">💡 {prefillHint}</p>}
+          {source !== 'authored' && (
+            <p className="val__detail-annotation-hint">Source: {source === 'llm' ? 'LLM-drafted' : 'Generalized from a disposition'} — review before saving.</p>
+          )}
           <label className="cati__label">Name</label>
           <input className="cati__select" value={name} onChange={(e) => setName(e.target.value)} placeholder="e.g. Revenue sanity check" />
           <label className="cati__label">Condition (fires when true)</label>
@@ -2397,44 +2489,144 @@ function annotatableVariableNames(instrument: Instrument): string[] {
   return [...names].sort();
 }
 
-function AnnotationsPanel({
+function AnnotationRow({
+  name,
+  existing,
   surveyId,
   instrument,
-  annotations,
+  observedSamples,
   onSaved,
+  onDraftRule,
 }: {
+  name: string;
+  existing: VariableAnnotation | undefined;
   surveyId: string;
   instrument: Instrument;
-  annotations: VariableAnnotation[];
+  observedSamples: unknown[];
   onSaved: (a: VariableAnnotation) => void;
+  onDraftRule: (draft: RulePrefill) => void;
 }) {
-  const names = useMemo(() => annotatableVariableNames(instrument), [instrument]);
-  const byName = new Map(annotations.map((a) => [a.variableName, a]));
-  const [editingName, setEditingName] = useState<string | null>(null);
+  const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState('');
   const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
+  const [llmDrafts, setLlmDrafts] = useState<LlmRuleDraftCandidate[] | null>(null);
+  const [llmLoading, setLlmLoading] = useState(false);
+  const [llmError, setLlmError] = useState<string | null>(null);
 
-  async function save(name: string) {
+  async function save() {
     setSaving(true);
     setSaveError(null);
     try {
       const annotation: VariableAnnotation = {
-        surveyId,
-        variableName: name,
-        note: draft.trim(),
-        author: 'analyst',
-        updatedAt: new Date().toISOString(),
+        surveyId, variableName: name, note: draft.trim(), author: 'analyst', updatedAt: new Date().toISOString(),
       };
       await saveAnnotation(annotation);
       onSaved(annotation);
-      setEditingName(null);
+      setEditing(false);
     } catch (e) {
       setSaveError(errorMessage(e));
     } finally {
       setSaving(false);
     }
   }
+
+  async function handleDraftRules() {
+    if (!existing?.note) return;
+    setLlmLoading(true);
+    setLlmError(null);
+    setLlmDrafts(null);
+    try {
+      setLlmDrafts(await draftRulesFromAnnotation(instrument, name, existing.note, observedSamples));
+    } catch (e) {
+      setLlmError(errorMessage(e));
+    } finally {
+      setLlmLoading(false);
+    }
+  }
+
+  return (
+    <div className="val__annotation-row">
+      <code className="val__annotation-name">{name}</code>
+      {editing ? (
+        <div className="val__annotation-edit">
+          <textarea
+            className="cati__textarea"
+            rows={2}
+            value={draft}
+            onChange={(e) => setDraft(e.target.value)}
+            placeholder="e.g. Values rarely drop >30% YoY unless a program sunsets."
+          />
+          {saveError && <p className="val__error" style={{ margin: 0 }}>{saveError}</p>}
+          <div style={{ display: 'flex', gap: 6 }}>
+            <button type="button" className="btn btn--primary" disabled={saving} onClick={() => void save()}>
+              {saving ? 'Saving…' : 'Save'}
+            </button>
+            <button type="button" className="btn" onClick={() => { setEditing(false); setSaveError(null); }}>Cancel</button>
+          </div>
+        </div>
+      ) : (
+        <>
+          <span className="val__annotation-note">{existing?.note || '—'}</span>
+          <button
+            type="button"
+            className="btn"
+            style={{ fontSize: 11, padding: '2px 8px' }}
+            onClick={() => { setEditing(true); setDraft(existing?.note ?? ''); setSaveError(null); }}
+          >
+            {existing ? 'Edit' : '+ Add note'}
+          </button>
+          {llmConfigured() && existing?.note && (
+            <button type="button" className="btn" style={{ fontSize: 11, padding: '2px 8px' }} disabled={llmLoading} onClick={() => void handleDraftRules()}>
+              {llmLoading ? '🤖 Thinking…' : '🤖 Draft rules'}
+            </button>
+          )}
+        </>
+      )}
+      {llmError && <p className="val__error" style={{ margin: 0 }}>{llmError}</p>}
+      {llmDrafts && (
+        llmDrafts.length === 0 ? (
+          <p className="dash__empty" style={{ margin: 0 }}>No usable drafts came back (nothing compiled against known variables).</p>
+        ) : (
+          <div className="val__llm-drafts">
+            {llmDrafts.map((d, i) => (
+              <div key={i} className="val__llm-draft">
+                <span className="val__badge" style={{ background: SEVERITY_COLORS[d.severity] }}>{d.severity}</span>
+                <code className="val__mapping-expr">{d.when}</code>
+                <button
+                  type="button"
+                  className="btn"
+                  style={{ fontSize: 11, padding: '2px 8px' }}
+                  onClick={() => onDraftRule({ when: d.when, message: d.message, severity: d.severity, variableName: name, source: 'llm' })}
+                >
+                  Use this draft
+                </button>
+              </div>
+            ))}
+          </div>
+        )
+      )}
+    </div>
+  );
+}
+
+function AnnotationsPanel({
+  surveyId,
+  instrument,
+  annotations,
+  observedSamplesByVariable,
+  onSaved,
+  onDraftRule,
+}: {
+  surveyId: string;
+  instrument: Instrument;
+  annotations: VariableAnnotation[];
+  observedSamplesByVariable: Map<string, unknown[]>;
+  onSaved: (a: VariableAnnotation) => void;
+  onDraftRule: (draft: RulePrefill) => void;
+}) {
+  const names = useMemo(() => annotatableVariableNames(instrument), [instrument]);
+  const byName = new Map(annotations.map((a) => [a.variableName, a]));
 
   return (
     <div className="val__annotations dash__section">
@@ -2445,45 +2637,18 @@ function AnnotationsPanel({
         Free-text domain knowledge attached to a variable — shown alongside flags on that variable during review.
       </p>
       <div className="val__annotation-list">
-        {names.map((name) => {
-          const existing = byName.get(name);
-          const isEditing = editingName === name;
-          return (
-            <div key={name} className="val__annotation-row">
-              <code className="val__annotation-name">{name}</code>
-              {isEditing ? (
-                <div className="val__annotation-edit">
-                  <textarea
-                    className="cati__textarea"
-                    rows={2}
-                    value={draft}
-                    onChange={(e) => setDraft(e.target.value)}
-                    placeholder="e.g. Values rarely drop >30% YoY unless a program sunsets."
-                  />
-                  {saveError && <p className="val__error" style={{ margin: 0 }}>{saveError}</p>}
-                  <div style={{ display: 'flex', gap: 6 }}>
-                    <button type="button" className="btn btn--primary" disabled={saving} onClick={() => void save(name)}>
-                      {saving ? 'Saving…' : 'Save'}
-                    </button>
-                    <button type="button" className="btn" onClick={() => { setEditingName(null); setSaveError(null); }}>Cancel</button>
-                  </div>
-                </div>
-              ) : (
-                <>
-                  <span className="val__annotation-note">{existing?.note || '—'}</span>
-                  <button
-                    type="button"
-                    className="btn"
-                    style={{ fontSize: 11, padding: '2px 8px' }}
-                    onClick={() => { setEditingName(name); setDraft(existing?.note ?? ''); setSaveError(null); }}
-                  >
-                    {existing ? 'Edit' : '+ Add note'}
-                  </button>
-                </>
-              )}
-            </div>
-          );
-        })}
+        {names.map((name) => (
+          <AnnotationRow
+            key={name}
+            name={name}
+            existing={byName.get(name)}
+            surveyId={surveyId}
+            instrument={instrument}
+            observedSamples={observedSamplesByVariable.get(name) ?? []}
+            onSaved={onSaved}
+            onDraftRule={onDraftRule}
+          />
+        ))}
       </div>
     </div>
   );
@@ -2499,6 +2664,7 @@ function ValidatorView({ onBack }: { onBack: () => void }) {
   const [rules, setRules] = useState<ValidatorRule[]>([]);
   const [annotations, setAnnotations] = useState<VariableAnnotation[]>([]);
   const [referenceDatasets, setReferenceDatasets] = useState<{ dataset: ReferenceDataset; mappings: ConfrontationMapping[] }[]>([]);
+  const [ruleDraftPrefill, setRuleDraftPrefill] = useState<RulePrefill | null>(null);
   const [running, setRunning] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -2614,6 +2780,20 @@ function ValidatorView({ onBack }: { onBack: () => void }) {
   });
   const selectedRow = flagRows.find((fr) => fr.flag.id === selectedFlagId) ?? null;
 
+  // Best-effort value profile for LLM rule-drafting context: only sees previously-flagged
+  // values from the current run (not the full response distribution), since ValidatorView
+  // doesn't otherwise hold raw responses in state. Good enough for an advisory illustration.
+  const observedSamplesByVariable = useMemo(() => {
+    const map = new Map<string, unknown[]>();
+    for (const fr of flagRows) {
+      if (!fr.flag.variableName) continue;
+      const arr = map.get(fr.flag.variableName) ?? [];
+      arr.push(fr.flag.observed);
+      map.set(fr.flag.variableName, arr);
+    }
+    return map;
+  }, [flagRows]);
+
   return (
     <div className="hub">
       <header className="hub__header">
@@ -2708,11 +2888,18 @@ function ValidatorView({ onBack }: { onBack: () => void }) {
                       </div>
                     )}
                   </div>
-                  {selectedRow && (
+                  {selectedRow && instrument && (
                     <FlagDetailPanel
                       row={selectedRow}
+                      allFlags={flagRows}
+                      instrument={instrument}
                       annotation={selectedRow.flag.variableName ? annotations.find((a) => a.variableName === selectedRow.flag.variableName) : undefined}
                       onDisposition={handleDisposition}
+                      onDraftRule={(d) => setRuleDraftPrefill(
+                        'hint' in d
+                          ? { when: d.when, message: d.message, severity: d.severity, variableName: d.variableName, source: 'elicited', sourceFlagId: selectedRow.flag.id, hint: d.hint }
+                          : { when: d.when, message: d.message, severity: d.severity, source: 'llm' },
+                      )}
                       onClose={() => setSelectedFlagId(null)}
                     />
                   )}
@@ -2726,6 +2913,8 @@ function ValidatorView({ onBack }: { onBack: () => void }) {
               <RulesManager
                 surveyId={selectedSurveyId}
                 rules={rules}
+                prefill={ruleDraftPrefill}
+                onPrefillConsumed={() => setRuleDraftPrefill(null)}
                 onRuleAdded={(r) => setRules((prev) => [r, ...prev])}
                 onRuleToggled={(r) => setRules((prev) => prev.map((x) => (x.id === r.id ? r : x)))}
               />
@@ -2736,7 +2925,9 @@ function ValidatorView({ onBack }: { onBack: () => void }) {
                 surveyId={selectedSurveyId}
                 instrument={instrument}
                 annotations={annotations}
+                observedSamplesByVariable={observedSamplesByVariable}
                 onSaved={(a) => setAnnotations((prev) => [...prev.filter((x) => x.variableName !== a.variableName), a])}
+                onDraftRule={setRuleDraftPrefill}
               />
             )}
 
