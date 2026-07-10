@@ -14,6 +14,7 @@ import {
   Library,
   PenLine,
   ShieldCheck,
+  Smartphone,
 } from 'lucide-react';
 import logo from './assets/logo.png';
 import { blankInstrument, lfsInstrument, demoInstrument, fsepInstrument, BUNDLED_SURVEYS, redactResponses, piiVariableNames, surveyCollectsData, type Instrument } from '@mobilesurvey/instrument-schema';
@@ -3057,6 +3058,14 @@ function HomePage({ onNavigate }: { onNavigate: (v: HubView) => void }) {
       name: 'Questionnaire Tester',
       tagline: 'Catch routing errors before respondents do',
       description: 'Walks every path through a web survey automatically — catching dead ends, routing errors, and gaps between the designed instrument and the rendered form. Works on any survey platform.',
+      status: 'coming-soon',
+    },
+    {
+      id: 'sensor',
+      icon: <Smartphone size={22} />,
+      name: 'Sensor Data Collection',
+      tagline: 'Collect phone sensor and camera data',
+      description: 'Collect data, when approved by the user, from phone sensors (e.g. GPS). It also enables collection through the camera (e.g. pictures of food to measure nutritional info).',
       status: 'coming-soon',
     },
   ], [onNavigate]);
