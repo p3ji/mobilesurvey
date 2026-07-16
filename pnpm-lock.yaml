@@ -223,6 +223,9 @@ importers:
       vitest:
         specifier: ^3.2.6
         version: 3.2.6(@types/node@22.20.0)
+      xmllint-wasm:
+        specifier: ^5.2.0
+        version: 5.2.0(@types/node@22.20.0)
 
   packages/expression-engine:
     devDependencies:
@@ -1973,6 +1976,12 @@ packages:
     engines: {node: '>=8'}
     hasBin: true
 
+  xmllint-wasm@5.2.0:
+    resolution: {integrity: sha512-GVMuR3ViU8R7sakcVm/4GClMtCV8p7xgjXZlc6GmvPpInIz4V41lmRnjSd4uKhVkf5MZj97wEZkPM4RMAhojuQ==}
+    engines: {node: '>=16'}
+    peerDependencies:
+      '@types/node': '>=16'
+
   xstate@5.32.2:
     resolution: {integrity: sha512-uDrojEQYYb4cEeB/SpKDBQlnL2969N5ltmVak4jUMUC6VVRuhi7PCnTBxe4YlQ8YLzdaOEOuVR48CRQPE2o0Uw==}
 
@@ -3482,6 +3491,10 @@ snapshots:
     dependencies:
       siginfo: 2.0.0
       stackback: 0.0.2
+
+  xmllint-wasm@5.2.0(@types/node@22.20.0):
+    dependencies:
+      '@types/node': 22.20.0
 
   xstate@5.32.2: {}
 

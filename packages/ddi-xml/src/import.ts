@@ -25,6 +25,7 @@ import type {
   InterviewerConfig,
 } from '@mobilesurvey/instrument-schema';
 import { parseXml, type XmlNode } from './xml.js';
+import { unmapId } from './urn.js';
 import type { FidelityNote, ImportResult } from './types.js';
 
 // ---------------------------------------------------------------------------
@@ -40,23 +41,41 @@ function kid(n: XmlNode | undefined, localName: string): XmlNode | undefined {
   return n?.children.find(c => c.localName === localName);
 }
 
-/** Read <r:UserID type="mst:KEY"> text from a node's direct children. */
+/** Read <r:UserID typeOfUserID="mst:KEY"> text from a node's direct children.
+ * (`type` accepted as a legacy fallback for XML exported before the XSD-compliance change.) */
 function mst(n: XmlNode, key: string): string | undefined {
-  return n.children.find(c => c.localName === 'UserID' && c.attrs['type'] === `mst:${key}`)?.text;
-}
-
-/** r:ID text of a node. */
-function rid(n: XmlNode): string {
-  return kid(n, 'ID')?.text ?? '';
+  return n.children.find(
+    c => c.localName === 'UserID' && (c.attrs['typeOfUserID'] === `mst:${key}` || c.attrs['type'] === `mst:${key}`),
+  )?.text;
 }
 
 /**
- * Extract the local ID from a full URN produced by exportDdiXml().
- * Format: {instrumentUrn}!{localId}, where instrumentUrn contains no '!'.
+ * r:ID text of a node, un-mapped back to internal-id space (the exporter maps internal ids to
+ * XSD-legal DDI IDs by escaping 2nd+ dots as '@' — see urn.ts). Everything in this importer —
+ * registry keys, reference targets, id fallbacks — operates uniformly in the raw space so
+ * suffix conventions like `.cl` strip correctly. (An external file whose IDs genuinely contain
+ * '@' would be altered by this; acceptable for now — external-file hardening is P4.)
+ */
+function rid(n: XmlNode): string {
+  return unmapId(kid(n, 'ID')?.text ?? '');
+}
+
+/**
+ * Extract the local ID from a URN produced by exportDdiXml(), in raw internal-id space.
+ *
+ * Current format is the canonical DDI URN `urn:ddi:{agency}:{mappedId}:{version}` — the local
+ * id is the 4th colon-separated segment (agency labels contain no colons, nor do mapped ids or
+ * versions). The pre-compliance format `{instrumentUrn}!{localId}` is still accepted so XML
+ * exported before the canonical-URN change keeps importing.
  */
 function urnToLocalId(urn: string): string {
   const bang = urn.indexOf('!');
-  return bang >= 0 ? urn.slice(bang + 1) : urn;
+  if (bang >= 0) return urn.slice(bang + 1);
+  const parts = urn.split(':');
+  if (parts.length === 5 && parts[0]?.toLowerCase() === 'urn' && parts[1]?.toLowerCase() === 'ddi') {
+    return unmapId(parts[3]!);
+  }
+  return urn;
 }
 
 // ---------------------------------------------------------------------------
@@ -79,9 +98,12 @@ function intlFromLabel(n: XmlNode | undefined): InternationalString {
 function intlFromDdiText(n: XmlNode | undefined): InternationalString {
   const result: InternationalString = {};
   if (!n) return result;
-  const lit = kid(n, 'LiteralText');
-  for (const t of kids(lit, 'Text')) {
-    result[t.attrs['xml:lang'] ?? 'en'] = t.text;
+  // One LiteralText per language (each LiteralTextType holds exactly one Text). The inner loop
+  // also covers legacy exports that put multiple Text children under a single LiteralText.
+  for (const lit of kids(n, 'LiteralText')) {
+    for (const t of kids(lit, 'Text')) {
+      result[t.attrs['xml:lang'] ?? 'en'] = t.text;
+    }
   }
   return result;
 }
@@ -204,8 +226,11 @@ export function importDdiXml(xml: string): ImportResult {
     : (root.children.find(c => c.localName === 'StudyUnit') ?? root);
 
   // --- StudyUnit metadata ---
-  const instrumentUrn = kid(su, 'URN')?.text ?? '';
-  const version = kid(su, 'Version')?.text ?? '1.0.0';
+  // Prefer the verbatim originals preserved in mst extensions (the r:URN/r:Version on the
+  // StudyUnit are XSD-sanitized canonical forms since the compliance change); fall back to
+  // them for pre-compliance or external files.
+  const instrumentUrn = mst(su, 'instrumentId') ?? kid(su, 'URN')?.text ?? '';
+  const version = mst(su, 'instrumentVersion') ?? kid(su, 'Version')?.text ?? '1.0.0';
   const languages = (mst(su, 'languages') ?? 'en').split(/\s+/).filter(Boolean);
   const defaultLanguage = mst(su, 'defaultLanguage') ?? languages[0] ?? 'en';
   const ddiProfile = (mst(su, 'ddiProfile') ?? 'ddi-lifecycle-3.3') as 'ddi-lifecycle-3.3';
@@ -223,13 +248,17 @@ export function importDdiXml(xml: string): ImportResult {
     title[s.attrs['xml:lang'] ?? 'en'] = s.text;
   }
   if (!Object.keys(title).length) title['en'] = 'Untitled';
-  const agencyName = kid(citation, 'Creator')?.text;
-  const abstractNode = kid(citation, 'Abstract');
+  // Creator > CreatorName > String per CitationType; bare-text Creator accepted as legacy.
+  const creatorNode = kid(citation, 'Creator');
+  const agencyName = kid(kid(creatorNode, 'CreatorName'), 'String')?.text ?? creatorNode?.text ?? undefined;
+  // Abstract is a StudyUnit sibling per StudyUnitType; Citation-child accepted as legacy.
+  const abstractNode = kid(su, 'Abstract') ?? kid(citation, 'Abstract');
   const description: InternationalString = {};
   for (const c of kids(abstractNode, 'Content')) {
     description[c.attrs['xml:lang'] ?? 'en'] = c.text;
   }
-  const created = kid(citation, 'Date')?.text;
+  // PublicationDate > SimpleDate per CitationType; bare r:Date accepted as legacy.
+  const created = kid(kid(citation, 'PublicationDate'), 'SimpleDate')?.text ?? kid(citation, 'Date')?.text;
 
   // --- ConceptualComponent ---
   const cc = su.children.find(c => c.localName === 'ConceptualComponent');
@@ -289,8 +318,12 @@ export function importDdiXml(xml: string): ImportResult {
       kid(kid(vNode, 'VariableName'), 'String')?.text ??
       varId;
     const kind = (mst(vNode, 'kind') ?? 'collected') as Variable['kind'];
-    const reprNode = kid(vNode, 'Representation');
-    let representation: Variable['representation'] = 'text';
+    // Current element name is l:VariableRepresentation ('Representation' = legacy exports).
+    const reprNode = kid(vNode, 'VariableRepresentation') ?? kid(vNode, 'Representation');
+    // boolean/file have no DDI representation element; they travel as mst:repr on the
+    // Variable itself (legacy exports carried it on the Representation node instead).
+    let representation: Variable['representation'] =
+      (mst(vNode, 'repr') as Variable['representation'] | undefined) ?? 'text';
     let categorySchemeRef: string | undefined;
     if (reprNode) {
       const codeRepr = kid(reprNode, 'CodeRepresentation');
@@ -389,7 +422,15 @@ export function importDdiXml(xml: string): ImportResult {
 
     const editsRaw = mst(qi, 'edits');
     const tooltip = mst(qi, 'tooltip');
-    const instruction = intlFromDdiText(kid(qi, 'InstructionText'));
+    // Instruction travels as an mst extension (3.3 has no InstructionText child on
+    // QuestionItem); the element read is a legacy fallback for pre-compliance exports.
+    const instructionRaw = mst(qi, 'instruction');
+    const instruction = instructionRaw
+      ? (JSON.parse(instructionRaw) as InternationalString)
+      : intlFromDdiText(kid(qi, 'InstructionText'));
+    // The mst:rd extension is the authoritative response-domain definition (the native DDI
+    // domain element is a projection); parseRd remains the path for external files.
+    const rdRaw = mst(qi, 'rd');
 
     return {
       type: 'question',
@@ -402,7 +443,7 @@ export function importDdiXml(xml: string): ImportResult {
       edits: editsRaw !== undefined ? (JSON.parse(editsRaw) as EditRule[]) : undefined,
       visibleWhen: mst(qi, 'visibleWhen') ?? qcVisibleWhen ?? undefined,
       interviewerOnly: (mst(qi, 'interviewerOnly') === 'true' || qcInterviewerOnly) || undefined,
-      responseDomain: parseRd(qi, qId, notes),
+      responseDomain: rdRaw ? (JSON.parse(rdRaw) as ResponseDomain) : parseRd(qi, qId, notes),
     };
   }
 

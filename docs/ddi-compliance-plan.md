@@ -1,6 +1,36 @@
 # DDI-Lifecycle 3.3 compliance — schema-valid XML, canonical identity, ddigraph interop
 
-*Design document. Status: approved for implementation, not started. (2026-07-09)*
+*Design document. Status: **P1 DONE (2026-07-09)** — the XSD gate is live and every bundled
+instrument's export validates against the official 3.3 schemas. P2–P4 not started.*
+
+## P1 findings (what the gate actually surfaced — supplements §2's predictions)
+
+- **D4 resolved, worse than predicted:** the official 3.3 `BaseIDType` pattern is *defective* —
+  its post-dot character class reads `[A-Zz-z0-9*@$-_]` (omitting lowercase `a–y`), so even
+  spec-legal one-dot ids like `c.experience` fail validation. Consequence: the ID mapping
+  replaces **every** dot with `@` (dotless ids sidestep the broken branch entirely); `urn.ts`
+  implements the bijection (`@` ↔ `.`, `@` asserted absent from inputs).
+- **GridDomain was never legal in QuestionItem** — it is not in QuestionItemType's
+  response-domain choice (3.3 models grids as a separate `d:QuestionGrid` item). The `table`/
+  `grid` domains now project to `d:TextDomain` natively while the full definition round-trips
+  via a `mst:rd` JSON extension at the QuestionItem level (which is now the authoritative
+  domain representation for ALL domain types, since RepresentationType-based domains admit no
+  `UserID` children at all). A faithful `d:QuestionGrid` mapping is future work.
+- **`d:InstructionText` doesn't exist in 3.3** (instructions are a separate
+  InterviewerInstruction scheme) — carried as an `mst:instruction` extension instead.
+- Other fixes the gate forced: root `i:DDIInstance` + its own maintainable identity;
+  `r:UserID`'s required attribute is `typeOfUserID` (not `type`); `r:Citation` (not `s:`) with
+  `Creator > CreatorName` and `PublicationDate > SimpleDate`; `r:Abstract` is a StudyUnit
+  sibling, not a Citation child; StudyUnit module order is ConceptualComponent →
+  DataCollection → LogicalProduct; `TypeOfObject` is REQUIRED in every ReferenceType;
+  QuestionConstruct references questions via `r:QuestionReference` (not `d:`); one
+  `d:LiteralText` per language (each holds exactly one `d:Text`); `l:Code` needs identity +
+  `r:CategoryReference` + required `r:Value`; Variable uses `l:VariableRepresentation` with
+  the `r:` ValueRepresentation substitution group; `DateTimeRepresentation`/`DateTimeDomain`
+  require `r:DateTypeCode`.
+- Pre-compliance XML remains importable: the importer keeps legacy fallbacks for every
+  changed shape (`!`-suffix URNs, `type` attribute, Citation-child Abstract, flat Creator,
+  `r:Date`, single-LiteralText multi-Text, element-level domain extensions).
 
 ## 1. Problem statement
 

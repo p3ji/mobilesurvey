@@ -19,6 +19,7 @@ import type {
   Variable,
 } from '@mobilesurvey/instrument-schema';
 import { el, txt } from './xml.js';
+import { mapId, mintUrn, sanitizeAgency, sanitizeVersion } from './urn.js';
 
 const NS_DECL: Record<string, string> = {
   'xmlns:i': 'ddi:instance:3_3',
@@ -27,10 +28,12 @@ const NS_DECL: Record<string, string> = {
   'xmlns:c': 'ddi:conceptualcomponent:3_3',
   'xmlns:l': 'ddi:logicalproduct:3_3',
   'xmlns:d': 'ddi:datacollection:3_3',
+  'xmlns:xsi': 'http://www.w3.org/2001/XMLSchema-instance',
+  'xsi:schemaLocation':
+    'ddi:instance:3_3 https://ddialliance.org/Specification/DDI-Lifecycle/3.3/XMLSchema/instance.xsd',
 };
 
 interface Ctx {
-  urn: string;
   version: string;
   agency: string;
   langs: string[];
@@ -38,23 +41,35 @@ interface Ctx {
   cc: string[];  // accumulated control construct elements
 }
 
+/** Canonical DDI URN for a local id (docs/ddi-compliance-plan.md §3.2). */
 function fullUrn(ctx: Ctx, localId: string): string {
-  return `${ctx.urn}!${localId}`;
+  return mintUrn(ctx.agency, mapId(localId), ctx.version);
 }
 
-/** Emit DDI identity block: URN, Agency, ID, Version. */
+/**
+ * Emit DDI identity block: URN + Agency/ID/Version identification sequence (both allowed by
+ * AbstractIdentifiableType's choice maxOccurs=2; URN takes precedence on conflict). r:ID
+ * carries the XSD-legal mapped id — the verbatim internal id travels in an `mst:id` extension
+ * emitted separately by callers, which the importer prefers.
+ */
 function identity(ctx: Ctx, localId: string): string {
   return (
     txt('r:URN', {}, fullUrn(ctx, localId)) +
     txt('r:Agency', {}, ctx.agency) +
-    txt('r:ID', {}, localId) +
+    txt('r:ID', {}, mapId(localId)) +
     txt('r:Version', {}, ctx.version)
   );
 }
 
-/** Emit <r:UserID type="mst:KEY">value</r:UserID> only when value is non-empty. Text content is escaped. */
+/** The URN + identification-sequence body shared by every DDI reference element. */
+function refIdentity(ctx: Ctx, localId: string): string {
+  return identity(ctx, localId);
+}
+
+/** Emit <r:UserID typeOfUserID="mst:KEY">value</r:UserID> only when value is non-empty.
+ * `typeOfUserID` is UserIDType's required attribute name (reusable.xsd). Text content is escaped. */
 function mst(key: string, value: string): string {
-  return value ? txt('r:UserID', { type: `mst:${key}` }, value) : '';
+  return value ? txt('r:UserID', { typeOfUserID: `mst:${key}` }, value) : '';
 }
 
 function intlLabel(ctx: Ctx, v: InternationalString): string {
@@ -65,14 +80,13 @@ function intlLabel(ctx: Ctx, v: InternationalString): string {
   );
 }
 
+/** DynamicTextType: TextContent (⊃ LiteralText) repeats; each LiteralTextType holds exactly ONE Text. */
 function ddiLiteralText(tag: string, ctx: Ctx, v: InternationalString): string {
   return el(
     tag,
     {},
-    el(
-      'd:LiteralText',
-      {},
-      ...ctx.langs.map(l => txt('d:Text', { 'xml:lang': l }, v[l] ?? v['en'] ?? '')),
+    ...ctx.langs.map(l =>
+      el('d:LiteralText', {}, txt('d:Text', { 'xml:lang': l }, v[l] ?? v['en'] ?? '')),
     ),
   );
 }
@@ -81,120 +95,50 @@ function ccRef(ctx: Ctx, localId: string, typeOfObject: string): string {
   return el(
     'd:ControlConstructReference',
     {},
-    txt('r:URN', {}, fullUrn(ctx, localId)),
-    txt('r:Agency', {}, ctx.agency),
-    txt('r:ID', {}, localId),
-    txt('r:Version', {}, ctx.version),
+    refIdentity(ctx, localId),
     txt('r:TypeOfObject', {}, typeOfObject),
   );
 }
 
+/**
+ * Native DDI response-domain element for a question. Domains are RepresentationType-based and
+ * accept NO UserID children, so every MST-specific field travels instead as one
+ * `mst:rd` JSON extension at the QuestionItem level (emitted by renderQ; the importer prefers
+ * it and this native element is a standards-facing projection).
+ *
+ * Mapping notes:
+ * - code/lookup/markAll → CodeDomain with the required CodeListReference.
+ * - datetime → DateTimeDomain with the required r:DateTypeCode.
+ * - boolean/file → TextDomain (no closer 3.3 domain without a code list).
+ * - grid/table → TextDomain: GridDomain is NOT in QuestionItemType's response-domain choice
+ *   (3.3 models grids as a separate d:QuestionGrid item). A faithful QuestionGrid mapping for
+ *   the establishment `table` domain is future work (docs/ddi-compliance-plan.md §8 territory);
+ *   until then the full table definition round-trips via the mst:rd extension.
+ */
 function rdEl(ctx: Ctx, rd: ResponseDomain): string {
   switch (rd.type) {
-    case 'code': {
-      const clId = `${rd.categorySchemeRef}.cl`;
-      return el(
-        'd:CodeDomain',
-        {},
-        el(
-          'r:CodeListReference',
-          {},
-          txt('r:URN', {}, fullUrn(ctx, clId)),
-          txt('r:Agency', {}, ctx.agency),
-          txt('r:ID', {}, clId),
-          txt('r:Version', {}, ctx.version),
-        ),
-        rd.selection === 'multiple' ? mst('selection', 'multiple') : '',
-      );
-    }
-    case 'numeric':
-      return el(
-        'd:NumericDomain',
-        {},
-        rd.min != null ? mst('min', String(rd.min)) : '',
-        rd.max != null ? mst('max', String(rd.max)) : '',
-        rd.decimals != null ? mst('decimals', String(rd.decimals)) : '',
-        rd.unit ? mst('unit', JSON.stringify(rd.unit)) : '',
-      );
-    case 'text':
-      return el(
-        'd:TextDomain',
-        {},
-        rd.multiline ? mst('multiline', 'true') : '',
-        rd.maxLength != null ? mst('maxLength', String(rd.maxLength)) : '',
-        rd.pattern ? mst('pattern', rd.pattern) : '',
-      );
-    case 'datetime':
-      return el('d:DateTimeDomain', {}, mst('mode', rd.mode));
-    case 'boolean':
-      return el('d:CodeDomain', {}, mst('rdType', 'boolean'));
-    case 'file':
-      return el(
-        'd:TextDomain',
-        {},
-        mst('rdType', 'file'),
-        rd.accept ? mst('accept', rd.accept.join(',')) : '',
-        rd.maxSizeMb != null ? mst('maxSizeMb', String(rd.maxSizeMb)) : '',
-      );
-    case 'lookup': {
-      const clId = `${rd.categorySchemeRef}.cl`;
-      return el(
-        'd:CodeDomain',
-        {},
-        el(
-          'r:CodeListReference',
-          {},
-          txt('r:URN', {}, fullUrn(ctx, clId)),
-          txt('r:Agency', {}, ctx.agency),
-          txt('r:ID', {}, clId),
-          txt('r:Version', {}, ctx.version),
-        ),
-        mst('rdType', 'lookup'),
-        rd.hierarchical ? mst('hierarchical', 'true') : '',
-      );
-    }
+    case 'code':
+    case 'lookup':
     case 'markAll': {
       const clId = `${rd.categorySchemeRef}.cl`;
       return el(
         'd:CodeDomain',
         {},
-        el(
-          'r:CodeListReference',
-          {},
-          txt('r:URN', {}, fullUrn(ctx, clId)),
-          txt('r:Agency', {}, ctx.agency),
-          txt('r:ID', {}, clId),
-          txt('r:Version', {}, ctx.version),
-        ),
-        mst('rdType', 'markAll'),
-        mst('variablePrefix', rd.variablePrefix),
+        el('r:CodeListReference', {}, refIdentity(ctx, clId), txt('r:TypeOfObject', {}, 'CodeList')),
       );
     }
+    case 'numeric':
+      return el('d:NumericDomain', {});
+    case 'datetime': {
+      const code = rd.mode === 'date' ? 'Date' : rd.mode === 'time' ? 'Time' : 'DateTime';
+      return el('d:DateTimeDomain', {}, txt('r:DateTypeCode', {}, code));
+    }
+    case 'text':
+    case 'boolean':
+    case 'file':
     case 'grid':
-      return el(
-        'd:GridDomain',
-        {},
-        mst('rdType', 'grid'),
-        mst('rowSchemeRef', rd.rowSchemeRef),
-        mst('colSchemeRef', rd.colSchemeRef),
-        mst('variablePrefix', rd.variablePrefix),
-      );
     case 'table':
-      return el(
-        'd:GridDomain',
-        {},
-        mst('rdType', 'table'),
-        mst('rowSchemeRef', rd.rowSchemeRef),
-        mst('colSchemeRef', rd.colSchemeRef),
-        mst('variablePrefix', rd.variablePrefix),
-        rd.unit ? mst('unit', JSON.stringify(rd.unit)) : '',
-        rd.decimals != null ? mst('decimals', String(rd.decimals)) : '',
-        rd.min != null ? mst('min', String(rd.min)) : '',
-        rd.max != null ? mst('max', String(rd.max)) : '',
-        rd.totalRow ? mst('totalRow', 'true') : '',
-        rd.totalCol ? mst('totalCol', 'true') : '',
-        rd.disabledCells?.length ? mst('disabledCells', JSON.stringify(rd.disabledCells)) : '',
-      );
+      return el('d:TextDomain', {});
   }
 }
 
@@ -212,8 +156,12 @@ function renderQ(ctx: Ctx, q: QuestionConstruct): void {
       q.visibleWhen ? mst('visibleWhen', q.visibleWhen) : '',
       q.tooltip ? mst('tooltip', JSON.stringify(q.tooltip)) : '',
       q.edits !== undefined ? mst('edits', JSON.stringify(q.edits)) : '',
+      // 3.3 has no InstructionText child on QuestionItem (instructions are a separate
+      // InterviewerInstruction scheme) — carried as an extension instead.
+      q.instruction ? mst('instruction', JSON.stringify(q.instruction)) : '',
+      // Authoritative response-domain definition; the native element below is a projection.
+      mst('rd', JSON.stringify(q.responseDomain)),
       ddiLiteralText('d:QuestionText', ctx, q.text),
-      q.instruction ? ddiLiteralText('d:InstructionText', ctx, q.instruction) : '',
       rdEl(ctx, q.responseDomain),
     ),
   );
@@ -226,12 +174,9 @@ function renderQ(ctx: Ctx, q: QuestionConstruct): void {
       q.visibleWhen ? mst('visibleWhen', q.visibleWhen) : '',
       q.interviewerOnly ? mst('interviewerOnly', 'true') : '',
       el(
-        'd:QuestionReference',
+        'r:QuestionReference', // QuestionConstructType refs live in the r: namespace
         {},
-        txt('r:URN', {}, fullUrn(ctx, qiId)),
-        txt('r:Agency', {}, ctx.agency),
-        txt('r:ID', {}, qiId),
-        txt('r:Version', {}, ctx.version),
+        refIdentity(ctx, qiId),
         txt('r:TypeOfObject', {}, 'QuestionItem'),
       ),
     ),
@@ -268,8 +213,8 @@ function renderSeq(ctx: Ctx, s: SequenceConstruct): void {
 }
 
 function renderIte(ctx: Ctx, ite: IfThenElseConstruct): void {
-  const thenId = `${ite.id}!then`;
-  const elseId = ite.else?.length ? `${ite.id}!else` : null;
+  const thenId = `${ite.id}_then`;
+  const elseId = ite.else?.length ? `${ite.id}_else` : null;
   renderSeq(ctx, { type: 'sequence', id: thenId, children: ite.then });
   if (elseId) renderSeq(ctx, { type: 'sequence', id: elseId, children: ite.else! });
   ctx.cc.push(
@@ -291,20 +236,14 @@ function renderIte(ctx: Ctx, ite: IfThenElseConstruct): void {
       el(
         'd:ThenConstructReference',
         {},
-        txt('r:URN', {}, fullUrn(ctx, thenId)),
-        txt('r:Agency', {}, ctx.agency),
-        txt('r:ID', {}, thenId),
-        txt('r:Version', {}, ctx.version),
+        refIdentity(ctx, thenId),
         txt('r:TypeOfObject', {}, 'Sequence'),
       ),
       elseId
         ? el(
             'd:ElseConstructReference',
             {},
-            txt('r:URN', {}, fullUrn(ctx, elseId)),
-            txt('r:Agency', {}, ctx.agency),
-            txt('r:ID', {}, elseId),
-            txt('r:Version', {}, ctx.version),
+            refIdentity(ctx, elseId),
             txt('r:TypeOfObject', {}, 'Sequence'),
           )
         : '',
@@ -313,7 +252,7 @@ function renderIte(ctx: Ctx, ite: IfThenElseConstruct): void {
 }
 
 function renderLoop(ctx: Ctx, loop: LoopConstruct): void {
-  const bodyId = `${loop.id}!body`;
+  const bodyId = `${loop.id}_body`;
   renderSeq(ctx, { type: 'sequence', id: bodyId, children: loop.children });
   ctx.cc.push(
     el(
@@ -330,10 +269,7 @@ function renderLoop(ctx: Ctx, loop: LoopConstruct): void {
       el(
         'd:ControlConstructReference',
         {},
-        txt('r:URN', {}, fullUrn(ctx, bodyId)),
-        txt('r:Agency', {}, ctx.agency),
-        txt('r:ID', {}, bodyId),
-        txt('r:Version', {}, ctx.version),
+        refIdentity(ctx, bodyId),
         txt('r:TypeOfObject', {}, 'Sequence'),
       ),
     ),
@@ -379,34 +315,36 @@ function renderConstruct(ctx: Ctx, c: ControlConstruct): void {
 }
 
 function renderVar(ctx: Ctx, v: Variable): string {
+  // VariableRepresentationType's value slot accepts the r:ValueRepresentation substitution
+  // group (Numeric/Text/DateTime/Code — all in the r: namespace). boolean/file have no DDI
+  // representation element; they travel as an mst:repr extension on the Variable itself
+  // (VariableRepresentationType has no UserID slot).
   let repr = '';
   if (v.representation === 'code' && v.categorySchemeRef) {
     const clId = `${v.categorySchemeRef}.cl`;
     repr = el(
-      'l:Representation',
+      'l:VariableRepresentation',
       {},
       el(
-        'l:CodeRepresentation',
+        'r:CodeRepresentation',
         {},
-        el(
-          'r:CodeListReference',
-          {},
-          txt('r:URN', {}, fullUrn(ctx, clId)),
-          txt('r:Agency', {}, ctx.agency),
-          txt('r:ID', {}, clId),
-          txt('r:Version', {}, ctx.version),
-        ),
+        el('r:CodeListReference', {}, refIdentity(ctx, clId), txt('r:TypeOfObject', {}, 'CodeList')),
       ),
     );
   } else if (v.representation === 'numeric') {
-    repr = el('l:Representation', {}, el('l:NumericRepresentation', {}));
+    repr = el('l:VariableRepresentation', {}, el('r:NumericRepresentation', {}));
   } else if (v.representation === 'text') {
-    repr = el('l:Representation', {}, el('l:TextRepresentation', {}));
+    repr = el('l:VariableRepresentation', {}, el('r:TextRepresentation', {}));
   } else if (v.representation === 'datetime') {
-    repr = el('l:Representation', {}, el('l:DateTimeRepresentation', {}));
-  } else {
-    repr = el('l:Representation', {}, mst('repr', v.representation));
+    // DateTimeRepresentation requires a DateTypeCode child; Variable doesn't carry a mode
+    // (that lives on the question's response domain), so the generic DateTime code is used.
+    repr = el(
+      'l:VariableRepresentation',
+      {},
+      el('r:DateTimeRepresentation', {}, txt('r:DateTypeCode', {}, 'DateTime')),
+    );
   }
+  // VariableType child order: VariableName, r:Label, …, r:ConceptReference, …, VariableRepresentation.
   return el(
     'l:Variable',
     {},
@@ -414,21 +352,20 @@ function renderVar(ctx: Ctx, v: Variable): string {
     mst('id', v.id),
     mst('name', v.name),
     mst('kind', v.kind),
+    repr === '' ? mst('repr', v.representation) : '',
     v.compute ? mst('compute', v.compute) : '',
     v.interviewerOnly ? mst('interviewerOnly', 'true') : '',
     v.isPII ? mst('isPII', 'true') : '',
-    v.conceptRef
-      ? el(
-          'l:ConceptReference',
-          {},
-          txt('r:URN', {}, fullUrn(ctx, v.conceptRef)),
-          txt('r:Agency', {}, ctx.agency),
-          txt('r:ID', {}, v.conceptRef),
-          txt('r:Version', {}, ctx.version),
-        )
-      : '',
     el('l:VariableName', {}, txt('r:String', { 'xml:lang': ctx.langs[0]! }, v.name)),
     intlLabel(ctx, v.label),
+    v.conceptRef
+      ? el(
+          'r:ConceptReference',
+          {},
+          refIdentity(ctx, v.conceptRef),
+          txt('r:TypeOfObject', {}, 'Concept'),
+        )
+      : '',
     repr,
   );
 }
@@ -436,12 +373,14 @@ function renderVar(ctx: Ctx, v: Variable): string {
 /** Serialize an Instrument to a DDI-Lifecycle 3.3 XML string. */
 export function exportDdiXml(instrument: Instrument): string {
   const uparts = instrument.id.split(':');
-  const agency = uparts[2] ?? 'unknown';
-  const shortId = uparts[3] ?? instrument.id;
+  // Agency/version must satisfy the XSD's DDIAgencyIDType/VersionType patterns; anything
+  // unparseable falls back to the project placeholder (docs/ddi-compliance-plan.md §3.1).
+  // P2 of the plan replaces this derivation with an explicit agencyId config.
+  const agency = sanitizeAgency(uparts[2]);
+  const shortId = uparts[3] ?? instrument.id; // raw; identity()/fullUrn() map at emission
 
   const ctx: Ctx = {
-    urn: instrument.id,
-    version: instrument.version,
+    version: sanitizeVersion(instrument.version),
     agency,
     langs: instrument.languages,
     qi: [],
@@ -474,18 +413,18 @@ export function exportDdiXml(instrument: Instrument): string {
       mst('id', cs.id),
       intlLabel(ctx, cs.label),
       ...cs.categories.map(cat =>
+        // CodeType: identity head, then r:CategoryReference, then REQUIRED r:Value.
         el(
           'l:Code',
           {},
+          identity(ctx, `${cs.id}.cd.${cat.code}`),
           el(
-            'l:CategoryReference',
+            'r:CategoryReference',
             {},
-            txt('r:URN', {}, fullUrn(ctx, `${cs.id}.${cat.code}`)),
-            txt('r:Agency', {}, agency),
-            txt('r:ID', {}, `${cs.id}.${cat.code}`),
-            txt('r:Version', {}, ctx.version),
+            refIdentity(ctx, `${cs.id}.${cat.code}`),
+            txt('r:TypeOfObject', {}, 'Category'),
           ),
-          txt('l:Value', {}, cat.code),
+          txt('r:Value', {}, cat.code),
         ),
       ),
     ),
@@ -530,18 +469,21 @@ export function exportDdiXml(instrument: Instrument): string {
   const studyUnit = el(
     's:StudyUnit',
     {},
-    txt('r:URN', {}, instrument.id),
-    txt('r:Agency', {}, agency),
-    txt('r:ID', {}, shortId),
-    txt('r:Version', {}, instrument.version),
+    identity(ctx, shortId),
+    // Verbatim originals: the canonical URN/Version above are XSD-sanitized forms, so the
+    // exact instrument id and version round-trip through extensions the importer prefers.
+    mst('instrumentId', instrument.id),
+    mst('instrumentVersion', instrument.version),
     mst('languages', instrument.languages.join(' ')),
     mst('defaultLanguage', instrument.defaultLanguage),
     mst('ddiProfile', instrument.ddiProfile),
     instrument.prefillMappings.length ? mst('prefillMappings', JSON.stringify(instrument.prefillMappings)) : '',
     instrument.interviewer ? mst('interviewer', JSON.stringify(instrument.interviewer)) : '',
-    // Citation
+    // Citation (r: namespace per StudyUnitType; CitationType children in schema order:
+    // Title, Creator > CreatorName (a BibliographicNameType, i.e. r:String children),
+    // PublicationDate > SimpleDate).
     el(
-      's:Citation',
+      'r:Citation',
       {},
       el(
         'r:Title',
@@ -550,76 +492,86 @@ export function exportDdiXml(instrument: Instrument): string {
           txt('r:String', { 'xml:lang': l }, instrument.metadata.title[l] ?? ''),
         ),
       ),
-      instrument.metadata.agency ? txt('r:Creator', {}, instrument.metadata.agency) : '',
-      instrument.metadata.description
+      instrument.metadata.agency
         ? el(
-            'r:Abstract',
+            'r:Creator',
             {},
-            ...instrument.languages.map(l =>
-              txt(
-                'r:Content',
-                { 'xml:lang': l },
-                instrument.metadata.description![l] ?? instrument.metadata.description!['en'] ?? '',
-              ),
-            ),
+            el('r:CreatorName', {}, txt('r:String', { 'xml:lang': instrument.defaultLanguage }, instrument.metadata.agency)),
           )
         : '',
-      instrument.metadata.created ? txt('r:Date', {}, instrument.metadata.created) : '',
+      instrument.metadata.created
+        ? el('r:PublicationDate', {}, txt('r:SimpleDate', {}, instrument.metadata.created))
+        : '',
     ),
+    // Abstract is a StudyUnit sibling of Citation (not a Citation child) per StudyUnitType.
+    instrument.metadata.description
+      ? el(
+          'r:Abstract',
+          {},
+          ...instrument.languages.map(l =>
+            txt(
+              'r:Content',
+              { 'xml:lang': l },
+              instrument.metadata.description![l] ?? instrument.metadata.description!['en'] ?? '',
+            ),
+          ),
+        )
+      : '',
     // ConceptualComponent
     el(
       'c:ConceptualComponent',
       {},
-      identity(ctx, `${shortId}!cc`),
+      identity(ctx, `${shortId}_cc`),
       concepts.length
-        ? el('c:ConceptScheme', {}, identity(ctx, `${shortId}!cs.concepts`), ...concepts)
+        ? el('c:ConceptScheme', {}, identity(ctx, `${shortId}_csc`), ...concepts)
         : '',
       universes.length
-        ? el('c:UniverseScheme', {}, identity(ctx, `${shortId}!us`), ...universes)
+        ? el('c:UniverseScheme', {}, identity(ctx, `${shortId}_us`), ...universes)
         : '',
     ),
-    // LogicalProduct
-    el(
-      'l:LogicalProduct',
-      {},
-      identity(ctx, `${shortId}!lp`),
-      ...catSchemes.map(cs => cs.catScheme),
-      catSchemes.length
-        ? el('l:CodeListScheme', {}, identity(ctx, `${shortId}!cls`), ...catSchemes.map(cs => cs.codeList))
-        : '',
-      variables.length
-        ? el('l:VariableScheme', {}, identity(ctx, `${shortId}!vs`), ...variables)
-        : '',
-    ),
+    // StudyUnitType module order: ConceptualComponent, then DataCollection, then the
+    // l:BaseLogicalProduct substitution group (l:LogicalProduct).
     // DataCollection
     el(
       'd:DataCollection',
       {},
-      identity(ctx, `${shortId}!dc`),
-      el('d:QuestionScheme', {}, identity(ctx, `${shortId}!qs`), ...ctx.qi),
-      el('d:ControlConstructScheme', {}, identity(ctx, `${shortId}!ccs`), ...ctx.cc),
+      identity(ctx, `${shortId}_dc`),
+      el('d:QuestionScheme', {}, identity(ctx, `${shortId}_qs`), ...ctx.qi),
+      el('d:ControlConstructScheme', {}, identity(ctx, `${shortId}_ccs`), ...ctx.cc),
       el(
         'd:InstrumentScheme',
         {},
-        identity(ctx, `${shortId}!is`),
+        identity(ctx, `${shortId}_is`),
         el(
           'd:Instrument',
           {},
-          identity(ctx, `${shortId}!inst`),
+          identity(ctx, `${shortId}_inst`),
           intlLabel(ctx, instrument.metadata.title),
           el(
             'd:ControlConstructReference',
             {},
-            txt('r:URN', {}, fullUrn(ctx, instrument.sequence.id)),
-            txt('r:Agency', {}, agency),
-            txt('r:ID', {}, instrument.sequence.id),
-            txt('r:Version', {}, ctx.version),
+            refIdentity(ctx, instrument.sequence.id),
             txt('r:TypeOfObject', {}, 'Sequence'),
           ),
         ),
       ),
     ),
+    // LogicalProduct
+    el(
+      'l:LogicalProduct',
+      {},
+      identity(ctx, `${shortId}_lp`),
+      ...catSchemes.map(cs => cs.catScheme),
+      catSchemes.length
+        ? el('l:CodeListScheme', {}, identity(ctx, `${shortId}_cls`), ...catSchemes.map(cs => cs.codeList))
+        : '',
+      variables.length
+        ? el('l:VariableScheme', {}, identity(ctx, `${shortId}_vs`), ...variables)
+        : '',
+    ),
   );
 
-  return `<?xml version="1.0" encoding="UTF-8"?>\n<DDIInstance\n  ${nsStr}>\n${studyUnit}\n</DDIInstance>`;
+  // DDIInstanceType extends r:MaintainableType, so the root wrapper carries its own identity.
+  const rootIdentity = identity(ctx, `${shortId}_ddii`);
+  return `<?xml version="1.0" encoding="UTF-8"?>\n<i:DDIInstance\n  ${nsStr}>\n${rootIdentity}${studyUnit}\n</i:DDIInstance>`;
 }
