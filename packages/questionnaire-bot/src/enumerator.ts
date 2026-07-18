@@ -113,6 +113,19 @@ function isItemAnswered(item: RenderItem, responses: Record<string, unknown>): b
       .flat()
       .filter((c) => !c.disabled && !c.computed)
       .every((c) => responses[c.instanceKey] !== undefined);
+  // Sensor questions: unanswered until the consent decision exists; after that, granted
+  // needs a capture (base variable), declined needs the manual fallback when offered
+  // (photo has none — a declined photo question is simply skippable).
+  if (item.kind === 'geolocation') {
+    if (item.consent === undefined) return responses[item.consentKey] !== undefined;
+    if (item.consent === 'declined' && !item.manualFallback) return true;
+    return responses[item.instanceKey] !== undefined;
+  }
+  if (item.kind === 'photo') {
+    if (item.consent === undefined) return responses[item.consentKey] !== undefined;
+    if (item.consent === 'declined') return true;
+    return responses[item.instanceKey] !== undefined;
+  }
   return true; // sections, statements, headings, pageBreaks need no answer
 }
 
@@ -289,6 +302,72 @@ function generateCandidates(
     return [{ answers, steps }];
   }
 
+  // Sensor questions answer in two rounds: first the consent decision (both branches
+  // enumerated outside canonical mode — consent is routable via $CONSENT_*), then the
+  // capture itself, filled with deterministic bot values mirroring the runtime mocks.
+  if (item.kind === 'geolocation' || item.kind === 'photo') {
+    const step = (instanceKey: string, variableRef: string, value: unknown, isRoutingVar: boolean): AnswerStep => ({
+      instanceKey,
+      variableRef,
+      value,
+      domainType: item.kind,
+      isRoutingVar,
+    });
+    const consentVar = item.consentKey.split('@')[0] ?? item.consentKey;
+    if (item.consent === undefined) {
+      const isRouting = routingVars.has(consentVar);
+      const decide = (decision: 'granted' | 'declined'): AnswerCandidate => ({
+        answers: { [item.consentKey]: decision },
+        steps: [step(item.consentKey, consentVar, decision, isRouting)],
+      });
+      return mode === 'canonical' && !isRouting ? [decide('granted')] : [decide('granted'), decide('declined')];
+    }
+    const baseVar = item.instanceKey.split('@')[0] ?? item.instanceKey;
+    if (item.kind === 'geolocation') {
+      if (item.consent === 'declined') {
+        // manualFallback is guaranteed here (no-fallback declines were "answered" above).
+        return [{
+          answers: { [item.instanceKey]: 'Bot City', [item.subKeys.src]: 'declined' },
+          steps: [step(item.instanceKey, baseVar, 'Bot City', routingVars.has(baseVar))],
+        }];
+      }
+      const f = 10 ** item.precision;
+      const lat = Math.round(45.42153 * f) / f;
+      const lon = Math.round(-75.697193 * f) / f;
+      return [{
+        answers: {
+          [item.instanceKey]: `${lat}, ${lon} (±12 m)`,
+          [item.subKeys.lat]: lat,
+          [item.subKeys.lon]: lon,
+          [item.subKeys.acc]: 12,
+          [item.subKeys.ts]: '2026-01-01T00:00:00.000Z',
+          [item.subKeys.src]: 'gps',
+        },
+        steps: [step(item.instanceKey, baseVar, `${lat}, ${lon} (±12 m)`, routingVars.has(baseVar))],
+      }];
+    }
+    // photo, consent granted: mock ref (+ one confirmed recognition item when configured).
+    const answers: Record<string, unknown> = {
+      [item.instanceKey]: `bot/${item.constructId}.jpg`,
+      [item.subKeys.ts]: '2026-01-01T00:00:00.000Z',
+      [item.subKeys.src]: 'camera',
+    };
+    if (item.recognition) {
+      const p = item.recognition.variablePrefix;
+      const suffix = item.recognition.scopeSuffix;
+      const k = (name: string) => `${name}@${suffix}`;
+      answers[k(`${p}_N_ITEMS`)] = 1;
+      answers[k(`${p}_I1_LABEL`)] = item.recognition.itemOptions?.[0]?.code ?? 'Bot item';
+      answers[k(`${p}_I1_QTY`)] = 1;
+      answers[k(`${p}_I1_UNIT`)] = 'serving';
+      answers[k(`${p}_I1_CONF`)] = 1;
+    }
+    return [{
+      answers,
+      steps: [step(item.instanceKey, baseVar, answers[item.instanceKey], routingVars.has(baseVar))],
+    }];
+  }
+
   return [{ answers: {}, steps: [] }];
 }
 
@@ -382,6 +461,8 @@ function enumerateAllPaths(
 
 function getFallbackKey(item: RenderItem): string {
   if (item.kind === 'question') return item.instanceKey;
+  if (item.kind === 'geolocation' || item.kind === 'photo')
+    return item.consent === undefined ? item.consentKey : item.instanceKey;
   if (item.kind === 'markAll') return item.categories[0]?.instanceKey ?? '';
   if (item.kind === 'grid') return item.rows[0]?.instanceKey ?? '';
   if (item.kind === 'table')

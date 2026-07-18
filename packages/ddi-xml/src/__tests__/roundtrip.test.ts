@@ -198,3 +198,32 @@ describe('DDI-XML import: fidelity report', () => {
     expect(unknownDomainNote?.severity).toBe('warning');
   });
 });
+
+describe('sensor-module round-trip (Phase 16)', () => {
+  it('sensor declarations and sensor domains survive both packagings exactly', () => {
+    for (const packaging of ['instance', 'fragment'] as const) {
+      const { instrument } = importDdiXml(exportDdiXml(demoInstrument, { packaging }));
+      expect(JSON.parse(JSON.stringify(instrument.sensors))).toEqual(
+        JSON.parse(JSON.stringify(demoInstrument.sensors)),
+      );
+      const find = (nodes: unknown[], id: string): { responseDomain?: unknown } | null => {
+        for (const n of nodes as { type: string; id?: string; children?: unknown[]; then?: unknown[]; else?: unknown[]; responseDomain?: unknown }[]) {
+          if (n.type === 'question' && n.id === id) return n;
+          for (const kids of [n.children, n.then, n.else]) {
+            if (kids) { const r = find(kids, id); if (r) return r; }
+          }
+        }
+        return null;
+      };
+      const geo = find(instrument.sequence.children, 'q.demoLoc');
+      const photo = find(instrument.sequence.children, 'q.demoPhoto');
+      expect(geo?.responseDomain).toEqual({ type: 'geolocation', precision: 2, manualFallback: true });
+      expect(photo?.responseDomain).toEqual({
+        type: 'photo',
+        facing: 'environment',
+        allowLibrary: true,
+        recognition: { profile: 'food', variablePrefix: 'MEAL', maxItems: 3 },
+      });
+    }
+  });
+});

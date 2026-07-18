@@ -19,7 +19,7 @@ interface FlatQuestion {
   pageLabel: string;
 }
 
-type AddType = 'text' | 'paragraph' | 'number' | 'boolean' | 'single' | 'multiple' | 'date' | 'statement';
+type AddType = 'text' | 'paragraph' | 'number' | 'boolean' | 'single' | 'multiple' | 'date' | 'photo' | 'statement';
 
 const ADD_MENU: { type: AddType; label: string }[] = [
   { type: 'text',      label: 'Short text' },
@@ -29,6 +29,7 @@ const ADD_MENU: { type: AddType; label: string }[] = [
   { type: 'single',    label: 'Single choice' },
   { type: 'multiple',  label: 'Multiple choice' },
   { type: 'date',      label: 'Date' },
+  { type: 'photo',     label: 'Photo (camera, consent-gated)' },
   { type: 'statement', label: 'Statement (no answer)' },
 ];
 
@@ -58,6 +59,25 @@ function flattenQuestions(root: ControlConstruct, lang: string): FlatQuestion[] 
   return result;
 }
 
+// A photo question needs an instrument-level camera declaration (consent text) to be valid
+// and runnable — auto-add a starter one, same as the Pro-mode Inspector does.
+function ensureCameraDeclaration(d: Instrument): void {
+  d.sensors ??= { sensors: [] };
+  if (!d.sensors.sensors.some((s) => s.kind === 'camera')) {
+    d.sensors.sensors.push({
+      kind: 'camera',
+      purpose: Object.fromEntries(
+        d.languages.map((l) => [
+          l,
+          l === 'fr'
+            ? 'Nous vous demandons de photographier l’objet de cette question. La photo est réduite et débarrassée des métadonnées cachées avant le téléversement.'
+            : 'We ask you to photograph the subject of this question. The photo is downscaled and stripped of hidden metadata before upload.',
+        ]),
+      ),
+    });
+  }
+}
+
 function domainLabel(rd: ResponseDomain): string {
   switch (rd.type) {
     case 'code':    return rd.selection === 'multiple' ? 'Multiple choice' : 'Single choice';
@@ -66,6 +86,8 @@ function domainLabel(rd: ResponseDomain): string {
     case 'datetime':return `Date${rd.mode !== 'date' ? `/${rd.mode}` : ''}`;
     case 'boolean': return 'Yes / No';
     case 'file':    return 'File upload';
+    case 'photo':   return 'Photo (camera)';
+    case 'geolocation': return 'Location capture';
     case 'lookup':  return 'Lookup';
     case 'markAll': return 'Mark all that apply';
     case 'grid':    return 'Grid';
@@ -261,6 +283,10 @@ function DomainEditor({
         case 'number':    n.responseDomain = { type: 'numeric' }; break;
         case 'boolean':   n.responseDomain = { type: 'boolean' }; break;
         case 'date':      n.responseDomain = { type: 'datetime', mode: 'date' }; break;
+        case 'photo':
+          n.responseDomain = { type: 'photo', facing: 'environment' };
+          ensureCameraDeclaration(d);
+          break;
         case 'single':
         case 'multiple': {
           const existing = rd.type === 'code' || rd.type === 'markAll' || rd.type === 'lookup'
@@ -285,6 +311,7 @@ function DomainEditor({
     if (rd.type === 'datetime') return 'date';
     if (rd.type === 'code' && rd.selection === 'multiple') return 'multiple';
     if (rd.type === 'code') return 'single';
+    if (rd.type === 'photo') return 'photo';
     return 'text';
   })();
 
@@ -339,6 +366,10 @@ export function EasyModeView() {
           case 'number':    q.responseDomain = { type: 'numeric' }; break;
           case 'boolean':   q.responseDomain = { type: 'boolean' }; break;
           case 'date':      q.responseDomain = { type: 'datetime', mode: 'date' }; break;
+          case 'photo':
+            q.responseDomain = { type: 'photo', facing: 'environment' };
+            ensureCameraDeclaration(d);
+            break;
           case 'single':
           case 'multiple': {
             const csId = genId('cs');

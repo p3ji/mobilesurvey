@@ -151,6 +151,27 @@ export function checkReferences(instrument: Instrument): ValidationIssue[] {
             message: `${rd.type} question requires a matching "${neededKind}" declaration in \`sensors\` (consent purpose text); the runtime refuses undeclared sensors`,
           });
         }
+        // Consent-trap check: a required sensor question with no answer path for a
+        // non-consenting respondent would block the survey. The escape hatches are a manual
+        // fallback (geolocation), making it optional, or gating visibility on the consent
+        // variable (e.g. visibleWhen: "$CONSENT_CAMERA == 'granted'").
+        if (q.required) {
+          const consentVar = SENSOR_CONSENT_VARIABLES[neededKind];
+          const gatedOnConsent = (q.visibleWhen ?? '').includes(consentVar);
+          const trapped =
+            rd.type === 'photo' ? !gatedOnConsent : rd.manualFallback === false && !gatedOnConsent;
+          if (trapped) {
+            issues.push({
+              path: `${path}.required`,
+              message:
+                `Required ${rd.type} question traps respondents who decline consent — ` +
+                (rd.type === 'geolocation'
+                  ? 'enable the manual fallback, make it optional, or gate visibleWhen on '
+                  : 'make it optional or gate visibleWhen on ') +
+                `$${consentVar}`,
+            });
+          }
+        }
         if (rd.type === 'photo' && rd.recognition) {
           const rec = rd.recognition;
           const recPrior = seenPrefixes.get(rec.variablePrefix);

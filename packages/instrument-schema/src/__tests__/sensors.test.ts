@@ -100,6 +100,37 @@ describe('geolocation domain validation', () => {
     expect(issuesOf(inst).join('\n')).toContain('would collide');
   });
 
+  it('flags consent traps: required sensor questions with no decline path', () => {
+    const inst = clone();
+    const page = inst.sequence.children.find(
+      (c): c is SequenceConstruct => c.type === 'sequence' && c.id === 'pg.sensor',
+    )!;
+    const geo = page.children.find(
+      (c): c is QuestionConstruct => c.type === 'question' && c.id === 'q.demoLoc',
+    )!;
+    const photo = page.children.find(
+      (c): c is QuestionConstruct => c.type === 'question' && c.id === 'q.demoPhoto',
+    )!;
+
+    // Required + manual fallback (geolocation) is fine.
+    geo.required = true;
+    expect(issuesOf(inst)).toEqual([]);
+
+    // Required + fallback disabled = trap.
+    (geo.responseDomain as { manualFallback?: boolean }).manualFallback = false;
+    expect(issuesOf(inst).join('\n')).toContain('traps respondents');
+
+    // Gating visibility on the consent variable is an escape hatch.
+    geo.visibleWhen = "$CONSENT_GEOLOCATION == 'granted'";
+    expect(issuesOf(inst)).toEqual([]);
+
+    // Photo has no fallback: required alone is a trap, consent-gated is fine.
+    photo.required = true;
+    expect(issuesOf(inst).join('\n')).toContain('traps respondents');
+    photo.visibleWhen = "$CONSENT_CAMERA == 'granted'";
+    expect(issuesOf(inst)).toEqual([]);
+  });
+
   it('sensor declarations require a purpose text', () => {
     const inst = clone();
     (inst.sensors!.sensors[0]! as { purpose: Record<string, string> }).purpose = {};

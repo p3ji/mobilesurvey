@@ -1,7 +1,11 @@
 # Sensor module — GPS-tagged collection & camera capture with ML-assisted coding
 
-*Design document. Status: **PLANNED (2026-07-17)** — architecture agreed, nothing built.
-Corresponds to the hub roadmap card `sensor` ("Sensor Data Collection", coming-soon).*
+*Design document. Status: **S1–S4 BUILT (2026-07-18)** — all four phases implemented and
+verified live (results and deviations in §8). One deployment step remains manual: creating
+the `attachments` Storage bucket (DEPLOYMENT.md §9d); until then photo uploads fail
+gracefully and photo questions stay skippable. The real Anthropic vision call is wired but
+unexercised in this environment (no `VITE_ANTHROPIC_API_KEY`); the mock provider verified
+the full suggest→correct→save UX end-to-end.*
 
 ## 1. Problem statement
 
@@ -336,3 +340,45 @@ consent rate, fix quality, and model correction rate without touching the respon
   proxy, not built (D5) — consistent with the Validator V3 decision.
 - **(2026-07-17)** Photos: private bucket, path refs in answers, mandatory client-side
   re-encode (EXIF/GPS strip), default coordinate precision is ~110 m, never raw (D6).
+
+## 8. Build results & deviations from the design (2026-07-18)
+
+Implemented exactly as designed except where noted. Commits: S1 `067a426`, S2 `04d9900`,
+S3 `d38a0c0`, S4 (this doc's commit).
+
+- **Photo variables (deviation from D2):** the base variable itself holds the attachment ref
+  (`representation: 'file'`), generating only `_TS`/`_SRC` — a separate `_REF` sub-variable
+  was redundant once the base variable had to exist anyway (`variableRef` must name a
+  declared variable). Recognition variables are as designed
+  (`{prefix}_N_ITEMS`, `_I{i}_LABEL/QTY/UNIT/CONF`).
+- **`geolocation.mode: 'perPage'` not built:** S1 shipped point capture only; the field was
+  dropped from the schema rather than shipped inert. Add it with a real re-capture
+  implementation when a diary study needs it.
+- **Upload retry (simplification of D6):** no background queue — the capture uploads
+  immediately, failure surfaces inline and leaves the question unanswered (retry = capture
+  again). A required photo can't submit unanswered, so nothing is silently dropped.
+- **Correction paradata (simplification of D7):** there is no discrete
+  `recognition-corrected` event; `recognition-ran` carries the raw suggestions and the
+  variables hold the confirmed list, so kept-vs-corrected is derivable by comparing the two.
+- **Consent variables are root-scoped instance keys** (`CONSENT_GEOLOCATION@`) so
+  `$CONSENT_GEOLOCATION` resolves in routing expressions; authoring a variable with a
+  reserved consent name is a validation error, as is a "consent trap" (a required sensor
+  question with no decline path — checked in `validate.ts`, surfaced in the designer).
+- **Bundled-demo seeding got version+content awareness** (`apps/hub api.upsertSurvey`): the
+  stored row refreshes when the shipped bundle's `version` is newer, or when versions are
+  equal but content differs (bundle is source of truth for bundled surveys — this self-heals
+  rows written from half-edited dev snapshots by HMR-remounted seeding effects, which
+  happened twice during this build). **Bump `demoInstrument.version` on every content
+  change** or the change never reaches Supabase.
+- **Bot support (S4):** the enumerator answers sensor questions in two rounds — the consent
+  decision (both branches enumerated outside canonical mode; routable) then a deterministic
+  capture fill (incl. one confirmed recognition item). The Playwright browser-driver does
+  NOT yet drive the consent/capture UI in a real browser — that rides on Phase 14's
+  outstanding live-runtime work.
+- **Verified live:** designer preview + render mode (mock captures, recognition
+  suggest→correct→save, values read back from variables); runtime against Supabase (consent
+  cards with declared text, browser-permission denial → typed fallback, EXIF-strip preview,
+  upload failure recorded as `photo-upload-failed` paradata with "Bucket not found");
+  consent decisions audited as `sensor-consent` paradata rows. Still to do on a real phone
+  once deployed: a genuine GPS fix and camera capture over HTTPS (S1/S2 acceptance's
+  on-device half), and the real Anthropic vision call (needs the API key).
