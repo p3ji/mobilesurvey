@@ -3110,9 +3110,11 @@ function HomePage({ onNavigate }: { onNavigate: (v: HubView) => void }) {
       id: 'sensor',
       icon: <Smartphone size={22} />,
       name: 'Sensor Data Collection',
-      tagline: 'Collect phone sensor and camera data',
-      description: 'Collect data, when approved by the user, from phone sensors (e.g. GPS). It also enables collection through the camera (e.g. pictures of food to measure nutritional info).',
-      status: 'coming-soon',
+      tag: 'Testing',
+      tagline: 'Consent-gated GPS and camera questions',
+      description: 'Location and photo question types with per-sensor respondent consent: coordinates rounded to an authored precision, photos EXIF-stripped client-side, and optional ML-assisted coding the respondent always confirms (e.g. food items for nutritional studies). Try the last page of the Feature Demo Survey.',
+      status: 'live',
+      action: () => window.open(`${RUNTIME_URL}/?survey=demo`, '_blank', 'noopener'),
     },
   ], [onNavigate]);
 
