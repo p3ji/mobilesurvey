@@ -179,6 +179,22 @@ export type ResponseDomain =
        * survey completable for non-consenting respondents.
        */
       manualFallback?: boolean;
+    }
+  | {
+      /**
+       * Camera capture (sensor module, docs/sensor-module-plan.md). The question's
+       * `variableRef` variable stores the attachment ref (storage path — never image bytes);
+       * the capture generates `{variableRef}_{TS|SRC}` sub-variables. Photos are downscaled
+       * and re-encoded client-side before upload, which strips all EXIF (including any
+       * embedded GPS tag). Requires a `camera` declaration in `Instrument.sensors`.
+       */
+      type: 'photo';
+      /** Camera hint passed to the capture input: back ('environment') or front ('user'). */
+      facing?: 'environment' | 'user';
+      /** Also allow picking an existing photo from the device library. Default false. */
+      allowLibrary?: boolean;
+      /** Longest-edge pixel cap for the client-side downscale (default 1600). */
+      maxEdgePx?: number;
     };
 
 /** Reserved category code for computed total row/column cells in `table` response domains. */
@@ -186,6 +202,9 @@ export const TABLE_TOTAL_CODE = 'TOT' as const;
 
 /** Suffixes of the sub-variables a `geolocation` capture generates from its `variableRef`. */
 export const GEOLOCATION_SUFFIXES = ['LAT', 'LON', 'ACC', 'TS', 'SRC'] as const;
+
+/** Suffixes of the sub-variables a `photo` capture generates from its `variableRef`. */
+export const PHOTO_SUFFIXES = ['TS', 'SRC'] as const;
 
 /** Sensor kinds an instrument can declare (camera arrives with the `photo` domain, S2). */
 export type SensorKind = 'geolocation' | 'camera';

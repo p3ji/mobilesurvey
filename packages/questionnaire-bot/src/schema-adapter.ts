@@ -181,6 +181,7 @@ function resolveQuestion(
     case 'grid':
     case 'table':
     case 'geolocation':
+    case 'photo':
       return { kind: 'skip', reason: `unexpected ${domain.type} domain on a plain question item` };
   }
 }

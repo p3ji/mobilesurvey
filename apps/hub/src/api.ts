@@ -334,6 +334,22 @@ export async function recordCaseOutcome(
 
 // ── Connectivity check ────────────────────────────────────────────────────────
 
+/**
+ * Resolve a stored attachment ref (photo answers keep the storage path, never bytes) to a
+ * short-lived signed URL for display. Needs the demo-only anon SELECT policy on the private
+ * `attachments` bucket (DEPLOYMENT.md §9d); returns null when unavailable.
+ */
+export async function signedAttachmentUrl(ref: string): Promise<string | null> {
+  if (!SUPABASE_URL || !SUPABASE_KEY) return null;
+  try {
+    const { data, error } = await sb().storage.from('attachments').createSignedUrl(ref, 3600);
+    if (error || !data?.signedUrl) return null;
+    return data.signedUrl;
+  } catch {
+    return null;
+  }
+}
+
 export async function pingApi(): Promise<boolean> {
   if (!SUPABASE_URL || !SUPABASE_KEY) return false;
   try {

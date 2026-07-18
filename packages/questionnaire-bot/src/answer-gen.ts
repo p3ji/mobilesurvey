@@ -110,8 +110,9 @@ export function generateValues(
     case 'grid':
     case 'table':
     case 'geolocation':
+    case 'photo':
       // Handled separately in the enumerator; not enumerable via domain values alone.
-      // (geolocation: consent branches + capture are S4 sensor-module bot work.)
+      // (sensor domains: consent branches + capture are S4 sensor-module bot work.)
       return [];
   }
 }

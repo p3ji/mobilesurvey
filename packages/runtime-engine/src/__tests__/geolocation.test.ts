@@ -86,6 +86,39 @@ describe('geolocation render item', () => {
   });
 });
 
+describe('photo render item', () => {
+  type PhotoItem = Extract<RenderItem, { kind: 'photo' }>;
+  const photoItem = (responses: Record<string, unknown>): PhotoItem => {
+    const { items } = flattenInstrument(demoInstrument, stateWith(responses));
+    const item = items.find((i): i is PhotoItem => i.kind === 'photo');
+    expect(item).toBeDefined();
+    return item!;
+  };
+
+  it('emits a photo item with ref/base + _TS/_SRC keys and its own consent variable', () => {
+    const item = photoItem({});
+    expect(item.instanceKey).toBe('demoPhoto@');
+    expect(item.subKeys).toEqual({ ts: 'demoPhoto_TS@', src: 'demoPhoto_SRC@' });
+    expect(item.consentKey).toBe('CONSENT_CAMERA@');
+    expect(item.consent).toBeUndefined();
+    expect(item.facing).toBe('environment');
+    expect(item.allowLibrary).toBe(true);
+    expect(item.maxEdgePx).toBe(1600);
+    expect(item.purpose).toContain('public demo');
+  });
+
+  it('camera consent is independent of geolocation consent', () => {
+    const item = photoItem({ 'CONSENT_GEOLOCATION@': 'granted' });
+    expect(item.consent).toBeUndefined();
+    expect(photoItem({ 'CONSENT_CAMERA@': 'declined' }).consent).toBe('declined');
+  });
+
+  it('a stored ref answers the question', () => {
+    const item = photoItem({ 'demoPhoto@': 'demo/anon-1/q.demoPhoto-123.jpg' });
+    expect(item.value).toBe('demo/anon-1/q.demoPhoto-123.jpg');
+  });
+});
+
 describe('createMockSensorServices', () => {
   it('returns a deterministic Ottawa-area fix', async () => {
     const mock = createMockSensorServices();
@@ -96,5 +129,12 @@ describe('createMockSensorServices', () => {
       expect(res.fix.lon).toBeCloseTo(-75.7, 1);
       expect(res.fix.accuracyM).toBe(12);
     }
+  });
+
+  it('stores photos under mock refs', async () => {
+    const mock = createMockSensorServices();
+    const res = await mock.storePhoto(new Blob(['x']), { questionId: 'q.demoPhoto' });
+    expect(res.ok).toBe(true);
+    if (res.ok) expect(res.ref).toBe('mock/q.demoPhoto-1.jpg');
   });
 });

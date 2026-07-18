@@ -41,14 +41,15 @@ export function pageHasHardEdits(pageItems: RenderItem[]): boolean {
         item.kind === 'markAll' ||
         item.kind === 'grid' ||
         item.kind === 'table' ||
-        item.kind === 'geolocation') &&
+        item.kind === 'geolocation' ||
+        item.kind === 'photo') &&
       item.firedEdits.some((e) => e.type === 'hard'),
   );
 }
 
 /**
  * Assign 1-based, sequential question numbers across a paginated instrument: `question`,
- * `markAll`, `grid`, `table` and `geolocation` items are counted; every other kind is skipped. Shared so the
+ * `markAll`, `grid`, `table`, `geolocation` and `photo` items are counted; every other kind is skipped. Shared so the
  * designer preview, the designer's render mode, and the respondent runtime number questions
  * identically.
  */
@@ -62,7 +63,8 @@ export function numberQuestions(pages: RenderItem[][]): Map<string, number> {
         item.kind === 'markAll' ||
         item.kind === 'grid' ||
         item.kind === 'table' ||
-        item.kind === 'geolocation'
+        item.kind === 'geolocation' ||
+        item.kind === 'photo'
       ) {
         numbers.set(item.key, ++n);
       }

@@ -156,6 +156,35 @@ export type RenderItem =
       manualFallback: boolean;
       firedEdits: FiredEdit[];
       depth: number;
+    }
+  | {
+      /**
+       * Camera capture (sensor module). The base variable holds the attachment ref
+       * (storage path); `subKeys` are the `_TS/_SRC` sub-variable storage keys. `consent`
+       * mirrors the session-global `CONSENT_CAMERA` reserved variable.
+       */
+      kind: 'photo';
+      key: string;
+      constructId: string;
+      questionText: string;
+      instruction?: string;
+      required?: boolean;
+      /** Storage key of the base ref variable (this roster instance). */
+      instanceKey: string;
+      /** Stored attachment ref, or undefined until a photo is uploaded. */
+      value: string | undefined;
+      subKeys: { ts: string; src: string };
+      /** Current `_SRC` value: 'camera' | 'library' | 'declined' | undefined. */
+      src: string | undefined;
+      consent: 'granted' | 'declined' | undefined;
+      consentKey: string;
+      purpose: string;
+      retention?: string;
+      facing: 'environment' | 'user';
+      allowLibrary: boolean;
+      maxEdgePx: number;
+      firedEdits: FiredEdit[];
+      depth: number;
     };
 
 /** The serializable runtime state the engine operates on. */

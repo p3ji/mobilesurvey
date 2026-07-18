@@ -148,9 +148,10 @@ function rdEl(ctx: Ctx, rd: ResponseDomain): string {
     case 'file':
     case 'grid':
     case 'table':
-    // geolocation's base variable is a text summary; the full sensor definition (precision,
-    // consent linkage…) round-trips via the authoritative mst:rd extension like grid/table.
+    // Sensor domains' base variables are text-shaped (location summary / attachment ref);
+    // the full sensor definition round-trips via the authoritative mst:rd extension.
     case 'geolocation':
+    case 'photo':
       return el('d:TextDomain', {});
   }
 }

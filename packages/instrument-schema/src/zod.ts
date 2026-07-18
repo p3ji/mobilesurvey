@@ -133,6 +133,12 @@ export const responseDomainSchema = z.discriminatedUnion('type', [
     maxAccuracyM: z.number().positive().optional(),
     manualFallback: z.boolean().optional(),
   }),
+  z.object({
+    type: z.literal('photo'),
+    facing: z.enum(['environment', 'user']).optional(),
+    allowLibrary: z.boolean().optional(),
+    maxEdgePx: z.number().int().min(200).max(8000).optional(),
+  }),
 ]);
 
 export const editTypeSchema = z.enum(['hard', 'soft']);

@@ -93,6 +93,7 @@ function ResponseDomainEditor({
       totalRow: true,
     },
     geolocation: { type: 'geolocation', precision: 3, manualFallback: true },
+    photo: { type: 'photo', facing: 'environment' },
   };
 
   return (
@@ -107,20 +108,26 @@ function ResponseDomainEditor({
               const nextType = e.target.value as ResponseDomain['type'];
               // Sensor domains require an instrument-level declaration (consent text);
               // auto-add a starter one so the question is immediately valid and runnable.
-              if (nextType === 'geolocation') {
+              const sensorKind =
+                nextType === 'geolocation' ? 'geolocation' : nextType === 'photo' ? 'camera' : null;
+              if (sensorKind) {
+                const starter: Record<string, [string, string]> = {
+                  geolocation: [
+                    'We ask for your location to place your answers geographically. Coordinates are rounded before they are stored.',
+                    'Nous demandons votre position pour situer vos réponses géographiquement. Les coordonnées sont arrondies avant d’être conservées.',
+                  ],
+                  camera: [
+                    'We ask you to photograph the subject of this question. The photo is downscaled and stripped of hidden metadata before upload.',
+                    'Nous vous demandons de photographier l’objet de cette question. La photo est réduite et débarrassée des métadonnées cachées avant le téléversement.',
+                  ],
+                };
                 update((draft) => {
                   draft.sensors ??= { sensors: [] };
-                  if (!draft.sensors.sensors.some((s) => s.kind === 'geolocation')) {
+                  if (!draft.sensors.sensors.some((s) => s.kind === sensorKind)) {
+                    const [en, fr] = starter[sensorKind]!;
                     draft.sensors.sensors.push({
-                      kind: 'geolocation',
-                      purpose: Object.fromEntries(
-                        languages.map((l) => [
-                          l,
-                          l === 'fr'
-                            ? 'Nous demandons votre position pour situer vos réponses géographiquement. Les coordonnées sont arrondies avant d’être conservées.'
-                            : 'We ask for your location to place your answers geographically. Coordinates are rounded before they are stored.',
-                        ]),
-                      ),
+                      kind: sensorKind,
+                      purpose: Object.fromEntries(languages.map((l) => [l, l === 'fr' ? fr : en])),
                     });
                   }
                 });
@@ -286,6 +293,58 @@ function ResponseDomainEditor({
             Stores a summary in this question's variable plus generated
             {' '}<code>_LAT/_LON/_ACC/_TS/_SRC</code> sub-variables. Consent text lives in the
             root sequence's <strong>Sensors &amp; consent</strong> panel.
+          </p>
+        </>
+      )}
+
+      {domain.type === 'photo' && (
+        <>
+          <div className="row">
+            <Field label="Camera" hint="Which camera the capture input requests">
+              {(id) => (
+                <select
+                  id={id}
+                  value={domain.facing ?? 'environment'}
+                  onChange={(e) =>
+                    onChange({ ...domain, facing: e.target.value as 'environment' | 'user' })
+                  }
+                >
+                  <option value="environment">Back (environment)</option>
+                  <option value="user">Front (user)</option>
+                </select>
+              )}
+            </Field>
+            <Field label="Max edge (px)" hint="Client-side downscale cap before upload (default 1600)">
+              {(id) => (
+                <input
+                  id={id}
+                  type="number"
+                  min={200}
+                  max={8000}
+                  value={domain.maxEdgePx ?? ''}
+                  onChange={(e) =>
+                    onChange({
+                      ...domain,
+                      maxEdgePx: e.target.value === '' ? undefined : Number(e.target.value),
+                    })
+                  }
+                />
+              )}
+            </Field>
+          </div>
+          <label className="checkbox">
+            <input
+              type="checkbox"
+              checked={domain.allowLibrary === true}
+              onChange={(e) => onChange({ ...domain, allowLibrary: e.target.checked || undefined })}
+            />
+            Also allow picking an existing photo from the device library
+          </label>
+          <p className="hint">
+            Stores the attachment ref (storage path — never image bytes) in this question's
+            variable plus generated <code>_TS/_SRC</code> sub-variables. Photos are downscaled
+            and EXIF-stripped client-side. Consent text lives in the root sequence's
+            {' '}<strong>Sensors &amp; consent</strong> panel.
           </p>
         </>
       )}

@@ -60,6 +60,7 @@ import {
   respondentLink,
   assignCaseToInterviewer,
   setSurveyConfig,
+  signedAttachmentUrl,
   upsertSurvey,
   type CaseDetail,
   type CaseStatus,
@@ -528,11 +529,49 @@ function DemoAnalyzer({ rows }: { rows: ResponseRow[] }) {
   );
 }
 
-function SubmissionRow({ row, events }: { row: ResponseRow; events: SurveyParadataRow[] }) {
+/** Photo answers for a submission: `[instanceKey, attachmentRef]` per photo-domain variable. */
+function photoAnswers(instrument: Instrument | null, answers: Record<string, unknown>): Array<[string, string]> {
+  if (!instrument) return [];
+  const photoVars = new Set<string>();
+  const walk = (nodes: Instrument['sequence']['children']): void => {
+    for (const n of nodes) {
+      if (n.type === 'question' && n.responseDomain.type === 'photo') photoVars.add(n.variableRef);
+      if (n.type === 'sequence' || n.type === 'loop') walk(n.children);
+      if (n.type === 'ifThenElse') { walk(n.then); walk(n.else ?? []); }
+    }
+  };
+  walk(instrument.sequence.children);
+  if (photoVars.size === 0) return [];
+  return Object.entries(answers).filter(
+    (e): e is [string, string] =>
+      typeof e[1] === 'string' && e[1] !== '' && photoVars.has(e[0].split('@')[0] ?? ''),
+  );
+}
+
+/** Thumbnail for a stored attachment ref, resolved through a short-lived signed URL. */
+function AttachmentThumb({ refPath }: { refPath: string }) {
+  const [url, setUrl] = useState<string | null>(null);
+  const [failed, setFailed] = useState(false);
+  useEffect(() => {
+    let active = true;
+    signedAttachmentUrl(refPath).then((u) => { if (active) { setUrl(u); setFailed(u === null); } });
+    return () => { active = false; };
+  }, [refPath]);
+  if (failed) return <code style={{ fontSize: 11 }}>{refPath} (no signed-URL access)</code>;
+  if (!url) return <span style={{ fontSize: 11, color: 'var(--ink-soft)' }}>loading photo…</span>;
+  return (
+    <a href={url} target="_blank" rel="noreferrer">
+      <img src={url} alt={`Attachment ${refPath}`} style={{ maxHeight: 96, borderRadius: 6, border: '1px solid var(--line)' }} />
+    </a>
+  );
+}
+
+function SubmissionRow({ row, events, instrument }: { row: ResponseRow; events: SurveyParadataRow[]; instrument: Instrument | null }) {
   const dur = row.durationMs != null ? `${Math.round(row.durationMs / 1000)}s` : '—';
   const ts = new Date(row.submittedAt).toLocaleString(undefined, {
     month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit',
   });
+  const photos = photoAnswers(instrument, row.answersJson);
   return (
     <details className="dash__submission">
       <summary>
@@ -543,6 +582,13 @@ function SubmissionRow({ row, events }: { row: ResponseRow; events: SurveyParada
           {row.completed ? 'Complete' : 'Partial'}
         </span>
       </summary>
+      {photos.length > 0 && (
+        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', padding: '6px 0' }}>
+          {photos.map(([key, ref]) => (
+            <AttachmentThumb key={key} refPath={ref} />
+          ))}
+        </div>
+      )}
       <div className="dash__sub-events">
         {events.length === 0 ? (
           <p style={{ color: 'var(--ink-soft)', fontSize: 12, margin: '4px 0' }}>No paradata recorded.</p>
@@ -717,7 +763,7 @@ function CollectionDashboard({ surveyId }: { surveyId: string }) {
         ) : (
           <div className="dash__submissions">
             {r.slice(0, 10).map((row) => (
-              <SubmissionRow key={row.id} row={row} events={byRespondent.get(row.respondentId) ?? []} />
+              <SubmissionRow key={row.id} row={row} events={byRespondent.get(row.respondentId) ?? []} instrument={instrument} />
             ))}
           </div>
         )}

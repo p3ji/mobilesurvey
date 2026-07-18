@@ -131,6 +131,30 @@ export async function submitResponse(
   }
 }
 
+// ── Attachments (sensor-module photos) ────────────────────────────────────────
+
+/**
+ * Upload a processed photo blob to the private `attachments` bucket (docs/sensor-module-plan.md
+ * D6; bucket + policies: DEPLOYMENT.md). Returns the storage path to keep in the answer.
+ * The anon role is INSERT-only on this bucket — respondents can upload but never list or read.
+ */
+export async function uploadAttachment(
+  path: string,
+  blob: Blob,
+): Promise<{ ok: true; ref: string } | { ok: false; error: string }> {
+  if (!SUPABASE_URL || !SUPABASE_KEY) return { ok: false, error: 'Supabase not configured' };
+  try {
+    const { error } = await sb().storage.from('attachments').upload(path, blob, {
+      contentType: 'image/jpeg',
+      upsert: false,
+    });
+    if (error) return { ok: false, error: error.message };
+    return { ok: true, ref: path };
+  } catch (e) {
+    return { ok: false, error: String(e) };
+  }
+}
+
 // ── CMS (access codes) ────────────────────────────────────────────────────────
 
 function supabaseCms(): CmsClient {

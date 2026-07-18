@@ -24,7 +24,15 @@ describe('geolocation domain validation', () => {
   it('flags a geolocation question whose sensor is not declared', () => {
     const inst = clone();
     delete inst.sensors;
-    expect(issuesOf(inst).join('\n')).toContain('requires a matching declaration');
+    expect(issuesOf(inst).join('\n')).toContain('requires a matching');
+  });
+
+  it('flags a photo question when only geolocation is declared (kinds are independent)', () => {
+    const inst = clone();
+    inst.sensors!.sensors = inst.sensors!.sensors.filter((s) => s.kind !== 'camera');
+    const msgs = issuesOf(inst).join('\n');
+    expect(msgs).toContain('"camera" declaration');
+    expect(msgs).not.toContain('"geolocation" declaration');
   });
 
   it('flags a variableRef colliding with a markAll/grid variablePrefix', () => {

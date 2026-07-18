@@ -9,6 +9,7 @@
  */
 import { useState } from 'react';
 import type { RenderItem, SensorServices } from '@mobilesurvey/runtime-engine';
+import { ConsentCard } from './ConsentCard.jsx';
 import { EditList } from './EditList.jsx';
 
 type GeolocationItem = Extract<RenderItem, { kind: 'geolocation' }>;
@@ -138,24 +139,16 @@ export function GeolocationQuestion({
           {t.undeclared}
         </p>
       ) : item.consent === undefined ? (
-        <div className="eq__consent-card" role="group" aria-label={t.consentHeading}>
-          <p className="eq__consent-heading">{t.consentHeading}</p>
-          <p className="eq__consent-purpose">{item.purpose}</p>
-          {item.retention && (
-            <p className="eq__consent-retention">
-              <strong>{t.retention}</strong> {item.retention}
-            </p>
-          )}
-          <p className="eq__consent-note">{t.browserNote}</p>
-          <div className="eq__consent-actions">
-            <button type="button" className="eq__consent-allow" onClick={() => onAnswer(item.consentKey, 'granted')}>
-              {t.allow}
-            </button>
-            <button type="button" className="eq__consent-decline" onClick={() => onAnswer(item.consentKey, 'declined')}>
-              {t.decline}
-            </button>
-          </div>
-        </div>
+        <ConsentCard
+          heading={t.consentHeading}
+          purpose={item.purpose}
+          retention={item.retention}
+          retentionLabel={t.retention}
+          note={t.browserNote}
+          allowLabel={t.allow}
+          declineLabel={t.decline}
+          onDecide={(d) => onAnswer(item.consentKey, d)}
+        />
       ) : item.consent === 'granted' ? (
         <div className="eq__sensor" aria-describedby={errId}>
           <button type="button" className="eq__sensor-capture" disabled={busy} onClick={() => void capture()}>

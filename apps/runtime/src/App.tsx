@@ -311,7 +311,10 @@ export function App() {
           sensors={
             // Same split as the backend: exploration-only surveys never touch real sensors.
             loaded.collectsData
-              ? createBrowserSensorServices(backend.paradata)
+              ? createBrowserSensorServices(backend.paradata, {
+                  surveyId: loaded.surveyId,
+                  respondentId: survey.caseId,
+                })
               : createMockSensorServices()
           }
           notice={loaded.notice}

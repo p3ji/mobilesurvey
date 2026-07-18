@@ -16,7 +16,7 @@ export const demoInstrument: Instrument = {
   id: 'urn:ddi:mobilesurvey:demo:1.0',
   // Bump on every content change: backend seeding only refreshes the stored demo row when
   // the bundled version is newer (see apps/hub api.upsertSurvey).
-  version: '1.1.0',
+  version: '1.2.1',
   ddiProfile: 'ddi-lifecycle-3.3',
   languages: ['en', 'fr'],
   defaultLanguage: 'en',
@@ -116,6 +116,7 @@ export const demoInstrument: Instrument = {
     { id: 'v.reviewFlag', name: 'reviewFlag', kind: 'hidden', label: s('Follow-up flag', 'Indicateur de suivi'), representation: 'boolean' },
     { id: 'v.npsPositive', name: 'npsPositive', kind: 'derived', label: s('Positive score (derived)', 'Score positif (dérivé)'), representation: 'boolean', compute: '$nps >= 7' },
     { id: 'v.demoLoc', name: 'demoLoc', kind: 'collected', label: s('Rough location (city level)', 'Position approximative (niveau ville)'), representation: 'text' },
+    { id: 'v.demoPhoto', name: 'demoPhoto', kind: 'collected', label: s('Demo photo (attachment ref)', 'Photo de démonstration (référence de pièce jointe)'), representation: 'file' },
   ],
 
   prefillMappings: [],
@@ -127,6 +128,17 @@ export const demoInstrument: Instrument = {
         purpose: s(
           'This public demo asks for your location only to demonstrate sensor questions. Coordinates are rounded to roughly city level (~1 km) before being stored, and demo responses are publicly visible.',
           'Cette démo publique demande votre position uniquement pour illustrer les questions capteurs. Les coordonnées sont arrondies à environ 1 km (niveau ville) avant d’être conservées, et les réponses de la démo sont publiquement visibles.',
+        ),
+        retention: s(
+          'Demo data may be cleared at any time.',
+          'Les données de la démo peuvent être effacées à tout moment.',
+        ),
+      },
+      {
+        kind: 'camera',
+        purpose: s(
+          'This public demo asks for a photo only to demonstrate camera questions. The photo is downscaled and stripped of hidden metadata (like embedded GPS) before upload, and demo responses are publicly visible — please photograph an object, not a person.',
+          'Cette démo publique demande une photo uniquement pour illustrer les questions avec appareil photo. La photo est réduite et débarrassée des métadonnées cachées (comme le GPS intégré) avant le téléversement, et les réponses de la démo sont publiquement visibles — photographiez un objet, pas une personne.',
         ),
         retention: s(
           'Demo data may be cleared at any time.',
@@ -414,6 +426,16 @@ export const demoInstrument: Instrument = {
             ),
             // precision 2 ≈ 1.1 km: deliberately coarse — the demo is public-by-design.
             responseDomain: { type: 'geolocation', precision: 2, manualFallback: true },
+          },
+          {
+            type: 'question',
+            id: 'q.demoPhoto',
+            variableRef: 'demoPhoto',
+            text: s(
+              'Optionally, photograph a nearby object (not a person) to try the camera question.',
+              'Facultativement, photographiez un objet à proximité (pas une personne) pour essayer la question avec appareil photo.',
+            ),
+            responseDomain: { type: 'photo', facing: 'environment', allowLibrary: true },
           },
         ],
       },

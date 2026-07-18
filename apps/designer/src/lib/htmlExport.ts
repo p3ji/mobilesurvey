@@ -172,6 +172,18 @@ function domainHtml(domain: ResponseDomain, instrument: Instrument, lang: string
         domain.maxAccuracyM ? `, max ±${domain.maxAccuracyM} m` : ''
       }${domain.manualFallback !== false ? '; typed fallback offered on decline' : ''}</small></div>`;
     }
+    case 'photo': {
+      const decl = instrument.sensors?.sensors.find((s) => s.kind === 'camera');
+      const purpose = decl ? esc(lbl(decl.purpose as Record<string, string>, lang)) : '';
+      const retention = decl?.retention
+        ? ` <em>Retention:</em> ${esc(lbl(decl.retention as Record<string, string>, lang))}`
+        : '';
+      return `<div class="resp-open">📷 [Photo capture — respondent consent required]${
+        purpose ? `<br><em>Consent text:</em> ${purpose}${retention}` : ''
+      }<br><small>Photos are downscaled (max edge ${domain.maxEdgePx ?? 1600}px) and EXIF-stripped before upload${
+        domain.allowLibrary ? '; device-library picks allowed' : ''
+      }.</small></div>`;
+    }
   }
 }
 

@@ -348,3 +348,8 @@ select[aria-invalid="true"] {
   font-size: 14px;
   margin-bottom: 4px;
 }
+.eq__photo-preview {
+  max-width: min(100%, 320px);
+  border-radius: var(--radius);
+  border: 1px solid var(--line);
+}

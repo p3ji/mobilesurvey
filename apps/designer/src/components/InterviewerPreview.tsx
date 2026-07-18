@@ -126,6 +126,7 @@ const DOMAIN_LABEL: Record<string, string> = {
   grid: 'Grid / matrix',
   file: 'File upload',
   geolocation: 'Location capture (consent-gated)',
+  photo: 'Photo capture (consent-gated)',
 };
 
 function CatiCard({ item }: { item: FlatItem }) {

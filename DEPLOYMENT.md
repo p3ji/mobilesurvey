@@ -398,6 +398,43 @@ grant select, insert, delete on confrontation_mappings to anon;
 
 ---
 
+### 9d. Attachments bucket (required before using photo questions — sensor module)
+
+Photo response domains (`docs/sensor-module-plan.md`) upload respondent photos to a **private**
+Storage bucket named `attachments`. Photos are downscaled and EXIF-stripped client-side before
+upload; answers store only the object path (`{surveyId}/{respondentId}/{questionId}-{ts}.jpg`),
+never image bytes. Until the bucket exists, photo questions show "Upload failed" (the question
+stays skippable, so surveys remain completable).
+
+Apply once:
+
+1. **Dashboard → Storage → New bucket** — name `attachments`, **Public bucket OFF**.
+2. **Dashboard → SQL Editor** — storage policies live on `storage.objects` (the usual
+   "new tables need explicit GRANTs" gotcha does not apply here; `storage.objects` already
+   has role grants, only policies are needed):
+
+```sql
+-- Respondents (anon role) may upload into this bucket only — a write-only drop-box.
+-- No select/update/delete policy for anon: respondents can never list or read
+-- other respondents' photos, and an uploaded object cannot be altered from the client.
+create policy "anon upload attachments" on storage.objects
+  for insert to anon
+  with check (bucket_id = 'attachments');
+
+-- Demo-only: let the hub (same anon key) read photos back for the Validator/response views
+-- via signed URLs. Acceptable under the public-by-design demo decision; a real deployment
+-- restricts this to an authenticated dashboard role instead.
+create policy "anon read attachments (demo)" on storage.objects
+  for select to anon
+  using (bucket_id = 'attachments');
+```
+
+Housekeeping notes (accepted for the demo): a retake uploads a new object and leaves the
+superseded one in the bucket; there is no server-side scanning of uploads (flagged in the
+sensor-module plan's non-goals alongside the RLS hardening plan).
+
+---
+
 ## Security notes
 
 - The public Supabase `anon` key in the bundle is a **publishable key** — it is safe to expose but grants only the permissions defined by Row Level Security (RLS) policies.

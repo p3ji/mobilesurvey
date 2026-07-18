@@ -266,7 +266,7 @@ export function PreviewPane() {
         out.push({ num, key: item.key, varRef: item.variablePrefix + '_*', label: item.questionText, pageIdx: pageOf.get(item.key) ?? 0 });
       } else if (item.kind === 'table') {
         out.push({ num, key: item.key, varRef: item.variablePrefix + '_*_*', label: item.questionText, pageIdx: pageOf.get(item.key) ?? 0 });
-      } else if (item.kind === 'geolocation') {
+      } else if (item.kind === 'geolocation' || item.kind === 'photo') {
         out.push({ num, key: item.key, varRef: item.instanceKey, label: item.questionText, pageIdx: pageOf.get(item.key) ?? 0 });
       }
     }
@@ -646,6 +646,60 @@ export function PreviewPane() {
                   )}
                   <p className="pv-markall-vars">
                     Variables: {'{'}base{'}'} + _LAT _LON _ACC _TS _SRC · consent → CONSENT_GEOLOCATION
+                  </p>
+                  <EditList edits={item.firedEdits} />
+                </div>
+              );
+            }
+
+            if (item.kind === 'photo') {
+              const phNum = qNumMap.get(item.key);
+              const mockCapture = () => {
+                send({ type: 'ANSWER', instanceKey: item.instanceKey, value: `mock/${item.constructId}.jpg` });
+                send({ type: 'ANSWER', instanceKey: item.subKeys.ts, value: new Date().toISOString() });
+                send({ type: 'ANSWER', instanceKey: item.subKeys.src, value: 'camera' });
+              };
+              return (
+                <div
+                  key={item.key}
+                  id={`pv-q-${item.key}`}
+                  className="pv-question"
+                  style={{ marginInlineStart: item.depth * 8 }}
+                >
+                  <p className="pv-label">
+                    {phNum != null && <span className="pv-q-num">Q{phNum}.</span>}
+                    {item.questionText}
+                    {item.required ? <span aria-hidden="true" className="pv-req"> *</span> : null}
+                  </p>
+                  {item.instruction && <p className="pv-instruction">{item.instruction}</p>}
+                  {item.purpose === '' ? (
+                    <p className="pv-instruction">⚠ No camera declaration in Sensors &amp; consent.</p>
+                  ) : item.consent === undefined ? (
+                    <div className="pv-consent">
+                      <p className="pv-instruction">📷 {item.purpose}</p>
+                      <div className="pv-consent-actions">
+                        <button type="button" onClick={() => send({ type: 'ANSWER', instanceKey: item.consentKey, value: 'granted' })}>
+                          Allow
+                        </button>
+                        <button type="button" onClick={() => send({ type: 'ANSWER', instanceKey: item.consentKey, value: 'declined' })}>
+                          Decline
+                        </button>
+                      </div>
+                    </div>
+                  ) : item.consent === 'granted' ? (
+                    <div className="pv-consent">
+                      <button type="button" onClick={mockCapture}>
+                        {item.value ? '↺ Retake photo (mock)' : '📷 Take a photo (mock)'}
+                      </button>
+                      {item.value && <p className="pv-instruction">✓ {item.value}</p>}
+                    </div>
+                  ) : (
+                    <div className="pv-consent">
+                      <p className="pv-instruction">Camera declined — question can be skipped.</p>
+                    </div>
+                  )}
+                  <p className="pv-markall-vars">
+                    Variables: {'{'}base{'}'} = attachment ref + _TS _SRC · consent → CONSENT_CAMERA
                   </p>
                   <EditList edits={item.firedEdits} />
                 </div>

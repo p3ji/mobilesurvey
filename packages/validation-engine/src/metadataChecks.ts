@@ -91,6 +91,17 @@ export function buildFieldRegistry(instrument: Instrument): Map<string, FieldSpe
         });
         return;
       }
+      case 'photo': {
+        // Base variable holds the attachment ref (a storage path, text-shaped).
+        registry.set(q.variableRef, { kind: 'text' });
+        registry.set(`${q.variableRef}_TS`, { kind: 'datetime' });
+        registry.set(`${q.variableRef}_SRC`, {
+          kind: 'code',
+          codes: new Set(['camera', 'library', 'declined']),
+          multi: false,
+        });
+        return;
+      }
       case 'table': {
         const rowCodes = (schemeById.get(rd.rowSchemeRef)?.categories ?? []).map((c) => c.code);
         const colCodes = (schemeById.get(rd.colSchemeRef)?.categories ?? []).map((c) => c.code);

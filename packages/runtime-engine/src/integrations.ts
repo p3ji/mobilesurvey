@@ -72,6 +72,15 @@ export interface SensorServices {
     maxAccuracyM?: number;
     timeoutMs?: number;
   }): Promise<{ ok: true; fix: LocationFix } | { ok: false; error: LocationError }>;
+  /**
+   * Persist an already-processed (downscaled, EXIF-stripped) photo blob and return an opaque
+   * attachment ref (storage path) to store in the answer — never the image bytes. The
+   * respondent runtime uploads to Supabase Storage; the mock returns a fake ref.
+   */
+  storePhoto(
+    blob: Blob,
+    ctx: { questionId: string },
+  ): Promise<{ ok: true; ref: string; ts: number } | { ok: false; error: 'upload_failed' }>;
 }
 
 /**
@@ -80,6 +89,7 @@ export interface SensorServices {
  */
 export function createMockSensorServices(): SensorServices {
   let n = 0;
+  let p = 0;
   return {
     captureLocation: async () => {
       n += 1;
@@ -87,6 +97,10 @@ export function createMockSensorServices(): SensorServices {
         ok: true,
         fix: { lat: 45.42153 + n * 0.0001, lon: -75.697193 - n * 0.0001, accuracyM: 12, ts: Date.now() },
       };
+    },
+    storePhoto: async (_blob, ctx) => {
+      p += 1;
+      return { ok: true, ref: `mock/${ctx.questionId}-${p}.jpg`, ts: Date.now() };
     },
   };
 }

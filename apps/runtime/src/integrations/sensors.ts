@@ -5,9 +5,30 @@
  * `createMockSensorServices()` instead (see App.tsx), mirroring the backend split.
  */
 import type { ParadataSink, SensorServices } from '@mobilesurvey/runtime-engine';
+import { uploadAttachment } from './api.js';
 
-export function createBrowserSensorServices(paradata: ParadataSink): SensorServices {
+export function createBrowserSensorServices(
+  paradata: ParadataSink,
+  ids: { surveyId: string; respondentId: string },
+): SensorServices {
   return {
+    storePhoto: async (blob, ctx) => {
+      // Path scheme {surveyId}/{respondentId}/{questionId}-{ts}.jpg — retakes get a new
+      // object; the superseded one stays in the bucket (accepted for the demo, noted in
+      // DEPLOYMENT.md housekeeping).
+      const path = `${ids.surveyId}/${ids.respondentId}/${ctx.questionId}-${Date.now()}.jpg`;
+      const res = await uploadAttachment(path, blob);
+      if (!res.ok) {
+        paradata.emit({ ts: Date.now(), type: 'photo-upload-failed', payload: { error: res.error } });
+        return { ok: false, error: 'upload_failed' };
+      }
+      paradata.emit({
+        ts: Date.now(),
+        type: 'photo-captured',
+        payload: { ref: res.ref, bytes: blob.size },
+      });
+      return { ok: true, ref: res.ref, ts: Date.now() };
+    },
     captureLocation: (opts) =>
       new Promise((resolve) => {
         if (!('geolocation' in navigator)) {

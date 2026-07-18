@@ -8,6 +8,7 @@ import { createMockSensorServices, type RenderItem, type SensorServices } from '
 import { Control } from './Control.jsx';
 import { EditList } from './EditList.jsx';
 import { GeolocationQuestion } from './GeolocationQuestion.jsx';
+import { PhotoQuestion } from './PhotoQuestion.jsx';
 import { TableQuestion } from './TableQuestion.jsx';
 
 // Shared fallback for callers that don't wire real sensors (designer preview, render mode).
@@ -129,6 +130,20 @@ export function QuestionPage({
         if (item.kind === 'geolocation') {
           return (
             <GeolocationQuestion
+              key={item.key}
+              item={item}
+              qNum={qNum}
+              wrapperId={idFor?.(item.key)}
+              lang={lang}
+              sensors={sensors ?? mockSensors}
+              onAnswer={onAnswer}
+            />
+          );
+        }
+
+        if (item.kind === 'photo') {
+          return (
+            <PhotoQuestion
               key={item.key}
               item={item}
               qNum={qNum}

@@ -131,9 +131,9 @@ export function checkReferences(instrument: Instrument): ValidationIssue[] {
           seenPrefixes.set(rd.variablePrefix, path);
         }
       }
-      if (rd.type === 'geolocation') {
-        // The capture generates `{variableRef}_LAT` etc., so the variableRef doubles as a
-        // generated-name prefix and must not collide with markAll/grid/table prefixes.
+      if (rd.type === 'geolocation' || rd.type === 'photo') {
+        // Sensor captures generate `{variableRef}_LAT` etc., so the variableRef doubles as
+        // a generated-name prefix and must not collide with markAll/grid/table prefixes.
         const prior = seenPrefixes.get(q.variableRef);
         if (prior) {
           issues.push({
@@ -143,12 +143,12 @@ export function checkReferences(instrument: Instrument): ValidationIssue[] {
         } else {
           seenPrefixes.set(q.variableRef, path);
         }
-        const declared = instrument.sensors?.sensors.some((s) => s.kind === 'geolocation');
+        const neededKind = rd.type === 'geolocation' ? 'geolocation' : 'camera';
+        const declared = instrument.sensors?.sensors.some((s) => s.kind === neededKind);
         if (!declared) {
           issues.push({
             path: `${path}.responseDomain`,
-            message:
-              'geolocation question requires a matching declaration in `sensors` (consent purpose text); the runtime refuses undeclared sensors',
+            message: `${rd.type} question requires a matching "${neededKind}" declaration in \`sensors\` (consent purpose text); the runtime refuses undeclared sensors`,
           });
         }
       }

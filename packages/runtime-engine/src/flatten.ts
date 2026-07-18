@@ -380,6 +380,42 @@ export function flattenInstrument(instrument: Instrument, state: RuntimeState): 
           return;
         }
 
+        // photo: consent-gated camera capture; base variable holds the attachment ref.
+        if (q.responseDomain.type === 'photo') {
+          const domain = q.responseDomain;
+          const baseKey = instanceKey(q.variableRef, scope);
+          const decl = instrument.sensors?.sensors.find((s) => s.kind === 'camera');
+          const consentKey = instanceKey(SENSOR_CONSENT_VARIABLES.camera, []);
+          const consentRaw = responses[consentKey];
+          const value = responses[baseKey] as string | undefined;
+          items.push({
+            kind: 'photo',
+            key: `${q.id}@${scopeSuffix}`,
+            constructId: q.id,
+            questionText: localizePiped(q.text, language, ctx),
+            instruction: q.instruction ? localizePiped(q.instruction, language, ctx) : undefined,
+            required: q.required,
+            instanceKey: baseKey,
+            value,
+            subKeys: {
+              ts: instanceKey(`${q.variableRef}_TS`, scope),
+              src: instanceKey(`${q.variableRef}_SRC`, scope),
+            },
+            src: responses[instanceKey(`${q.variableRef}_SRC`, scope)] as string | undefined,
+            consent:
+              consentRaw === 'granted' || consentRaw === 'declined' ? consentRaw : undefined,
+            consentKey,
+            purpose: decl ? pick(decl.purpose, language) : '',
+            retention: decl?.retention ? pick(decl.retention, language) : undefined,
+            facing: domain.facing ?? 'environment',
+            allowLibrary: domain.allowLibrary === true,
+            maxEdgePx: domain.maxEdgePx ?? 1600,
+            firedEdits: evalEdits(q.edits, q.required, value, ctx, language),
+            depth,
+          });
+          return;
+        }
+
         const key = instanceKey(q.variableRef, scope);
         const value = responses[key];
         items.push({
@@ -442,7 +478,7 @@ export function collectEdits(result: FlattenResult): { hard: number; soft: numbe
   let hard = 0;
   let soft = 0;
   for (const item of result.items) {
-    if (item.kind !== 'question' && item.kind !== 'table' && item.kind !== 'geolocation') continue;
+    if (item.kind !== 'question' && item.kind !== 'table' && item.kind !== 'geolocation' && item.kind !== 'photo') continue;
     for (const edit of item.firedEdits) {
       if (edit.type === 'hard') hard++;
       else soft++;
