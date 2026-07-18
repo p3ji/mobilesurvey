@@ -195,6 +195,24 @@ export type ResponseDomain =
       allowLibrary?: boolean;
       /** Longest-edge pixel cap for the client-side downscale (default 1600). */
       maxEdgePx?: number;
+      /**
+       * Optional ML coding pass over the captured image (docs/sensor-module-plan.md D5).
+       * The model's suggestions are ALWAYS shown to the respondent for confirmation or
+       * correction before anything is stored — the confirmed list explodes into
+       * `{variablePrefix}_N_ITEMS` plus, per item i (1-based),
+       * `{variablePrefix}_I{i}_{LABEL|QTY|UNIT|CONF}` (CONF = the model's pre-confirmation
+       * confidence, 0–1; 1 for items the respondent added manually). With no recognition
+       * provider configured, the same list UI works as manual item entry.
+       */
+      recognition?: {
+        profile: 'food' | 'document' | 'generic';
+        /** Prefix for the generated item variables (must not collide with other prefixes). */
+        variablePrefix: string;
+        /** Category scheme constraining item labels (dropdown); free text when unset. */
+        itemSchemeRef?: Id;
+        /** Maximum confirmable items (default 5). */
+        maxItems?: number;
+      };
     };
 
 /** Reserved category code for computed total row/column cells in `table` response domains. */

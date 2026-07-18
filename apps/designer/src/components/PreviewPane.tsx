@@ -700,6 +700,8 @@ export function PreviewPane() {
                   )}
                   <p className="pv-markall-vars">
                     Variables: {'{'}base{'}'} = attachment ref + _TS _SRC · consent → CONSENT_CAMERA
+                    {item.recognition &&
+                      ` · recognition (${item.recognition.profile}) → ${item.recognition.variablePrefix}_N_ITEMS + _I{i}_LABEL/QTY/UNIT/CONF`}
                   </p>
                   <EditList edits={item.firedEdits} />
                 </div>

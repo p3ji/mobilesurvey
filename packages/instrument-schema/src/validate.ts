@@ -151,6 +151,24 @@ export function checkReferences(instrument: Instrument): ValidationIssue[] {
             message: `${rd.type} question requires a matching "${neededKind}" declaration in \`sensors\` (consent purpose text); the runtime refuses undeclared sensors`,
           });
         }
+        if (rd.type === 'photo' && rd.recognition) {
+          const rec = rd.recognition;
+          const recPrior = seenPrefixes.get(rec.variablePrefix);
+          if (recPrior) {
+            issues.push({
+              path: `${path}.responseDomain.recognition.variablePrefix`,
+              message: `variablePrefix "${rec.variablePrefix}" is already used at ${recPrior}; generated variable names would collide`,
+            });
+          } else {
+            seenPrefixes.set(rec.variablePrefix, path);
+          }
+          if (rec.itemSchemeRef && !schemeIds.has(rec.itemSchemeRef)) {
+            issues.push({
+              path: `${path}.responseDomain.recognition.itemSchemeRef`,
+              message: `Unknown category scheme "${rec.itemSchemeRef}"`,
+            });
+          }
+        }
       }
       if (rd.type === 'table') {
         const rowScheme = schemeById.get(rd.rowSchemeRef);

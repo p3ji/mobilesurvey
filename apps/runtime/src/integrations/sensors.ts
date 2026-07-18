@@ -6,12 +6,31 @@
  */
 import type { ParadataSink, SensorServices } from '@mobilesurvey/runtime-engine';
 import { uploadAttachment } from './api.js';
+import { createAnthropicRecognitionProvider } from './recognition.js';
 
 export function createBrowserSensorServices(
   paradata: ParadataSink,
   ids: { surveyId: string; respondentId: string },
 ): SensorServices {
+  const recognition = createAnthropicRecognitionProvider();
   return {
+    recognizePhoto: async (blob, profile, opts) => {
+      if (!recognition) return { ok: false, error: 'unavailable' };
+      try {
+        const result = await recognition.recognize(blob, profile, opts);
+        // Raw pre-confirmation suggestions go to paradata (D7); the variables hold only what
+        // the respondent confirms, so the correction rate is derivable by comparing the two.
+        paradata.emit({
+          ts: Date.now(),
+          type: 'recognition-ran',
+          payload: { modelId: result.modelId, latencyMs: result.latencyMs, items: result.items },
+        });
+        return { ok: true, result };
+      } catch (e) {
+        paradata.emit({ ts: Date.now(), type: 'recognition-failed', payload: { error: String(e) } });
+        return { ok: false, error: 'failed' };
+      }
+    },
     storePhoto: async (blob, ctx) => {
       // Path scheme {surveyId}/{respondentId}/{questionId}-{ts}.jpg — retakes get a new
       // object; the superseded one stays in the bucket (accepted for the demo, noted in

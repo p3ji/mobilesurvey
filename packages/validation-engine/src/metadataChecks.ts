@@ -100,6 +100,27 @@ export function buildFieldRegistry(instrument: Instrument): Map<string, FieldSpe
           codes: new Set(['camera', 'library', 'declined']),
           multi: false,
         });
+        if (rd.recognition) {
+          const rec = rd.recognition;
+          const max = rec.maxItems ?? 5;
+          registry.set(`${rec.variablePrefix}_N_ITEMS`, { kind: 'numeric', min: 0, max });
+          const labelCodes = rec.itemSchemeRef
+            ? new Set((schemeById.get(rec.itemSchemeRef)?.categories ?? []).map((c) => c.code))
+            : null;
+          for (let i = 1; i <= max; i++) {
+            registry.set(
+              `${rec.variablePrefix}_I${i}_LABEL`,
+              labelCodes ? { kind: 'code', codes: labelCodes, multi: false } : { kind: 'text' },
+            );
+            registry.set(`${rec.variablePrefix}_I${i}_QTY`, { kind: 'numeric', min: 0 });
+            registry.set(`${rec.variablePrefix}_I${i}_UNIT`, {
+              kind: 'code',
+              codes: new Set(['g', 'ml', 'serving']),
+              multi: false,
+            });
+            registry.set(`${rec.variablePrefix}_I${i}_CONF`, { kind: 'numeric', min: 0, max: 1 });
+          }
+        }
         return;
       }
       case 'table': {

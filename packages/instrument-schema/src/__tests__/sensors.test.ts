@@ -74,6 +74,32 @@ describe('geolocation domain validation', () => {
     expect(res.ok).toBe(false);
   });
 
+  it('flags a recognition itemSchemeRef that names no scheme', () => {
+    const inst = clone();
+    const page = inst.sequence.children.find(
+      (c): c is SequenceConstruct => c.type === 'sequence' && c.id === 'pg.sensor',
+    )!;
+    const q = page.children.find(
+      (c): c is QuestionConstruct => c.type === 'question' && c.id === 'q.demoPhoto',
+    )!;
+    (q.responseDomain as { recognition: { itemSchemeRef?: string } }).recognition.itemSchemeRef =
+      'cs.nope';
+    expect(issuesOf(inst).join('\n')).toContain('Unknown category scheme "cs.nope"');
+  });
+
+  it('flags a recognition variablePrefix colliding with another generator', () => {
+    const inst = clone();
+    const page = inst.sequence.children.find(
+      (c): c is SequenceConstruct => c.type === 'sequence' && c.id === 'pg.sensor',
+    )!;
+    const q = page.children.find(
+      (c): c is QuestionConstruct => c.type === 'question' && c.id === 'q.demoPhoto',
+    )!;
+    (q.responseDomain as { recognition: { variablePrefix: string } }).recognition.variablePrefix =
+      'demoLoc'; // already claimed by the geolocation question
+    expect(issuesOf(inst).join('\n')).toContain('would collide');
+  });
+
   it('sensor declarations require a purpose text', () => {
     const inst = clone();
     (inst.sensors!.sensors[0]! as { purpose: Record<string, string> }).purpose = {};

@@ -183,6 +183,21 @@ export type RenderItem =
       facing: 'environment' | 'user';
       allowLibrary: boolean;
       maxEdgePx: number;
+      /**
+       * ML coding config (when the domain declares `recognition`). `scopeSuffix` lets the
+       * component mint item-variable storage keys for this roster instance
+       * (`{prefix}_I{i}_LABEL@{scopeSuffix}`); `itemOptions` constrains labels when the
+       * domain names an item scheme; `storedItems` are the previously confirmed items
+       * (session resume renders them without re-running recognition).
+       */
+      recognition?: {
+        profile: 'food' | 'document' | 'generic';
+        variablePrefix: string;
+        maxItems: number;
+        scopeSuffix: string;
+        itemOptions?: { code: string; label: string }[];
+        storedItems: { label: string; qty?: number; unit?: string; conf?: number }[];
+      };
       firedEdits: FiredEdit[];
       depth: number;
     };

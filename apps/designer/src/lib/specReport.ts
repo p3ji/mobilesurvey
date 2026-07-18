@@ -47,7 +47,11 @@ function domainText(d: ResponseDomain): string {
     case 'geolocation':
       return `Location capture (consent-gated; ${d.precision ?? 3} decimals${d.maxAccuracyM ? `, max ±${d.maxAccuracyM} m` : ''}${d.manualFallback !== false ? ', typed fallback' : ''}) → variables {base} + _LAT/_LON/_ACC/_TS/_SRC`;
     case 'photo':
-      return `Photo capture (consent-gated; EXIF-stripped, max edge ${d.maxEdgePx ?? 1600}px${d.allowLibrary ? ', library allowed' : ''}) → variables {base}=attachment ref + _TS/_SRC`;
+      return `Photo capture (consent-gated; EXIF-stripped, max edge ${d.maxEdgePx ?? 1600}px${d.allowLibrary ? ', library allowed' : ''}) → variables {base}=attachment ref + _TS/_SRC${
+        d.recognition
+          ? `; ML coding (${d.recognition.profile}, respondent-confirmed) → ${d.recognition.variablePrefix}_N_ITEMS + _I{i}_LABEL/QTY/UNIT/CONF`
+          : ''
+      }`;
   }
 }
 

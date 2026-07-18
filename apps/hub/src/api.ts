@@ -151,24 +151,25 @@ export async function setSurveyConfig(
 /** Upsert a survey row by explicit id — used to seed bundled demo surveys into Supabase. */
 /**
  * Seed/refresh a bundled-survey row. A missing row is inserted; an existing row is updated
- * ONLY when the shipped instrument's `version` is newer than the stored one — so shipping a
- * bundled-demo change (with a version bump) reaches the backend on the next hub load, while
- * a row that matches the current bundle is left untouched.
+ * when the shipped instrument's `version` is newer than the stored one, or when the versions
+ * are equal but the content differs (for bundled surveys the shipped bundle is the source of
+ * truth — this self-heals rows written from a half-edited dev snapshot, e.g. a Vite HMR
+ * re-mount firing the seeding effect between edits). A stored row that is strictly newer, or
+ * identical, is left untouched.
  */
 export async function upsertSurvey(id: string, title: string, instrument: Instrument, opts?: {
   requiresAccessCode?: boolean; status?: SurveyStatus;
 }): Promise<void> {
   const { data: existing } = await sb()
     .from('surveys')
-    .select('instrument_json->>version')
+    .select('instrument_json')
     .eq('id', id)
     .maybeSingle();
-  const storedVersion = (existing as { version?: string } | null)?.version;
-  if (
-    storedVersion !== undefined &&
-    compareInstrumentVersions(instrument.version, storedVersion ?? '0.0.0') <= 0
-  ) {
-    return; // stored row is current (or newer) — never clobber it
+  const stored = (existing as { instrument_json?: Instrument } | null)?.instrument_json;
+  if (stored !== undefined) {
+    const cmp = compareInstrumentVersions(instrument.version, stored?.version ?? '0.0.0');
+    if (cmp < 0) return; // stored row is newer — never downgrade
+    if (cmp === 0 && JSON.stringify(stored) === JSON.stringify(instrument)) return; // identical
   }
   const { error } = await sb().from('surveys').upsert({
     id,

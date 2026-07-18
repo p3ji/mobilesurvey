@@ -388,6 +388,40 @@ export function flattenInstrument(instrument: Instrument, state: RuntimeState): 
           const consentKey = instanceKey(SENSOR_CONSENT_VARIABLES.camera, []);
           const consentRaw = responses[consentKey];
           const value = responses[baseKey] as string | undefined;
+
+          let recognition;
+          if (domain.recognition) {
+            const rec = domain.recognition;
+            const maxItems = rec.maxItems ?? 5;
+            const scheme = rec.itemSchemeRef
+              ? instrument.categorySchemes.find((s) => s.id === rec.itemSchemeRef)
+              : undefined;
+            const nRaw = responses[instanceKey(`${rec.variablePrefix}_N_ITEMS`, scope)];
+            const n = Math.min(typeof nRaw === 'number' ? nRaw : Number(nRaw) || 0, maxItems);
+            const storedItems = Array.from({ length: n }, (_, idx) => {
+              const i = idx + 1;
+              const get = (suffix: string): unknown =>
+                responses[instanceKey(`${rec.variablePrefix}_I${i}_${suffix}`, scope)];
+              const qty = get('QTY');
+              const conf = get('CONF');
+              return {
+                label: String(get('LABEL') ?? ''),
+                qty: typeof qty === 'number' ? qty : undefined,
+                unit: (get('UNIT') as string | undefined) ?? undefined,
+                conf: typeof conf === 'number' ? conf : undefined,
+              };
+            });
+            recognition = {
+              profile: rec.profile,
+              variablePrefix: rec.variablePrefix,
+              maxItems,
+              scopeSuffix: scope.map((s) => `${s.name}=${s.index}`).join(';'),
+              itemOptions: scheme
+                ? scheme.categories.map((c) => ({ code: c.code, label: pick(c.label, language) }))
+                : undefined,
+              storedItems,
+            };
+          }
           items.push({
             kind: 'photo',
             key: `${q.id}@${scopeSuffix}`,
@@ -410,6 +444,7 @@ export function flattenInstrument(instrument: Instrument, state: RuntimeState): 
             facing: domain.facing ?? 'environment',
             allowLibrary: domain.allowLibrary === true,
             maxEdgePx: domain.maxEdgePx ?? 1600,
+            recognition,
             firedEdits: evalEdits(q.edits, q.required, value, ctx, language),
             depth,
           });

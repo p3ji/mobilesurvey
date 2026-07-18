@@ -61,6 +61,38 @@ export interface LocationFix {
 
 export type LocationError = 'denied' | 'timeout' | 'unavailable';
 
+export type RecognitionProfile = 'food' | 'document' | 'generic';
+
+/** One suggested item from a recognition pass (pre-confirmation). */
+export interface RecognitionItem {
+  label: string;
+  /** Estimated quantity in `unit` (recognition profiles that can't estimate omit it). */
+  qty?: number;
+  unit?: 'g' | 'ml' | 'serving';
+  /** Model confidence 0–1. */
+  confidence: number;
+}
+
+export interface RecognitionResult {
+  items: RecognitionItem[];
+  modelId: string;
+  latencyMs: number;
+}
+
+/**
+ * Pluggable image-recognition backend (docs/sensor-module-plan.md D5). The demo default is
+ * Anthropic vision behind the client-bundled-key pattern; production fronts the same
+ * interface with a serverless proxy. Output is a SUGGESTION — the UI always routes it
+ * through respondent confirmation before storage.
+ */
+export interface RecognitionProvider {
+  recognize(
+    blob: Blob,
+    profile: RecognitionProfile,
+    opts: { maxItems: number },
+  ): Promise<RecognitionResult>;
+}
+
 /**
  * Device-sensor access, behind the same integration boundary as `CmsClient`/`SessionStore`:
  * the respondent runtime provides browser implementations; the designer preview,
@@ -81,6 +113,16 @@ export interface SensorServices {
     blob: Blob,
     ctx: { questionId: string },
   ): Promise<{ ok: true; ref: string; ts: number } | { ok: false; error: 'upload_failed' }>;
+  /**
+   * Run the configured recognition provider over the just-captured (processed) blob.
+   * `unavailable` = no provider configured (graceful absence: the item list becomes manual
+   * entry); `failed` = the provider errored.
+   */
+  recognizePhoto(
+    blob: Blob,
+    profile: RecognitionProfile,
+    opts: { maxItems: number },
+  ): Promise<{ ok: true; result: RecognitionResult } | { ok: false; error: 'unavailable' | 'failed' }>;
 }
 
 /**
@@ -101,6 +143,16 @@ export function createMockSensorServices(): SensorServices {
     storePhoto: async (_blob, ctx) => {
       p += 1;
       return { ok: true, ref: `mock/${ctx.questionId}-${p}.jpg`, ts: Date.now() };
+    },
+    recognizePhoto: async (_blob, _profile, opts) => {
+      const items: RecognitionItem[] = [
+        { label: 'Apple', qty: 150, unit: 'g', confidence: 0.92 },
+        { label: 'Sandwich', qty: 1, unit: 'serving', confidence: 0.81 },
+      ];
+      return {
+        ok: true,
+        result: { items: items.slice(0, opts.maxItems), modelId: 'mock', latencyMs: 5 },
+      };
     },
   };
 }

@@ -182,7 +182,11 @@ function domainHtml(domain: ResponseDomain, instrument: Instrument, lang: string
         purpose ? `<br><em>Consent text:</em> ${purpose}${retention}` : ''
       }<br><small>Photos are downscaled (max edge ${domain.maxEdgePx ?? 1600}px) and EXIF-stripped before upload${
         domain.allowLibrary ? '; device-library picks allowed' : ''
-      }.</small></div>`;
+      }.${
+        domain.recognition
+          ? ` ML-assisted coding (${esc(domain.recognition.profile)}): suggested items are always confirmed/corrected by the respondent before storage.`
+          : ''
+      }</small></div>`;
     }
   }
 }

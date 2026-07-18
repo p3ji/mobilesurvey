@@ -138,6 +138,14 @@ export const responseDomainSchema = z.discriminatedUnion('type', [
     facing: z.enum(['environment', 'user']).optional(),
     allowLibrary: z.boolean().optional(),
     maxEdgePx: z.number().int().min(200).max(8000).optional(),
+    recognition: z
+      .object({
+        profile: z.enum(['food', 'document', 'generic']),
+        variablePrefix: z.string().min(1, 'variablePrefix is required'),
+        itemSchemeRef: idSchema.optional(),
+        maxItems: z.number().int().min(1).max(20).optional(),
+      })
+      .optional(),
   }),
 ]);
 

@@ -117,6 +117,40 @@ describe('photo render item', () => {
     const item = photoItem({ 'demoPhoto@': 'demo/anon-1/q.demoPhoto-123.jpg' });
     expect(item.value).toBe('demo/anon-1/q.demoPhoto-123.jpg');
   });
+
+  it('passes the recognition config through with defaults applied', () => {
+    const item = photoItem({});
+    expect(item.recognition).toBeDefined();
+    expect(item.recognition!.profile).toBe('food');
+    expect(item.recognition!.variablePrefix).toBe('MEAL');
+    expect(item.recognition!.maxItems).toBe(3);
+    expect(item.recognition!.scopeSuffix).toBe('');
+    expect(item.recognition!.itemOptions).toBeUndefined(); // free text in the demo
+    expect(item.recognition!.storedItems).toEqual([]);
+  });
+
+  it('reads back previously confirmed items for session resume', () => {
+    const item = photoItem({
+      'MEAL_N_ITEMS@': 2,
+      'MEAL_I1_LABEL@': 'Apple',
+      'MEAL_I1_QTY@': 150,
+      'MEAL_I1_UNIT@': 'g',
+      'MEAL_I1_CONF@': 0.92,
+      'MEAL_I2_LABEL@': 'Coffee',
+      'MEAL_I2_QTY@': 250,
+      'MEAL_I2_UNIT@': 'ml',
+      'MEAL_I2_CONF@': 1,
+    });
+    expect(item.recognition!.storedItems).toEqual([
+      { label: 'Apple', qty: 150, unit: 'g', conf: 0.92 },
+      { label: 'Coffee', qty: 250, unit: 'ml', conf: 1 },
+    ]);
+  });
+
+  it('caps stored items at maxItems even if N_ITEMS lies', () => {
+    const item = photoItem({ 'MEAL_N_ITEMS@': 99 });
+    expect(item.recognition!.storedItems).toHaveLength(3);
+  });
 });
 
 describe('createMockSensorServices', () => {

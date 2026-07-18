@@ -346,6 +346,108 @@ function ResponseDomainEditor({
             and EXIF-stripped client-side. Consent text lives in the root sequence's
             {' '}<strong>Sensors &amp; consent</strong> panel.
           </p>
+          <label className="checkbox">
+            <input
+              type="checkbox"
+              checked={domain.recognition !== undefined}
+              onChange={(e) =>
+                onChange({
+                  ...domain,
+                  recognition: e.target.checked
+                    ? { profile: 'food', variablePrefix: 'ITEMS' }
+                    : undefined,
+                })
+              }
+            />
+            ML-assisted coding: suggest items from the photo (respondent always confirms/corrects)
+          </label>
+          {domain.recognition && (
+            <>
+              <div className="row">
+                <Field label="Profile">
+                  {(id) => (
+                    <select
+                      id={id}
+                      value={domain.recognition!.profile}
+                      onChange={(e) =>
+                        onChange({
+                          ...domain,
+                          recognition: {
+                            ...domain.recognition!,
+                            profile: e.target.value as 'food' | 'document' | 'generic',
+                          },
+                        })
+                      }
+                    >
+                      <option value="food">food (nutritional studies)</option>
+                      <option value="document">document</option>
+                      <option value="generic">generic objects</option>
+                    </select>
+                  )}
+                </Field>
+                <Field label="Variable prefix" hint="Confirmed items → {prefix}_N_ITEMS + {prefix}_I{i}_LABEL/QTY/UNIT/CONF">
+                  {(id) => (
+                    <input
+                      id={id}
+                      type="text"
+                      value={domain.recognition!.variablePrefix}
+                      onChange={(e) =>
+                        onChange({
+                          ...domain,
+                          recognition: { ...domain.recognition!, variablePrefix: e.target.value },
+                        })
+                      }
+                    />
+                  )}
+                </Field>
+                <Field label="Max items">
+                  {(id) => (
+                    <input
+                      id={id}
+                      type="number"
+                      min={1}
+                      max={20}
+                      value={domain.recognition!.maxItems ?? ''}
+                      placeholder="5"
+                      onChange={(e) =>
+                        onChange({
+                          ...domain,
+                          recognition: {
+                            ...domain.recognition!,
+                            maxItems: e.target.value === '' ? undefined : Number(e.target.value),
+                          },
+                        })
+                      }
+                    />
+                  )}
+                </Field>
+              </div>
+              <Field label="Item label scheme" hint="Constrain confirmed labels to a code list; blank = free text">
+                {(id) => (
+                  <select
+                    id={id}
+                    value={domain.recognition!.itemSchemeRef ?? ''}
+                    onChange={(e) =>
+                      onChange({
+                        ...domain,
+                        recognition: {
+                          ...domain.recognition!,
+                          itemSchemeRef: e.target.value || undefined,
+                        },
+                      })
+                    }
+                  >
+                    <option value="">— free text —</option>
+                    {schemes.map((s) => (
+                      <option key={s.id} value={s.id}>
+                        {s.id}
+                      </option>
+                    ))}
+                  </select>
+                )}
+              </Field>
+            </>
+          )}
         </>
       )}
 

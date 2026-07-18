@@ -16,7 +16,7 @@ export const demoInstrument: Instrument = {
   id: 'urn:ddi:mobilesurvey:demo:1.0',
   // Bump on every content change: backend seeding only refreshes the stored demo row when
   // the bundled version is newer (see apps/hub api.upsertSurvey).
-  version: '1.2.1',
+  version: '1.3.0',
   ddiProfile: 'ddi-lifecycle-3.3',
   languages: ['en', 'fr'],
   defaultLanguage: 'en',
@@ -432,10 +432,15 @@ export const demoInstrument: Instrument = {
             id: 'q.demoPhoto',
             variableRef: 'demoPhoto',
             text: s(
-              'Optionally, photograph a nearby object (not a person) to try the camera question.',
-              'Facultativement, photographiez un objet à proximité (pas une personne) pour essayer la question avec appareil photo.',
+              'Optionally, photograph some food (or any nearby object — not a person) to try the camera question with ML-assisted coding.',
+              'Facultativement, photographiez de la nourriture (ou tout objet à proximité — pas une personne) pour essayer la question avec appareil photo et codage assisté.',
             ),
-            responseDomain: { type: 'photo', facing: 'environment', allowLibrary: true },
+            responseDomain: {
+              type: 'photo',
+              facing: 'environment',
+              allowLibrary: true,
+              recognition: { profile: 'food', variablePrefix: 'MEAL', maxItems: 3 },
+            },
           },
         ],
       },
