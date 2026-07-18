@@ -25,7 +25,7 @@ import type {
   InterviewerConfig,
 } from '@mobilesurvey/instrument-schema';
 import { parseXml, type XmlNode } from './xml.js';
-import { unmapId } from './urn.js';
+import { DEFAULT_AGENCY, unmapId } from './urn.js';
 import type { FidelityNote, ImportResult } from './types.js';
 
 // ---------------------------------------------------------------------------
@@ -78,6 +78,24 @@ function urnToLocalId(urn: string): string {
   return urn;
 }
 
+/**
+ * Local id of a ReferenceType element. Our exports carry a full r:URN; real-world files
+ * (Colectica exports like the Ireland LFS) usually identify references by Agency/ID/Version
+ * only, so the r:ID child is the fallback.
+ */
+function refLocalId(ref: XmlNode | undefined): string {
+  if (!ref) return '';
+  const urn = kid(ref, 'URN')?.text;
+  return urn ? urnToLocalId(urn) : rid(ref);
+}
+
+/** Coerce an arbitrary external string (UUID, Colectica item name, …) into a valid variable
+ * identifier (`[A-Za-z_][A-Za-z0-9_]*`) for synthesized variable bindings. */
+function identifierize(s: string): string {
+  const cleaned = s.replace(/[^A-Za-z0-9_]/g, '_');
+  return /^[A-Za-z_]/.test(cleaned) ? cleaned : `v_${cleaned}`;
+}
+
 // ---------------------------------------------------------------------------
 // InternationalString extraction
 // ---------------------------------------------------------------------------
@@ -120,6 +138,14 @@ function parseRd(qiNode: XmlNode, qid: string, notes: FidelityNote[]): ResponseD
     const clRef = kid(codeDom, 'CodeListReference');
     const clId = clRef ? rid(clRef) : '';
     const csRef = clId.endsWith('.cl') ? clId.slice(0, -3) : clId;
+    if (!csRef) {
+      notes.push({
+        severity: 'warning',
+        elementId: qid,
+        message: 'CodeDomain has no resolvable CodeListReference; defaulted to text',
+      });
+      return { type: 'text' };
+    }
     if (rdType === 'lookup') {
       return {
         type: 'lookup',
@@ -215,15 +241,262 @@ function parseRd(qiNode: XmlNode, qid: string, notes: FidelityNote[]): ResponseD
 }
 
 // ---------------------------------------------------------------------------
+// FragmentInstance reassembly
+// ---------------------------------------------------------------------------
+
+/**
+ * Containment references per parent element: these are the by-reference *children* of schemes
+ * and modules in FragmentInstance packaging, and get replaced by the referenced fragment's
+ * content so the rest of the importer sees the familiar hierarchical (DDIInstance) shape.
+ * Semantic references (CodeDomain > CodeListReference, Variable > ConceptReference, a
+ * Sequence's child ControlConstructReferences, …) are deliberately absent — the importer
+ * resolves those by id, and inflating them would corrupt structure.
+ */
+const CONTAINMENT_REFS: Record<string, ReadonlySet<string>> = {
+  StudyUnit: new Set([
+    'ConceptualComponentReference',
+    'DataCollectionReference',
+    'LogicalProductReference',
+    'BaseLogicalProductReference',
+  ]),
+  ConceptualComponent: new Set(['ConceptSchemeReference', 'UniverseSchemeReference']),
+  DataCollection: new Set([
+    'QuestionSchemeReference',
+    'ControlConstructSchemeReference',
+    'InstrumentSchemeReference',
+  ]),
+  LogicalProduct: new Set([
+    'CategorySchemeReference',
+    'CodeListSchemeReference',
+    'VariableSchemeReference',
+  ]),
+  ConceptScheme: new Set(['ConceptReference']),
+  UniverseScheme: new Set(['UniverseReference']),
+  QuestionScheme: new Set(['QuestionItemReference', 'QuestionGridReference', 'QuestionBlockReference']),
+  ControlConstructScheme: new Set(['ControlConstructReference']),
+  InstrumentScheme: new Set(['InstrumentReference']),
+  CategoryScheme: new Set(['CategoryReference']),
+  CodeListScheme: new Set(['CodeListReference']),
+  VariableScheme: new Set(['VariableReference']),
+};
+
+/** Index each i:Fragment's single content element by its (mapped) r:ID text. */
+function indexFragments(root: XmlNode): Map<string, XmlNode> {
+  const byId = new Map<string, XmlNode>();
+  for (const fragEl of root.children) {
+    if (fragEl.localName !== 'Fragment') continue;
+    const content = fragEl.children[0];
+    if (!content) continue;
+    const id = content.children.find(k => k.localName === 'ID')?.text;
+    if (id && !byId.has(id)) byId.set(id, content);
+  }
+  return byId;
+}
+
+/** Recursively replace containment references with the fragments they point at. Unresolvable
+ * references are left in place (the scheme readers simply won't see those children). The
+ * `active` set guards against reference cycles in malformed files; every fragment spliced in
+ * is recorded in `consumed` so loose (never-referenced) fragments can be detected afterwards. */
+function inflate(
+  node: XmlNode,
+  byId: Map<string, XmlNode>,
+  active: Set<string>,
+  consumed: Set<string>,
+): XmlNode {
+  const allowed = CONTAINMENT_REFS[node.localName];
+  const children = node.children.map(ch => {
+    if (allowed?.has(ch.localName)) {
+      const refId = ch.children.find(k => k.localName === 'ID')?.text;
+      const target = refId ? byId.get(refId) : undefined;
+      if (target && refId && !active.has(refId)) {
+        active.add(refId);
+        consumed.add(refId);
+        const inflated = inflate(target, byId, active, consumed);
+        active.delete(refId);
+        return inflated;
+      }
+      return ch;
+    }
+    return inflate(ch, byId, active, consumed);
+  });
+  return { ...node, children };
+}
+
+const IDENTITY_TAGS = new Set(['URN', 'Agency', 'ID', 'Version']);
+const CONSTRUCT_TAGS = new Set([
+  'Sequence',
+  'QuestionConstruct',
+  'IfThenElse',
+  'Loop',
+  'ComputationItem',
+  'StatementItem',
+]);
+
+/** Fabricated wrapper element for grafting loose fragments into the StudyUnit shape the
+ * importer reads. */
+function synthNode(localName: string, children: XmlNode[]): XmlNode {
+  return { tag: localName, prefix: '', localName, attrs: {}, children, text: '' };
+}
+
+function synthText(localName: string, text: string): XmlNode {
+  return { tag: localName, prefix: '', localName, attrs: {}, children: [], text };
+}
+
+function synthMst(key: string, value: string): XmlNode {
+  return {
+    tag: 'r:UserID',
+    prefix: 'r',
+    localName: 'UserID',
+    attrs: { typeOfUserID: `mst:${key}` },
+    children: [],
+    text: value,
+  };
+}
+
+/**
+ * Locate the StudyUnit regardless of packaging: bare StudyUnit, hierarchical DDIInstance, or
+ * flat FragmentInstance. For FragmentInstances, containment references are inflated back into
+ * a hierarchy; loose fragments (common in real repository exports, which keep items flat and
+ * scheme-less) are grafted into synthesized schemes; whatever still has no mapping is counted
+ * in fidelity notes so nothing is silently dropped.
+ */
+function resolveStudyUnit(root: XmlNode, notes: FidelityNote[]): XmlNode {
+  if (root.localName === 'StudyUnit') return root;
+  if (root.localName !== 'FragmentInstance') {
+    return root.children.find(c => c.localName === 'StudyUnit') ?? root;
+  }
+
+  const byId = indexFragments(root);
+  const consumed = new Set<string>();
+
+  const suFrag = [...byId.values()].find(n => n.localName === 'StudyUnit');
+  let su: XmlNode | undefined;
+  if (suFrag) {
+    const suId = suFrag.children.find(k => k.localName === 'ID')?.text;
+    if (suId) consumed.add(suId);
+    su = inflate(suFrag, byId, new Set(), consumed);
+  }
+
+  /** Claim all still-loose fragments matching `names`, in document order. */
+  const takeLoose = (...names: string[]): XmlNode[] => {
+    const wanted = new Set(names);
+    const out: XmlNode[] = [];
+    for (const [id, n] of byId) {
+      if (!consumed.has(id) && wanted.has(n.localName)) {
+        consumed.add(id);
+        out.push(n);
+      }
+    }
+    return out;
+  };
+
+  // Loose CategoryScheme fragments still reference their Categories — inflate them directly.
+  const catSchemeFrags = takeLoose('CategoryScheme').map(cs => inflate(cs, byId, new Set(), consumed));
+
+  // Loose CodeLists: synthesize one CategoryScheme per CodeList (scheme id = CodeList id,
+  // which is exactly what CodeDomain/CodeRepresentation references resolve to for external
+  // files), pulling each referenced Category in and stamping its code value on it.
+  const codeLists = takeLoose('CodeList');
+  const synthCatSchemes: XmlNode[] = [];
+  for (const cl of codeLists) {
+    const cats: XmlNode[] = [];
+    for (const codeEl of cl.children.filter(c => c.localName === 'Code')) {
+      const catRef = codeEl.children.find(c => c.localName === 'CategoryReference');
+      const catId = catRef?.children.find(c => c.localName === 'ID')?.text;
+      const catNode = catId ? byId.get(catId) : undefined;
+      if (catNode && catId) {
+        consumed.add(catId);
+        const value = codeEl.children.find(c => c.localName === 'Value')?.text ?? '';
+        cats.push({ ...catNode, children: [synthMst('code', value), ...catNode.children] });
+      }
+    }
+    if (cats.length) {
+      const identity = cl.children.filter(c => IDENTITY_TAGS.has(c.localName));
+      const label = cl.children.find(c => c.localName === 'Label');
+      synthCatSchemes.push(synthNode('CategoryScheme', [...identity, ...(label ? [label] : []), ...cats]));
+    }
+  }
+
+  const questionItems = takeLoose('QuestionItem');
+  const constructs = takeLoose(...Array.from(CONSTRUCT_TAGS));
+  const instruments = takeLoose('Instrument');
+  const variables = takeLoose('Variable');
+  const concepts = takeLoose('Concept');
+  const universes = takeLoose('Universe');
+
+  const synthModules: XmlNode[] = [];
+  if (questionItems.length || constructs.length || instruments.length) {
+    const dcChildren: XmlNode[] = [];
+    if (questionItems.length) dcChildren.push(synthNode('QuestionScheme', questionItems));
+    if (constructs.length) dcChildren.push(synthNode('ControlConstructScheme', constructs));
+    if (instruments.length) dcChildren.push(synthNode('InstrumentScheme', instruments));
+    synthModules.push(synthNode('DataCollection', dcChildren));
+  }
+  if (catSchemeFrags.length || synthCatSchemes.length || codeLists.length || variables.length) {
+    const lpChildren: XmlNode[] = [...catSchemeFrags, ...synthCatSchemes];
+    if (codeLists.length) lpChildren.push(synthNode('CodeListScheme', codeLists));
+    if (variables.length) lpChildren.push(synthNode('VariableScheme', variables));
+    synthModules.push(synthNode('LogicalProduct', lpChildren));
+  }
+  if (concepts.length || universes.length) {
+    const ccChildren: XmlNode[] = [];
+    if (concepts.length) ccChildren.push(synthNode('ConceptScheme', concepts));
+    if (universes.length) ccChildren.push(synthNode('UniverseScheme', universes));
+    synthModules.push(synthNode('ConceptualComponent', ccChildren));
+  }
+
+  if (!su) {
+    // No StudyUnit fragment (instrument-only exports): synthesize one, borrowing identity
+    // from the TopLevelReference so the instrument still gets a stable id.
+    const tlr = root.children.find(c => c.localName === 'TopLevelReference');
+    const idChildren = tlr ? tlr.children.filter(c => IDENTITY_TAGS.has(c.localName)) : [];
+    if (!idChildren.some(c => c.localName === 'URN')) {
+      const get = (name: string) => idChildren.find(c => c.localName === name)?.text ?? '';
+      if (get('ID')) {
+        idChildren.unshift(synthText('URN', `urn:ddi:${get('Agency')}:${get('ID')}:${get('Version')}`));
+      }
+    }
+    su = synthNode('StudyUnit', idChildren);
+    notes.push({
+      severity: 'info',
+      elementId: '(root)',
+      message: 'FragmentInstance has no StudyUnit fragment; synthesized one around the loose fragments',
+    });
+  }
+
+  if (synthModules.length) {
+    su = { ...su, children: [...su.children, ...synthModules] };
+    notes.push({
+      severity: 'info',
+      elementId: rid(su) || '(root)',
+      message: `FragmentInstance: attached ${consumed.size} of ${byId.size} fragments; loose items were grafted into synthesized schemes`,
+    });
+  }
+
+  // Complete-fidelity accounting: anything still unclaimed has no mapping in our model.
+  const leftoverByType = new Map<string, number>();
+  for (const [id, n] of byId) {
+    if (!consumed.has(id)) leftoverByType.set(n.localName, (leftoverByType.get(n.localName) ?? 0) + 1);
+  }
+  for (const [type, count] of [...leftoverByType].sort((a, b) => a[0].localeCompare(b[0]))) {
+    notes.push({
+      severity: 'info',
+      elementId: type,
+      message: `${count} ${type} fragment(s) have no mapping in the instrument model and were not imported`,
+    });
+  }
+
+  return su;
+}
+
+// ---------------------------------------------------------------------------
 // Main import
 // ---------------------------------------------------------------------------
 
 export function importDdiXml(xml: string): ImportResult {
   const notes: FidelityNote[] = [];
   const root = parseXml(xml);
-  const su = root.localName === 'StudyUnit'
-    ? root
-    : (root.children.find(c => c.localName === 'StudyUnit') ?? root);
+  const su = resolveStudyUnit(root, notes);
 
   // --- StudyUnit metadata ---
   // Prefer the verbatim originals preserved in mst extensions (the r:URN/r:Version on the
@@ -239,6 +512,10 @@ export function importDdiXml(xml: string): ImportResult {
   const interviewer: InterviewerConfig | undefined = interviewerRaw
     ? (JSON.parse(interviewerRaw) as InterviewerConfig)
     : undefined;
+  // Maintenance agency: an unset agencyId and the project placeholder are the same identity
+  // (export mints under DEFAULT_AGENCY either way), so only a foreign agency is recovered.
+  const agencyRaw = kid(su, 'Agency')?.text;
+  const agencyId = agencyRaw && agencyRaw !== DEFAULT_AGENCY ? agencyRaw : undefined;
 
   // --- Citation ---
   const citation = kid(su, 'Citation');
@@ -261,11 +538,13 @@ export function importDdiXml(xml: string): ImportResult {
   const created = kid(kid(citation, 'PublicationDate'), 'SimpleDate')?.text ?? kid(citation, 'Date')?.text;
 
   // --- ConceptualComponent ---
-  const cc = su.children.find(c => c.localName === 'ConceptualComponent');
-  const conceptScheme = kid(cc, 'ConceptScheme');
-  const universeScheme = kid(cc, 'UniverseScheme');
+  // Aggregate across every module/scheme of a kind: our exports emit exactly one of each,
+  // but real-world files (e.g. the Ireland LFS) carry several DataCollections and schemes.
+  const ccModules = su.children.filter(c => c.localName === 'ConceptualComponent');
+  const conceptNodes = ccModules.flatMap(m => kids(m, 'ConceptScheme')).flatMap(s => kids(s, 'Concept'));
+  const universeNodes = ccModules.flatMap(m => kids(m, 'UniverseScheme')).flatMap(s => kids(s, 'Universe'));
 
-  const concepts: Concept[] = kids(conceptScheme, 'Concept').map(c => {
+  const concepts: Concept[] = conceptNodes.map(c => {
     const descNode = kid(c, 'Description');
     const desc: InternationalString = {};
     for (const s of kids(descNode, 'Content')) desc[s.attrs['xml:lang'] ?? 'en'] = s.text;
@@ -276,42 +555,55 @@ export function importDdiXml(xml: string): ImportResult {
     };
   });
 
-  const universes: Universe[] = kids(universeScheme, 'Universe').map(u => ({
+  const universes: Universe[] = universeNodes.map(u => ({
     id: mst(u, 'id') ?? rid(u),
     label: intlFromLabel(u),
     clause: mst(u, 'clause') ?? undefined,
   }));
 
   // --- LogicalProduct ---
-  const lp = su.children.find(c => c.localName === 'LogicalProduct');
-  const clsNode = kid(lp, 'CodeListScheme');
+  const lpModules = su.children.filter(c => c.localName === 'LogicalProduct');
+  const allCodeLists = lpModules
+    .flatMap(m => kids(m, 'CodeListScheme'))
+    .flatMap(s => kids(s, 'CodeList'));
 
-  const categorySchemes: CategoryScheme[] = kids(lp, 'CategoryScheme').map(csNode => {
-    const csId = mst(csNode, 'id') ?? rid(csNode);
-    // Map category r:ID → code value from the matching CodeList
-    const matchingCl = kids(clsNode, 'CodeList').find(cl => (mst(cl, 'id') ?? '') === csId);
-    const codeMap = new Map<string, string>();
-    for (const codeEl of kids(matchingCl, 'Code')) {
+  // Category r:ID → code value, across ALL CodeLists. Category ids are globally unique, so a
+  // single map both preserves the per-scheme behaviour of our own exports (where mst:code wins
+  // anyway) and gives external files code values even when the CategoryScheme↔CodeList pairing
+  // can't be recovered from an mst id.
+  const globalCodeMap = new Map<string, string>();
+  for (const cl of allCodeLists) {
+    for (const codeEl of kids(cl, 'Code')) {
       const catRef = kid(codeEl, 'CategoryReference');
-      const catRid = catRef ? rid(catRef) : urnToLocalId(kid(catRef ?? codeEl, 'URN')?.text ?? '');
-      codeMap.set(catRid, kid(codeEl, 'Value')?.text ?? '');
+      const catRid = catRef ? rid(catRef) : urnToLocalId(kid(codeEl, 'URN')?.text ?? '');
+      globalCodeMap.set(catRid, kid(codeEl, 'Value')?.text ?? '');
     }
-    return {
-      id: csId,
-      label: intlFromLabel(csNode),
-      categories: kids(csNode, 'Category').map(catNode => {
-        const catRid = rid(catNode);
-        return {
-          code: mst(catNode, 'code') ?? codeMap.get(catRid) ?? catRid.split('.').pop() ?? catRid,
-          label: intlFromLabel(catNode),
-        };
-      }),
-    };
-  });
+  }
+
+  const categorySchemes: CategoryScheme[] = lpModules
+    .flatMap(m => kids(m, 'CategoryScheme'))
+    .map(csNode => {
+      const csId = mst(csNode, 'id') ?? rid(csNode);
+      const csLabel = intlFromLabel(csNode);
+      return {
+        id: csId,
+        // Real-world CodeLists often carry no Label; the schema requires one language.
+        label: Object.keys(csLabel).length ? csLabel : { en: csId },
+        categories: kids(csNode, 'Category').map(catNode => {
+          const catRid = rid(catNode);
+          const code = mst(catNode, 'code') ?? globalCodeMap.get(catRid) ?? catRid.split('.').pop() ?? catRid;
+          const catLabel = intlFromLabel(catNode);
+          return {
+            code,
+            label: Object.keys(catLabel).length ? catLabel : { en: code },
+          };
+        }),
+      };
+    });
 
   // --- Variables ---
-  const vsNode = kid(lp, 'VariableScheme');
-  const variables: Variable[] = kids(vsNode, 'Variable').map(vNode => {
+  const variableNodes = lpModules.flatMap(m => kids(m, 'VariableScheme')).flatMap(s => kids(s, 'Variable'));
+  const allVariables: Variable[] = variableNodes.map(vNode => {
     const varId = mst(vNode, 'id') ?? rid(vNode);
     const name =
       mst(vNode, 'name') ??
@@ -346,7 +638,7 @@ export function importDdiXml(xml: string): ImportResult {
       id: varId,
       name,
       kind,
-      label: intlFromLabel(vNode),
+      label: (() => { const l = intlFromLabel(vNode); return Object.keys(l).length ? l : { en: name }; })(),
       representation,
       categorySchemeRef,
       compute: mst(vNode, 'compute') ?? undefined,
@@ -356,27 +648,79 @@ export function importDdiXml(xml: string): ImportResult {
     };
   });
 
+  // A coded variable whose code list lives outside the file (e.g. in a ResourcePackage that
+  // wasn't included) cannot keep the dangling reference; downgrade it to text and say so.
+  const knownSchemeIds = new Set(categorySchemes.map(cs => cs.id));
+  for (const v of allVariables) {
+    if (v.categorySchemeRef && !knownSchemeIds.has(v.categorySchemeRef)) {
+      notes.push({
+        severity: 'warning',
+        elementId: v.id,
+        message: `Variable ${v.name}: code list ${v.categorySchemeRef} is not in this file; representation downgraded to text`,
+      });
+      v.representation = 'text';
+      v.categorySchemeRef = undefined;
+    }
+  }
+
+  // Real-world files repeat variable names across collection waves (one VariableScheme per
+  // wave); the instrument model requires unique names, so keep the first of each.
+  const seenVarNames = new Set<string>();
+  const variables: Variable[] = allVariables.filter(v =>
+    seenVarNames.has(v.name) ? false : (seenVarNames.add(v.name), true),
+  );
+  if (variables.length < allVariables.length) {
+    notes.push({
+      severity: 'info',
+      elementId: '(variables)',
+      message: `Dropped ${allVariables.length - variables.length} same-named duplicate variable(s) (repeated across collection waves)`,
+    });
+  }
+
   // --- DataCollection ---
-  const dc = su.children.find(c => c.localName === 'DataCollection');
-  const qsNode = kid(dc, 'QuestionScheme');
-  const ccsNode = kid(dc, 'ControlConstructScheme');
-  const isNode = kid(dc, 'InstrumentScheme');
+  const dcModules = su.children.filter(c => c.localName === 'DataCollection');
 
   // QuestionItem registry: key = r:ID (e.g. "qi.q1")
   const qiRegistry = new Map<string, XmlNode>();
-  for (const qi of kids(qsNode, 'QuestionItem')) qiRegistry.set(rid(qi), qi);
+  for (const qs of dcModules.flatMap(m => kids(m, 'QuestionScheme'))) {
+    for (const qi of kids(qs, 'QuestionItem')) qiRegistry.set(rid(qi), qi);
+  }
 
   // ControlConstruct registry: key = r:ID
   const ccRegistry = new Map<string, { node: XmlNode; tag: string }>();
-  for (const c of ccsNode?.children ?? []) {
-    if (c.prefix === 'd' || !c.prefix) ccRegistry.set(rid(c), { node: c, tag: c.localName });
+  for (const ccs of dcModules.flatMap(m => kids(m, 'ControlConstructScheme'))) {
+    for (const c of ccs.children) {
+      if (c.prefix === 'd' || !c.prefix) ccRegistry.set(rid(c), { node: c, tag: c.localName });
+    }
   }
 
-  // Find root sequence local ID from InstrumentScheme
-  const instNode = kid(isNode, 'Instrument');
-  const rootRef = kid(instNode, 'ControlConstructReference');
-  const rootUrn = kid(rootRef, 'URN')?.text ?? '';
-  const rootLocalId = urnToLocalId(rootUrn);
+  // Find the root sequence from an Instrument's ControlConstructReference. Real-world files
+  // can carry several Instruments (e.g. one per collection wave); the first whose root
+  // reference actually resolves wins, and the rest are noted.
+  const instNodes = dcModules
+    .flatMap(m => kids(m, 'InstrumentScheme'))
+    .flatMap(s => kids(s, 'Instrument'));
+  let instNode: XmlNode | undefined;
+  let rootLocalId = '';
+  for (const cand of instNodes) {
+    const lid = refLocalId(kid(cand, 'ControlConstructReference'));
+    if (lid && ccRegistry.has(lid)) {
+      instNode = cand;
+      rootLocalId = lid;
+      break;
+    }
+  }
+  if (!instNode && instNodes.length) {
+    instNode = instNodes[0];
+    rootLocalId = refLocalId(kid(instNode, 'ControlConstructReference'));
+  }
+  if (instNodes.length > 1) {
+    notes.push({
+      severity: 'info',
+      elementId: instNode ? rid(instNode) : '(none)',
+      message: `File contains ${instNodes.length} Instruments; imported the first with a resolvable root sequence`,
+    });
+  }
 
   // --- Construct tree walker ---
 
@@ -396,9 +740,7 @@ export function importDdiXml(xml: string): ImportResult {
       interviewerOnly: mst(n, 'interviewerOnly') === 'true' || undefined,
       visibleWhen: mst(n, 'visibleWhen') ?? undefined,
       label: Object.keys(label).length ? label : undefined,
-      children: kids(n, 'ControlConstructReference').map(ref =>
-        walkConstruct(urnToLocalId(kid(ref, 'URN')?.text ?? '')),
-      ),
+      children: kids(n, 'ControlConstructReference').map(ref => walkConstruct(refLocalId(ref))),
     };
   }
 
@@ -406,18 +748,18 @@ export function importDdiXml(xml: string): ImportResult {
     const entry = ccRegistry.get(localId);
     if (!entry || entry.tag !== 'QuestionConstruct') {
       notes.push({ severity: 'warning', elementId: localId, message: `QuestionConstruct not found: ${localId}` });
-      return { type: 'question', id: localId, variableRef: '', text: { en: '' }, responseDomain: { type: 'text' } };
+      return { type: 'question', id: localId, variableRef: identifierize(localId), text: { en: '' }, responseDomain: { type: 'text' } };
     }
     const qcNode = entry.node;
     const qId = mst(qcNode, 'id') ?? localId;
     const qcVisibleWhen = mst(qcNode, 'visibleWhen');
     const qcInterviewerOnly = mst(qcNode, 'interviewerOnly') === 'true';
 
-    const qiUrn = kid(kid(qcNode, 'QuestionReference'), 'URN')?.text ?? '';
-    const qi = qiRegistry.get(urnToLocalId(qiUrn));
+    const qiLocalId = refLocalId(kid(qcNode, 'QuestionReference'));
+    const qi = qiRegistry.get(qiLocalId);
     if (!qi) {
-      notes.push({ severity: 'warning', elementId: qId, message: `QuestionItem not found: ${urnToLocalId(qiUrn)}` });
-      return { type: 'question', id: qId, variableRef: '', text: { en: '' }, responseDomain: { type: 'text' } };
+      notes.push({ severity: 'warning', elementId: qId, message: `QuestionItem not found: ${qiLocalId}` });
+      return { type: 'question', id: qId, variableRef: identifierize(qId), text: { en: '' }, responseDomain: { type: 'text' } };
     }
 
     const editsRaw = mst(qi, 'edits');
@@ -435,7 +777,11 @@ export function importDdiXml(xml: string): ImportResult {
     return {
       type: 'question',
       id: qId,
-      variableRef: mst(qi, 'variableRef') ?? '',
+      // External questions carry no MST variable binding; fall back to the question item's
+      // own name (Colectica's QuestionItemName) or id so the schema's non-empty rule holds.
+      variableRef:
+        mst(qi, 'variableRef') ??
+        identifierize(kid(kid(qi, 'QuestionItemName'), 'String')?.text ?? qId),
       text: intlFromDdiText(kid(qi, 'QuestionText')),
       instruction: Object.keys(instruction).length ? instruction : undefined,
       tooltip: tooltip ? (JSON.parse(tooltip) as InternationalString) : undefined,
@@ -456,14 +802,20 @@ export function importDdiXml(xml: string): ImportResult {
     const n = entry.node;
     const condition =
       kid(kid(kid(n, 'IfCondition'), 'Command'), 'CommandContent')?.text ?? '';
-    const thenLocalId = urnToLocalId(kid(kid(n, 'ThenConstructReference'), 'URN')?.text ?? '');
-    const elseLocalId = urnToLocalId(kid(kid(n, 'ElseConstructReference'), 'URN')?.text ?? '');
+    const thenLocalId = refLocalId(kid(n, 'ThenConstructReference'));
+    const elseLocalId = refLocalId(kid(n, 'ElseConstructReference'));
+    // Our exports always point Then/Else at a synthetic Sequence; external files may point
+    // straight at any construct, which then becomes a single-child branch.
+    const branch = (lid: string): ControlConstruct[] => {
+      if (!lid) return [];
+      return ccRegistry.get(lid)?.tag === 'Sequence' ? walkSeq(lid).children : [walkConstruct(lid)];
+    };
     return {
       type: 'ifThenElse',
       id: mst(n, 'id') ?? localId,
       condition,
-      then: walkSeq(thenLocalId).children,
-      else: elseLocalId ? walkSeq(elseLocalId).children : undefined,
+      then: branch(thenLocalId),
+      else: elseLocalId ? branch(elseLocalId) : undefined,
     };
   }
 
@@ -474,9 +826,7 @@ export function importDdiXml(xml: string): ImportResult {
       return { type: 'loop', id: localId, loopVariable: 'i', children: [] };
     }
     const n = entry.node;
-    const bodyLocalId = urnToLocalId(
-      kid(kid(n, 'ControlConstructReference'), 'URN')?.text ?? '',
-    );
+    const bodyLocalId = refLocalId(kid(n, 'ControlConstructReference'));
     const label = intlFromLabel(n);
     const itemLabelRaw = mst(n, 'itemLabel');
     return {
@@ -496,14 +846,18 @@ export function importDdiXml(xml: string): ImportResult {
     const entry = ccRegistry.get(localId);
     if (!entry || entry.tag !== 'ComputationItem') {
       notes.push({ severity: 'warning', elementId: localId, message: `ComputationItem not found: ${localId}` });
-      return { type: 'computation', id: localId, targetVariableRef: '', expression: '' };
+      return { type: 'computation', id: localId, targetVariableRef: identifierize(localId), expression: '0' };
     }
     const n = entry.node;
+    // External ComputationItems have no MST bindings; the DDI CommandContent (whatever source
+    // language it's in) is preserved as the expression text, and the construct id stands in
+    // for the unknown target variable.
+    const commandContent = kid(kid(kid(n, 'CommandCode') ?? n, 'Command'), 'CommandContent')?.text;
     return {
       type: 'computation',
       id: mst(n, 'id') ?? localId,
-      targetVariableRef: mst(n, 'targetVariableRef') ?? '',
-      expression: mst(n, 'expression') ?? '',
+      targetVariableRef: mst(n, 'targetVariableRef') ?? identifierize(localId),
+      expression: mst(n, 'expression') ?? commandContent ?? '0',
     };
   }
 
@@ -546,6 +900,71 @@ export function importDdiXml(xml: string): ImportResult {
     ? walkSeq(rootLocalId)
     : { type: 'sequence' as const, id: 'seq.root', children: [] };
 
+  // External files bind questions/computations to variable names that have no Variable item
+  // in the file. Synthesize minimal variables for those bindings so the instrument satisfies
+  // referential validation and the designer's variables panel reflects them.
+  {
+    const varNames = new Set(variables.map(v => v.name));
+    let synthesized = 0;
+    const addVar = (v: Variable): void => {
+      varNames.add(v.name);
+      variables.push(v);
+      synthesized++;
+    };
+    const visit = (c: ControlConstruct): void => {
+      if (c.type === 'question') {
+        if (c.variableRef && !varNames.has(c.variableRef)) {
+          const rd = c.responseDomain;
+          const coded = rd.type === 'code' || rd.type === 'lookup' || rd.type === 'markAll';
+          addVar({
+            id: c.variableRef,
+            name: c.variableRef,
+            kind: 'collected',
+            label: { en: c.variableRef },
+            representation: coded ? 'code' : rd.type === 'numeric' ? 'numeric' : rd.type === 'datetime' ? 'datetime' : 'text',
+            categorySchemeRef: coded ? rd.categorySchemeRef : undefined,
+          });
+        }
+      } else if (c.type === 'computation') {
+        if (c.targetVariableRef && !varNames.has(c.targetVariableRef)) {
+          addVar({
+            id: c.targetVariableRef,
+            name: c.targetVariableRef,
+            kind: 'derived',
+            label: { en: c.targetVariableRef },
+            representation: 'text',
+            compute: c.expression || '0',
+          });
+        }
+      } else if (c.type === 'sequence') {
+        c.children.forEach(visit);
+      } else if (c.type === 'loop') {
+        c.children.forEach(visit);
+      } else if (c.type === 'ifThenElse') {
+        c.then.forEach(visit);
+        c.else?.forEach(visit);
+      }
+    };
+    sequence.children.forEach(visit);
+    if (synthesized) {
+      notes.push({
+        severity: 'info',
+        elementId: '(variables)',
+        message: `Synthesized ${synthesized} variable(s) for question/computation bindings with no Variable item in the file`,
+      });
+    }
+  }
+
+  // Files without a Citation (instrument-only FragmentInstances) fall back to the
+  // Instrument's own label for a usable title.
+  if (title['en'] === 'Untitled' && Object.keys(title).length === 1 && instNode) {
+    const instLabel = intlFromLabel(instNode);
+    if (Object.keys(instLabel).length) {
+      delete title['en'];
+      Object.assign(title, instLabel);
+    }
+  }
+
   const instrument: Instrument = {
     id: instrumentUrn,
     version,
@@ -555,6 +974,7 @@ export function importDdiXml(xml: string): ImportResult {
     metadata: {
       title,
       agency: agencyName,
+      agencyId,
       description: Object.keys(description).length ? description : undefined,
       created,
     },

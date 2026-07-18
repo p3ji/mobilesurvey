@@ -231,6 +231,10 @@ export const interviewerConfigSchema = z.object({
 export const instrumentMetadataSchema = z.object({
   title: internationalStringSchema,
   agency: z.string().optional(),
+  agencyId: z
+    .string()
+    .regex(/^[a-zA-Z0-9-]{1,63}(\.[a-zA-Z0-9-]{1,63})*$/, 'must be a DDI agency id (dot-separated labels, e.g. io.github.p3ji)')
+    .optional(),
   description: internationalStringSchema.optional(),
   created: z.string().optional(),
 });

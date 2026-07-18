@@ -52,6 +52,30 @@ describe('DDI-XML round-trip', () => {
   }
 });
 
+describe('DDI-XML fragment-packaging round-trip', () => {
+  for (const [name, original] of FIXTURES) {
+    it(`${name}: fragment export round-trips to deep-equal instrument`, () => {
+      const xml = exportDdiXml(original, { packaging: 'fragment' });
+      expect(xml).toContain('<i:FragmentInstance');
+      expect(xml).toContain('<i:TopLevelReference>');
+      const { instrument, report } = importDdiXml(xml);
+      expect(report.notes.filter(n => n.severity === 'warning')).toHaveLength(0);
+      expect(normalize(instrument)).toEqual(normalize(original));
+    });
+  }
+
+  it('demo: every versionable item gets its own Fragment', () => {
+    const xml = exportDdiXml(demoInstrument, { packaging: 'fragment' });
+    const fragCount = (xml.match(/<i:Fragment>/g) ?? []).length;
+    // At minimum: StudyUnit + 3 modules + one fragment per question item.
+    const questionCount = (xml.match(/<d:QuestionItem>/g) ?? []).length;
+    expect(fragCount).toBeGreaterThan(4 + questionCount);
+    // Schemes hold children by reference, not inline: a QuestionItem fragment is a direct
+    // Fragment child, never nested inside the QuestionScheme element.
+    expect(xml).not.toMatch(/<d:QuestionScheme>(?:(?!<\/d:QuestionScheme>).)*<d:QuestionItem>/s);
+  });
+});
+
 describe('DDI-XML export structure', () => {
   it('demo: contains all category scheme IDs', () => {
     const xml = exportDdiXml(demoInstrument);

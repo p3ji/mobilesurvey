@@ -295,7 +295,16 @@ export interface InterviewerConfig {
 
 export interface InstrumentMetadata {
   title: InternationalString;
+  /** Human-readable creator/agency name for citations (e.g. "Demo Org"). */
   agency?: string;
+  /**
+   * DDI maintenance-agency identifier used to mint every URN on DDI-XML export
+   * (`urn:ddi:{agencyId}:{id}:{version}`). Must match the DDI registry pattern
+   * (dot-separated labels, e.g. `io.github.p3ji`). Leave unset to use the project
+   * placeholder — never set a registered agency (like `ca.statcan`) unless you
+   * actually publish on that agency's behalf.
+   */
+  agencyId?: string;
   description?: InternationalString;
   /** ISO-8601 creation timestamp. */
   created?: string;

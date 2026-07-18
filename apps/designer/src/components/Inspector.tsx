@@ -540,6 +540,44 @@ function EditsEditor({
   );
 }
 
+/** DDI agency-id pattern (dot-separated labels), mirrored from instrument-schema's Zod rule. */
+const AGENCY_ID_RE = /^[a-zA-Z0-9-]{1,63}(\.[a-zA-Z0-9-]{1,63})*$/;
+
+/** Instrument-level DDI identity settings, shown when the root sequence is selected. */
+function SurveyIdentityFields({ instrument }: { instrument: Instrument }) {
+  const update = useDesigner((s) => s.update);
+  const agencyId = instrument.metadata.agencyId ?? '';
+  const invalid = agencyId !== '' && !AGENCY_ID_RE.test(agencyId);
+  return (
+    <>
+      <Field
+        label="DDI maintenance agency ID"
+        hint="Stamped into every URN on DDI-XML export (urn:ddi:{agency}:{id}:{version}). Leave blank to publish under the project placeholder io.github.p3ji. Only set a registered agency (e.g. ca.statcan) if you actually publish on its behalf."
+      >
+        {(id) => (
+          <input
+            id={id}
+            type="text"
+            value={agencyId}
+            placeholder="io.github.p3ji (placeholder)"
+            onChange={(e) =>
+              update((draft) => {
+                draft.metadata.agencyId = e.target.value.trim() || undefined;
+              })
+            }
+          />
+        )}
+      </Field>
+      {invalid && (
+        <p className="hint" role="alert">
+          Not a valid DDI agency ID — use dot-separated labels of letters, digits and hyphens
+          (e.g. io.github.p3ji). Export will fall back to the placeholder.
+        </p>
+      )}
+    </>
+  );
+}
+
 function ConstructEditor({ node, instrument }: { node: ControlConstruct; instrument: Instrument }) {
   const languages = instrument.languages;
   const edit = useEditConstruct(node.id);
@@ -591,6 +629,7 @@ function ConstructEditor({ node, instrument }: { node: ControlConstruct; instrum
             />
             Interviewer only (hidden in self-administered mode)
           </label>
+          {node.id === instrument.sequence.id && <SurveyIdentityFields instrument={instrument} />}
         </>
       );
     case 'statement':

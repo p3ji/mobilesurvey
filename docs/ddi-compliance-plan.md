@@ -1,7 +1,47 @@
 # DDI-Lifecycle 3.3 compliance — schema-valid XML, canonical identity, ddigraph interop
 
-*Design document. Status: **P1 DONE (2026-07-09)** — the XSD gate is live and every bundled
-instrument's export validates against the official 3.3 schemas. P2–P4 not started.*
+*Design document. Status: **ALL PHASES DONE (2026-07-17)** — P1 XSD gate (2026-07-09);
+P2 `agencyId` identity model; P3 FragmentInstance packaging, both packagings green in the XSD
+gate, ddigraph interop harness passing; P4 real Ireland-LFS files import clean. Results below.*
+
+## P2–P4 results (2026-07-17)
+
+- **P2 (identity model):** `agencyId` is an optional `InstrumentMetadata` field (Zod-validated
+  against the DDI agency pattern), edited in the designer's root-sequence Inspector, consumed
+  by both codecs. Unset ≡ the `io.github.p3ji` placeholder (the importer normalizes the
+  placeholder back to unset so round-trips stay deep-equal). Acceptance test proves changing
+  `agencyId` changes every URN/Agency and *nothing else* (string-substitution identity).
+- **P3 (FragmentInstance):** `exportDdiXml(instrument, { packaging: 'fragment' })` emits
+  Colectica-style flat packaging — TopLevelReference → StudyUnit, one `i:Fragment` per
+  maintainable/versionable, schemes hold children BY REFERENCE (a fragment consumer treats each
+  Fragment's single child as one node and never recurses into inline children, so anything
+  inline would vanish from the consumer's graph; only `l:Code` stays inline — it's Identifiable,
+  not Versionable, and ddigraph special-cases CodeList→Category edges). Both packagings pass the
+  XSD gate for all 5 bundled instruments; fragment exports round-trip deep-equal (the importer
+  re-inflates containment references). Designer Export menu gained the second entry.
+- **P3b (ddigraph interop, `scripts/ddigraph-interop/`):** ddigraph 0.4.2 (PyPI) ingests our
+  fragment exports with its unmodified `DDIFragmentParser`: **demo 121 nodes / 212 edges, fsep
+  131 nodes / 221 edges**, every node keyed by a canonical `urn:ddi:io.github.p3ji:…` URN,
+  entity counts matching a manifest derived from the instrument model, structural edges
+  (Instrument→Sequence, QuestionConstruct→QuestionItem, QuestionItem→CodeList→Category) intact.
+- **P4 (real files, `packages/ddi-xml/fixtures/external/` + `external-import.test.ts`, suite
+  skips when fixtures absent):** Colectica-produced Ireland LFS files from ddigraph `demo/`
+  (Git LFS via media.githubusercontent.com; `fetch.mjs` downloads, never committed).
+  - `LFS.xml` (14.5 MB, 5,200 fragments, agency `ie.cso`): imports in **~2.4 s / 160 MB heap**
+    → 676 constructs, 636 unique variables (1,609 raw across 4 collection waves, deduped with
+    a note), 235 category schemes, 54 fidelity notes, and the result passes
+    `validateInstrument` (the designer's own load gate).
+  - `Ireland_LabourSurvey.xml` (6.8 MB, **no StudyUnit at all** — instrument-only): imports via
+    synthesized StudyUnit/schemes → 766 constructs, 195 category schemes, Zod-valid.
+  - `Ireland_LFS_Series.xml` (66 MB): imports in ~5.5 s / 475 MB heap without crashing.
+  - What external-file hardening required (all with legacy behaviour preserved for our own
+    exports): references resolved by Agency/ID/Version when no `r:URN` child exists; loose
+    fragments grafted into synthesized schemes (real repositories keep items flat and
+    scheme-less); a synthetic CategoryScheme per CodeList (scheme id = CodeList id, code values
+    stamped from `l:Code`); aggregation across multiple DataCollections/schemes; multi-
+    Instrument root selection; synthesized variables for question/computation bindings;
+    wave-duplicate variable names deduped; dangling code-list references downgraded to text.
+    Everything skipped or approximated lands in the FidelityReport — no silent drops.
 
 ## P1 findings (what the gate actually surfaced — supplements §2's predictions)
 

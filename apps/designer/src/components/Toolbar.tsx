@@ -103,11 +103,12 @@ export function Toolbar({
     setExportOpen(false);
   };
 
-  const exportDdi = () => {
-    const xml = exportDdiXml(instrument);
+  const exportDdi = (packaging: 'instance' | 'fragment' = 'instance') => {
+    const xml = exportDdiXml(instrument, { packaging });
     const slug = (pick(instrument.metadata.title as Record<string, string>, language) ?? 'instrument')
       .toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
-    download(xml, `${slug}.ddi.xml`, 'application/xml;charset=utf-8');
+    const suffix = packaging === 'fragment' ? '.ddi-fragments.xml' : '.ddi.xml';
+    download(xml, `${slug}${suffix}`, 'application/xml;charset=utf-8');
     setExportOpen(false);
   };
 
@@ -295,8 +296,11 @@ export function Toolbar({
             <button type="button" role="menuitem" onClick={exportJson}>
               ⬇ Instrument JSON
             </button>
-            <button type="button" role="menuitem" onClick={exportDdi}>
+            <button type="button" role="menuitem" onClick={() => exportDdi('instance')}>
               ⬇ DDI-XML (DDI-L 3.3)
+            </button>
+            <button type="button" role="menuitem" onClick={() => exportDdi('fragment')}>
+              ⬇ DDI-XML (FragmentInstance, for repositories)
             </button>
             <button type="button" role="menuitem" onClick={exportJsonSchema}>
               ⬇ JSON Schema

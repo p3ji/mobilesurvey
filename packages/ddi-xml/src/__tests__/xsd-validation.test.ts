@@ -30,5 +30,11 @@ describe('XSD validation against official DDI-Lifecycle 3.3 schemas', () => {
       const result = await validateDdi(xml);
       expect(result.valid, `\nXSD violations for "${name}":\n${formatErrors(result)}\n`).toBe(true);
     }, 120_000);
+
+    it(`${name}: fragment packaging is schema-valid`, async () => {
+      const xml = exportDdiXml(instrument, { packaging: 'fragment' });
+      const result = await validateDdi(xml);
+      expect(result.valid, `\nXSD violations for "${name}" (fragment):\n${formatErrors(result)}\n`).toBe(true);
+    }, 120_000);
   }
 });
