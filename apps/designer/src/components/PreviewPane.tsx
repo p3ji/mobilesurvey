@@ -266,6 +266,8 @@ export function PreviewPane() {
         out.push({ num, key: item.key, varRef: item.variablePrefix + '_*', label: item.questionText, pageIdx: pageOf.get(item.key) ?? 0 });
       } else if (item.kind === 'table') {
         out.push({ num, key: item.key, varRef: item.variablePrefix + '_*_*', label: item.questionText, pageIdx: pageOf.get(item.key) ?? 0 });
+      } else if (item.kind === 'geolocation') {
+        out.push({ num, key: item.key, varRef: item.instanceKey, label: item.questionText, pageIdx: pageOf.get(item.key) ?? 0 });
       }
     }
     return out;
@@ -572,6 +574,79 @@ export function PreviewPane() {
                     </table>
                   </div>
                   <p className="pv-markall-vars">Variables: {item.variablePrefix}_row_col (+ _TOT totals)</p>
+                  <EditList edits={item.firedEdits} />
+                </div>
+              );
+            }
+
+            if (item.kind === 'geolocation') {
+              const geoNum = qNumMap.get(item.key);
+              // Device-frame mock: same consent → capture flow as the runtime, but the
+              // "fix" is a fixed Ottawa coordinate (no real sensor in the preview).
+              const mockCapture = () => {
+                const f = 10 ** item.precision;
+                const lat = Math.round(45.42153 * f) / f;
+                const lon = Math.round(-75.697193 * f) / f;
+                send({ type: 'ANSWER', instanceKey: item.subKeys.lat, value: lat });
+                send({ type: 'ANSWER', instanceKey: item.subKeys.lon, value: lon });
+                send({ type: 'ANSWER', instanceKey: item.subKeys.acc, value: 12 });
+                send({ type: 'ANSWER', instanceKey: item.subKeys.ts, value: new Date().toISOString() });
+                send({ type: 'ANSWER', instanceKey: item.subKeys.src, value: 'gps' });
+                send({ type: 'ANSWER', instanceKey: item.instanceKey, value: `${lat}, ${lon} (±12 m)` });
+              };
+              return (
+                <div
+                  key={item.key}
+                  id={`pv-q-${item.key}`}
+                  className="pv-question"
+                  style={{ marginInlineStart: item.depth * 8 }}
+                >
+                  <p className="pv-label">
+                    {geoNum != null && <span className="pv-q-num">Q{geoNum}.</span>}
+                    {item.questionText}
+                    {item.required ? <span aria-hidden="true" className="pv-req"> *</span> : null}
+                  </p>
+                  {item.instruction && <p className="pv-instruction">{item.instruction}</p>}
+                  {item.purpose === '' ? (
+                    <p className="pv-instruction">⚠ No location declaration in Sensors &amp; consent.</p>
+                  ) : item.consent === undefined ? (
+                    <div className="pv-consent">
+                      <p className="pv-instruction">📍 {item.purpose}</p>
+                      <div className="pv-consent-actions">
+                        <button type="button" onClick={() => send({ type: 'ANSWER', instanceKey: item.consentKey, value: 'granted' })}>
+                          Allow
+                        </button>
+                        <button type="button" onClick={() => send({ type: 'ANSWER', instanceKey: item.consentKey, value: 'declined' })}>
+                          Decline
+                        </button>
+                      </div>
+                    </div>
+                  ) : item.consent === 'granted' ? (
+                    <div className="pv-consent">
+                      <button type="button" onClick={mockCapture}>
+                        {item.src === 'gps' ? '↺ Update location (mock)' : '📍 Use my location (mock)'}
+                      </button>
+                      {item.src === 'gps' && item.value && <p className="pv-instruction">✓ {item.value}</p>}
+                    </div>
+                  ) : (
+                    <div className="pv-consent">
+                      <p className="pv-instruction">Location declined.</p>
+                      {item.manualFallback && (
+                        <input
+                          type="text"
+                          placeholder="Describe your location…"
+                          value={item.src !== 'gps' ? (item.value ?? '') : ''}
+                          onChange={(e) => {
+                            send({ type: 'ANSWER', instanceKey: item.instanceKey, value: e.target.value });
+                            send({ type: 'ANSWER', instanceKey: item.subKeys.src, value: 'declined' });
+                          }}
+                        />
+                      )}
+                    </div>
+                  )}
+                  <p className="pv-markall-vars">
+                    Variables: {'{'}base{'}'} + _LAT _LON _ACC _TS _SRC · consent → CONSENT_GEOLOCATION
+                  </p>
                   <EditList edits={item.firedEdits} />
                 </div>
               );

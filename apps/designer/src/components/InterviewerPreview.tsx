@@ -125,6 +125,7 @@ const DOMAIN_LABEL: Record<string, string> = {
   markAll: 'Mark all that apply',
   grid: 'Grid / matrix',
   file: 'File upload',
+  geolocation: 'Location capture (consent-gated)',
 };
 
 function CatiCard({ item }: { item: FlatItem }) {

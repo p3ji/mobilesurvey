@@ -44,6 +44,8 @@ function domainText(d: ResponseDomain): string {
       return `Grid (rows: ${d.rowSchemeRef}, cols: ${d.colSchemeRef}) → variables ${d.variablePrefix}_*`;
     case 'table':
       return `Data table (rows: ${d.rowSchemeRef}, cols: ${d.colSchemeRef}${d.totalRow ? ', +total row' : ''}${d.totalCol ? ', +total col' : ''}) → variables ${d.variablePrefix}_*_*`;
+    case 'geolocation':
+      return `Location capture (consent-gated; ${d.precision ?? 3} decimals${d.maxAccuracyM ? `, max ±${d.maxAccuracyM} m` : ''}${d.manualFallback !== false ? ', typed fallback' : ''}) → variables {base} + _LAT/_LON/_ACC/_TS/_SRC`;
   }
 }
 

@@ -15,5 +15,6 @@ export {
   BUNDLED_SURVEYS,
   bundledSurvey,
   surveyCollectsData,
+  compareInstrumentVersions,
   type BundledSurvey,
 } from './bundled.js';

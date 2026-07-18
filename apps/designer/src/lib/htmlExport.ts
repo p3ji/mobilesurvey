@@ -159,6 +159,19 @@ function domainHtml(domain: ResponseDomain, instrument: Instrument, lang: string
       }
       return `${unitLine}<table class="resp-grid"><thead><tr><th></th>${headerCells}</tr></thead><tbody>${bodyRows.join('')}</tbody></table>`;
     }
+    case 'geolocation': {
+      // The paper artifact documents the sensor use (incl. consent text) for review boards.
+      const decl = instrument.sensors?.sensors.find((s) => s.kind === 'geolocation');
+      const purpose = decl ? esc(lbl(decl.purpose as Record<string, string>, lang)) : '';
+      const retention = decl?.retention
+        ? ` <em>Retention:</em> ${esc(lbl(decl.retention as Record<string, string>, lang))}`
+        : '';
+      return `<div class="resp-open">📍 [Location capture — respondent consent required]${
+        purpose ? `<br><em>Consent text:</em> ${purpose}${retention}` : ''
+      }<br><small>Precision: ${domain.precision ?? 3} decimals${
+        domain.maxAccuracyM ? `, max ±${domain.maxAccuracyM} m` : ''
+      }${domain.manualFallback !== false ? '; typed fallback offered on decline' : ''}</small></div>`;
+    }
   }
 }
 

@@ -127,6 +127,12 @@ export const responseDomainSchema = z.discriminatedUnion('type', [
       .array(z.string().regex(/^[^:]+:[^:]+$/, 'Use ROWCODE:COLCODE'))
       .optional(),
   }),
+  z.object({
+    type: z.literal('geolocation'),
+    precision: z.union([z.literal(2), z.literal(3), z.literal(4), z.literal(5)]).optional(),
+    maxAccuracyM: z.number().positive().optional(),
+    manualFallback: z.boolean().optional(),
+  }),
 ]);
 
 export const editTypeSchema = z.enum(['hard', 'soft']);
@@ -228,6 +234,16 @@ export const interviewerConfigSchema = z.object({
   exitModuleRef: z.string().optional(),
 });
 
+export const sensorDeclarationSchema = z.object({
+  kind: z.enum(['geolocation', 'camera']),
+  purpose: internationalStringSchema,
+  retention: internationalStringSchema.optional(),
+});
+
+export const sensorConfigSchema = z.object({
+  sensors: z.array(sensorDeclarationSchema),
+});
+
 export const instrumentMetadataSchema = z.object({
   title: internationalStringSchema,
   agency: z.string().optional(),
@@ -254,6 +270,7 @@ export const instrumentSchema = z
     prefillMappings: z.array(prefillMappingSchema),
     sequence: sequenceConstructSchema,
     interviewer: interviewerConfigSchema.optional(),
+    sensors: sensorConfigSchema.optional(),
   })
   .refine((inst) => inst.languages.includes(inst.defaultLanguage), {
     message: 'defaultLanguage must be one of languages',

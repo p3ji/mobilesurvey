@@ -10,11 +10,17 @@
  */
 import { useEffect, useRef, useState } from 'react';
 import { bundledSurvey, surveyCollectsData, type Instrument } from '@mobilesurvey/instrument-schema';
-import type { ParadataEvent, RuntimeState, SampleUnit } from '@mobilesurvey/runtime-engine';
+import {
+  createMockSensorServices,
+  type ParadataEvent,
+  type RuntimeState,
+  type SampleUnit,
+} from '@mobilesurvey/runtime-engine';
 import { AccessGate } from './components/AccessGate.jsx';
 import { SurveyRunner } from './components/SurveyRunner.jsx';
 import { Completion } from './components/Completion.jsx';
 import { createBackend, ensureSurveyRow, fetchSurvey, submitResponse, type Backend } from './integrations/api.js';
+import { createBrowserSensorServices } from './integrations/sensors.js';
 
 interface SavedSession {
   runtimeState: RuntimeState;
@@ -302,6 +308,12 @@ export function App() {
           initialPage={survey.initialPage}
           resumed={survey.resumed}
           paradata={backend.paradata}
+          sensors={
+            // Same split as the backend: exploration-only surveys never touch real sensors.
+            loaded.collectsData
+              ? createBrowserSensorServices(backend.paradata)
+              : createMockSensorServices()
+          }
           notice={loaded.notice}
           onPersist={(state, page) => persist(survey.caseId, state, page)}
           onSubmit={(responses) => submit(survey.caseId, responses)}

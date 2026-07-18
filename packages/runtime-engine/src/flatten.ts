@@ -6,7 +6,11 @@
  * Pure: it clones the response map so derived/computation writes never mutate the input.
  */
 import { evaluate, parse, type EvalContext } from '@mobilesurvey/expression-engine';
-import { DICHOTOMOUS_CODES, TABLE_TOTAL_CODE } from '@mobilesurvey/instrument-schema';
+import {
+  DICHOTOMOUS_CODES,
+  SENSOR_CONSENT_VARIABLES,
+  TABLE_TOTAL_CODE,
+} from '@mobilesurvey/instrument-schema';
 import type {
   ControlConstruct,
   EditRule,
@@ -332,6 +336,50 @@ export function flattenInstrument(instrument: Instrument, state: RuntimeState): 
           return;
         }
 
+        // geolocation: consent-gated device capture; base variable holds the pipeable
+        // summary, generated `_LAT/_LON/_ACC/_TS/_SRC` sub-variables hold the parts.
+        if (q.responseDomain.type === 'geolocation') {
+          const domain = q.responseDomain;
+          const baseKey = instanceKey(q.variableRef, scope);
+          const decl = instrument.sensors?.sensors.find((s) => s.kind === 'geolocation');
+          // Consent is session-global (one decision per sensor kind), never roster-scoped —
+          // stored at root scope so `$CONSENT_GEOLOCATION` resolves in routing expressions.
+          const consentKey = instanceKey(SENSOR_CONSENT_VARIABLES.geolocation, []);
+          const consentRaw = responses[consentKey];
+          const value = responses[baseKey] as string | undefined;
+          items.push({
+            kind: 'geolocation',
+            key: `${q.id}@${scopeSuffix}`,
+            constructId: q.id,
+            questionText: localizePiped(q.text, language, ctx),
+            instruction: q.instruction ? localizePiped(q.instruction, language, ctx) : undefined,
+            required: q.required,
+            instanceKey: baseKey,
+            value,
+            subKeys: {
+              lat: instanceKey(`${q.variableRef}_LAT`, scope),
+              lon: instanceKey(`${q.variableRef}_LON`, scope),
+              acc: instanceKey(`${q.variableRef}_ACC`, scope),
+              ts: instanceKey(`${q.variableRef}_TS`, scope),
+              src: instanceKey(`${q.variableRef}_SRC`, scope),
+            },
+            src: responses[instanceKey(`${q.variableRef}_SRC`, scope)] as string | undefined,
+            consent:
+              consentRaw === 'granted' || consentRaw === 'declined' ? consentRaw : undefined,
+            consentKey,
+            // A missing declaration is a validation error; the empty purpose makes the
+            // control render its "sensor not declared" refusal instead of capturing.
+            purpose: decl ? pick(decl.purpose, language) : '',
+            retention: decl?.retention ? pick(decl.retention, language) : undefined,
+            precision: domain.precision ?? 3,
+            maxAccuracyM: domain.maxAccuracyM,
+            manualFallback: domain.manualFallback !== false,
+            firedEdits: evalEdits(q.edits, q.required, value, ctx, language),
+            depth,
+          });
+          return;
+        }
+
         const key = instanceKey(q.variableRef, scope);
         const value = responses[key];
         items.push({
@@ -394,7 +442,7 @@ export function collectEdits(result: FlattenResult): { hard: number; soft: numbe
   let hard = 0;
   let soft = 0;
   for (const item of result.items) {
-    if (item.kind !== 'question' && item.kind !== 'table') continue;
+    if (item.kind !== 'question' && item.kind !== 'table' && item.kind !== 'geolocation') continue;
     for (const edit of item.firedEdits) {
       if (edit.type === 'hard') hard++;
       else soft++;

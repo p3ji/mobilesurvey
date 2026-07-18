@@ -73,6 +73,7 @@ function ResponseDomainEditor({
   onChange: (d: ResponseDomain) => void;
 }) {
   const languages = useDesigner((s) => s.instrument.languages);
+  const update = useDesigner((s) => s.update);
   const firstScheme = schemes[0]?.id ?? '';
   const defaults: Record<ResponseDomain['type'], ResponseDomain> = {
     code: { type: 'code', categorySchemeRef: firstScheme, selection: 'single' },
@@ -91,6 +92,7 @@ function ResponseDomainEditor({
       variablePrefix: 'T01',
       totalRow: true,
     },
+    geolocation: { type: 'geolocation', precision: 3, manualFallback: true },
   };
 
   return (
@@ -101,7 +103,30 @@ function ResponseDomainEditor({
           <select
             id={id}
             value={domain.type}
-            onChange={(e) => onChange(defaults[e.target.value as ResponseDomain['type']])}
+            onChange={(e) => {
+              const nextType = e.target.value as ResponseDomain['type'];
+              // Sensor domains require an instrument-level declaration (consent text);
+              // auto-add a starter one so the question is immediately valid and runnable.
+              if (nextType === 'geolocation') {
+                update((draft) => {
+                  draft.sensors ??= { sensors: [] };
+                  if (!draft.sensors.sensors.some((s) => s.kind === 'geolocation')) {
+                    draft.sensors.sensors.push({
+                      kind: 'geolocation',
+                      purpose: Object.fromEntries(
+                        languages.map((l) => [
+                          l,
+                          l === 'fr'
+                            ? 'Nous demandons votre position pour situer vos réponses géographiquement. Les coordonnées sont arrondies avant d’être conservées.'
+                            : 'We ask for your location to place your answers geographically. Coordinates are rounded before they are stored.',
+                        ]),
+                      ),
+                    });
+                  }
+                });
+              }
+              onChange(defaults[nextType]);
+            }}
           >
             {Object.keys(defaults).map((t) => (
               <option key={t} value={t}>
@@ -210,6 +235,59 @@ function ResponseDomainEditor({
 
       {domain.type === 'lookup' && (
         <p className="hint">Rendered with the advanced-search UI (auto-suggest / fuzzy match).</p>
+      )}
+
+      {domain.type === 'geolocation' && (
+        <>
+          <div className="row">
+            <Field label="Precision (decimals)" hint="Privacy dial: 2 ≈ 1.1 km, 3 ≈ 110 m, 5 ≈ raw GPS">
+              {(id) => (
+                <select
+                  id={id}
+                  value={domain.precision ?? 3}
+                  onChange={(e) =>
+                    onChange({ ...domain, precision: Number(e.target.value) as 2 | 3 | 4 | 5 })
+                  }
+                >
+                  <option value={2}>2 (~1.1 km)</option>
+                  <option value={3}>3 (~110 m)</option>
+                  <option value={4}>4 (~11 m)</option>
+                  <option value={5}>5 (raw)</option>
+                </select>
+              )}
+            </Field>
+            <Field label="Max accuracy (m)" hint="Reject fixes worse than this radius; blank = accept any">
+              {(id) => (
+                <input
+                  id={id}
+                  type="number"
+                  min={1}
+                  value={domain.maxAccuracyM ?? ''}
+                  onChange={(e) =>
+                    onChange({
+                      ...domain,
+                      maxAccuracyM: e.target.value === '' ? undefined : Number(e.target.value),
+                    })
+                  }
+                />
+              )}
+            </Field>
+          </div>
+          <label className="checkbox">
+            <input
+              type="checkbox"
+              checked={domain.manualFallback !== false}
+              onChange={(e) => onChange({ ...domain, manualFallback: e.target.checked })}
+            />
+            Offer a typed location description when consent is declined or the fix fails
+            (recommended — keeps the survey completable)
+          </label>
+          <p className="hint">
+            Stores a summary in this question's variable plus generated
+            {' '}<code>_LAT/_LON/_ACC/_TS/_SRC</code> sub-variables. Consent text lives in the
+            root sequence's <strong>Sensors &amp; consent</strong> panel.
+          </p>
+        </>
       )}
 
       {domain.type === 'markAll' && (
@@ -578,6 +656,71 @@ function SurveyIdentityFields({ instrument }: { instrument: Instrument }) {
   );
 }
 
+const SENSOR_KIND_LABEL: Record<string, string> = {
+  geolocation: 'Location (GPS)',
+  camera: 'Camera',
+};
+
+/**
+ * Instrument-level sensor declarations + consent text, shown when the root sequence is
+ * selected. A declaration is auto-added when the first sensor question is created; this
+ * panel is where its respondent-facing purpose/retention text is edited.
+ */
+function SensorConsentFields({ instrument }: { instrument: Instrument }) {
+  const update = useDesigner((s) => s.update);
+  const declarations = instrument.sensors?.sensors ?? [];
+  if (declarations.length === 0) return null;
+  return (
+    <div className="subpanel">
+      <h3>Sensors &amp; consent</h3>
+      <p className="hint">
+        Shown verbatim on the consent card before the sensor can fire. Declining always keeps
+        the survey completable.
+      </p>
+      {declarations.map((decl, i) => (
+        <div key={decl.kind}>
+          <div className="row" style={{ justifyContent: 'space-between', alignItems: 'center' }}>
+            <strong>{SENSOR_KIND_LABEL[decl.kind] ?? decl.kind}</strong>
+            <button
+              type="button"
+              className="btn-small"
+              onClick={() =>
+                update((draft) => {
+                  draft.sensors!.sensors.splice(i, 1);
+                  if (draft.sensors!.sensors.length === 0) delete draft.sensors;
+                })
+              }
+            >
+              Remove
+            </button>
+          </div>
+          <IntlStringField
+            label="Purpose (why, what is stored, at what precision)"
+            value={decl.purpose}
+            languages={instrument.languages}
+            multiline
+            onChange={(v) =>
+              update((draft) => {
+                draft.sensors!.sensors[i]!.purpose = v;
+              })
+            }
+          />
+          <IntlStringField
+            label="Retention statement (optional)"
+            value={decl.retention}
+            languages={instrument.languages}
+            onChange={(v) =>
+              update((draft) => {
+                draft.sensors!.sensors[i]!.retention = v;
+              })
+            }
+          />
+        </div>
+      ))}
+    </div>
+  );
+}
+
 function ConstructEditor({ node, instrument }: { node: ControlConstruct; instrument: Instrument }) {
   const languages = instrument.languages;
   const edit = useEditConstruct(node.id);
@@ -630,6 +773,7 @@ function ConstructEditor({ node, instrument }: { node: ControlConstruct; instrum
             Interviewer only (hidden in self-administered mode)
           </label>
           {node.id === instrument.sequence.id && <SurveyIdentityFields instrument={instrument} />}
+          {node.id === instrument.sequence.id && <SensorConsentFields instrument={instrument} />}
         </>
       );
     case 'statement':

@@ -5,7 +5,8 @@
  *
  * It is a teaching survey: show how to edit a survey (and reuse questions from the registry),
  * render & launch it, complete it, and view the collected data in analytics. Anonymous by design —
- * no name/contact/demographic fields, no pre-fill mappings.
+ * no name/contact/demographic fields, no pre-fill mappings. The one sensor question (geolocation)
+ * is optional, consent-gated, and coarsened to ~1 km precisely because demo data is public.
  */
 import type { Instrument, InternationalString } from '../types.js';
 
@@ -13,7 +14,9 @@ const s = (en: string, fr: string): InternationalString => ({ en, fr });
 
 export const demoInstrument: Instrument = {
   id: 'urn:ddi:mobilesurvey:demo:1.0',
-  version: '1.0.0',
+  // Bump on every content change: backend seeding only refreshes the stored demo row when
+  // the bundled version is newer (see apps/hub api.upsertSurvey).
+  version: '1.1.0',
   ddiProfile: 'ddi-lifecycle-3.3',
   languages: ['en', 'fr'],
   defaultLanguage: 'en',
@@ -112,9 +115,26 @@ export const demoInstrument: Instrument = {
     { id: 'v.improve', name: 'improve', kind: 'collected', label: s('What to improve', 'À améliorer'), representation: 'text' },
     { id: 'v.reviewFlag', name: 'reviewFlag', kind: 'hidden', label: s('Follow-up flag', 'Indicateur de suivi'), representation: 'boolean' },
     { id: 'v.npsPositive', name: 'npsPositive', kind: 'derived', label: s('Positive score (derived)', 'Score positif (dérivé)'), representation: 'boolean', compute: '$nps >= 7' },
+    { id: 'v.demoLoc', name: 'demoLoc', kind: 'collected', label: s('Rough location (city level)', 'Position approximative (niveau ville)'), representation: 'text' },
   ],
 
   prefillMappings: [],
+
+  sensors: {
+    sensors: [
+      {
+        kind: 'geolocation',
+        purpose: s(
+          'This public demo asks for your location only to demonstrate sensor questions. Coordinates are rounded to roughly city level (~1 km) before being stored, and demo responses are publicly visible.',
+          'Cette démo publique demande votre position uniquement pour illustrer les questions capteurs. Les coordonnées sont arrondies à environ 1 km (niveau ville) avant d’être conservées, et les réponses de la démo sont publiquement visibles.',
+        ),
+        retention: s(
+          'Demo data may be cleared at any time.',
+          'Les données de la démo peuvent être effacées à tout moment.',
+        ),
+      },
+    ],
+  },
 
   sequence: {
     type: 'sequence',
@@ -373,6 +393,27 @@ export const demoInstrument: Instrument = {
                 responseDomain: { type: 'text', multiline: true, maxLength: 300 },
               },
             ],
+          },
+        ],
+      },
+
+      // ── Page 7 — Sensor demo: consent-gated coarse location ────────────
+      {
+        type: 'sequence',
+        id: 'pg.sensor',
+        label: s('Where in the world?', 'Où dans le monde ?'),
+        isPage: true,
+        children: [
+          {
+            type: 'question',
+            id: 'q.demoLoc',
+            variableRef: 'demoLoc',
+            text: s(
+              'Optionally, share your rough location (city level) so the demo can show sensor questions.',
+              'Facultativement, partagez votre position approximative (au niveau de la ville) pour que la démo montre les questions capteurs.',
+            ),
+            // precision 2 ≈ 1.1 km: deliberately coarse — the demo is public-by-design.
+            responseDomain: { type: 'geolocation', precision: 2, manualFallback: true },
           },
         ],
       },

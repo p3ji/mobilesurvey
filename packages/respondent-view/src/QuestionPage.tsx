@@ -4,10 +4,14 @@
  * Callers own everything around this: pagination, headers, navigation, persistence.
  */
 import type { Instrument } from '@mobilesurvey/instrument-schema';
-import type { RenderItem } from '@mobilesurvey/runtime-engine';
+import { createMockSensorServices, type RenderItem, type SensorServices } from '@mobilesurvey/runtime-engine';
 import { Control } from './Control.jsx';
 import { EditList } from './EditList.jsx';
+import { GeolocationQuestion } from './GeolocationQuestion.jsx';
 import { TableQuestion } from './TableQuestion.jsx';
+
+// Shared fallback for callers that don't wire real sensors (designer preview, render mode).
+const mockSensors = createMockSensorServices();
 
 export function QuestionPage({
   items,
@@ -16,6 +20,7 @@ export function QuestionPage({
   qNumbers,
   onAnswer,
   idFor,
+  sensors,
 }: {
   /** The current page's items, in document order (e.g. one entry of `paginate(...).pages`). */
   items: RenderItem[];
@@ -30,6 +35,12 @@ export function QuestionPage({
    * Omitted by default so callers that don't need it (the respondent runtime) get no extra id.
    */
   idFor?: (key: string) => string | undefined;
+  /**
+   * Device-sensor implementations for sensor questions (geolocation…). The respondent runtime
+   * passes browser-backed services; when omitted (designer preview, render mode, tests) a
+   * deterministic mock is used, so sensor questions stay interactive everywhere.
+   */
+  sensors?: SensorServices;
 }) {
   return (
     <>
@@ -110,6 +121,20 @@ export function QuestionPage({
               item={item}
               qNum={qNum}
               wrapperId={idFor?.(item.key)}
+              onAnswer={onAnswer}
+            />
+          );
+        }
+
+        if (item.kind === 'geolocation') {
+          return (
+            <GeolocationQuestion
+              key={item.key}
+              item={item}
+              qNum={qNum}
+              wrapperId={idFor?.(item.key)}
+              lang={lang}
+              sensors={sensors ?? mockSensors}
               onAnswer={onAnswer}
             />
           );

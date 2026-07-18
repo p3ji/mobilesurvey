@@ -180,6 +180,7 @@ function resolveQuestion(
     case 'markAll':
     case 'grid':
     case 'table':
+    case 'geolocation':
       return { kind: 'skip', reason: `unexpected ${domain.type} domain on a plain question item` };
   }
 }

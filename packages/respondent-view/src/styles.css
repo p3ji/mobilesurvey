@@ -259,3 +259,92 @@ select[aria-invalid="true"] {
   border-color: var(--danger);
   outline-color: var(--danger);
 }
+
+/* ── sensor questions (geolocation; photo arrives in S2) ─────────────────── */
+.eq__consent-card {
+  border: 1px solid var(--line);
+  border-inline-start: 4px solid var(--brand);
+  border-radius: var(--radius);
+  background: var(--selected);
+  padding: 12px 14px;
+  margin-top: 4px;
+}
+.eq__consent-heading {
+  margin: 0 0 6px;
+  font-weight: 600;
+}
+.eq__consent-purpose {
+  margin: 0 0 6px;
+}
+.eq__consent-retention,
+.eq__consent-note {
+  margin: 0 0 6px;
+  font-size: 13px;
+  color: var(--ink-soft);
+}
+.eq__consent-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+}
+.eq__consent-allow,
+.eq__consent-decline {
+  padding: 8px 18px;
+  border-radius: var(--radius);
+  font-size: 15px;
+  cursor: pointer;
+}
+.eq__consent-allow {
+  background: var(--brand);
+  border: 1px solid var(--brand-dark);
+  color: var(--brand-ink);
+}
+.eq__consent-decline {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  color: var(--ink);
+}
+.eq__sensor {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: flex-start;
+}
+.eq__sensor-capture {
+  padding: 10px 18px;
+  border-radius: var(--radius);
+  border: 1px solid var(--brand-dark);
+  background: var(--brand);
+  color: var(--brand-ink);
+  font-size: 15px;
+  cursor: pointer;
+}
+.eq__sensor-capture:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+.eq__sensor-result {
+  color: var(--ok);
+  font-size: 14px;
+}
+.eq__sensor-declined {
+  margin: 0;
+  color: var(--ink-soft);
+  font-size: 14px;
+}
+.eq__sensor-error {
+  margin: 0;
+  padding: 8px 10px;
+  border-radius: 6px;
+  background: var(--warn-bg);
+  color: var(--warn);
+  font-size: 14px;
+}
+.eq__sensor-manual {
+  width: 100%;
+}
+.eq__sensor-manual label {
+  display: block;
+  font-size: 14px;
+  margin-bottom: 4px;
+}

@@ -47,3 +47,46 @@ export interface SessionStore {
   load(key: string): Promise<unknown | null>;
   clear(key: string): Promise<void>;
 }
+
+// ── Sensor module (docs/sensor-module-plan.md) ────────────────────────────────
+
+/** A successful device-location fix (raw precision; the caller rounds per the domain). */
+export interface LocationFix {
+  lat: number;
+  lon: number;
+  /** Reported accuracy radius in metres. */
+  accuracyM: number;
+  ts: number;
+}
+
+export type LocationError = 'denied' | 'timeout' | 'unavailable';
+
+/**
+ * Device-sensor access, behind the same integration boundary as `CmsClient`/`SessionStore`:
+ * the respondent runtime provides browser implementations; the designer preview,
+ * exploration-only surveys, and tests use `createMockSensorServices()`. Consent gating lives
+ * in the UI layer (the consent card) — implementations only do the capture.
+ */
+export interface SensorServices {
+  captureLocation(opts?: {
+    maxAccuracyM?: number;
+    timeoutMs?: number;
+  }): Promise<{ ok: true; fix: LocationFix } | { ok: false; error: LocationError }>;
+}
+
+/**
+ * Deterministic mock: a fixed Ottawa coordinate with a small index-based jitter so repeated
+ * captures are distinguishable but stable across runs (no Math.random — keeps tests exact).
+ */
+export function createMockSensorServices(): SensorServices {
+  let n = 0;
+  return {
+    captureLocation: async () => {
+      n += 1;
+      return {
+        ok: true,
+        fix: { lat: 45.42153 + n * 0.0001, lon: -75.697193 - n * 0.0001, accuracyM: 12, ts: Date.now() },
+      };
+    },
+  };
+}

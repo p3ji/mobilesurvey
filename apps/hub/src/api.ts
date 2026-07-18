@@ -3,7 +3,7 @@
  * Falls back to the local Hono API when VITE_SUPABASE_URL is not set.
  */
 import { createClient, type SupabaseClient } from '@supabase/supabase-js';
-import type { Instrument } from '@mobilesurvey/instrument-schema';
+import { compareInstrumentVersions, type Instrument } from '@mobilesurvey/instrument-schema';
 
 // ── Supabase client (lazy, only when env vars are present) ────────────────────
 
@@ -149,9 +149,27 @@ export async function setSurveyConfig(
 }
 
 /** Upsert a survey row by explicit id — used to seed bundled demo surveys into Supabase. */
+/**
+ * Seed/refresh a bundled-survey row. A missing row is inserted; an existing row is updated
+ * ONLY when the shipped instrument's `version` is newer than the stored one — so shipping a
+ * bundled-demo change (with a version bump) reaches the backend on the next hub load, while
+ * a row that matches the current bundle is left untouched.
+ */
 export async function upsertSurvey(id: string, title: string, instrument: Instrument, opts?: {
   requiresAccessCode?: boolean; status?: SurveyStatus;
 }): Promise<void> {
+  const { data: existing } = await sb()
+    .from('surveys')
+    .select('instrument_json->>version')
+    .eq('id', id)
+    .maybeSingle();
+  const storedVersion = (existing as { version?: string } | null)?.version;
+  if (
+    storedVersion !== undefined &&
+    compareInstrumentVersions(instrument.version, storedVersion ?? '0.0.0') <= 0
+  ) {
+    return; // stored row is current (or newer) — never clobber it
+  }
   const { error } = await sb().from('surveys').upsert({
     id,
     title,
@@ -160,7 +178,7 @@ export async function upsertSurvey(id: string, title: string, instrument: Instru
     status: opts?.status ?? 'published',
     question_count: countQuestions(instrument),
     updated_at: new Date().toISOString(),
-  }, { onConflict: 'id', ignoreDuplicates: true });
+  }, { onConflict: 'id' });
   if (error) throw error;
 }
 

@@ -2501,3 +2501,38 @@ code {
   opacity: 0.45;
   cursor: not-allowed;
 }
+
+/* sensor question mock (compact preview) */
+.pv-consent {
+  border: 1px solid var(--line);
+  border-inline-start: 3px solid var(--brand);
+  border-radius: 6px;
+  background: var(--selected);
+  padding: 8px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  align-items: flex-start;
+}
+.pv-consent-actions {
+  display: flex;
+  gap: 8px;
+}
+.pv-consent button {
+  padding: 4px 12px;
+  border-radius: 6px;
+  border: 1px solid var(--brand-dark);
+  background: var(--brand);
+  color: var(--brand-ink);
+  font-size: 12px;
+  cursor: pointer;
+}
+.pv-consent-actions button:last-child {
+  background: var(--panel);
+  color: var(--ink);
+  border-color: var(--line);
+}
+.pv-consent input {
+  width: 100%;
+  font-size: 12px;
+}

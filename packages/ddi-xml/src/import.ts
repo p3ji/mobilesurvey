@@ -23,6 +23,7 @@ import type {
   EditRule,
   PrefillMapping,
   InterviewerConfig,
+  SensorConfig,
 } from '@mobilesurvey/instrument-schema';
 import { parseXml, type XmlNode } from './xml.js';
 import { DEFAULT_AGENCY, unmapId } from './urn.js';
@@ -512,6 +513,10 @@ export function importDdiXml(xml: string): ImportResult {
   const interviewer: InterviewerConfig | undefined = interviewerRaw
     ? (JSON.parse(interviewerRaw) as InterviewerConfig)
     : undefined;
+  const sensorsRaw = mst(su, 'sensors');
+  const sensors: SensorConfig | undefined = sensorsRaw
+    ? (JSON.parse(sensorsRaw) as SensorConfig)
+    : undefined;
   // Maintenance agency: an unset agencyId and the project placeholder are the same identity
   // (export mints under DEFAULT_AGENCY either way), so only a foreign agency is recovered.
   const agencyRaw = kid(su, 'Agency')?.text;
@@ -985,6 +990,7 @@ export function importDdiXml(xml: string): ImportResult {
     prefillMappings,
     sequence,
     interviewer,
+    sensors,
   };
 
   return {

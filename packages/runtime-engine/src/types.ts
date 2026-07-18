@@ -126,6 +126,36 @@ export type RenderItem =
       cells: TableCell[][];
       firedEdits: FiredEdit[];
       depth: number;
+    }
+  | {
+      /**
+       * Device-location capture (sensor module). The base variable holds a pipeable text
+       * summary; `subKeys` are the storage keys of the generated `_LAT/_LON/_ACC/_TS/_SRC`
+       * sub-variables for this roster instance. `consent` mirrors the session-global
+       * `CONSENT_GEOLOCATION` reserved variable (stored at `consentKey`).
+       */
+      kind: 'geolocation';
+      key: string;
+      constructId: string;
+      questionText: string;
+      instruction?: string;
+      required?: boolean;
+      /** Storage key of the base summary variable (this roster instance). */
+      instanceKey: string;
+      value: string | undefined;
+      subKeys: { lat: string; lon: string; acc: string; ts: string; src: string };
+      /** Current `_SRC` value: 'gps' | 'manual' | 'declined' | undefined. */
+      src: string | undefined;
+      consent: 'granted' | 'declined' | undefined;
+      consentKey: string;
+      /** Localized consent-card text from the instrument's sensor declaration. */
+      purpose: string;
+      retention?: string;
+      precision: number;
+      maxAccuracyM?: number;
+      manualFallback: boolean;
+      firedEdits: FiredEdit[];
+      depth: number;
     };
 
 /** The serializable runtime state the engine operates on. */

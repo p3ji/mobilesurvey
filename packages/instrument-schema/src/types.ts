@@ -155,10 +155,68 @@ export type ResponseDomain =
       totalCol?: boolean;
       /** Cells that cannot be answered, as "ROWCODE:COLCODE". */
       disabledCells?: string[];
+    }
+  | {
+      /**
+       * Device-location capture (sensor module, docs/sensor-module-plan.md). The question's
+       * `variableRef` variable stores a pipeable text summary ("45.421, -75.697 (±23 m)" or the
+       * manual description); the capture explodes into generated sub-variables
+       * `{variableRef}_{LAT|LON|ACC|TS|SRC}` (see `GEOLOCATION_SUFFIXES`). Requires a
+       * `geolocation` declaration in `Instrument.sensors` — the runtime shows that
+       * declaration's consent card before any capture and refuses undeclared sensors.
+       */
+      type: 'geolocation';
+      /**
+       * Decimal places kept on lat/lon — the privacy dial: 2 ≈ 1.1 km, 3 ≈ 110 m, 5 ≈ raw
+       * GPS precision. Default 3; deliberately not raw.
+       */
+      precision?: 2 | 3 | 4 | 5;
+      /** Reject fixes with an accuracy radius worse than this (metres). */
+      maxAccuracyM?: number;
+      /**
+       * Offer a free-text location description when consent is declined or the fix fails
+       * (stored in the base variable with `_SRC` = `manual`). Default true — keeps the
+       * survey completable for non-consenting respondents.
+       */
+      manualFallback?: boolean;
     };
 
 /** Reserved category code for computed total row/column cells in `table` response domains. */
 export const TABLE_TOTAL_CODE = 'TOT' as const;
+
+/** Suffixes of the sub-variables a `geolocation` capture generates from its `variableRef`. */
+export const GEOLOCATION_SUFFIXES = ['LAT', 'LON', 'ACC', 'TS', 'SRC'] as const;
+
+/** Sensor kinds an instrument can declare (camera arrives with the `photo` domain, S2). */
+export type SensorKind = 'geolocation' | 'camera';
+
+/**
+ * Reserved hidden variables holding the respondent's per-sensor consent decision
+ * (`granted` | `declined`). Written by the runtime's consent card, never authored;
+ * routable in expressions, e.g. `$CONSENT_GEOLOCATION == 'granted'`.
+ */
+export const SENSOR_CONSENT_VARIABLES: Record<SensorKind, string> = {
+  geolocation: 'CONSENT_GEOLOCATION',
+  camera: 'CONSENT_CAMERA',
+} as const;
+
+/** One declared sensor: what fires, why, and what the respondent is told (verbatim). */
+export interface SensorDeclaration {
+  kind: SensorKind;
+  /** Shown verbatim on the consent card: why, what is stored, at what precision. */
+  purpose: InternationalString;
+  /** Retention statement shown on the card (free text; enforcement is org-side). */
+  retention?: InternationalString;
+}
+
+/**
+ * Sensor module configuration (docs/sensor-module-plan.md). Every sensor the instrument uses
+ * MUST be declared here — the runtime refuses to fire an undeclared sensor, and the consent
+ * card's text comes from the declaration.
+ */
+export interface SensorConfig {
+  sensors: SensorDeclaration[];
+}
 
 /** Hard edits block progression; soft edits warn but allow a confirmed override. */
 export type EditType = 'hard' | 'soft';
@@ -327,4 +385,6 @@ export interface Instrument {
   sequence: SequenceConstruct;
   /** Optional interviewer-administration settings (CATI / field interviewer mode). */
   interviewer?: InterviewerConfig;
+  /** Optional sensor declarations + consent text (required by any sensor response domain). */
+  sensors?: SensorConfig;
 }

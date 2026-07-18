@@ -3,7 +3,7 @@
  * checks that Zod alone cannot express (e.g. "every `variableRef` names a declared variable").
  */
 import { instrumentSchema } from './zod.js';
-import { TABLE_TOTAL_CODE } from './types.js';
+import { SENSOR_CONSENT_VARIABLES, TABLE_TOTAL_CODE } from './types.js';
 import type {
   ControlConstruct,
   Instrument,
@@ -55,9 +55,18 @@ export function checkReferences(instrument: Instrument): ValidationIssue[] {
   const schemeById = new Map(instrument.categorySchemes.map((s) => [s.id, s]));
   const seenPrefixes = new Map<string, string>(); // variablePrefix -> first path using it
 
+  // Reserved names: the runtime writes per-sensor consent decisions into these.
+  const consentNames = new Set<string>(Object.values(SENSOR_CONSENT_VARIABLES));
+
   // Duplicate variable names.
   const seen = new Set<string>();
   for (const v of instrument.variables) {
+    if (consentNames.has(v.name)) {
+      issues.push({
+        path: `variables.${v.name}`,
+        message: `Variable name "${v.name}" is reserved for the runtime's sensor-consent record`,
+      });
+    }
     if (seen.has(v.name)) {
       issues.push({ path: `variables`, message: `Duplicate variable name "${v.name}"` });
     }
@@ -120,6 +129,27 @@ export function checkReferences(instrument: Instrument): ValidationIssue[] {
           });
         } else {
           seenPrefixes.set(rd.variablePrefix, path);
+        }
+      }
+      if (rd.type === 'geolocation') {
+        // The capture generates `{variableRef}_LAT` etc., so the variableRef doubles as a
+        // generated-name prefix and must not collide with markAll/grid/table prefixes.
+        const prior = seenPrefixes.get(q.variableRef);
+        if (prior) {
+          issues.push({
+            path: `${path}.variableRef`,
+            message: `variableRef "${q.variableRef}" is already used as a variablePrefix at ${prior}; generated variable names would collide`,
+          });
+        } else {
+          seenPrefixes.set(q.variableRef, path);
+        }
+        const declared = instrument.sensors?.sensors.some((s) => s.kind === 'geolocation');
+        if (!declared) {
+          issues.push({
+            path: `${path}.responseDomain`,
+            message:
+              'geolocation question requires a matching declaration in `sensors` (consent purpose text); the runtime refuses undeclared sensors',
+          });
         }
       }
       if (rd.type === 'table') {

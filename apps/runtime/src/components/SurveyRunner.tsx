@@ -15,8 +15,13 @@ import {
   type ParadataSink,
   type RuntimeState,
   type SampleUnit,
+  type SensorServices,
 } from '@mobilesurvey/runtime-engine';
-import type { Instrument, LanguageCode } from '@mobilesurvey/instrument-schema';
+import {
+  SENSOR_CONSENT_VARIABLES,
+  type Instrument,
+  type LanguageCode,
+} from '@mobilesurvey/instrument-schema';
 import { isRtl, QuestionPage } from '@mobilesurvey/respondent-view';
 
 // ── component ────────────────────────────────────────────────────────────────
@@ -29,6 +34,7 @@ export function SurveyRunner({
   initialPage,
   resumed,
   paradata,
+  sensors,
   notice,
   onPersist,
   onSubmit,
@@ -40,6 +46,8 @@ export function SurveyRunner({
   initialPage: number;
   resumed: boolean;
   paradata: ParadataSink;
+  /** Device-sensor implementations for sensor questions (browser-backed or mock). */
+  sensors?: SensorServices;
   notice?: { kind: 'demo-no-save' | 'demo-saves'; text: string };
   onPersist: (state: RuntimeState, page: number) => void;
   onSubmit: (responses: Record<string, unknown>) => void;
@@ -81,7 +89,7 @@ export function SurveyRunner({
 
   // Count questions per page for global sequential numbering.
   const questionsPerPage = useMemo(
-    () => pages.map((p) => p.filter((i) => i.kind === 'question' || i.kind === 'markAll' || i.kind === 'grid' || i.kind === 'table').length),
+    () => pages.map((p) => p.filter((i) => i.kind === 'question' || i.kind === 'markAll' || i.kind === 'grid' || i.kind === 'table' || i.kind === 'geolocation').length),
     [pages],
   );
   const totalQuestions = useMemo(
@@ -129,8 +137,19 @@ export function SurveyRunner({
     focusContent();
   };
 
+  const consentVarNames = new Set<string>(Object.values(SENSOR_CONSENT_VARIABLES));
   const answer = (instanceKey: string, value: unknown) => {
-    paradata.emit({ ts: Date.now(), type: 'answer', payload: { key: instanceKey } });
+    // Instance keys are `name@scope`; consent variables are always root-scoped (`NAME@`).
+    if (consentVarNames.has(instanceKey.split('@')[0] ?? '')) {
+      // Sensor-consent decisions get their own audit event (docs/sensor-module-plan.md D7).
+      paradata.emit({
+        ts: Date.now(),
+        type: 'sensor-consent',
+        payload: { variable: instanceKey, decision: value },
+      });
+    } else {
+      paradata.emit({ ts: Date.now(), type: 'answer', payload: { key: instanceKey } });
+    }
     send({ type: 'ANSWER', instanceKey, value });
   };
 
@@ -192,6 +211,7 @@ export function SurveyRunner({
             lang={lang}
             qNumbers={qNumbers}
             onAnswer={answer}
+            sensors={sensors}
           />
         </form>
       </div>

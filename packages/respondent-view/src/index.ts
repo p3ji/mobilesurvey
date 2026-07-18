@@ -2,5 +2,6 @@ export { Control } from './Control.jsx';
 export { EditList } from './EditList.jsx';
 export { QuestionPage } from './QuestionPage.jsx';
 export { TableQuestion } from './TableQuestion.jsx';
+export { GeolocationQuestion } from './GeolocationQuestion.jsx';
 export { parseTsvBlock, mapPasteToCells } from './tablePaste.js';
 export { isRtl } from './dir.js';

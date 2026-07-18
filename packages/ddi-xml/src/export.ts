@@ -148,6 +148,9 @@ function rdEl(ctx: Ctx, rd: ResponseDomain): string {
     case 'file':
     case 'grid':
     case 'table':
+    // geolocation's base variable is a text summary; the full sensor definition (precision,
+    // consent linkage…) round-trips via the authoritative mst:rd extension like grid/table.
+    case 'geolocation':
       return el('d:TextDomain', {});
   }
 }
@@ -535,6 +538,7 @@ function buildParts(instrument: Instrument): Parts {
       ? mst('prefillMappings', JSON.stringify(instrument.prefillMappings))
       : '') +
     (instrument.interviewer ? mst('interviewer', JSON.stringify(instrument.interviewer)) : '') +
+    (instrument.sensors ? mst('sensors', JSON.stringify(instrument.sensors)) : '') +
     // Citation (r: namespace per StudyUnitType; CitationType children in schema order:
     // Title, Creator > CreatorName (a BibliographicNameType, i.e. r:String children),
     // PublicationDate > SimpleDate).

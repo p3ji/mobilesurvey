@@ -76,6 +76,21 @@ export function buildFieldRegistry(instrument: Instrument): Map<string, FieldSpe
         }
         return;
       }
+      case 'geolocation': {
+        // Base variable is the pipeable text summary; the capture's generated sub-variables
+        // get typed entries so stored lat/lon/accuracy values are structurally checked.
+        registry.set(q.variableRef, { kind: 'text' });
+        registry.set(`${q.variableRef}_LAT`, { kind: 'numeric', min: -90, max: 90 });
+        registry.set(`${q.variableRef}_LON`, { kind: 'numeric', min: -180, max: 180 });
+        registry.set(`${q.variableRef}_ACC`, { kind: 'numeric', min: 0 });
+        registry.set(`${q.variableRef}_TS`, { kind: 'datetime' });
+        registry.set(`${q.variableRef}_SRC`, {
+          kind: 'code',
+          codes: new Set(['gps', 'manual', 'declined']),
+          multi: false,
+        });
+        return;
+      }
       case 'table': {
         const rowCodes = (schemeById.get(rd.rowSchemeRef)?.categories ?? []).map((c) => c.code);
         const colCodes = (schemeById.get(rd.colSchemeRef)?.categories ?? []).map((c) => c.code);
