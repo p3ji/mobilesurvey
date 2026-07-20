@@ -19,7 +19,7 @@ import type {
   Variable,
 } from '@mobilesurvey/instrument-schema';
 import { el, txt } from './xml.js';
-import { mapId, mintUrn, sanitizeAgency, sanitizeVersion } from './urn.js';
+import { mintUrn, sanitizeAgency, sanitizeVersion, schemeId, type IdScheme } from './urn.js';
 
 const NS_DECL: Record<string, string> = {
   'xmlns:i': 'ddi:instance:3_3',
@@ -46,6 +46,7 @@ interface Item {
 interface Ctx {
   version: string;
   agency: string;
+  idScheme: IdScheme;
   langs: string[];
   qi: Item[];  // accumulated d:QuestionItem elements
   cc: Item[];  // accumulated control construct elements
@@ -53,7 +54,7 @@ interface Ctx {
 
 /** Canonical DDI URN for a local id (docs/ddi-compliance-plan.md §3.2). */
 function fullUrn(ctx: Ctx, localId: string): string {
-  return mintUrn(ctx.agency, mapId(localId), ctx.version);
+  return mintUrn(ctx.agency, schemeId(ctx.idScheme, localId), ctx.version);
 }
 
 /**
@@ -66,7 +67,7 @@ function identity(ctx: Ctx, localId: string): string {
   return (
     txt('r:URN', {}, fullUrn(ctx, localId)) +
     txt('r:Agency', {}, ctx.agency) +
-    txt('r:ID', {}, mapId(localId)) +
+    txt('r:ID', {}, schemeId(ctx.idScheme, localId)) +
     txt('r:Version', {}, ctx.version)
   );
 }
@@ -403,6 +404,16 @@ export interface ExportOptions {
    *   repository tooling (e.g. ddigraph) ingests.
    */
   packaging?: 'instance' | 'fragment';
+  /**
+   * How URN/ID components are minted (docs/ddi-compliance-plan.md §3.2):
+   * - `'uuid'` (default) — RFC 4122 UUIDv5 derived from (agency, internal id), matching the
+   *   convention Colectica and other DDI repositories use, so our node keys look like theirs
+   *   in a consuming graph. Also avoids the official XSD's defective post-dot ID pattern.
+   * - `'readable'` — the legacy dot-escaped internal id, easier to debug by eye.
+   *
+   * Either way the verbatim internal id travels in `mst:id`, so import round-trips both.
+   */
+  idScheme?: IdScheme;
 }
 
 /** Everything both packagings need, computed once per export. */
@@ -425,7 +436,7 @@ interface Parts {
   instrumentItem: Item;
 }
 
-function buildParts(instrument: Instrument): Parts {
+function buildParts(instrument: Instrument, options?: ExportOptions): Parts {
   const uparts = instrument.id.split(':');
   // Agency comes from the instrument's explicit agencyId config (docs/ddi-compliance-plan.md
   // §3.1); unset or pattern-invalid values fall back to the project placeholder — never to a
@@ -436,6 +447,7 @@ function buildParts(instrument: Instrument): Parts {
   const ctx: Ctx = {
     version: sanitizeVersion(instrument.version),
     agency,
+    idScheme: options?.idScheme ?? 'uuid',
     langs: instrument.languages,
     qi: [],
     cc: [],
@@ -811,6 +823,6 @@ function assembleFragments(p: Parts): string {
 
 /** Serialize an Instrument to a DDI-Lifecycle 3.3 XML string. */
 export function exportDdiXml(instrument: Instrument, options?: ExportOptions): string {
-  const parts = buildParts(instrument);
+  const parts = buildParts(instrument, options);
   return options?.packaging === 'fragment' ? assembleFragments(parts) : assembleInstance(parts);
 }

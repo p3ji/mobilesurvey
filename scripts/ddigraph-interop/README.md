@@ -24,16 +24,17 @@ python -m venv .venv
 
 1. **Entity counts** by element type equal a manifest computed from the instrument *model*
    (not from the XML), so the check is independent of the emission logic.
-2. **Node keys are canonical URNs** under our agency — ddigraph uses the verbatim URN as its
-   graph node key, so these strings become the org's Neo4j keys verbatim.
+2. **Node keys are canonical URNs** under our agency, each with a **UUIDv5 identity
+   component** (the Colectica/DDI-repository convention) — ddigraph uses the verbatim URN as
+   its graph node key, so these strings become the org's Neo4j keys verbatim.
 3. **Structural edges**: Instrument→Sequence, every QuestionConstruct→its QuestionItem,
    coded QuestionItems→CodeList, every CodeList→its Categories. ddigraph drops edges whose
    target fragment is missing, so these also detect dangling references.
 
-## Last verified result (2026-07-17, ddigraph 0.4.2)
+## Last verified result (2026-07-20, ddigraph 0.4.2, UUIDv5 identity)
 
 ```
-demo: 121 nodes, 212 edges, 5 coded questions -> CodeList; OK
+demo: 128 nodes, 224 edges, 5 coded questions -> CodeList; OK
 fsep: 131 nodes, 221 edges, 0 coded questions -> CodeList; OK
 All interop checks passed.
 ```

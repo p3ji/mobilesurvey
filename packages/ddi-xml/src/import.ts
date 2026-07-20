@@ -27,6 +27,7 @@ import type {
 } from '@mobilesurvey/instrument-schema';
 import { parseXml, type XmlNode } from './xml.js';
 import { DEFAULT_AGENCY, unmapId } from './urn.js';
+import { isUuid } from './uuid.js';
 import type { FidelityNote, ImportResult } from './types.js';
 
 // ---------------------------------------------------------------------------
@@ -57,8 +58,41 @@ function mst(n: XmlNode, key: string): string | undefined {
  * suffix conventions like `.cl` strip correctly. (An external file whose IDs genuinely contain
  * '@' would be altered by this; acceptable for now — external-file hardening is P4.)
  */
+/**
+ * UUID → verbatim-internal-id aliases for the import in progress.
+ *
+ * When an export mints UUIDv5 identity (the default `idScheme`, matching Colectica/ddigraph
+ * convention), the URN's ID component is an opaque hash with no trace of the original id.
+ * Every identifiable element also emits its verbatim id in an `mst:id` extension, so one pass
+ * over the document recovers the mapping and references resolve back to readable ids.
+ *
+ * Only UUID-shaped ids are aliased, so `readable`-scheme exports and external files (real
+ * Colectica exports use UUIDs but carry no `mst:id`) behave exactly as before.
+ *
+ * Module-scoped and rebuilt per `importDdiXml` call: imports are fully synchronous, so no two
+ * imports can interleave.
+ */
+let idAliases = new Map<string, string>();
+
+function buildIdAliases(root: XmlNode): Map<string, string> {
+  const map = new Map<string, string>();
+  const visit = (n: XmlNode): void => {
+    const idText = kid(n, 'ID')?.text;
+    const verbatim = mst(n, 'id');
+    if (idText && verbatim && isUuid(idText)) map.set(idText, verbatim);
+    for (const c of n.children) visit(c);
+  };
+  visit(root);
+  return map;
+}
+
+/** Resolve a UUID id back to its verbatim internal id, if this document declared one. */
+function dealias(id: string): string {
+  return idAliases.get(id) ?? id;
+}
+
 function rid(n: XmlNode): string {
-  return unmapId(kid(n, 'ID')?.text ?? '');
+  return dealias(unmapId(kid(n, 'ID')?.text ?? ''));
 }
 
 /**
@@ -74,7 +108,7 @@ function urnToLocalId(urn: string): string {
   if (bang >= 0) return urn.slice(bang + 1);
   const parts = urn.split(':');
   if (parts.length === 5 && parts[0]?.toLowerCase() === 'urn' && parts[1]?.toLowerCase() === 'ddi') {
-    return unmapId(parts[3]!);
+    return dealias(unmapId(parts[3]!));
   }
   return urn;
 }
@@ -497,6 +531,8 @@ function resolveStudyUnit(root: XmlNode, notes: FidelityNote[]): XmlNode {
 export function importDdiXml(xml: string): ImportResult {
   const notes: FidelityNote[] = [];
   const root = parseXml(xml);
+  // Recover verbatim ids before anything resolves a reference (see buildIdAliases).
+  idAliases = buildIdAliases(root);
   const su = resolveStudyUnit(root, notes);
 
   // --- StudyUnit metadata ---

@@ -2,7 +2,7 @@
 import { useEffect, useRef, useState, type ChangeEvent } from 'react';
 import { pick } from '@mobilesurvey/runtime-engine';
 import { getInstrumentJsonSchema, validateInstrument } from '@mobilesurvey/instrument-schema';
-import { exportDdiXml, importDdiXml } from '@mobilesurvey/ddi-xml';
+import { exportDdiXml, exportJsonLd, importDdiXml } from '@mobilesurvey/ddi-xml';
 import { useDesigner } from '../store/instrumentStore.js';
 import { saveSurvey } from '../lib/surveyApi.js';
 import { printSpec } from '../lib/specReport.js';
@@ -109,6 +109,14 @@ export function Toolbar({
       .toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
     const suffix = packaging === 'fragment' ? '.ddi-fragments.xml' : '.ddi.xml';
     download(xml, `${slug}${suffix}`, 'application/xml;charset=utf-8');
+    setExportOpen(false);
+  };
+
+  const exportLinkedData = () => {
+    const jsonld = exportJsonLd(instrument);
+    const slug = (pick(instrument.metadata.title as Record<string, string>, language) ?? 'instrument')
+      .toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
+    download(jsonld, `${slug}.jsonld`, 'application/ld+json;charset=utf-8');
     setExportOpen(false);
   };
 
@@ -301,6 +309,9 @@ export function Toolbar({
             </button>
             <button type="button" role="menuitem" onClick={() => exportDdi('fragment')}>
               ⬇ DDI-XML (FragmentInstance, for repositories)
+            </button>
+            <button type="button" role="menuitem" onClick={exportLinkedData}>
+              ⬇ JSON-LD (linked data, FAIR)
             </button>
             <button type="button" role="menuitem" onClick={exportJsonSchema}>
               ⬇ JSON Schema

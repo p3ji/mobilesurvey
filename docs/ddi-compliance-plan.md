@@ -2,7 +2,57 @@
 
 *Design document. Status: **ALL PHASES DONE (2026-07-17)** — P1 XSD gate (2026-07-09);
 P2 `agencyId` identity model; P3 FragmentInstance packaging, both packagings green in the XSD
-gate, ddigraph interop harness passing; P4 real Ireland-LFS files import clean. Results below.*
+gate, ddigraph interop harness passing; P4 real Ireland-LFS files import clean. Results below.
+**P5 added 2026-07-20** after reviewer feedback: UUIDv5 identity + a JSON-LD serialization — §P5.*
+
+## P5 results (2026-07-20) — FAIR feedback from the standards reviewer
+
+Reviewer comment: *"for json to be F.A.I.R, should use json-LD and generate ids for the items.
+we mostly use UUID4 or 5 for DDI URNs."* Two changes, both additive:
+
+- **UUIDv5 identity is now the default** (`exportDdiXml(inst, { idScheme })`, `'uuid' | 'readable'`).
+  The ID component of every URN is an RFC 4122 v5 UUID derived from the internal id via a
+  project namespace (`packages/ddi-xml/src/uuid.ts` — hand-rolled SHA-1 so the package stays
+  zero-dependency and synchronous; Web Crypto's digest is async and would have forced
+  `exportDdiXml` to become async).
+  - **v5, not v4, is load-bearing:** a URN is a *persistent* identifier, so the same question
+    must mint the same UUID on every export. v4 would require persisting a UUID next to every
+    item in the instrument JSON; v5 derives it deterministically and keeps the file clean.
+  - Derived from the internal id **alone** — not the agency, not the version. DDI identity is
+    already the triple (Agency, ID, Version), so folding either into the ID would be redundant
+    *and* would make an item lose identity when versioned or when maintainership transferred.
+  - **This retires the dot-escaping workaround** for the defective `BaseIDType` post-dot
+    character class: a UUID has no dots, so the broken branch is never reached. The escaping
+    survives only under `idScheme: 'readable'` (kept for debuggability and for reproducing
+    pre-UUID exports).
+  - Round-trip is unaffected because the verbatim internal id already travelled in `mst:id`;
+    the importer now builds a UUID→internal-id alias map from those extensions in one pass
+    (`buildIdAliases`). Aliasing is scoped to UUID-shaped ids, so `readable` exports and real
+    Colectica files (UUIDs, but no `mst:id`) behave exactly as before.
+- **JSON-LD serialization** (`exportJsonLd` / `toJsonLd`, `packages/ddi-xml/src/jsonld.ts`;
+  designer Export menu → "JSON-LD (linked data, FAIR)"). A flat `@graph` of nodes
+  cross-referenced by `@id`, mirroring FragmentInstance packaging.
+  - **The `@id`s are the same canonical URNs the XML mints** — an XML fragment and a JSON-LD
+    node describing the same question are the same resource to a consuming graph. Asserted by
+    test, for both id schemes.
+  - Vocabulary: `disco` (DDI-RDF Discovery) for Questionnaire/Question/Variable/Universe,
+    SKOS for code lists (`ConceptScheme`/`Concept`/`notation`/`inScheme`/`hasTopConcept`),
+    DCTerms for descriptive metadata, and an explicit `mst:` namespace for everything DDI-RDF
+    has no term for (questionnaire flow, edit rules, sensor config). Where a standard term
+    would be a *misuse* it is deliberately not used — e.g. the variable→concept edge is
+    `mst:concept`, not `skos:related` (SKOS scopes that to concept-to-concept links).
+    **The disco mapping is our reading of the vocabulary, not a certified crosswalk** — the
+    reviewer is better placed than we are to correct it.
+  - `InternationalString` maps straight onto JSON-LD language maps (`@container: "@language"`),
+    so `{en, fr}` needs no transformation.
+  - Our working `Instrument` JSON is deliberately NOT replaced: it is what the designer edits
+    and the runtime executes, and linked-data ceremony in that hot path buys nothing. JSON-LD
+    is a projection, exactly as DDI-XML is.
+  - Tests assert structural validity the way a consumer would experience it: every `@id` is a
+    canonical URN, and **no reference is dangling** (checked across demo/fsep/census).
+- **Re-verified against ddigraph 0.4.2 with UUID identity** (`scripts/ddigraph-interop/`):
+  demo 128 nodes / 224 edges, fsep 131 / 221, all node keys canonical URNs with a UUIDv5
+  identity component (the harness now asserts the UUID shape explicitly, not incidentally).
 
 ## P2–P4 results (2026-07-17)
 

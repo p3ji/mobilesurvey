@@ -37,6 +37,12 @@ URN_RE = re.compile(
     r":(?P<id>[A-Za-z0-9@$*_-]+):(?P<version>[0-9]+(?:\.[0-9]+)*)$"
 )
 
+# The ID component should be an RFC 4122 v5 UUID -- the convention Colectica and other DDI
+# repositories use, so our node keys are shaped like the ones already in the org's graph.
+UUID5_RE = re.compile(
+    r"^[0-9a-f]{8}-[0-9a-f]{4}-5[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+)
+
 
 def load_graph(path: Path):
     """Parse a FragmentInstance with ddigraph and return (nodes, edges).
@@ -74,10 +80,14 @@ def check_fixture(name: str, spec: dict) -> list[str]:
     if unexpected:
         failures.append(f"{name}: unexpected node types {sorted(unexpected)}")
 
-    # 2. Every node key is a canonical URN under our agency.
+    # 2. Every node key is a canonical URN under our agency, with a UUIDv5 ID component.
     agency = spec["agency"]
     for key in nodes:
         m = URN_RE.match(key)
+        if m and not UUID5_RE.match(m.group("id")):
+            failures.append(
+                f"{name}: node key {key!r} does not use a UUIDv5 identity component"
+            )
         if not m:
             failures.append(f"{name}: non-canonical node key {key!r}")
         elif m.group("agency") != agency:

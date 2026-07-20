@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "description": "DDI-Lifecycle 3.3 XML codec: export Instrument to DDI-XML and import DDI-XML back with a fidelity report.",
+  "description": "DDI-Lifecycle 3.3 serialization codec: export an Instrument to DDI-XML (instance or fragment packaging) or JSON-LD, and import DDI-XML back with a fidelity report. Canonical identity (UUIDv5 URNs) is shared across both serializations.",
   "main": "./src/index.ts",
   "types": "./src/index.ts",
   "exports": {
