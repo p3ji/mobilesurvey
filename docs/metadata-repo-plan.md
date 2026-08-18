@@ -125,14 +125,41 @@ of intermediate state). It must never be reachable from an app bundle. A separat
 that boundary structural rather than a matter of discipline — `apps/*` never depend on it; they
 depend on `metadata-registry`, which stays browser-safe.
 
-**PDF text extraction is the one dependency question.** The measurement above used Python's
-PyMuPDF. Options, in preference order:
-1. **`pdfjs-dist`** (Mozilla) in Node — already the ecosystem the designer's PDF upload uses; keeps
-   the pipeline in TypeScript with the rest of the monorepo. **Recommended**; must be validated
-   against PyMuPDF's output on the golden files before committing to it (text-ordering differences
-   are the risk — these layouts are position-sensitive).
-2. A committed Python ETL step under `scripts/`, precedent being `scripts/ddigraph-interop/`.
-   Acceptable, but splits the pipeline across two languages.
+**PDF text extraction — SETTLED (2026-08-18), and the answer inverted the assumption.**
+`pdfjs-dist` (already a workspace dependency at v6.1.200) is not merely an acceptable
+TypeScript-native alternative to PyMuPDF; for *this* corpus it is **materially more correct**.
+
+These dictionaries are laid out as visual tables. PyMuPDF's default text order flattens each cell
+onto its own line, destroying row association; pdfjs exposes per-item geometry, so grouping items
+into lines by y-coordinate and sorting by x **reconstructs the original rows**:
+
+```
+PyMuPDF                       pdfjs (y-grouped, x-sorted)
+  Variable Name:              Variable Name:  HHLDID  Position:  1  Length:  14
+  HHLDID                      Collection Name:  ID
+  Position:                   99999995  Not applicable  0  0
+  1                           99999996  Valid skip      0  0
+  Length:
+  14                          ← code │ label │ freq │ wtd survives as one row
+```
+
+Measured on the same two files, with parsers written against each engine's output:
+
+| | PyMuPDF | pdfjs (row-reconstructed) |
+|---|---|---|
+| T15.2 (LSIC W3) | 25 vars, 20 coded | **25 vars, 22 coded** |
+| T15.6 (CCHS RR 2013) | 463 vars, 445 coded | **463 vars, 424 coded** |
+| Code-label correctness | ✗ **wrong** — `1 → "10,137"` (frequency read as label) | ✓ `70 → "COMPLETE"`, `99999995 → "Not applicable"` |
+
+The correctness row is what decides it: under PyMuPDF the *code lists* — the single most valuable
+part of the data — silently mis-associate labels with frequency counts. That is a data-integrity
+failure that would have been laborious to detect downstream. **Decision: `pdfjs-dist`, with a
+documented y-bucket/x-sort row reconstruction that is itself covered by golden tests** (the bucket
+tolerance is a real parameter; too coarse merges adjacent rows, too fine splits them).
+
+PyMuPDF is retained only as an **independent cross-check** in the fidelity harness — where the two
+engines disagree on variable count for a file, that file is flagged for review. Two engines
+disagreeing is a much better error detector than either alone.
 
 Non-PDF inputs (`.doc`, `.docx`, `.xlsx`) are **deferred to M4** — 727 files, ~24% of the corpus,
 but a long tail of formats. `.wpd` (WordPerfect, 6 files) is explicitly out of scope.
@@ -221,12 +248,20 @@ language. This is non-negotiable for three reasons: a designer reusing wording n
 extraction errors need to be traceable to a source page to be fixable; and the data is
 **Statistics Canada's**, not ours.
 
-**CRITICAL — open question for you (§7):** the read-me confirms these dictionaries are
-*non-confidential and shareable*, which settles confidentiality but **not licensing**. Before any
-public deployment we need to confirm the terms (presumably the Statistics Canada Open Licence,
-which requires attribution and a no-endorsement statement) and add the required attribution to the
-UI. I have not assumed a licence. Until that's settled, the corpus should be treated as
-**local-only** — ingest and search work fully offline; deployment waits.
+**Licence — SETTLED (2026-08-18): Statistics Canada Open Licence.** Confirmed by the project
+owner. This unblocks public deployment (M5) and imposes concrete, non-optional obligations that
+the UI must satisfy:
+
+- **Attribution** naming Statistics Canada as the source, the product/document title, and the
+  reference date — carried per record (we already keep survey, cycle, year, file, page).
+- **No endorsement**: the UI must not state or imply that Statistics Canada endorses this tool.
+- The adaptation must be identifiable as such — search results and anything inserted into an
+  instrument are *adapted* metadata (re-parsed, re-structured), not the official publication, and
+  must say so.
+
+Implemented as: a persistent attribution + disclaimer in the Searcher UI, per-record source
+citation in the provenance panel, and the same attribution carried into anything exported from a
+corpus-derived question. Tracked in M5.
 
 ### D9 — Ingest is deterministic and re-runnable
 
@@ -278,15 +313,16 @@ with source citation; "insert into instrument" through the existing Library path
 ✅ Accept: a designer can search StatCan wording, see its full provenance and cycle history, and
 insert it into an instrument that then exports as valid DDI-XML.
 
-**M5 — Deployment** *(blocked on D8's licence question)*
-Attribution UI, RLS policies, seed automation, docs.
-✅ Accept: licence confirmed and attribution shown; DEPLOYMENT.md documents the seeding path.
+**M5 — Deployment** *(unblocked — StatCan Open Licence confirmed 2026-08-18)*
+Attribution + no-endorsement disclaimer in the Searcher UI, per-record source citation, RLS
+policies (read-only `select` to `anon`), seed automation, DEPLOYMENT.md section.
+✅ Accept: every corpus surface shows StatCan attribution and identifies the data as an adaptation;
+no endorsement is stated or implied; DEPLOYMENT.md documents the seeding path end to end.
 
 ## 7. Open questions — yours to answer
 
-1. **Licensing (blocking for M5, not for M1–M4).** Confirmed non-confidential, but under what
-   terms may it be *republished*? StatCan Open Licence with attribution is the likely answer, but
-   I won't assume it. Until confirmed, plan is local-only.
+1. ~~**Licensing.**~~ **ANSWERED (2026-08-18): Statistics Canada Open Licence.** Obligations
+   folded into D8 and M5; no longer blocking.
 2. **Audience.** Is this a personal/demo capability, or aimed at the target organization? If the
    latter, they may already have a metadata repository this should complement rather than
    duplicate — worth asking your standards contact, who would know.
@@ -316,4 +352,9 @@ Attribution UI, RLS policies, seed automation, docs.
   retained for the offline bundled-instrument path. Rejected: static shards, SQLite WASM.
 - **(2026-08-18)** Corpus records project onto the existing `RegistryEntry` model (D6), so designer
   insertion and the whole DDI/JSON-LD export chain work with no changes.
-- **(2026-08-18)** Public deployment is gated on an explicit licensing answer (D8).
+- **(2026-08-18)** Licence confirmed as the **Statistics Canada Open Licence** — deployment
+  unblocked; attribution, no-endorsement, and identify-as-adaptation obligations are now
+  acceptance criteria for M5, not open questions (D8).
+- **(2026-08-18)** `pdfjs-dist` chosen over PyMuPDF on **correctness**, not convenience: PyMuPDF's
+  default text order destroys table-row association and silently mis-labels code lists
+  (`1 → "10,137"`). PyMuPDF is kept as an independent cross-check in the fidelity harness (D2).
