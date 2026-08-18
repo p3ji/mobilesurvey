@@ -32,3 +32,11 @@ ddi-c_2-6_2026-04-15/
 DDI_*/
 ddi-c_*/
 *.zip
+
+# StatCan RDC documentation corpus (docs/metadata-repo-plan.md D1): 2.4 GB of source zips and
+# every bulk artifact derived from them. The ETL code and the fidelity report ARE committed;
+# the payload never is. (*.zip above already covers the source, listed here for intent.)
+docs/metadatarepo/
+packages/statcan-corpus/out/
+packages/statcan-corpus/cache/
+corpus.jsonl
