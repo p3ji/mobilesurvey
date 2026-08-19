@@ -46,7 +46,7 @@ import {
 } from './ingest.js';
 import { detectLayout, parseDictionary } from './parse.js';
 import { toCorpusRow } from './project.js';
-import { credentialsFromEnv, loadCorpusJsonl } from './load.js';
+import { credentialsFromEnv, envWithFile, loadCorpusJsonl } from './load.js';
 import { renderInventoryJsonl, renderReportMarkdown } from './report.js';
 import type { CorpusVariable, DocKind, ExtractedDoc } from './types.js';
 
@@ -107,8 +107,9 @@ Options:
                    repeated it. The delivery ships some dictionaries more than once.
   -h, --help       This message.
 
-load reads SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY from the environment. The service-role
-key bypasses RLS — set it for the command only, never in a VITE_* variable and never in CI.
+load reads SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY from packages/statcan-corpus/.env.local
+(gitignored) or from the environment, which takes precedence. The service-role key bypasses RLS —
+never put it in a VITE_* variable and never in CI.
 `.trim();
 
 /* -------------------------------------------------------------------------------------------- *
@@ -1232,7 +1233,10 @@ async function loadCommand(args: CliArgs): Promise<void> {
     return;
   }
 
-  const creds = credentialsFromEnv();
+  // Credentials come from a gitignored .env.local beside the package, or from the real
+  // environment, which wins. Keeping the key in a file rather than a shell command keeps it out
+  // of shell history and out of any transcript of the run.
+  const creds = credentialsFromEnv(envWithFile(path.join(PACKAGE_DIR, '.env.local')));
   process.stderr.write('target:  ' + creds.url + '\n');
   process.stderr.write('records: ' + path.relative(REPO_ROOT, recordsPath).replace(/\\/g, '/') + '\n\n');
 

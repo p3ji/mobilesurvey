@@ -7,11 +7,25 @@ import { mkdtempSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { credentialsFromEnv, factKey, loadCorpusJsonl, upsertBatch } from '../load.js';
+import {
+  credentialsFromEnv,
+  envWithFile,
+  factKey,
+  loadCorpusJsonl,
+  parseEnvFile,
+  upsertBatch,
+} from '../load.js';
 import { toCorpusRow } from '../project.js';
 import type { CorpusVariable } from '../types.js';
 
 const CREDS = { url: 'https://project.supabase.co', serviceRoleKey: 'sb_secret_test' };
+
+const creds = (key: string) =>
+  credentialsFromEnv({ SUPABASE_URL: 'https://project.supabase.co', SUPABASE_SERVICE_ROLE_KEY: key });
+
+/** A JWT with the given payload. Only the middle segment is ever read, so the rest is filler. */
+const jwt = (payload: Record<string, unknown>) =>
+  `header.${Buffer.from(JSON.stringify(payload)).toString('base64url')}.signature`;
 
 function record(name: string): CorpusVariable {
   return {
@@ -54,12 +68,32 @@ describe('credentialsFromEnv', () => {
 
   it('rejects a publishable key', () => {
     // Writes with the anon key are refused by RLS *silently enough* to look like an empty corpus.
-    expect(() =>
-      credentialsFromEnv({
-        SUPABASE_URL: 'https://project.supabase.co',
-        SUPABASE_SERVICE_ROLE_KEY: 'sb_publishable_abc',
-      }),
-    ).toThrow(/service-role key/);
+    expect(() => creds('sb_publishable_abc')).toThrow(/publishable key/);
+  });
+
+  it('rejects the scaffold placeholder before it reaches the network', () => {
+    // Creating .env.local and forgetting to fill it in is the likeliest mistake of all, and a 401
+    // several seconds into a load does not say which of the two values is wrong.
+    expect(() => creds('PASTE_THE_SECRET_KEY_HERE')).toThrow(/still the placeholder/);
+    expect(() => creds('<service-role-key>')).toThrow(/still the placeholder/);
+  });
+
+  it('rejects a legacy anon JWT by reading its role claim', () => {
+    // The substring check this replaced could not catch this: {"role":"anon"} base64-encodes to
+    // text containing no "anon" anywhere, so the wrong key sailed through to a silent no-op.
+    expect(() => creds(jwt({ role: 'anon' }))).toThrow(/an "anon" key, not service_role/);
+    expect(() => creds(jwt({ role: 'public' }))).toThrow(/a "public" key, not service_role/);
+  });
+
+  it('accepts a legacy service_role JWT', () => {
+    expect(creds(jwt({ role: 'service_role' })).serviceRoleKey).toContain('.');
+  });
+
+  it('accepts a key shape it does not recognize', () => {
+    // Conservative on purpose: refusing to run on a format that postdates this code would be a
+    // worse failure than the mistake the guard exists to catch.
+    expect(() => creds('sb_secret_something')).not.toThrow();
+    expect(() => creds('not.a.jwt')).not.toThrow();
   });
 
   it('strips a trailing slash so the URL joins cleanly', () => {
@@ -225,5 +259,46 @@ describe('limit', () => {
       fetchImpl: fetchImpl as unknown as typeof fetch,
     });
     expect(result.rows).toBe(3);
+  });
+});
+
+describe('parseEnvFile', () => {
+  it('skips comments and blanks, and splits on the first = only', () => {
+    // A JWT contains no "=", but a base64 secret can end in padding — splitting on every "=" would
+    // truncate the key and produce an authentication failure that looks like a wrong key.
+    const env = parseEnvFile('# comment\n\nA=1\nKEY=abc=def==\n  B = two \n');
+    expect(env).toEqual({ A: '1', KEY: 'abc=def==', B: 'two' });
+  });
+
+  it('strips one pair of surrounding quotes, because pasted keys sometimes arrive wrapped', () => {
+    expect(parseEnvFile('K="quoted"\nJ=\'single\'\nL=un"quoted"')).toEqual({
+      K: 'quoted',
+      J: 'single',
+      L: 'un"quoted"',
+    });
+  });
+
+  it('ignores a line with no assignment rather than inventing an empty key', () => {
+    expect(parseEnvFile('nonsense\n=novalue\n')).toEqual({});
+  });
+});
+
+describe('envWithFile', () => {
+  it('lets a real environment variable win over the file', () => {
+    // So `SUPABASE_URL=… pnpm corpus:load` can redirect a load without anyone having to remember
+    // that a file on disk is also in play.
+    const dir = mkdtempSync(path.join(tmpdir(), 'corpus-env-'));
+    dirs.push(dir);
+    const file = path.join(dir, '.env.local');
+    writeFileSync(file, 'SUPABASE_URL=https://from-file.supabase.co\nOTHER=file\n');
+
+    const merged = envWithFile(file, { SUPABASE_URL: 'https://from-shell.supabase.co' });
+    expect(merged.SUPABASE_URL).toBe('https://from-shell.supabase.co');
+    expect(merged.OTHER).toBe('file');
+  });
+
+  it('returns the environment untouched when there is no file', () => {
+    const env = { A: '1' };
+    expect(envWithFile(path.join(tmpdir(), 'definitely-absent-corpus-env'), env)).toBe(env);
   });
 });
