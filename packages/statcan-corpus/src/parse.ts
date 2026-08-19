@@ -78,7 +78,7 @@ export interface ParseResult {
 }
 
 /** Layouts this module can read, detected from content by {@link detectLayout}. */
-export type Layout = 'labelled' | 'collection' | 'field';
+export type Layout = 'labelled' | 'collection' | 'field' | 'definition';
 
 /* -------------------------------------------------------------------------------------------- *
  * Bilingual label vocabulary
@@ -388,6 +388,7 @@ export function detectLayout(doc: ExtractedDoc): Detection {
     ['collection', rows.filter((r) => COLLECTION_HEADER.test(r)).length],
     ['labelled', rows.filter((r) => LABELLED_HEADER.test(r)).length],
     ['field', rows.filter((r) => FIELD_HEADER.test(r)).length],
+    ['definition', rows.filter((r) => DEFINITION_HEADER.test(r)).length],
   ];
   counts.sort((a, b) => b[1] - a[1]);
   const [winner, n] = counts[0]!;
@@ -510,10 +511,92 @@ function parseField(doc: ExtractedDoc): Array<Omit<CorpusVariable, 'recordId'>> 
     .filter((v): v is Omit<CorpusVariable, 'recordId'> => v !== undefined);
 }
 
+/**
+ * Field labels of the `definition` layout, which documents linked administrative files rather
+ * than questionnaires — hence `Column number` instead of `Position` and no question wording at
+ * all, because nothing here was ever asked of a respondent.
+ */
+const DEFINITION_LABELS = {
+  variableName: /Variable\s+name/i,
+  shortDescription: /Short\s+Description/i,
+  columnNumber: /Column\s+number/i,
+  dataType: /Data\s+type/i,
+  derivedFrom: /Derived\s+from/i,
+  longDescription: /Long\s+Description/i,
+} as const;
+
+/**
+ * `Variable name: X` with the name **alone on the row** — no `Length:` or `Position:` beside it,
+ * which is exactly why the labelled and collection headers miss these documents.
+ *
+ * The end anchor is load-bearing rather than tidy. Without it this pattern also matches the
+ * labelled family's `Variable Name:  X  Length: 2  Position: 31`, both layouts count the same
+ * rows, and which one wins comes down to the tie-break order of a sort — a coin flip deciding how
+ * 37,000 records get parsed.
+ */
+const DEFINITION_HEADER = /^\s*Variable\s+name\s*:\s*[A-Za-z][A-Za-z0-9_]{1,31}\s*$/i;
+
+/**
+ * A bare page number sitting between wrapped prose rows.
+ *
+ * These documents interleave the page number with the text, so a continuation reader appends it
+ * to whatever field is open — `…follow the student through their B.C. education path 5 from Early
+ * Learning…`. Dropping short bare integers costs nothing: no field in this layout is one.
+ */
+const PAGE_NUMBER_ROW = /^\s*\d{1,4}\s*$/;
+
+function parseDefinition(doc: ExtractedDoc): Array<Omit<CorpusVariable, 'recordId'>> {
+  const anyLabel = new RegExp(
+    `^\\s*(?:${Object.values(DEFINITION_LABELS).map((r) => r.source).join('|')})\\s*:`,
+    'i',
+  );
+  return blocks(doc, (r) => DEFINITION_HEADER.test(r))
+    .map((block) => {
+      const collected = new Map<string, string[]>();
+      let currentKey: string | undefined;
+      for (const row of block.rows) {
+        const text = row.trim();
+        if (text === '' || PAGE_NUMBER_ROW.test(text)) continue;
+        if (anyLabel.test(text)) {
+          const at = text.indexOf(':');
+          currentKey = text.slice(0, at).trim().toUpperCase().replace(/\s+/g, ' ');
+          collected.set(currentKey, [text.slice(at + 1).trim()]);
+        } else if (currentKey !== undefined) {
+          collected.get(currentKey)!.push(text);
+        }
+      }
+      const get = (key: string): string | undefined => {
+        const parts = collected.get(key)?.filter((p) => p !== '');
+        return parts !== undefined && parts.length > 0 ? parts.join(' ') : undefined;
+      };
+
+      const name = get('VARIABLE NAME')?.split(/\s+/)[0];
+      if (name === undefined || !VAR_NAME.test(name)) return undefined;
+
+      // `Derived from` names the administrative source a variable came from — real provenance with
+      // no home in the schema, so it rides in the note rather than being discarded.
+      const derived = get('DERIVED FROM');
+      const long = get('LONG DESCRIPTION');
+      const note = [long, derived === undefined ? undefined : `Derived from: ${derived}`]
+        .filter((part): part is string => part !== undefined)
+        .join(' ');
+
+      return makeVariable(doc.file, block.page, {
+        name,
+        position: get('COLUMN NUMBER'),
+        concept: get('SHORT DESCRIPTION'),
+        ...(note === '' ? {} : { note }),
+        codes: block.rows.map(readCodeRow).filter((c): c is CodeEntry => c !== undefined),
+      });
+    })
+    .filter((v): v is Omit<CorpusVariable, 'recordId'> => v !== undefined);
+}
+
 const PARSERS: Record<Layout, (doc: ExtractedDoc) => Array<Omit<CorpusVariable, 'recordId'>>> = {
   labelled: parseLabelled,
   collection: parseCollection,
   field: parseField,
+  definition: parseDefinition,
 };
 
 /* -------------------------------------------------------------------------------------------- *

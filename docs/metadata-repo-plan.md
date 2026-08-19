@@ -915,3 +915,83 @@ works, because it does.
   concepts, and the cycle-to-cycle grouping in §2 is still done by the reader's eye.
 - **Designer insertion** of a corpus record has not been exercised end to end.
 - `.doc`/`.docx` (M4) — 604 files unread.
+
+---
+
+## The fourth layout, and what the other unparsed documents actually are (2026-08-19)
+
+`definition` is now parsed, and the investigation reframed the problem it was meant to solve.
+
+### The layout
+
+```
+Variable name: COHORT_GROUP_ID
+Short Description: Variable for linking records within the BC file
+Column number: 1
+Data type: Number
+Derived from: Statistics Canada
+Long Description: The Cohort_Group_Id is a unique number used to identify unique
+individuals within the B.C. data file which can be used to follow the student …
+```
+
+One field per row, values wrapping across rows, and the header carrying nothing beside it — which
+is precisely why the `labelled` and `collection` headers miss it, both requiring `Length:` or
+`Position:` on the same row.
+
+It documents **linked administrative files rather than questionnaires**, so it has no question
+wording at all and calls position a column number. That is a property of the source, not a gap:
+nothing in these files was ever asked of a respondent. It maps onto the existing schema unchanged —
+`Short Description` → `concept`, `Column number` → `position`, `Long Description` + `Derived from`
+→ `note`.
+
+| | before | after |
+|---|---:|---:|
+| Documents producing records | 1,157 (84.6%) | **1,183 (86.5%)** |
+| Variable occurrences | 436,962 | **438,931** |
+| Documents with no recognized layout | 210 | **184** |
+
+### The reframing: "a fourth layout" was the wrong model
+
+Probing the clusters found at least three different things among the 210, and the largest is not a
+parser gap at all:
+
+| Cluster | | What it is |
+|---|---:|---|
+| `IMDB_BDIM` | 52 | **Annexes** — standalone classification tables (census divisions, country codes). No variable entries exist to find. |
+| `BC_CB_K12` | 27 | The `definition` layout. Now parsed. |
+| `CEN_REC` | 21 | 1,753-page census dictionaries; entries exist but are buried in prose sections. |
+| `CCR_RCC` | 15 | A **wrapped header** — `Variable` and `Name` split across two rows, fields written without colons (`Concept Underlying cause of death`). |
+
+So the residual 184 is a mix of *documents that will never yield records* and *layouts not yet
+written*, and reporting them under one heading overstates the parser's shortfall. Separating the
+two is the next useful step, ahead of writing another parser.
+
+A scan to characterize all 210 mechanically was abandoned: it ran slower than the 20-minute
+full re-parse it was meant to inform, because the census files are 1,753 pages each. The re-parse
+*is* the measurement.
+
+### Two implementation notes worth keeping
+
+**Layout detection nearly became a coin flip.** The first `DEFINITION_HEADER` was a
+case-insensitive `Variable name:` with no end anchor, which also matches the `labelled` family's
+`Variable Name:  DHHGAGE  Length: 2  Position: 31`. Both layouts would have counted the same rows
+and the winner would have come down to a sort's tie-break — deciding how ~37,000 records parse.
+Anchoring the name to end-of-row separates them, and a test asserts a labelled document is not
+stolen.
+
+**Page numbers are interleaved with the prose.** These documents print the page number between
+wrapped rows, so a continuation reader glues it into whatever field is open
+(`…education path 5 from Early Learning…`). Bare short integers are dropped; no field in this
+layout is one.
+
+### Operational: vacuum after a full re-load
+
+Upserting 193,152 existing rows writes a new tuple version for each and leaves the old one dead.
+The table went from 213 MB to **333 MB** for 0.7% more rows (1,153.8 → 1,792.7 B/row), and the
+cost is not only storage: `corpus_stats` went from 1.6 s to exceeding the 8 s statement timeout,
+and `smoking` from 189 ms to 1.5 s, because every scan now walks the dead tuples too.
+
+`vacuum (full, analyze) corpus_variable;` reclaims it. Deleting has the same effect — space is not
+returned until vacuum, which is why the table read 210 MB with zero rows in it earlier. **Any full
+refresh of this table should be followed by a vacuum**, and the D5 headroom figures assume a
+vacuumed table.

@@ -15,8 +15,8 @@ Source archive: `CRSB_ADHOC_CENTRAL_002_FromStatCan_DeStatCan20260818133553.zip`
 | Dictionary candidates | 1,810 |
 | Of those, PDFs (the only format M2 reads) | 1,368 |
 | Parsed | 1,368 |
-| Produced at least one variable | 1,157 (84.6%) |
-| Produced nothing | 211 (15.4%) |
+| Produced at least one variable | 1,183 (86.5%) |
+| Produced nothing | 185 (13.5%) |
 
 ### Layouts detected
 
@@ -28,6 +28,7 @@ contains.
 |---|---:|---:|
 | `labelled` | 1,078 | 78.8% |
 | `collection` | 58 | 4.2% |
+| `definition` | 26 | 1.9% |
 | `field` | 22 | 1.6% |
 
 ### Documents that produced no records
@@ -37,17 +38,17 @@ individually in `out/parse-notes.jsonl`.
 
 | Reason | Documents |
 |---|---:|
-| no recognized layout | 210 |
+| no recognized layout | 184 |
 | layout found, no variable read | 1 |
 
 ## Records
 
 | | |
 |---|---:|
-| Variable occurrences | 436,962 |
-| Mean per productive document | 377.7 |
-| Response-category entries | 840,096 |
-| `corpus.jsonl` | 283.3 MB |
+| Variable occurrences | 438,931 |
+| Mean per productive document | 371.0 |
+| Response-category entries | 840,108 |
+| `corpus.jsonl` | 284.8 MB |
 | Mean bytes per record | 680 |
 
 ### Field completion
@@ -60,13 +61,13 @@ construction.
 
 | Field | Populated | Share |
 |---|---:|---:|
-| `position` | 431,548 | 98.8% |
-| `length` | 432,921 | 99.1% |
-| `concept` | 384,943 | 88.1% |
-| `questionText` | 249,969 | 57.2% |
-| `universe` | 357,365 | 81.8% |
-| `note` | 189,249 | 43.3% |
-| `codes` | 170,963 | 39.1% |
+| `position` | 433,230 | 98.7% |
+| `length` | 432,921 | 98.6% |
+| `concept` | 386,628 | 88.1% |
+| `questionText` | 249,969 | 56.9% |
+| `universe` | 357,365 | 81.4% |
+| `note` | 191,051 | 43.5% |
+| `codes` | 170,966 | 39.0% |
 | `collectionName` | 7,000 | 1.6% |
 
 ### By language
@@ -77,16 +78,16 @@ way.
 
 | Language | Documents | Occurrences | With a code list | Share coded |
 |---|---:|---:|---:|---:|
-| `en` | 644 | 228,252 | 97,872 | 42.9% |
-| `fr` | 585 | 195,499 | 72,874 | 37.3% |
-| `unknown` | 139 | 13,211 | 217 | 1.6% |
+| `en` | 644 | 230,034 | 97,872 | 42.5% |
+| `fr` | 585 | 195,502 | 72,874 | 37.3% |
+| `unknown` | 139 | 13,395 | 220 | 1.6% |
 
 ## Fidelity
 
 | | |
 |---|---:|
-| Notes | 939 |
-| Of those, warnings | 211 |
+| Notes | 928 |
+| Of those, warnings | 185 |
 
 Per-file detail is in the gitignored `out/parse-notes.jsonl`, one JSON object per note.
 

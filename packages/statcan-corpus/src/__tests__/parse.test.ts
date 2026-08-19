@@ -399,3 +399,93 @@ describe('variable-listing rows on the single-space path', () => {
     });
   });
 });
+
+describe('definition layout', () => {
+  const doc = (rows: string[]): ExtractedDoc => ({
+    file: {
+      bundle: 'b.zip',
+      path: 'BC_CB_K12/bc.pdf',
+      sizeBytes: 0,
+      ext: '.pdf',
+      tcode: 'T15.2',
+      docKind: 'data-dictionary',
+      surveyGroup: 'BC_CB_K12',
+      surveyAcronym: undefined,
+      cycle: undefined,
+      year: 2021,
+      lang: 'en',
+    },
+    pages: [{ pageNumber: 1, text: rows.join('\n') }],
+    charCount: rows.join('\n').length,
+    engine: 'test',
+    likelyScanned: false,
+  });
+
+  const BLOCK = [
+    'Data Field Definitions',
+    'Variable name: COHORT_GROUP_ID',
+    'Short Description: Variable for linking records within the BC file',
+    'Column number: 1',
+    'Data type: Number',
+    'Derived from: Statistics Canada',
+    'Long Description: The Cohort_Group_Id is a unique number used to identify unique individuals',
+    'within the B.C. data file which can be used to follow the student through their education path.',
+    'Variable name: SCHOOL_YEAR',
+    'Short Description: School year',
+    'Column number: 3',
+    'Data type: Text',
+    'Long Description: The school year the row corresponds to.',
+  ];
+
+  it('is detected from content', () => {
+    expect(detectLayout(doc(BLOCK))).toMatchObject({ layout: 'definition' });
+  });
+
+  it('reads the fields onto the existing schema', () => {
+    // `Column number` is this family's position, and `Short Description` its concept. There is no
+    // question wording anywhere in the layout, correctly: it documents linked administrative
+    // files, so nothing in it was ever asked of a respondent.
+    const { variables } = parseDictionary(doc(BLOCK), (v) => v.name);
+    expect(variables).toHaveLength(2);
+    expect(variables[0]).toMatchObject({
+      name: 'COHORT_GROUP_ID',
+      position: '1',
+      concept: 'Variable for linking records within the BC file',
+    });
+    expect(variables[0]).not.toHaveProperty('questionText');
+  });
+
+  it('joins prose that wraps across rows', () => {
+    const { variables } = parseDictionary(doc(BLOCK), (v) => v.name);
+    expect(variables[0]!.note).toContain('unique individuals within the B.C. data file');
+  });
+
+  it('keeps `Derived from` rather than discarding it', () => {
+    // Real provenance with no home in the schema. Losing it silently would be worse than carrying
+    // it in the note, where it is at least searchable.
+    expect(parseDictionary(doc(BLOCK), (v) => v.name).variables[0]!.note).toContain(
+      'Derived from: Statistics Canada',
+    );
+  });
+
+  it('drops the page numbers interleaved with the prose', () => {
+    // These documents print the page number between wrapped rows, so a continuation reader glues
+    // it into whatever field is open.
+    const withPage = [...BLOCK];
+    withPage.splice(8, 0, '5');
+    const { variables } = parseDictionary(doc(withPage), (v) => v.name);
+    expect(variables[0]!.note).not.toMatch(/\s5\s/);
+  });
+
+  it('does not steal documents from the labelled layout', () => {
+    // Both headers start `Variable name:`; only the end anchor separates them. Without it the two
+    // count identical rows and the winner is decided by a sort's tie-break.
+    const labelled = doc([
+      'Variable Name:  DHHGAGE  Length: 2  Position: 31',
+      'Concept:  Age of respondent',
+      'Variable Name:  DHH_SEX  Length: 1  Position: 33',
+      'Concept:  Sex',
+    ]);
+    expect(detectLayout(labelled).layout).toBe('labelled');
+  });
+});
