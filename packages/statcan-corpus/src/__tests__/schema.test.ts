@@ -155,3 +155,62 @@ describe('sql/schema.sql', () => {
     ]);
   });
 });
+
+describe('sql/clusters.sql', () => {
+  let clusters: string;
+
+  beforeAll(() => {
+    clusters = readFileSync(path.resolve(path.dirname(SCHEMA_PATH), 'clusters.sql'), 'utf8');
+  });
+
+  it('parses as PostgreSQL', () => {
+    const result = pg.parse(clusters);
+    expect(
+      result.error == null
+        ? undefined
+        : `${result.error.message} — ${locate(clusters, result.error.cursorpos)}`,
+    ).toBeUndefined();
+  });
+
+  it('parses every function body', () => {
+    const bodies = [
+      ...clusters.matchAll(/create or replace function\s+(\w+)[\s\S]*?as \$\$([\s\S]*?)\$\$;/g),
+    ];
+    expect(bodies.length).toBe(4);
+    for (const [, name, body] of bodies) {
+      const result = pg.parse(body!);
+      expect(
+        result.error == null
+          ? undefined
+          : `${name}: ${result.error.message} — ${locate(body!, result.error.cursorpos)}`,
+      ).toBeUndefined();
+    }
+  });
+
+  it('declares all four levels of the DDI cascade', () => {
+    // Concept, ConceptualVariable and RepresentedVariable are separate objects in DDI, and the
+    // separation is what makes "the coding changed between cycles" a property rather than a query.
+    for (const table of [
+      'corpus_concept',
+      'corpus_conceptual_variable',
+      'corpus_represented_variable',
+      'corpus_variable_cluster',
+    ]) {
+      // The trailing ` (` is the boundary: without it, `corpus_concept` also matches the
+      // declaration of `corpus_conceptual_variable` and the assertion passes on three tables.
+      expect(clusters).toContain(`create table if not exists ${table} (`);
+    }
+  });
+
+  it('keeps membership out of the occurrence table (D3)', () => {
+    // Clusters are inference; occurrences are what a document said. A clustering bug must not be
+    // able to reach the extracted facts, which means never altering corpus_variable from here.
+    expect(clusters).not.toMatch(/alter table\s+corpus_variable\b(?!_)/i);
+    expect(clusters).toMatch(/create table if not exists corpus_variable_cluster/);
+  });
+
+  it('gives anon select and the loader role write, on every new table', () => {
+    expect(clusters).toMatch(/grant select on %I to anon/);
+    expect(clusters).toMatch(/grant select, insert, update, delete on %I to service_role/);
+  });
+});

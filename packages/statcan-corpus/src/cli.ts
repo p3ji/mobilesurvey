@@ -46,7 +46,15 @@ import {
 } from './ingest.js';
 import { detectLayout, parseDictionary } from './parse.js';
 import { toCorpusRow } from './project.js';
-import { credentialsFromEnv, envWithFile, loadCorpusJsonl } from './load.js';
+import {
+  credentialsFromEnv,
+  DEFAULT_BATCH,
+  envWithFile,
+  factKey,
+  loadCorpusJsonl,
+  upsertRows,
+} from './load.js';
+import { buildClusters } from './cluster.js';
 import { renderInventoryJsonl, renderReportMarkdown } from './report.js';
 import type { CorpusVariable, DocKind, ExtractedDoc } from './types.js';
 
@@ -75,6 +83,7 @@ Usage:
   tsx src/cli.ts inventory [options]   Classify the delivery; with --extract, pull text.
   tsx src/cli.ts parse     [options]   Classify, extract, and parse dictionaries into records.
   tsx src/cli.ts load      [options]   Upsert parsed records into Supabase.
+  tsx src/cli.ts cluster   [options]   Build the DDI variable cascade and load it.
 
 Classifies every file in the corpus delivery and, with --extract, pulls row-reconstructed text
 out of the selected documents. Writes <out>/inventory.jsonl (gitignored) and the committed
@@ -102,12 +111,14 @@ Options:
   --batch N        load: rows per request. Default: 500
   --limit N        load: stop after N rows. For measuring a real table before committing to a
                    full load; the rest upserts on top afterwards.
-  --lang LIST      load: only these languages (en, fr, unknown). 99.8% of French records are
-                   translations of English ones, so one language keeps every survey, variable
-                   and code list — the other language upserts on top later.
+  --lang LIST      load, cluster: only these languages (en, fr, unknown). 99.8% of French records
+                   are translations of English ones, so one language keeps every survey, variable
+                   and code list — the other upserts on top later. Cluster the same set you load,
+                   or memberships point at rows that are not there.
   --dry-run        load: project every record and report size, but send nothing.
-  --dedupe         load: keep one row per distinct fact instead of one per document that
-                   repeated it. The delivery ships some dictionaries more than once.
+  --dedupe         load, cluster: keep one row per distinct fact instead of one per document
+                   that repeated it. The delivery ships some dictionaries more than once. Pass
+                   the same value to both, or memberships outnumber the rows they point at.
   -h, --help       This message.
 
 load reads SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY from packages/statcan-corpus/.env.local
@@ -1278,6 +1289,107 @@ async function loadCommand(args: CliArgs): Promise<void> {
 }
 
 /* -------------------------------------------------------------------------------------------- *
+ * cluster
+ * -------------------------------------------------------------------------------------------- */
+
+/**
+ * Build the DDI variable cascade over the parsed occurrences and load it.
+ *
+ * Separate from `load` because the two answer to different things: occurrences change when the
+ * parser changes, clusters change when the *inference* changes, and re-running one should not
+ * force the other. It also means a clustering experiment costs two minutes rather than a re-parse.
+ */
+async function clusterCommand(args: CliArgs): Promise<void> {
+  const recordsPath = args.records ?? path.join(args.outDir, 'corpus.jsonl');
+  if (!existsSync(recordsPath)) {
+    throw new Error(`No records at ${recordsPath}. Run \`corpus:parse\` first, or pass --records PATH.`);
+  }
+
+  const langs = args.langs === undefined ? undefined : new Set(args.langs);
+  process.stderr.write(`records: ${path.relative(REPO_ROOT, recordsPath).replace(/\\/g, '/')}\n`);
+  process.stderr.write(`langs:   ${args.langs?.join(', ') ?? 'all'}\n`);
+  process.stderr.write(`dedupe:  ${args.dedupe ? 'on' : 'off'}\n\n`);
+
+  const started = Date.now();
+  const records: CorpusVariable[] = [];
+  // The same filters the load applied, for the same reason. Clustering a *wider* set than was
+  // loaded produces memberships pointing at rows that are not there, and inflates every
+  // occurrence count the concept view shows — a group claiming 66 members that can only display
+  // 54 is worse than one that never claimed them.
+  const seen = args.dedupe ? new Set<string>() : undefined;
+  const reader = createInterface({ input: createReadStream(recordsPath), crlfDelay: Infinity });
+  for await (const line of reader) {
+    if (line.trim() === '') continue;
+    const v = JSON.parse(line) as CorpusVariable;
+    if (langs !== undefined && !langs.has(v.source.lang)) continue;
+    if (seen !== undefined) {
+      const key = factKey(toCorpusRow(v));
+      if (seen.has(key)) continue;
+      seen.add(key);
+    }
+    records.push(v);
+    if (records.length % 50000 === 0) status(`read:    ${formatInt(records.length)} occurrences`);
+  }
+  endStatus(`read:    ${formatInt(records.length)} occurrences`);
+
+  const result = buildClusters(records);
+  const spanning = result.conceptualVariables.filter((cv) => cv.years > 1);
+  const changed = spanning.filter((cv) => cv.representations > 1);
+  const crossSurvey = spanning.filter((cv) => cv.surveys > 1);
+
+  process.stderr.write('\n');
+  process.stderr.write(`concepts:              ${formatInt(result.concepts.length)}\n`);
+  process.stderr.write(`conceptual variables:  ${formatInt(result.conceptualVariables.length)}\n`);
+  process.stderr.write(`represented variables: ${formatInt(result.representedVariables.length)}\n`);
+  process.stderr.write(`memberships:           ${formatInt(result.members.length)}\n`);
+  process.stderr.write(
+    `unplaced (no meaning): ${formatInt(result.unplaced)} ` +
+      `(${formatPercent(result.unplaced, records.length)})\n\n`,
+  );
+  process.stderr.write(`spanning >1 year:      ${formatInt(spanning.length)}\n`);
+  process.stderr.write(`  coding changed:      ${formatInt(changed.length)}\n`);
+  process.stderr.write(`  >1 survey:           ${formatInt(crossSurvey.length)}\n\n`);
+
+  if (args.dryRun) {
+    process.stderr.write('nothing was sent (--dry-run)\n');
+    return;
+  }
+
+  const creds = credentialsFromEnv(envWithFile(path.join(PACKAGE_DIR, '.env.local')));
+  process.stderr.write(`target:  ${creds.url}\n\n`);
+
+  // Order matters only for readability here — there are no foreign keys, deliberately, so a
+  // partial load degrades to missing links rather than to a failed transaction.
+  const tables: Array<[string, string, readonly object[]]> = [
+    ['corpus_concept', 'concept_id', result.concepts],
+    ['corpus_conceptual_variable', 'conceptual_variable_id', result.conceptualVariables],
+    ['corpus_represented_variable', 'represented_variable_id', result.representedVariables],
+    [
+      'corpus_variable_cluster',
+      'record_id',
+      result.members.map((m) => ({
+        record_id: m.recordId,
+        concept_id: m.conceptId,
+        conceptual_variable_id: m.conceptualVariableId,
+        represented_variable_id: m.representedVariableId,
+      })),
+    ],
+  ];
+
+  for (const [table, conflict, rows] of tables) {
+    let written = 0;
+    for (let i = 0; i < rows.length; i += args.batch ?? DEFAULT_BATCH) {
+      await upsertRows(creds, table, conflict, rows.slice(i, i + (args.batch ?? DEFAULT_BATCH)));
+      written += Math.min(args.batch ?? DEFAULT_BATCH, rows.length - i);
+      status(`load:    ${table} ${formatInt(written)}/${formatInt(rows.length)}`);
+    }
+    endStatus(`load:    ${table.padEnd(28)} ${formatInt(rows.length)} rows`);
+  }
+
+  process.stderr.write(`\ndone:    ${formatDuration(Date.now() - started)}\n`);
+}
+
+/* -------------------------------------------------------------------------------------------- *
  * main
  * -------------------------------------------------------------------------------------------- */
 
@@ -1303,6 +1415,10 @@ async function main(argv: readonly string[]): Promise<number> {
   }
   if (command === 'load') {
     await loadCommand(parseArgs(rest));
+    return 0;
+  }
+  if (command === 'cluster') {
+    await clusterCommand(parseArgs(rest));
     return 0;
   }
   process.stderr.write(`Unknown command "${command}". Run with --help.\n`);
