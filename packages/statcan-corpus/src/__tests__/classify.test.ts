@@ -274,6 +274,32 @@ const FILE_CASES: ReadonlyArray<readonly [string, Expectation]> = [
     { tcode: 'T3', docKind: 'record-layout', surveyAcronym: 'CCHS', cycle: '2011_2012', year: 2011, lang: 'fr' },
   ],
 
+  // ---- two-letter acronym pairs, which a 3-letter minimum silently blanked ----
+  // Found by hand-checking a stratified sample: every file in BC_CB_K12, ROE_RE, AG_SA_AllYears
+  // and HS_EH came out lang='unknown'. The French prose in these very filenames confirms the
+  // split, so a guard that rejects them is losing information it demonstrably has.
+  [
+    'ROE_RE/RE_PVAE_PAE_code_de_semaines_f1_T3_v1.xlsx',
+    { tcode: 'T3', surveyAcronym: 'ROE', lang: 'fr' },
+  ],
+  [
+    'ROE_RE/ROE_EISV_EIB_week_codes_f1_T3_v1.xlsx',
+    { tcode: 'T3', surveyAcronym: 'ROE', lang: 'en' },
+  ],
+  ['AG_SA_AllYears/AG_2007_2017_f1_t15.2_v1.docx', { tcode: 'T15.2', lang: 'en' }],
+  ['AG_SA_AllYears/SA_2007_2017_f1_t15.2_v1.docx', { tcode: 'T15.2', lang: 'fr' }],
+  ['HS_EH/HS_f1_T1.1_v1.pdf', { tcode: 'T1.1', docKind: 'user-guide', lang: 'en' }],
+  ['HS_EH/EH_f1_T1.1_v1.pdf', { tcode: 'T1.1', docKind: 'user-guide', lang: 'fr' }],
+  ['BC_CB_K12/BC_CB_K12_2021/BC_K_12_2021_completion_rate_f1_T15-2_v1.pdf', { tcode: 'T15.2', lang: 'en' }],
+
+  // A two-letter token in a LINKAGE CHAIN must stay unknown: 'T4' and 'pi' are not the French
+  // halves of anything, and acronymPair's third-token guard is what keeps them out. This is the
+  // case that makes the 2-letter minimum safe rather than reckless.
+  [
+    'CHS_T4_T1FF_Hist_ID_AllYears/chs_t4_2019_f1_T15.2_v1.pdf',
+    { tcode: 'T15.2', lang: 'unknown' },
+  ],
+
   // ---- explicit language tag, survey id that is not a year ----
   [
     'LSIC_ELIC/LSIC_ELIC_3/SDDS4422_LSIC_ELIC_C3_LD_T15.2_eng.pdf',
@@ -491,9 +517,21 @@ describe('classifyFile', () => {
   });
 
   it('does not read a file-number token as a French tag', () => {
-    // `_f1`/`_f3` are file numbers. Nothing else in this name is a language signal.
-    expect(classify('BC_CB_K12/CB_K_12_2021_analytical_f1_T15-2.pdf').lang).toBe('unknown');
-    expect(classify('BC_CB_K12/CB_K_12_2021_analytical_f3_T15-2.pdf').lang).toBe('unknown');
+    // `_f1`/`_f3` are file numbers, not the `_f` French tag. Tested in a group with NO acronym
+    // pair, so the file number is genuinely the only thing that could be mistaken for a signal.
+    // (This case previously used BC_CB_K12, where `CB_` is in fact the French half of
+    // British Columbia / Colombie-Britannique — so 'unknown' there was a miss, not a guard.)
+    expect(classify('Business_Data/BIGS_2020_analytical_f1_T15-2.pdf').lang).toBe('unknown');
+    expect(classify('Business_Data/BIGS_2020_analytical_f3_T15-2.pdf').lang).toBe('unknown');
+  });
+
+  it('reads a two-letter acronym pair, which the corpus writes out in matched filenames', () => {
+    // BC_CB_K12 holds 17 `BC_*` and 15 `CB_*` files with otherwise identical stems, and the
+    // corpus confirms the split in its own words: `BC_K_12_ELMLP` pairs with `CB_K_12_PLEMT`
+    // (Education and Labour Market Longitudinal Platform / Plateforme longitudinale entre
+    // l'éducation et le marché du travail), and `bc_k12` pairs with `cb_m12` (maternelle–12).
+    expect(classify('BC_CB_K12/BC_K_12_2021_analytical_f1_T15-2.pdf').lang).toBe('en');
+    expect(classify('BC_CB_K12/CB_K_12_2021_analytical_f1_T15-2.pdf').lang).toBe('fr');
   });
 
   it('does not read the French word `en` as an English tag', () => {
@@ -514,7 +552,6 @@ describe('classifyFile', () => {
 
   it('leaves the language unknown rather than guessing', () => {
     for (const p of [
-      'BC_CB_K12/BC_CB_K-12_AllYears/CB_K_12_2021_completion_rate_f1_T15-2_v1.pdf',
       'CEEDD_BDCDEE/CodeSet_T1_2019Vintage_released.pdf',
       'Business_Data/BIGS_2020_DatasetNotes_EnterpriseLevel.docx',
       '0_Geo Summary/whatever.pdf',

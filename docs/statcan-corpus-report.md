@@ -17,7 +17,7 @@ file, so any diff here is a real change in coverage (D9).
 | Survey groups | 319 |
 | Bundles | 7 |
 | Year range | 1981–2026 |
-| Fidelity notes | 385 (96 warnings, 289 infos) |
+| Fidelity notes | 96 (96 warnings) |
 
 ## By document kind
 
@@ -105,9 +105,9 @@ _289 further groups are not shown here; every group appears in the inventory JSO
 
 | Language | Files | Share |
 |---|---:|---:|
-| English (`en`) | 1,375 | 45.7% |
-| French (`fr`) | 1,205 | 40.1% |
-| Undetermined (`unknown`) | 426 | 14.2% |
+| English (`en`) | 1,408 | 46.8% |
+| French (`fr`) | 1,236 | 41.1% |
+| Undetermined (`unknown`) | 362 | 12.0% |
 
 ## File types
 
@@ -232,65 +232,9 @@ variant the taxonomy has not learned yet.
 | `RDC Nonconfidential Documentation (7).zip/Vital Statistics Death Database/2023_Code_Ref_File_Version_1_0.xlsx` | xlsx | — | No document-type code in the filename (.xlsx). |
 | `RDC Nonconfidential Documentation (7).zip/Vital Statistics Death Database/Codes_multiple_cause_202404.xlsx` | xlsx | — | No document-type code in the filename (.xlsx). |
 
-## Text extraction
-
-Selection: `data-dictionary`, `T15.*` families, PDF only.
-
-> **These numbers are a SAMPLE, not a complete pass.** 160 of the
-> 1,342 matching PDFs (11.9%) were extracted.
->
-> The draw hashes each file's `bundle/path` under the seed `statcan-corpus/m1` and takes
-> the lowest — a uniform selection, spread across all seven bundles, every survey group and
-> the full 1980–2026 span, that returns the *same* files on every re-run (D9). Rates and
-> per-document averages below therefore generalize to the family; **totals do not**.
-
-| | |
-|---|---|
-| Matching files (any format) | 1,631 |
-| Matching PDFs | 1,342 |
-| Extraction attempted | 160 |
-| Succeeded | 160 (100.0%) |
-| Failed | 0 (0.0%) |
-| Likely image-only scans | 0 (0.0% of successes) |
-| Pages | 23,128 |
-| Characters | 50,843,709 |
-| Mean characters/page | 2,198 |
-| Source bytes read | 252.1 MB |
-| Engine | `pdfjs-dist@6.1.200` |
-
-### Row reconstruction actually worked
-
-pdfjs was chosen over PyMuPDF on correctness, not convenience: these dictionaries are visual
-tables, and a flat reading order drops each cell onto its own line, silently pairing a code
-with a frequency count instead of its label (D2). The check below is that claim measured at
-corpus scale rather than on two sample files — a *code-table row* is a line carrying a numeric
-code, a text label, and one or two count columns **together**, which can only exist if the
-row survived extraction.
-
-| Signal | Documents | Share of successes |
-|---|---:|---:|
-| Contains ≥1 reconstructed code-table row | 9 | 5.6% |
-| Contains the `Variable Name` field label (EN layouts) | 75 | 46.9% |
-| Contains `Nom de la variable` (FR layouts) | 74 | 46.3% |
-
-Total reconstructed code-table rows: **842**.
-
-### Extraction by document-type code
-
-| T-code | Documents | Pages | Characters |
-|---|---:|---:|---:|
-| `T15.2` | 138 | 20,121 | 44,987,345 |
-| `T15.4` | 14 | 1,855 | 3,746,067 |
-| `T15.6` | 6 | 1,050 | 1,958,544 |
-| `T15` | 1 | 93 | 140,316 |
-| `T15.3` | 1 | 9 | 11,437 |
-
-_Wall-clock and machine-specific timings are deliberately excluded so this report stays
-byte-identical across runs (D9); they are written to the gitignored `out/run-stats.json`._
-
 ## Fidelity notes
 
-385 notes, grouped by severity, most serious first.
+96 notes, grouped by severity, most serious first.
 
 ### Warnings (96)
 
@@ -390,108 +334,3 @@ byte-identical across runs (D9); they are written to the gitignored `out/run-sta
 - `RDC Nonconfidential Documentation (7).zip/SYC_EJC_2010/SYC2010_UgE.pdf` — Unclassified. No document-type code in the filename (.pdf).
 - `RDC Nonconfidential Documentation (7).zip/Vital Statistics Death Database/2023_Code_Ref_File_Version_1_0.xlsx` — Unclassified. No document-type code in the filename (.xlsx).
 - `RDC Nonconfidential Documentation (7).zip/Vital Statistics Death Database/Codes_multiple_cause_202404.xlsx` — Unclassified. No document-type code in the filename (.xlsx).
-
-### Info (289)
-
-- `RDC Nonconfidential Documentation (1).zip/ACS_EEA_2006/5108_ACS-EEA_C2006_T15.2_eng.doc` — Selected as a data-dictionary but the .doc format is deferred to M4; M1 extracts PDF only.
-- `RDC Nonconfidential Documentation (1).zip/ACS_EEA_2006/5108_ACS-EEA_C2006_T15.2_fra.doc` — Selected as a data-dictionary but the .doc format is deferred to M4; M1 extracts PDF only.
-- `RDC Nonconfidential Documentation (1).zip/AG_SA_AllYears/AG_2007_2017_f1_t15.2_v1.docx` — Selected as a data-dictionary but the .docx format is deferred to M4; M1 extracts PDF only.
-- `RDC Nonconfidential Documentation (1).zip/AG_SA_AllYears/SA_2007_2017_f1_t15.2_v1.docx` — Selected as a data-dictionary but the .docx format is deferred to M4; M1 extracts PDF only.
-- `RDC Nonconfidential Documentation (1).zip/ASML_EAMEF/codebooks_livres_des_codes/asml_f1_T15_2_v1.xlsx` — Selected as a data-dictionary but the .xlsx format is deferred to M4; M1 extracts PDF only.
-- `RDC Nonconfidential Documentation (1).zip/ASML_EAMEF/codebooks_livres_des_codes/asml_f1_T15_3_v1.xlsx` — Selected as a data-dictionary but the .xlsx format is deferred to M4; M1 extracts PDF only.
-- `RDC Nonconfidential Documentation (1).zip/ASML_EAMEF/codebooks_livres_des_codes/asml_f1_T15_4_v1.xlsx` — Selected as a data-dictionary but the .xlsx format is deferred to M4; M1 extracts PDF only.
-- `RDC Nonconfidential Documentation (1).zip/BRM_GRA_2017_vintage_v1/brm_2017_f1_T15.2_v1.docx` — Selected as a data-dictionary but the .docx format is deferred to M4; M1 extracts PDF only.
-- `RDC Nonconfidential Documentation (1).zip/BRM_GRA_2017_vintage_v1/brm_2017_f1_T15.2_v2.docx` — Selected as a data-dictionary but the .docx format is deferred to M4; M1 extracts PDF only.
-- `RDC Nonconfidential Documentation (1).zip/BRM_GRA_2017_vintage_v1/brm_2017_f1_T15.3_v1.docx` — Selected as a data-dictionary but the .docx format is deferred to M4; M1 extracts PDF only.
-- `RDC Nonconfidential Documentation (1).zip/BRM_GRA_2017_vintage_v1/brm_2017_f1_T15.3_v1.xlsx` — Selected as a data-dictionary but the .xlsx format is deferred to M4; M1 extracts PDF only.
-- `RDC Nonconfidential Documentation (1).zip/BRM_GRA_2017_vintage_v1/mre_2017_f1_T15.2_v1.docx` — Selected as a data-dictionary but the .docx format is deferred to M4; M1 extracts PDF only.
-- `RDC Nonconfidential Documentation (1).zip/BRM_GRA_2017_vintage_v1/mre_2017_f1_T15.2_v2.docx` — Selected as a data-dictionary but the .docx format is deferred to M4; M1 extracts PDF only.
-- `RDC Nonconfidential Documentation (1).zip/BRM_GRA_2017_vintage_v1/mre_2017_f1_T15.3_v1.docx` — Selected as a data-dictionary but the .docx format is deferred to M4; M1 extracts PDF only.
-- `RDC Nonconfidential Documentation (1).zip/BRM_GRA_2017_vintage_v1/mre_2017_f1_T15.3_v1.xlsx` — Selected as a data-dictionary but the .xlsx format is deferred to M4; M1 extracts PDF only.
-- `RDC Nonconfidential Documentation (1).zip/BRM_GRA_2021_vintage/brm_2021_f1_T15_2_v3.docx` — Selected as a data-dictionary but the .docx format is deferred to M4; M1 extracts PDF only.
-- `RDC Nonconfidential Documentation (1).zip/BRM_GRA_2021_vintage/mre_2021_f1_T15_2_v3.docx` — Selected as a data-dictionary but the .docx format is deferred to M4; M1 extracts PDF only.
-- `RDC Nonconfidential Documentation (1).zip/CAL_PCA_AllYears/CAL_2015_2017_f1_t15.2_v1.docx` — Selected as a data-dictionary but the .docx format is deferred to M4; M1 extracts PDF only.
-- `RDC Nonconfidential Documentation (1).zip/CAL_PCA_AllYears/PCA_2015_2017_f1_t15.2_v1.docx` — Selected as a data-dictionary but the .docx format is deferred to M4; M1 extracts PDF only.
-- `RDC Nonconfidential Documentation (1).zip/CCHS_ESCC_2015_NU/2019 CFG-FCS/CCHS_ESCC_2015_NU_v4/cchs_escc_2015_cfg_f1_T15-2_v4.docx` — Selected as a data-dictionary but the .docx format is deferred to M4; M1 extracts PDF only.
-- `RDC Nonconfidential Documentation (1).zip/CCHS_ESCC_T1FF/rdc_t1ff_data_dictionary_eng_f4_T15-2_v2.xlsx` — Selected as a data-dictionary but the .xlsx format is deferred to M4; M1 extracts PDF only.
-- `RDC Nonconfidential Documentation (1).zip/CCR_RCC/DY2013/CCR_2013_T15.2_D1_v1.doc` — Selected as a data-dictionary but the .doc format is deferred to M4; M1 extracts PDF only.
-- `RDC Nonconfidential Documentation (1).zip/CCR_RCC/DY2013/CCR_2013_T15.2_D2_v1.doc` — Selected as a data-dictionary but the .doc format is deferred to M4; M1 extracts PDF only.
-- `RDC Nonconfidential Documentation (1).zip/CCR_RCC/DY2013/CCR_2013_T15.2_D3_v1.doc` — Selected as a data-dictionary but the .doc format is deferred to M4; M1 extracts PDF only.
-- `RDC Nonconfidential Documentation (1).zip/CCR_RCC/DY2020/ccr_iarc_2020_f1_t15-2_v1.docx` — Selected as a data-dictionary but the .docx format is deferred to M4; M1 extracts PDF only.
-- `RDC Nonconfidential Documentation (1).zip/CCR_RCC/DY2020/rcc_circ_2020_f1_t15-2_v1.docx` — Selected as a data-dictionary but the .docx format is deferred to M4; M1 extracts PDF only.
-- `RDC Nonconfidential Documentation (1).zip/CDCP_008_2025_Linkage_AllYears/cdcp_enrollment_en_f3_T15_2_v2.docx` — Selected as a data-dictionary but the .docx format is deferred to M4; M1 extracts PDF only.
-- `RDC Nonconfidential Documentation (1).zip/CDCP_008_2025_Linkage_AllYears/cdcp_enrollment_fr_f3_T15_2_v2.docx` — Selected as a data-dictionary but the .docx format is deferred to M4; M1 extracts PDF only.
-- `RDC Nonconfidential Documentation (1).zip/CanFED-BDEACan/bdeacan_f1_t15_2_v2.docx` — Selected as a data-dictionary but the .docx format is deferred to M4; M1 extracts PDF only.
-- `RDC Nonconfidential Documentation (1).zip/CanFED-BDEACan/canfed_f1_t15_2_v2.docx` — Selected as a data-dictionary but the .docx format is deferred to M4; M1 extracts PDF only.
-- `RDC Nonconfidential Documentation (2).zip/CHSP_PSLC/acheteurs_202412_f1_T15_2_v1.docx` — Selected as a data-dictionary but the .docx format is deferred to M4; M1 extracts PDF only.
-- `RDC Nonconfidential Documentation (2).zip/CHSP_PSLC/buyers_202412_f1_T15_2_v1.docx` — Selected as a data-dictionary but the .docx format is deferred to M4; M1 extracts PDF only.
-- `RDC Nonconfidential Documentation (2).zip/CHSP_PSLC/chsp_2018_owner_f1_T15.2_v1.docx` — Selected as a data-dictionary but the .docx format is deferred to M4; M1 extracts PDF only.
-- `RDC Nonconfidential Documentation (2).zip/CHSP_PSLC/chsp_2018_owner_f1_T15.2_v2.docx` — Selected as a data-dictionary but the .docx format is deferred to M4; M1 extracts PDF only.
-- `RDC Nonconfidential Documentation (2).zip/CHSP_PSLC/chsp_2018_prop_f1_T15.2_v1.docx` — Selected as a data-dictionary but the .docx format is deferred to M4; M1 extracts PDF only.
-- `RDC Nonconfidential Documentation (2).zip/CHSP_PSLC/chsp_2019_owner_f1_T15.2_v2.docx` — Selected as a data-dictionary but the .docx format is deferred to M4; M1 extracts PDF only.
-- `RDC Nonconfidential Documentation (2).zip/CHSP_PSLC/chsp_2019_prop_f1_T15.2_v1.docx` — Selected as a data-dictionary but the .docx format is deferred to M4; M1 extracts PDF only.
-- `RDC Nonconfidential Documentation (2).zip/CHSP_PSLC/chsp_2022_bridge_f1_t15_2_v1.docx` — Selected as a data-dictionary but the .docx format is deferred to M4; M1 extracts PDF only.
-- `RDC Nonconfidential Documentation (2).zip/CHSP_PSLC/chsp_pslc_2023_buyer_codesets_f1_t15_2_v1.xlsx` — Selected as a data-dictionary but the .xlsx format is deferred to M4; M1 extracts PDF only.
-- `RDC Nonconfidential Documentation (2).zip/CHSP_PSLC/chsp_pslc_2023_owner_codesets_f1_t15_2_v1.xlsx` — Selected as a data-dictionary but the .xlsx format is deferred to M4; M1 extracts PDF only.
-- `RDC Nonconfidential Documentation (2).zip/CHSP_PSLC/chsp_pslc_2023_owner_investor_codesets_f1_t15_2_v1.xlsx` — Selected as a data-dictionary but the .xlsx format is deferred to M4; M1 extracts PDF only.
-- `RDC Nonconfidential Documentation (2).zip/CHSP_PSLC/chsp_pslc_2023_property_and_codesets_f1_t15_2_v1.xlsx` — Selected as a data-dictionary but the .xlsx format is deferred to M4; M1 extracts PDF only.
-- `RDC Nonconfidential Documentation (2).zip/CHSP_PSLC/chsp_pslc_2023_property_investor_codesets_f1_t15_2_v1.xlsx` — Selected as a data-dictionary but the .xlsx format is deferred to M4; M1 extracts PDF only.
-- `RDC Nonconfidential Documentation (2).zip/CHSP_PSLC/chsp_pslc_2023_sales_codesets_f1_t15_2_v1.xlsx` — Selected as a data-dictionary but the .xlsx format is deferred to M4; M1 extracts PDF only.
-- `RDC Nonconfidential Documentation (2).zip/CHSP_PSLC/owner_202412_f1_T15_2_v1.docx` — Selected as a data-dictionary but the .docx format is deferred to M4; M1 extracts PDF only.
-- `RDC Nonconfidential Documentation (2).zip/CHSP_PSLC/property_202412_f1_T15_2_v1.docx` — Selected as a data-dictionary but the .docx format is deferred to M4; M1 extracts PDF only.
-- `RDC Nonconfidential Documentation (2).zip/CHSP_PSLC/proprietaire_202412_f1_T15_2_v1.docx` — Selected as a data-dictionary but the .docx format is deferred to M4; M1 extracts PDF only.
-- `RDC Nonconfidential Documentation (2).zip/CHSP_PSLC/propriete_202412_f1_T15_2_v1.docx` — Selected as a data-dictionary but the .docx format is deferred to M4; M1 extracts PDF only.
-- `RDC Nonconfidential Documentation (2).zip/CHSP_PSLC/pslc_2022_passerelle_f1_t15_2_v1.docx` — Selected as a data-dictionary but the .docx format is deferred to M4; M1 extracts PDF only.
-- `RDC Nonconfidential Documentation (2).zip/CHSP_PSLC/sales_202412_f1_T15_2_v1.docx` — Selected as a data-dictionary but the .docx format is deferred to M4; M1 extracts PDF only.
-- `RDC Nonconfidential Documentation (2).zip/CHSP_PSLC/ventes_202412_f1_T15_2_v1.docx` — Selected as a data-dictionary but the .docx format is deferred to M4; M1 extracts PDF only.
-- `RDC Nonconfidential Documentation (2).zip/CIS_ECR_T1FF_AllYears/cis_t1ff_f3_t15_2_v3.xlsx` — Selected as a data-dictionary but the .xlsx format is deferred to M4; M1 extracts PDF only.
-- `RDC Nonconfidential Documentation (2).zip/CIS_ECR_T1FF_AllYears/ecr_fft1_f3_t15_2_v3.xlsx` — Selected as a data-dictionary but the .xlsx format is deferred to M4; M1 extracts PDF only.
-- `RDC Nonconfidential Documentation (2).zip/CIS_ECR_T1FF_AllYears/fft1_f3_t15_1_v2.docx` — Selected as a data-dictionary but the .docx format is deferred to M4; M1 extracts PDF only.
-- `RDC Nonconfidential Documentation (2).zip/CIS_ECR_T1FF_AllYears/t1ff_f3_t15_1_v2.docx` — Selected as a data-dictionary but the .docx format is deferred to M4; M1 extracts PDF only.
-- `RDC Nonconfidential Documentation (2).zip/COSGO_IOCGR_AllYears/cosgo_f1_T15_1_v2.docx` — Selected as a data-dictionary but the .docx format is deferred to M4; M1 extracts PDF only.
-- `RDC Nonconfidential Documentation (2).zip/COSGO_IOCGR_AllYears/iocgr_f1_T15_1_v2.docx` — Selected as a data-dictionary but the .docx format is deferred to M4; M1 extracts PDF only.
-- `RDC Nonconfidential Documentation (2).zip/CPI_IPC_AllYears/cpi_cder_f1_T15_2_v1.xlsx` — Selected as a data-dictionary but the .xlsx format is deferred to M4; M1 extracts PDF only.
-- `RDC Nonconfidential Documentation (2).zip/CRISM_2020/crism_2020_f1_T15.2_v1.docx` — Selected as a data-dictionary but the .docx format is deferred to M4; M1 extracts PDF only.
-- `RDC Nonconfidential Documentation (3).zip/CSLP_PCPE_AllYears/CSLP_Allyears_f1_t15.2_v1.docx` — Selected as a data-dictionary but the .docx format is deferred to M4; M1 extracts PDF only.
-- `RDC Nonconfidential Documentation (3).zip/CSLP_PCPE_AllYears/PCPE_Allyears_f1_t15.2_v1.docx` — Selected as a data-dictionary but the .docx format is deferred to M4; M1 extracts PDF only.
-- `RDC Nonconfidential Documentation (3).zip/CVCS_ECVC_2021/cvcs_2021_f1_T15.4_v2.xlsx` — Selected as a data-dictionary but the .xlsx format is deferred to M4; M1 extracts PDF only.
-- `RDC Nonconfidential Documentation (3).zip/EICS_ECAE_1997/ecae_1997_f1_T15.2_v1.wpd` — Selected as a data-dictionary but the .wpd format is deferred to M4; M1 extracts PDF only.
-- `RDC Nonconfidential Documentation (3).zip/EICS_ECAE_1997/eics_1997_f1_T15.2_v1.wpd` — Selected as a data-dictionary but the .wpd format is deferred to M4; M1 extracts PDF only.
-- `RDC Nonconfidential Documentation (3).zip/EICS_ECAE_1998/ecae_1998_f1_T15.2_v1.wpd` — Selected as a data-dictionary but the .wpd format is deferred to M4; M1 extracts PDF only.
-- `RDC Nonconfidential Documentation (3).zip/EICS_ECAE_1998/eics_1998_f1_T15.2_v1.wpd` — Selected as a data-dictionary but the .wpd format is deferred to M4; M1 extracts PDF only.
-- `RDC Nonconfidential Documentation (3).zip/EICS_ECAE_1999/ecae_1999_f1_T15.2_v1.wpd` — Selected as a data-dictionary but the .wpd format is deferred to M4; M1 extracts PDF only.
-- `RDC Nonconfidential Documentation (3).zip/EICS_ECAE_1999/eics_1999_f1_T15.2_v1.wpd` — Selected as a data-dictionary but the .wpd format is deferred to M4; M1 extracts PDF only.
-- `RDC Nonconfidential Documentation (4).zip/EISV_PVAE_AllYears/EISV_2018_Header_T15.2_F1_v1.docx` — Selected as a data-dictionary but the .docx format is deferred to M4; M1 extracts PDF only.
-- `RDC Nonconfidential Documentation (4).zip/EISV_PVAE_AllYears/EISV_2018_Trailers_T15.2_F1_v1.docx` — Selected as a data-dictionary but the .docx format is deferred to M4; M1 extracts PDF only.
-- `RDC Nonconfidential Documentation (4).zip/EISV_PVAE_AllYears/PVAE_2018_complémentaires_T15.2_F1_v1.docx` — Selected as a data-dictionary but the .docx format is deferred to M4; M1 extracts PDF only.
-- `RDC Nonconfidential Documentation (4).zip/EISV_PVAE_AllYears/PVAE_2018_maître_T15.2_F1_v1.docx` — Selected as a data-dictionary but the .docx format is deferred to M4; M1 extracts PDF only.
-- `RDC Nonconfidential Documentation (4).zip/EISV_PVAE_AllYears/eisv_2025_f1_t15_3_v1.docx` — Selected as a data-dictionary but the .docx format is deferred to M4; M1 extracts PDF only.
-- `RDC Nonconfidential Documentation (4).zip/EISV_PVAE_AllYears/eisv_2025_trailer_f1_t15_3_v1.docx` — Selected as a data-dictionary but the .docx format is deferred to M4; M1 extracts PDF only.
-- `RDC Nonconfidential Documentation (4).zip/EISV_PVAE_AllYears/eisv_pvae_2025_week_codes_f1_t15_3_v1.xlsx` — Selected as a data-dictionary but the .xlsx format is deferred to M4; M1 extracts PDF only.
-- `RDC Nonconfidential Documentation (4).zip/EISV_PVAE_AllYears/pvae_2025_comp_f1_t15_3_v1.docx` — Selected as a data-dictionary but the .docx format is deferred to M4; M1 extracts PDF only.
-- `RDC Nonconfidential Documentation (4).zip/EISV_PVAE_AllYears/pvae_2025_f1_t15_3_v1.docx` — Selected as a data-dictionary but the .docx format is deferred to M4; M1 extracts PDF only.
-- `RDC Nonconfidential Documentation (4).zip/FMS_EGF_CEAG_REAG_AllYears/fms_ceag_2025Sep19_f3_T15_2_v2.xlsx` — Selected as a data-dictionary but the .xlsx format is deferred to M4; M1 extracts PDF only.
-- `RDC Nonconfidential Documentation (4).zip/FTD_UAD_0405_v3/ftd_uad_f1_T15.2_v3.docx` — Selected as a data-dictionary but the .docx format is deferred to M4; M1 extracts PDF only.
-- `RDC Nonconfidential Documentation (4).zip/GSS_ESG_12-32/15/SDDS4501_GSS_ESG_C15_ANALM_T15.2_eng.doc` — Selected as a data-dictionary but the .doc format is deferred to M4; M1 extracts PDF only.
-- `RDC Nonconfidential Documentation (4).zip/GSS_ESG_12-32/18/SDDS4505_GSS_ESG_C18_ANALI_T15.2_eng.doc` — Selected as a data-dictionary but the .doc format is deferred to M4; M1 extracts PDF only.
-- `RDC Nonconfidential Documentation (4).zip/GSS_ESG_12-32/18/SDDS4505_GSS_ESG_C18_ANALM_T15.2_eng.doc` — Selected as a data-dictionary but the .doc format is deferred to M4; M1 extracts PDF only.
-- `RDC Nonconfidential Documentation (4).zip/GSS_ESG_12-32/20/4501_GSS-ESG_C20-ANALM_T15.2_eng.doc` — Selected as a data-dictionary but the .doc format is deferred to M4; M1 extracts PDF only.
-- `RDC Nonconfidential Documentation (4).zip/GSS_ESG_12-32/23-NORTH/4504_GSS-ESG_C23-NORD_T15.2_D1_fra.doc` — Selected as a data-dictionary but the .doc format is deferred to M4; M1 extracts PDF only.
-- `RDC Nonconfidential Documentation (4).zip/GSS_ESG_12-32/23-NORTH/4504_GSS-ESG_C23-NORD_T15.2_D2_fra.doc` — Selected as a data-dictionary but the .doc format is deferred to M4; M1 extracts PDF only.
-- `RDC Nonconfidential Documentation (4).zip/GSS_ESG_12-32/23-NORTH/4504_GSS-ESG_C23-NORTH_T15.2_D1_eng.doc` — Selected as a data-dictionary but the .doc format is deferred to M4; M1 extracts PDF only.
-- `RDC Nonconfidential Documentation (4).zip/GSS_ESG_12-32/23-NORTH/4504_GSS-ESG_C23-NORTH_T15.2_D2_eng.doc` — Selected as a data-dictionary but the .doc format is deferred to M4; M1 extracts PDF only.
-- `RDC Nonconfidential Documentation (4).zip/GSS_ESG_12-32/26/ESG_26_f1_T15.2_v1.doc` — Selected as a data-dictionary but the .doc format is deferred to M4; M1 extracts PDF only.
-- `RDC Nonconfidential Documentation (4).zip/GSS_ESG_12-32/26/GSS_26_f1_T15.2_v1.doc` — Selected as a data-dictionary but the .doc format is deferred to M4; M1 extracts PDF only.
-- `RDC Nonconfidential Documentation (4).zip/HCPIP_PIPCMH/hcpip_f1_T15-2_v1.docx` — Selected as a data-dictionary but the .docx format is deferred to M4; M1 extracts PDF only.
-- `RDC Nonconfidential Documentation (4).zip/HCPIP_PIPCMH/pipcmh_f1_T15-2_v1.docx` — Selected as a data-dictionary but the .docx format is deferred to M4; M1 extracts PDF only.
-- `RDC Nonconfidential Documentation (4).zip/HES_ALL_2006/SDDS3881_HES_EME_C2006_T15.2_eng.doc` — Selected as a data-dictionary but the .doc format is deferred to M4; M1 extracts PDF only.
-- `RDC Nonconfidential Documentation (4).zip/HES_ALL_2006/SDDS3881_HES_EME_C2006_T15.2_fra.doc` — Selected as a data-dictionary but the .doc format is deferred to M4; M1 extracts PDF only.
-- `RDC Nonconfidential Documentation (4).zip/ICE_CIE_AllYears/ice_cie_f1_T15_2_v1.xlsx` — Selected as a data-dictionary but the .xlsx format is deferred to M4; M1 extracts PDF only.
-- `RDC Nonconfidential Documentation (4).zip/IMDB_BDIM/2015/imdb_bdim_2015_f3_t15.3_v1.xlsx` — Selected as a data-dictionary but the .xlsx format is deferred to M4; M1 extracts PDF only.
-- `RDC Nonconfidential Documentation (4).zip/IMDB_BDIM/2016/imdb_bdim_2016_ent_var_f3_T15_v1.xlsx` — Selected as a data-dictionary but the .xlsx format is deferred to M4; M1 extracts PDF only.
-- `RDC Nonconfidential Documentation (4).zip/IMDB_BDIM/2024/imdb_2023_f3_T15-2_v1.xlsx` — Selected as a data-dictionary but the .xlsx format is deferred to M4; M1 extracts PDF only.
-- `RDC Nonconfidential Documentation (4).zip/IPAI_IPI_AllYears/ipai_2023_f1_T15_3_v1.csv` — Selected as a data-dictionary but the .csv format is deferred to M4; M1 extracts PDF only.
-- `RDC Nonconfidential Documentation (4).zip/IPAI_IPI_AllYears/ipi_2023_f1_T15_3_v1.csv` — Selected as a data-dictionary but the .csv format is deferred to M4; M1 extracts PDF only.
-- `RDC Nonconfidential Documentation (4).zip/IPPI_IPPI_AllYears/ippi_2025_eng_f1_T15_2_v1.csv` — Selected as a data-dictionary but the .csv format is deferred to M4; M1 extracts PDF only.
-
-_Capped: showing 100 of 289 info notes._

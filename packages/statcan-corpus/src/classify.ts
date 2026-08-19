@@ -496,9 +496,19 @@ function tokenPresent(name: string, token: string): boolean {
  *    `ACS_EEA` pair and only the tag distinguishes it.
  * 2. **The EN-vs-FR acronym** (D4's highest-confidence pairing signal): a file named `ESCC_*` in
  *    `CCHS_ESCC` is French, `CCHS_*` is English. Acronyms are matched on letter boundaries only,
- *    so `SHS2011` and `EDM2019` — the digits-run-on form used by hundreds of files — still count;
- *    and only acronyms of 3+ letters are trusted, since `AG`/`BC`/`SA` collide with ordinary
- *    tokens.
+ *    so `SHS2011` and `EDM2019` — the digits-run-on form used by hundreds of files — still count.
+ *
+ *    Two-letter acronyms are trusted too, and deliberately so. The guard here originally demanded
+ *    3+ letters on the theory that `AG`/`BC`/`SA` would collide with ordinary words — but
+ *    {@link tokenPresent} anchors on letter boundaries, so `AG` cannot match inside `agriculture`
+ *    and the collision it feared is unreachable. The cost of the guard was total: **every file in
+ *    `BC_CB_K12`, `ROE_RE`, `AG_SA_AllYears` and `HS_EH` came out `unknown`** — 91 files whose
+ *    language is written plainly in their names. Lowering it to 2 resolves 64 of them with no
+ *    observed error, corroborated by the prose in the same filenames
+ *    (`RE_…_code_de_semaines` → fr, `ROE_…_week_codes` → en; `AG_`/`SA_` and `HS_`/`EH_` split
+ *    cleanly). Linkage chains stay excluded regardless, because {@link acronymPair} already
+ *    refuses any group with a third acronym token — which is what keeps `CHS_T4_T1FF_…` and
+ *    `T1FF_pi_for_PSIS_…` out, and those are the genuinely dangerous two-character cases.
  * 3. **Vocabulary** (`Dictionnaire de données` vs `Data Dictionary`), which resolves the prose-y
  *    long tail that has neither a tag nor a usable acronym.
  *
@@ -525,7 +535,7 @@ function detectLang(stem: string, group: string): Lang {
   if (tagged.size === 1) return [...tagged][0]!;
 
   const pair = acronymPair(group);
-  if (pair !== undefined && pair.en.length >= 3 && pair.fr.length >= 3) {
+  if (pair !== undefined && pair.en.length >= 2 && pair.fr.length >= 2) {
     const hasEn = tokenPresent(stem, pair.en);
     const hasFr = tokenPresent(stem, pair.fr);
     if (hasEn !== hasFr) return hasEn ? 'en' : 'fr';
