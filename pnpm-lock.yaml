@@ -350,6 +350,28 @@ importers:
         specifier: ^3.2.6
         version: 3.2.6(@types/node@22.20.0)
 
+  packages/statcan-corpus:
+    dependencies:
+      '@mobilesurvey/ddi-xml':
+        specifier: workspace:*
+        version: link:../ddi-xml
+      '@mobilesurvey/instrument-schema':
+        specifier: workspace:*
+        version: link:../instrument-schema
+      pdfjs-dist:
+        specifier: ^6.1.200
+        version: 6.1.200
+    devDependencies:
+      '@types/node':
+        specifier: ^22.10.2
+        version: 22.20.0
+      typescript:
+        specifier: ^5.6.3
+        version: 5.9.3
+      vitest:
+        specifier: ^3.2.6
+        version: 3.2.6(@types/node@22.20.0)
+
   packages/validation-engine:
     dependencies:
       '@mobilesurvey/expression-engine':
