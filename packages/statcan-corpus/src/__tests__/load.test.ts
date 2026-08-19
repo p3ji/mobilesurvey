@@ -205,3 +205,25 @@ describe('factKey', () => {
     expect(factKey(yes)).not.toBe(factKey(oui));
   });
 });
+
+describe('limit', () => {
+  it('stops after N rows so a real table can be measured before a full load', async () => {
+    const fetchImpl = vi.fn(async () => new Response(null, { status: 201 }));
+    const file = jsonlFile(['A', 'B', 'C', 'D', 'E', 'F', 'G'].map(record));
+
+    const result = await loadCorpusJsonl(file, CREDS, {
+      batchSize: 2,
+      limit: 4,
+      fetchImpl: fetchImpl as unknown as typeof fetch,
+    });
+    expect(result.rows).toBe(4);
+  });
+
+  it('loads everything when no limit is given', async () => {
+    const fetchImpl = vi.fn(async () => new Response(null, { status: 201 }));
+    const result = await loadCorpusJsonl(jsonlFile(['A', 'B', 'C'].map(record)), CREDS, {
+      fetchImpl: fetchImpl as unknown as typeof fetch,
+    });
+    expect(result.rows).toBe(3);
+  });
+});

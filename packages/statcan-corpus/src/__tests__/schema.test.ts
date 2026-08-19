@@ -71,7 +71,7 @@ describe('sql/schema.sql', () => {
     // Asserted as a shape rather than a total so adding an index is not a test edit, but losing
     // the table, a function, or a GRANT is.
     expect(kinds.CreateStmt).toBe(1);
-    expect(kinds.CreateFunctionStmt).toBe(4);
+    expect(kinds.CreateFunctionStmt).toBe(5);
     expect(kinds.CreateExtensionStmt).toBe(1);
     expect(kinds.AlterTableStmt).toBe(1);
     expect(kinds.GrantStmt).toBeGreaterThanOrEqual(4);
@@ -84,7 +84,7 @@ describe('sql/schema.sql', () => {
     const bodies = [
       ...schema.matchAll(/create or replace function\s+(\w+)[\s\S]*?as \$\$([\s\S]*?)\$\$;/g),
     ];
-    expect(bodies.length).toBe(4);
+    expect(bodies.length).toBe(5);
 
     for (const [, name, body] of bodies) {
       const result = pg.parse(body!);

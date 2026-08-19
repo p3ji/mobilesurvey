@@ -269,3 +269,36 @@ as $$
 $$;
 
 grant execute on function corpus_surveys() to anon;
+
+-- ---------------------------------------------------------------------------------------------
+-- corpus_size — the real footprint, readable over the API
+--
+-- Exists so the D5 size question can be settled by measurement instead of arithmetic, and can be
+-- re-checked after every load without another trip to the SQL editor. `pg_total_relation_size`
+-- counts the table, its TOAST storage and every index — which is the number that matters, since
+-- the indexes are roughly a tenth of it and the projections that ignored them were wrong.
+-- ---------------------------------------------------------------------------------------------
+create or replace function corpus_size()
+returns table (
+  rows_loaded     bigint,
+  total_bytes     bigint,
+  table_bytes     bigint,
+  index_bytes     bigint,
+  bytes_per_row   numeric,
+  pretty_total    text
+)
+language sql
+stable
+as $$
+  select (select count(*) from corpus_variable)                        as rows_loaded,
+         pg_total_relation_size('corpus_variable')                     as total_bytes,
+         pg_table_size('corpus_variable')                              as table_bytes,
+         pg_indexes_size('corpus_variable')                            as index_bytes,
+         case when (select count(*) from corpus_variable) = 0 then 0
+              else round(pg_total_relation_size('corpus_variable')::numeric
+                         / (select count(*) from corpus_variable), 1)
+         end                                                           as bytes_per_row,
+         pg_size_pretty(pg_total_relation_size('corpus_variable'))     as pretty_total;
+$$;
+
+grant execute on function corpus_size() to anon;

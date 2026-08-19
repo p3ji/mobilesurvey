@@ -100,6 +100,8 @@ Options:
   --staging DIR    Keep staged payloads here instead of a temp directory that is deleted after.
   --records PATH   load: records to upsert. Default: <out>/corpus.jsonl
   --batch N        load: rows per request. Default: 500
+  --limit N        load: stop after N rows. For measuring a real table before committing to a
+                   full load; the rest upserts on top afterwards.
   --dry-run        load: project every record and report size, but send nothing.
   --dedupe         load: keep one row per distinct fact instead of one per document that
                    repeated it. The delivery ships some dictionaries more than once.
@@ -159,6 +161,7 @@ interface CliArgs {
   parseReportPath: string;
   records?: string;
   batch?: number;
+  limit?: number;
   dryRun: boolean;
   dedupe: boolean;
   writeReport: boolean;
@@ -267,6 +270,10 @@ function parseArgs(argv: readonly string[]): CliArgs {
         break;
       case '--batch':
         args.batch = parseCount('--batch', next);
+        i += 1;
+        break;
+      case '--limit':
+        args.limit = parseCount('--limit', next);
         i += 1;
         break;
       case '--dry-run':
@@ -1232,6 +1239,7 @@ async function loadCommand(args: CliArgs): Promise<void> {
   const started = Date.now();
   const result = await loadCorpusJsonl(recordsPath, creds, {
     ...(args.batch === undefined ? {} : { batchSize: args.batch }),
+    ...(args.limit === undefined ? {} : { limit: args.limit }),
     dedupe: args.dedupe,
     onProgress: (written) => {
       const perSec = (written / Math.max(1, (Date.now() - started) / 1000)).toFixed(0);
