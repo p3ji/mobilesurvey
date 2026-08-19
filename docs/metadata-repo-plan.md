@@ -560,3 +560,73 @@ downstream decision depends on it yet, but it should be tightened before it beco
 delivery* — `Enqu+¬te nationale aupr+¿s des m+¬nages`. The zip entries are correctly UTF-8 flagged
 and correctly decoded; StatCan's own export mangled the names before zipping. They are unresolvable
 by filename and are among the 362 unknowns.
+
+---
+
+## The dictionary field schema (measured, 2026-08-19)
+
+The question this answers: *what is the full set of fields a dictionary can give us, and what is
+the mandatory minimum?* It had been answered by inspection — `CorpusVariable`'s fields came from
+eyeballing four layouts — which is backwards. These numbers come from harvesting every field label
+printed across a 150-document sample (**38,413 variable blocks**) and measuring, per field, how
+often it is *populated* rather than merely printed.
+
+The distinction matters: the dominant layout prints a **fixed template**, so a label like
+`Question Text:` appears on ~100% of blocks and is *empty* on half of them. Label presence says
+what the format allows; fill rate says what we actually get.
+
+### The canonical field set
+
+| Field | labelled (37,326 rec) | collection (1,044) | field (29) | Verdict |
+|---|---:|---:|---:|---|
+| `name` | 100% | 100% | 100% | **mandatory** |
+| `position` | 99.9% | 100% | 100% | **mandatory** |
+| `length` | 100% | 100% | 100% | **mandatory** |
+| *meaning* (`concept` / `questionText`) | 99.4% | 100% | 100% | **mandatory** |
+| `universe` | 88.0% | 84.1% | 100% | expected |
+| `note` | 54.4% | 24.0% | 100% | optional |
+| `questionText` (as distinct from concept) | 48.9% | 100% | 100% | optional |
+| `codes[]` | 33.9% | 98.6% | 0% | conditional |
+| `collectionName` | 0% | 2.4% | 0% | rare |
+
+**The mandatory minimum is four fields: `name`, `position`, `length`, and one meaning-bearing
+field.** Every record in every layout has them, which makes them the right basis for identity,
+for the M3 concept clustering, and for the minimum a search result must be able to show.
+
+**The fourth one is the subtle part.** Its *name* differs by layout — the labelled family calls it
+`Concept` (a short subject label), the collection and field families give prose under
+`DESCRIPTION` or unlabelled. They are the same slot filled from different vocabularies, which is
+exactly why `concept` reads 0% in the collection layout and `questionText` reads 0% in neither:
+the canonical schema needs **one meaning slot with a recorded provenance label**, not two fields
+that each look half-empty. Today the parser writes them to different properties, so a naive query
+for "the description" misses one layout entirely. That is a schema fix for M3, not a parse fix.
+
+**`questionText` at 48.9% is correct, not a failure.** The labelled template prints
+`Question Text:` for every variable including derived and administrative ones, which have no
+question — an ID variable was never asked. An empty value there is the document being accurate.
+
+### Fields the corpus has that our schema does not
+
+Harvesting turned up labels with no home in `CorpusVariable`: `Source` (99.5% of labelled blocks —
+which survey/file the variable was taken from, distinct from our `source` provenance block),
+`Question Name` (99.5% — the questionnaire-side item name, which is what `collectionName` was meant
+to hold and why that field reads ~0%), `Based on` (derived-variable inputs), `Valid values`,
+`Blanks allowed`, and `Security level`. **`Question Name` and `Source` should be added**: the first
+is the join key between a dictionary variable and the questionnaire that asked it — precisely the
+link that makes the longitudinal question bank work — and it is being thrown away today.
+
+### The open defect this exposed
+
+Separating "the document prints no category table" from "we failed to read one":
+
+| | blocks | |
+|---|---:|---|
+| print an answer-category table | 14,224 | 94.9% |
+| print none (numeric, identifier, date) | 760 | 5.1% |
+| **had a table, we extracted nothing** | **11,008** | **77.4% of tabled blocks** |
+
+So the 33.9% code-list fill rate is **not** a ceiling imposed by the documents — it is our parser
+reading roughly a quarter of the code tables that are there. The code lists we do extract are
+clean (100% carry labels, 87% carry a frequency), so this is a recall problem, not a correctness
+one, and it is the single largest open item in M2. The misses cluster in the French labelled
+documents, whose category rows the single-space reader is not matching.
