@@ -36,6 +36,20 @@
  */
 export type DocKind =
   | 'data-dictionary'
+  /**
+   * Derived-variable *specifications* (`T15.4`): the derivation logic for computed variables —
+   * "Based on: CS_20A, CS_20B…" plus the rule — not variable definitions with code lists. Read
+   * from the documents rather than assumed: they are titled "Derived Variables (DV)
+   * Specifications" and contain no answer-category tables, so feeding them to a dictionary parser
+   * yields nothing and mislabels 82 files as a source they are not.
+   */
+  | 'derived-spec'
+  /**
+   * A flat variable inventory (`T15.3`): number, name, description, format, source — one row per
+   * variable, no answer categories. Useful for name/description search, but it is not a dictionary
+   * and cannot supply a code list.
+   */
+  | 'variable-list'
   | 'record-layout'
   | 'alphabetic-index'
   | 'topical-index'

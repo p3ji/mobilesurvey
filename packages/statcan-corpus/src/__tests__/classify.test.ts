@@ -347,7 +347,10 @@ const FILE_CASES: ReadonlyArray<readonly [string, Expectation]> = [
     'CCHS_ESCC/CCHS_ESCC_2001_C1.1/CCHS_C1_1_T15.4_f1_v1.pdf',
     {
       tcode: 'T15.4',
-      docKind: 'data-dictionary',
+      // T15.4 is a *derived-variable specification*, not a dictionary — read from the documents
+      // themselves ("Derived Variables (DV) Specifications", derivation logic, no answer-category
+      // tables). Filing 82 of them as dictionaries pointed the parsers at a source they are not.
+      docKind: 'derived-spec',
       surveyAcronym: 'CCHS',
       cycle: 'C1.1',
       year: 2001,
@@ -402,7 +405,9 @@ const FILE_CASES: ReadonlyArray<readonly [string, Expectation]> = [
   // …but a code in the document slot still outranks the filename wording.
   [
     'IMDB_BDIM/2015/imdb_2015_appendix_f3_t15.3_v1.pdf',
-    { tcode: 'T15.3', docKind: 'data-dictionary', year: 2015 },
+    // T15.3 is a flat variable inventory (number, name, description, format, source) with no
+    // answer categories — searchable, but it cannot supply a code list.
+    { tcode: 'T15.3', docKind: 'variable-list', year: 2015 },
   ],
   ['CEN_REC/CEN_REC_2011/CEN_NHS_2011_T4_v1.docx', { tcode: 'T4', docKind: 'reference', year: 2011 }],
 

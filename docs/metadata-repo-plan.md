@@ -330,9 +330,22 @@ no endorsement is stated or implied; DEPLOYMENT.md documents the seeding path en
 
 1. ~~**Licensing.**~~ **ANSWERED (2026-08-18): Statistics Canada Open Licence.** Obligations
    folded into D8 and M5; no longer blocking.
-2. **Audience.** Is this a personal/demo capability, or aimed at the target organization? If the
-   latter, they may already have a metadata repository this should complement rather than
-   duplicate — worth asking your standards contact, who would know.
+2. ~~**Audience.**~~ **ANSWERED (2026-08-19): external, and no internal equivalent exists.** Two
+   consequences, both load-bearing:
+   - **There is nothing to complement or defer to.** No internal concept vocabulary to align our
+     clustering against, no existing variable registry whose ids we should reuse. Our concept
+     grouping (D3) is therefore the contribution rather than a lossy mirror of someone's
+     authoritative list — which raises its value and also means *we* own the judgement calls, so
+     the occurrence/concept split that lets a reader always fall back to "what the document
+     literally said" matters more, not less.
+   - **The licence obligations become user-visible product requirements, not paperwork.** An
+     external audience sees the attribution, the no-endorsement statement, and the
+     identify-as-adaptation notice; they are UI, and they are how the tool stays honest about
+     being a re-parse of StatCan's documents rather than an official StatCan service. M5 is a
+     real milestone, not a formality.
+   - Design consequence for M3/M4: optimize for a reader who does **not** already know StatCan's
+     internal naming. Search must work from plain concepts ("smoking", "housing tenure"), not
+     from variable mnemonics, and every result must carry enough provenance to be citable.
 3. **Scope of ingest.** Dictionaries only (the ~1,200 files carrying ~95% of the structured value),
    or the full 3,006 including user guides and methodology papers as full-text search?
    Recommendation: dictionaries for M1–M3, decide on the rest with real usage data.

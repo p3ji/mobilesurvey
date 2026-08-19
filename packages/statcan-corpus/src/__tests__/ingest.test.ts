@@ -446,7 +446,10 @@ describe.skipIf(!existsSync(CORPUS))('real corpus delivery (on-demand, 2.4 GB, n
         file.tcode !== undefined &&
         (file.tcode === 'T15' || file.tcode.startsWith('T15.')),
     );
-    expect(extractable.length).toBe(1342);
+    // Was 1,342 before T15.3 (variable-list) and T15.4 (derived-spec) were reclassified out of
+    // 'data-dictionary'; both are real document classes that carry no answer categories. The drop
+    // is 92 rather than the full 109 of those two codes, because this filter also requires a PDF.
+    expect(extractable.length).toBe(1250);
   });
 
   it('mints a distinct stable id for every one of the 3,006 files', () => {

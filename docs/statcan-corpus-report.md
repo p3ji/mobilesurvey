@@ -23,13 +23,15 @@ file, so any diff here is a real change in coverage (D9).
 
 | Kind | Files | Share |
 |---|---:|---:|
-| `data-dictionary` | 1,919 | 63.8% |
+| `data-dictionary` | 1,810 | 60.2% |
 | `reference` | 358 | 11.9% |
 | `user-guide` | 331 | 11.0% |
 | `record-layout` | 104 | 3.5% |
 | `alphabetic-index` | 102 | 3.4% |
 | `topical-index` | 96 | 3.2% |
 | `unknown` | 96 | 3.2% |
+| `derived-spec` | 82 | 2.7% |
+| `variable-list` | 27 | 0.9% |
 
 ## By document-type code
 
