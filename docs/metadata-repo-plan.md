@@ -1,6 +1,8 @@
 # StatCan metadata repository — corpus ingest, longitudinal question bank, search at scale
 
-*Design document. Status: **M1 BUILT AND RUN (2026-08-18)**; M2–M5 planned. Architecture agreed
+*Design document. Status: **M1–M2 BUILT AND RUN; M3/M4 MVP shipped (2026-08-19)** — the whole
+chain runs, from the 2.4 GB archive to ranked search in the hub. Full-run numbers, the fired D5
+size trigger and what is still unverified are in **M2/M3 results** at the end. Architecture agreed
 from a measured survey of the corpus (§1 numbers are counted, not estimated, except where marked).
 `packages/statcan-corpus` classifies all 3,006 files in 4.9 s and extracts row-reconstructed text
 with zero failures — real results, corrections, and the settled D5 size verdict are in
@@ -630,3 +632,153 @@ reading roughly a quarter of the code tables that are there. The code lists we d
 clean (100% carry labels, 87% carry a frequency), so this is a recall problem, not a correctness
 one, and it is the single largest open item in M2. The misses cluster in the French labelled
 documents, whose category rows the single-space reader is not matching.
+
+---
+
+## M2/M3 results — the full corpus parsed, and a searchable MVP end to end (2026-08-19)
+
+The pipeline now runs the whole distance: **archive → classify → extract → parse → project →
+Supabase → ranked search in the hub**. Committed artifact: `docs/statcan-corpus-parse-report.md`,
+from `pnpm --filter @mobilesurvey/statcan-corpus corpus:parse -- --kinds data-dictionary
+--tcodes all`.
+
+### The full parse — 1,368 documents, 24 minutes
+
+| | |
+|---|---:|
+| Dictionary PDFs parsed | **1,368** (of 1,810 dictionary files; the rest are `.doc`/`.docx`, still M4) |
+| Produced ≥1 variable | **1,157 (84.6%)** |
+| **Variable occurrences** | **436,962** |
+| Response-category entries | **850,912** |
+| `corpus.jsonl` | **284.3 MB**, mean 682 B/record |
+| Wall clock | 24:00, peak RSS ~1.1 GB |
+
+**The count came in at 2.4× the M1 projection — 437k, not 185k.** M1 extrapolated from a
+120-document hash sample parsed with throwaway parsers at 96.7 variables/document; the real
+parsers over the real selection average 377.7 per productive document. Two causes, and the
+second one is the interesting one: the prototype parsers were reading a fraction of each
+document, and the delivery ships some dictionaries more than once, so a straight
+occurrences-per-document extrapolation was measuring the wrong population. The M1 figure was not
+a bad estimate of what it measured; it measured something narrower than it claimed.
+
+**The `--tcodes` default was a trap worth recording.** `corpus:parse` inherits `--tcodes T15`
+from the inventory command, and `matchesTcodeFamily` returns false for a file with no T-code at
+all — so the default silently excludes every dictionary the M1 keyword classifier recovered,
+which is roughly a third of them. The full run must pass `--tcodes all` and let `docKind` do the
+selecting. This is now stated in DEPLOYMENT.md §9e rather than left to be rediscovered.
+
+### Layout, and the one real coverage gap
+
+| Layout | Documents | Share |
+|---|---:|---:|
+| `labelled` | 1,078 | 78.8% |
+| `collection` | 58 | 4.2% |
+| `field` | 22 | 1.6% |
+| **no recognized layout** | **210** | **15.4%** |
+
+Content detection held up: three layouts cover 84.6% of documents, and the 210 failures are
+itemized per file in `out/parse-notes.jsonl` rather than absorbed (D7). They are not scattered —
+they cluster by survey group, `BC_CB_K12` alone accounting for dozens, which is the signature of
+**a fourth layout** rather than of 210 irregular documents. That makes it a bounded, tractable
+piece of work rather than a long tail, and it is the largest single item left in M2.
+
+**The `≥95% of T15.2 + T15.6 files parse with zero warnings` bar is NOT met.** 84.6% produce
+records at all. Stating it plainly because the acceptance criterion was written before the corpus
+was understood and the honest position is that it was optimistic, not that it was nearly reached.
+
+### Field completion at full scale
+
+| Field | Populated | Share |
+|---|---:|---:|
+| `position` / `length` | 431,548 / 432,921 | 98.8% / 99.1% |
+| `concept` | 384,943 | 88.1% |
+| `universe` | 357,365 | 81.8% |
+| `questionText` | 249,969 | 57.2% |
+| `note` | 189,249 | 43.3% |
+| `codes` | 171,143 | 39.2% |
+
+Code-list recall improved against the 150-document sample's 33.9%, to 39.2% — and splitting by
+language shows why that number is worth splitting: **en 42.9%, fr 37.3%**, against
+**`unknown` 1.7%**. That last figure is the finding. Documents whose language could not be
+determined from the path are also the documents whose category rows are not being read, which
+says the two problems share a cause — an unrecognized document family — rather than being a
+language-stemming issue as previously assumed. 13,211 occurrences sit in that bucket.
+
+### D5 — RE-MEASURED, and the trigger has fired
+
+M1 projected ~193–209 MB and set an explicit trigger: **if a real loaded table would exceed
+~300 MB, move the bulky payload out.** Measured against all 436,962 real records:
+
+| | all occurrences | deduplicated | deduplicated, `codes` moved to Storage |
+|---|---:|---:|---:|
+| Table (JSON × 1.25 for tuple overhead) | 355 MB | 299 MB | 239 MB |
+| `tsvector` GIN | 36 MB | 30 MB | 30 MB |
+| trigram + btree | 8 MB | 7 MB | 7 MB |
+| **Total** | **~399 MB** | **~337 MB** | **~283 MB** |
+
+**Every column of that table is over the 300 MB trigger except the last, and the 500 MB free tier
+is shared with every table the app already has.** So the M1 verdict ("fits, with the ceiling in
+sight") is superseded: at 437k occurrences it does not comfortably fit, and the decision deferred
+in M1 is now due. Three options, and they compose:
+
+1. **A separate Supabase project for the corpus.** Implemented and the recommended default:
+   `VITE_CORPUS_URL` / `VITE_CORPUS_ANON_KEY` override the app's project and fall back to it when
+   unset. The corpus is read-only reference data with a completely different lifecycle from
+   survey responses, and giving it its own 500 MB is the cheapest fix that changes no data model.
+2. **`corpus:load --dedupe`.** Implemented, off by default. Saves **15.7%** — 436,962 occurrences
+   collapse to 368,297 distinct facts. Note this is *lower* than the 28–35% measured on the first
+   128k records: the repeated deliveries cluster in the first bundle, so the early figure was a
+   sampling artifact. Re-measuring on the full set rather than trusting the extrapolation is the
+   only reason the number in this table is right.
+3. **Move `codes` to Storage** — 51 MB of the 284 MB. The largest single win and the most work,
+   which is why it stays designed-not-built until 1 and 2 are exhausted.
+
+The measurement that would settle this exactly is still `pg_total_relation_size` on a real loaded
+table; the arithmetic above is honest about being arithmetic.
+
+### What was built to make it searchable
+
+- **`project.ts`** — `CorpusVariable` → `CorpusRow`, the flat row Postgres stores. Field names
+  *are* the column names, so the loader needs no mapping layer to drift. `search_text` folds in
+  the response-category labels, which is what makes plain-language search work at all: "never
+  married" appears nowhere else in a record.
+- **`sql/schema.sql`** — table, language-aware generated `tsvector` (an `IMMUTABLE` wrapper, since
+  Postgres will not take a non-constant regconfig in a generated column), GIN + trigram + facet
+  indexes, RLS with `select` to `anon`, and three RPCs: `corpus_search` (ranked, filtered, paged,
+  with an exact/prefix rank boost so pasting a mnemonic behaves like a lookup), `corpus_stats`,
+  `corpus_surveys`.
+- **`load.ts` / `corpus:load`** — streaming upsert on `record_id` over PostgREST, service-role
+  credential read from the environment and refused if it looks publishable.
+- **`metadata-registry/corpus.ts`** — browser-safe read path. `SupabaseCorpusSource` calls the
+  RPCs with `fetch` (the package still has zero external dependencies) and projects rows onto the
+  existing `RegistryEntry`, so D6 holds: the designer's Library panel can consume these unchanged.
+  Licence obligations are attached at projection time, where a UI cannot forget them.
+- **`apps/hub/CorpusSearch.tsx`** — the Searcher's second scope. Debounced query, language /
+  survey / has-categories facets, paging, per-card citation, and the attribution notice above the
+  results.
+
+### Verified, and how
+
+The SQL is applied by hand in the Supabase editor, so nothing in the repo executes it — which
+means a syntax error would sit in a committed file until someone pasted it into a browser.
+`schema.test.ts` closes that with libpg_query (the real Postgres parser) compiled to wasm, over
+the file *and* over each dollar-quoted function body, which the statement-level parse skips.
+
+It earned its place on the first run: `returns table (… position text, length text …)` is a
+syntax error, because `position` and `length` are `col_name_keyword`s — legal as table column
+names, rejected as *function parameter* names, which is what a RETURNS TABLE entry is. Quoting
+them fixes it and keeps the JSON keys identical to the column names.
+
+The read path was verified end to end against 60,000 real parsed records served through a
+stand-in that speaks the same RPC contract, because the Supabase host is unreachable from the
+build environment. Searching `smoking` returned 522 results and put `CIH_010` — *"What is the
+single most important change you have made?"* — at the top across **CCHS 2015, 2016, 2017, 2018,
+2019 and 2020**, each with its own rounded frequencies and its own page citation. That is the
+longitudinal question bank from §2, working, and it matched on a *category label* rather than on
+the concept, which is the case `search_text` was designed for.
+
+**What that does not verify: the SQL itself.** It parses, and its contract is pinned by tests,
+but no statement in `schema.sql` has been executed against a Postgres. There is no database
+available here — no Docker, no local server, and the project host does not resolve from this
+environment (the hub's pre-existing `surveys` endpoint fails identically). Applying §9e is the
+step that proves it.

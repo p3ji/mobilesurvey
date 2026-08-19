@@ -433,6 +433,69 @@ Housekeeping notes (accepted for the demo): a retake uploads a new object and le
 superseded one in the bucket; there is no server-side scanning of uploads (flagged in the
 sensor-module plan's non-goals alongside the RLS hardening plan).
 
+### 9e. StatCan metadata corpus (required before using the Searcher's "Statistics Canada" tab)
+
+The Searcher's second tab queries ~10^5 variable occurrences extracted from the Statistics Canada
+RDC documentation corpus (`docs/metadata-repo-plan.md`). Without these objects the tab renders an
+error naming this section; the "Your surveys" tab is unaffected and keeps working offline.
+
+Three steps: apply the schema, parse the corpus, load the records.
+
+**1. Apply the schema** — Dashboard → SQL Editor → New query → paste
+`packages/statcan-corpus/sql/schema.sql` → Run. It is idempotent, so re-running after a change is
+safe. It creates:
+
+- `corpus_variable` — one row per variable occurrence, with a language-aware generated `tsvector`,
+  a GIN index for ranked search, and a trigram index on `name` for mnemonic lookup.
+- `corpus_search(q, …)` — ranked search, called over PostgREST RPC. A function rather than a
+  filter because ranking is the point: PostgREST's `fts` operator can say a row matched but not
+  how well, and an unranked list over 10^5 rows is not a search.
+- `corpus_stats()` / `corpus_surveys()` — the counts and the survey facet the UI shows before
+  anyone has typed anything.
+- RLS with a `select`-only policy for `anon`, plus the explicit `grant select` and
+  `grant execute` that new objects in this project do **not** inherit (see the §9b note).
+
+**2. Parse the corpus** — needs the 2.4 GB delivery in `docs/metadatarepo/` (never committed):
+
+```bash
+pnpm --filter @mobilesurvey/statcan-corpus corpus:parse -- --kinds data-dictionary --tcodes all
+```
+
+`--tcodes all` matters: the default `T15` family filter drops every dictionary whose filename
+carries no T-code, which is roughly a third of them. This writes the gitignored
+`packages/statcan-corpus/out/corpus.jsonl` plus the committed
+`docs/statcan-corpus-parse-report.md`.
+
+**3. Load** — the loader writes, so it needs the **service-role** key, which bypasses RLS. Set it
+for this command only. Never put it in a `VITE_*` variable, a `.env` that ships, or CI:
+
+```bash
+SUPABASE_URL=https://<project>.supabase.co SUPABASE_SERVICE_ROLE_KEY=<service-role-key> pnpm --filter @mobilesurvey/statcan-corpus corpus:load
+```
+
+Add `-- --dry-run` first to project every record and report the byte size without sending
+anything. Loading is an upsert on `record_id`, which is a UUIDv5 of (survey, file, variable name,
+position), so a re-run after a parser improvement updates rows in place rather than duplicating
+them.
+
+**Size.** Measure before assuming it fits — the free tier caps at 500 MB shared with every other
+table in the project, and the corpus is the only thing here big enough to reach it:
+
+```sql
+select pg_size_pretty(pg_total_relation_size('corpus_variable'));
+```
+
+If that passes ~300 MB, move the bulky payload (the `codes` column) to Storage and keep only the
+searchable projection in Postgres — the split the plan reserves for exactly this trigger.
+`corpus:load -- --dedupe` is the cheaper first move: the delivery ships some dictionaries more
+than once, and it keeps one row per distinct fact instead of one per document that repeated it.
+
+**Licence.** The data is published under the Statistics Canada Open Licence, which requires
+attribution, forbids implying endorsement, and requires adaptations to be identifiable as such.
+The UI satisfies all three (a notice above the results, a per-record citation on every card), and
+`CORPUS_ATTRIBUTION` in `packages/metadata-registry/src/corpus.ts` is the single string that
+carries the obligations — do not paraphrase it per surface.
+
 ---
 
 ## Security notes

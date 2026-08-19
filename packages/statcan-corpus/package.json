@@ -13,7 +13,9 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "corpus:inventory": "tsx src/cli.ts inventory",
-    "corpus:extract": "tsx src/cli.ts inventory --extract"
+    "corpus:extract": "tsx src/cli.ts inventory --extract",
+    "corpus:parse": "tsx src/cli.ts parse",
+    "corpus:load": "tsx src/cli.ts load"
   },
   "dependencies": {
     "@mobilesurvey/ddi-xml": "workspace:*",
@@ -21,8 +23,9 @@
     "pdfjs-dist": "^6.1.200"
   },
   "devDependencies": {
+    "@types/node": "^22.10.2",
+    "pg-query-emscripten": "^5.1.0",
     "typescript": "^5.6.3",
-    "vitest": "^3.2.6",
-    "@types/node": "^22.10.2"
+    "vitest": "^3.2.6"
   }
 }

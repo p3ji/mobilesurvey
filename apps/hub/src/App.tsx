@@ -42,7 +42,9 @@ import {
   type SearchIndex,
   type SearchHit,
 } from '@mobilesurvey/metadata-registry';
+import { CorpusSearch } from './CorpusSearch.js';
 import {
+  corpusSource,
   createSurvey,
   deleteSurvey,
   DESIGNER_URL,
@@ -1124,7 +1126,20 @@ function HitCard({ hit, surveyTitles }: { hit: SearchHit; surveyTitles: Record<s
   );
 }
 
+/**
+ * Which body of metadata the Searcher is looking at.
+ *
+ * Two scopes rather than one merged result list, because the two are not comparable: a bundled
+ * instrument's question is something this project authored and can be edited, while a corpus
+ * occurrence is a citation from a published StatCan document. Interleaving them by score would
+ * force one relevance scale onto two different kinds of claim, and would put the licence notice
+ * somewhere it does not always apply.
+ */
+type SearchScope = 'local' | 'corpus';
+
 function SearcherView({ onBack }: { onBack: () => void }) {
+  const corpus = useMemo(() => corpusSource(), []);
+  const [scope, setScope] = useState<SearchScope>('local');
   const [query, setQuery] = useState('');
   const [typeFilter, setTypeFilter] = useState<ComponentType | 'all'>('all');
   const [index, setIndex] = useState<SearchIndex | null>(null);
@@ -1190,7 +1205,7 @@ function SearcherView({ onBack }: { onBack: () => void }) {
           <span className="hub__sub">Find and reuse questions across surveys</span>
         </div>
         <div className="hub__header-right">
-          {!loading && (
+          {!loading && scope === 'local' && (
             <span className="hub__conn hub__conn--on">
               ● {surveyCount} survey{surveyCount === 1 ? '' : 's'} indexed
             </span>
@@ -1206,6 +1221,35 @@ function SearcherView({ onBack }: { onBack: () => void }) {
       </header>
 
       <main className="hub__main sr-main">
+        {/* Scope: this project's metadata, or the StatCan corpus. Hidden entirely when no corpus
+            is configured, so an offline deployment shows no tab it cannot fulfil. */}
+        {corpus !== null && (
+          <div className="sr-scopes" role="tablist" aria-label="Metadata source">
+            <button
+              type="button"
+              role="tab"
+              aria-selected={scope === 'local'}
+              className={`sr-scope ${scope === 'local' ? 'sr-scope--active' : ''}`}
+              onClick={() => setScope('local')}
+            >
+              Your surveys
+            </button>
+            <button
+              type="button"
+              role="tab"
+              aria-selected={scope === 'corpus'}
+              className={`sr-scope ${scope === 'corpus' ? 'sr-scope--active' : ''}`}
+              onClick={() => setScope('corpus')}
+            >
+              Statistics Canada
+            </button>
+          </div>
+        )}
+
+        {scope === 'corpus' && corpus !== null ? (
+          <CorpusSearch source={corpus} />
+        ) : (
+        <>
         {/* Search bar */}
         <div className="sr-search">
           <input
@@ -1256,6 +1300,8 @@ function SearcherView({ onBack }: { onBack: () => void }) {
               ))}
             </div>
           </>
+        )}
+        </>
         )}
       </main>
     </div>

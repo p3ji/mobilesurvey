@@ -65,6 +65,13 @@ export interface RegistryEntry {
   ddi: DdiMeta;
   registry: RegistryMeta;
   eq?: EqMeta;
+  /**
+   * Provenance for entries lifted from the StatCan documentation corpus. Additive and optional,
+   * the same pattern as `eq` — nothing about the bundled-instrument path changes because this
+   * exists, and a consumer that ignores it still gets a valid entry (docs/metadata-repo-plan.md
+   * D6). Typed in `./corpus.js` because that is where the whole corpus read path lives.
+   */
+  corpus?: import('./corpus.js').CorpusMeta;
 }
 
 /** A scored search result. */

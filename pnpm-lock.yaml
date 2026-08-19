@@ -365,6 +365,9 @@ importers:
       '@types/node':
         specifier: ^22.10.2
         version: 22.20.0
+      pg-query-emscripten:
+        specifier: ^5.1.0
+        version: 5.1.0
       typescript:
         specifier: ^5.6.3
         version: 5.9.3
@@ -1773,6 +1776,9 @@ packages:
   pdfjs-dist@6.1.200:
     resolution: {integrity: sha512-o8MolyzirkkLrcdsae/HEOiIcXWI7DS5zGpvqW8xTC2YUsW30rltFw2bDGvw/fskUdEMrQm2br68jzDS5BH2vw==}
     engines: {node: '>=22.13.0 || >=24'}
+
+  pg-query-emscripten@5.1.0:
+    resolution: {integrity: sha512-H1ZWOzLRddmHuE4GZqFjjo55hA9zMiePz/WDDGANA/EnvILCJps9pcRucyGd+MFvapeYOy6TWSYz6DbtBOaxRQ==}
 
   picocolors@1.1.1:
     resolution: {integrity: sha512-xceH2snhtb5M9liqDsmEw56le376mTZkEX/jEb/RxNFyegNul7eNslCXP9FDj/Lcu0X8KEyMceP2ntpaHrDEVA==}
@@ -3294,6 +3300,8 @@ snapshots:
   pdfjs-dist@6.1.200:
     optionalDependencies:
       '@napi-rs/canvas': 1.0.2
+
+  pg-query-emscripten@5.1.0: {}
 
   picocolors@1.1.1: {}
 

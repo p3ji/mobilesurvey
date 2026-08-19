@@ -25,12 +25,30 @@
  * stderr (so `stdout` stays free for piping), redraws in place on a TTY, and prints periodic full
  * lines when it is not one — a silent long run is indistinguishable from a hung one.
  */
-import { appendFileSync, existsSync, mkdirSync, readdirSync, rmSync, writeFileSync } from 'node:fs';
+import {
+  appendFileSync,
+  createReadStream,
+  existsSync,
+  mkdirSync,
+  readdirSync,
+  rmSync,
+  writeFileSync,
+} from 'node:fs';
+import { createInterface } from 'node:readline';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { DEFAULT_SAMPLE_SEED, documentRecordId, ingestCorpus, type IngestPlan } from './ingest.js';
+import {
+  DEFAULT_SAMPLE_SEED,
+  documentRecordId,
+  ingestCorpus,
+  variableRecordId,
+  type IngestPlan,
+} from './ingest.js';
+import { detectLayout, parseDictionary } from './parse.js';
+import { toCorpusRow } from './project.js';
+import { credentialsFromEnv, loadCorpusJsonl } from './load.js';
 import { renderInventoryJsonl, renderReportMarkdown } from './report.js';
-import type { DocKind, ExtractedDoc } from './types.js';
+import type { CorpusVariable, DocKind, ExtractedDoc } from './types.js';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const PACKAGE_DIR = path.resolve(HERE, '..');
@@ -38,6 +56,7 @@ const REPO_ROOT = path.resolve(PACKAGE_DIR, '..', '..');
 const CORPUS_DIR = path.join(REPO_ROOT, 'docs', 'metadatarepo');
 const DEFAULT_OUT_DIR = path.join(PACKAGE_DIR, 'out');
 const DEFAULT_REPORT = path.join(REPO_ROOT, 'docs', 'statcan-corpus-report.md');
+const DEFAULT_PARSE_REPORT = path.join(REPO_ROOT, 'docs', 'statcan-corpus-parse-report.md');
 
 const DOC_KINDS: readonly DocKind[] = [
   'data-dictionary',
@@ -53,7 +72,9 @@ const USAGE = `
 @mobilesurvey/statcan-corpus — StatCan RDC documentation corpus ETL
 
 Usage:
-  tsx src/cli.ts inventory [options]
+  tsx src/cli.ts inventory [options]   Classify the delivery; with --extract, pull text.
+  tsx src/cli.ts parse     [options]   Classify, extract, and parse dictionaries into records.
+  tsx src/cli.ts load      [options]   Upsert parsed records into Supabase.
 
 Classifies every file in the corpus delivery and, with --extract, pulls row-reconstructed text
 out of the selected documents. Writes <out>/inventory.jsonl (gitignored) and the committed
@@ -62,7 +83,8 @@ Markdown report.
 Options:
   --corpus PATH    Corpus delivery zip. Default: the single .zip in docs/metadatarepo/.
   --out DIR        Directory for gitignored bulk artifacts. Default: packages/statcan-corpus/out
-  --report PATH    Committed Markdown report. Default: docs/statcan-corpus-report.md
+  --report PATH    Committed Markdown report. Default: docs/statcan-corpus-report.md for
+                   inventory, docs/statcan-corpus-parse-report.md for parse.
   --no-report      Do not write the Markdown report.
   --extract        Extract text from the selected documents (off by default; an inventory pass
                    reads no payloads at all).
@@ -76,7 +98,15 @@ Options:
   --max N          Hard cap in traversal order. For smoke tests only — biased toward bundle 1.
   --text           Also write the extracted text to <out>/text/ (one file per document).
   --staging DIR    Keep staged payloads here instead of a temp directory that is deleted after.
+  --records PATH   load: records to upsert. Default: <out>/corpus.jsonl
+  --batch N        load: rows per request. Default: 500
+  --dry-run        load: project every record and report size, but send nothing.
+  --dedupe         load: keep one row per distinct fact instead of one per document that
+                   repeated it. The delivery ships some dictionaries more than once.
   -h, --help       This message.
+
+load reads SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY from the environment. The service-role
+key bypasses RLS — set it for the command only, never in a VITE_* variable and never in CI.
 `.trim();
 
 /* -------------------------------------------------------------------------------------------- *
@@ -126,6 +156,11 @@ interface CliArgs {
   corpus?: string;
   outDir: string;
   reportPath: string;
+  parseReportPath: string;
+  records?: string;
+  batch?: number;
+  dryRun: boolean;
+  dedupe: boolean;
   writeReport: boolean;
   extract: boolean;
   kinds?: DocKind[];
@@ -164,6 +199,9 @@ function parseArgs(argv: readonly string[]): CliArgs {
   const args: CliArgs = {
     outDir: DEFAULT_OUT_DIR,
     reportPath: DEFAULT_REPORT,
+    parseReportPath: DEFAULT_PARSE_REPORT,
+    dryRun: false,
+    dedupe: false,
     writeReport: true,
     extract: false,
     kinds: ['data-dictionary'],
@@ -185,7 +223,10 @@ function parseArgs(argv: readonly string[]): CliArgs {
         break;
       case '--report':
         if (next === undefined) throw new Error('--report needs a path');
+        // Retargets whichever report the running command writes, so `parse --report X` and
+        // `inventory --report X` both mean what they say.
         args.reportPath = path.resolve(next);
+        args.parseReportPath = args.reportPath;
         i += 1;
         break;
       case '--no-report':
@@ -218,6 +259,21 @@ function parseArgs(argv: readonly string[]): CliArgs {
         break;
       case '--text':
         args.writeText = true;
+        break;
+      case '--records':
+        if (next === undefined) throw new Error('--records needs a path');
+        args.records = path.resolve(next);
+        i += 1;
+        break;
+      case '--batch':
+        args.batch = parseCount('--batch', next);
+        i += 1;
+        break;
+      case '--dry-run':
+        args.dryRun = true;
+        break;
+      case '--dedupe':
+        args.dedupe = true;
         break;
       case '--staging':
         if (next === undefined) throw new Error('--staging needs a directory');
@@ -700,6 +756,502 @@ async function inventory(args: CliArgs): Promise<void> {
 }
 
 /* -------------------------------------------------------------------------------------------- *
+ * parse
+ * -------------------------------------------------------------------------------------------- */
+
+/** Fields whose fill rate the parse report tracks. Order is the report's column order. */
+const TRACKED_FIELDS = [
+  'position',
+  'length',
+  'concept',
+  'questionText',
+  'universe',
+  'note',
+  'codes',
+  'collectionName',
+] as const;
+
+interface LangBucket {
+  docs: number;
+  variables: number;
+  withCodes: number;
+}
+
+interface ParseStats {
+  /** Documents handed to the parser. */
+  docs: number;
+  /** Documents that produced at least one variable. */
+  productive: number;
+  /** Documents that produced nothing, bucketed by reason. */
+  barren: Map<string, number>;
+  /** Documents by detected layout. */
+  layouts: Map<string, number>;
+  variables: number;
+  /** Occurrences carrying a non-empty value, per tracked field. */
+  filled: Map<string, number>;
+  /** Split by language, so a recall gap in one language cannot hide inside the total. */
+  byLang: Map<string, LangBucket>;
+  codes: number;
+  /** Bytes of `corpus.jsonl` — the D5 size projection, finally measured rather than extrapolated. */
+  bytes: number;
+  notes: number;
+  warnings: number;
+}
+
+function newParseStats(): ParseStats {
+  return {
+    docs: 0,
+    productive: 0,
+    barren: new Map(),
+    layouts: new Map(),
+    variables: 0,
+    filled: new Map(),
+    byLang: new Map(),
+    codes: 0,
+    bytes: 0,
+    notes: 0,
+    warnings: 0,
+  };
+}
+
+function bump(counter: Map<string, number>, key: string, by = 1): void {
+  counter.set(key, (counter.get(key) ?? 0) + by);
+}
+
+/**
+ * Bucket a fidelity note into a reason the report can count.
+ *
+ * The parser's messages carry per-file detail (page counts, header counts) that must not become
+ * report rows — 1,900 unique reasons is a listing, not a statistic. These buckets are the distinct
+ * *causes*; anything unrecognized falls through as `other` rather than being dropped, so a new
+ * failure mode surfaces as a rising number instead of vanishing (D7).
+ */
+export function barrenReason(message: string): string {
+  if (message.includes('image-only scan')) return 'image-only scan';
+  if (message.includes('no known variable-entry layout')) return 'no recognized layout';
+  if (message.includes('no variable parsed')) return 'layout found, no variable read';
+  return 'other';
+}
+
+function renderParseReport(
+  corpusName: string,
+  plan: IngestPlan | undefined,
+  stats: ParseStats,
+): string {
+  const lines: string[] = [];
+  const share = (part: number): string => formatPercent(part, stats.variables);
+
+  lines.push('# StatCan corpus — parse report');
+  lines.push('');
+  lines.push(
+    'Committed artifact of `pnpm --filter @mobilesurvey/statcan-corpus corpus:parse`',
+    '(docs/metadata-repo-plan.md, M2). Byte-identical for the same archive and options, so a diff',
+    'here is always a real change in parse coverage rather than run-to-run noise (D9). Wall-clock',
+    'and machine details go to the gitignored `out/parse-stats.json` for exactly that reason.',
+  );
+  lines.push('');
+  lines.push('Source archive: `' + corpusName + '`');
+  lines.push('');
+
+  lines.push('## Documents');
+  lines.push('');
+  lines.push('| | |');
+  lines.push('|---|---:|');
+  if (plan !== undefined) {
+    lines.push('| Files in the delivery | ' + formatInt(plan.files) + ' |');
+    lines.push('| Dictionary candidates | ' + formatInt(plan.candidates) + ' |');
+    lines.push('| Of those, PDFs (the only format M2 reads) | ' + formatInt(plan.extractable) + ' |');
+    if (plan.sampled) {
+      lines.push('| **Selected for this run (sample)** | ' + formatInt(plan.selected) + ' |');
+    }
+  }
+  lines.push('| Parsed | ' + formatInt(stats.docs) + ' |');
+  lines.push(
+    '| Produced at least one variable | ' +
+      formatInt(stats.productive) +
+      ' (' +
+      formatPercent(stats.productive, stats.docs) +
+      ') |',
+  );
+  lines.push(
+    '| Produced nothing | ' +
+      formatInt(stats.docs - stats.productive) +
+      ' (' +
+      formatPercent(stats.docs - stats.productive, stats.docs) +
+      ') |',
+  );
+  lines.push('');
+
+  if (plan?.sampled === true) {
+    lines.push(
+      '> **This run parsed a sample, not the whole corpus.** Every rate below is measured on the',
+      '> selected documents; the absolute counts are not corpus totals.',
+    );
+    lines.push('');
+  }
+
+  lines.push('### Layouts detected');
+  lines.push('');
+  lines.push(
+    'The document-type code does *not* determine the layout — that assumption was tested and it',
+    'failed — so the parser detects layout from content. This table is what the corpus actually',
+    'contains.',
+  );
+  lines.push('');
+  lines.push('| Layout | Documents | Share |');
+  lines.push('|---|---:|---:|');
+  for (const [layout, n] of sortedCounts(stats.layouts)) {
+    lines.push('| `' + layout + '` | ' + formatInt(n) + ' | ' + formatPercent(n, stats.docs) + ' |');
+  }
+  lines.push('');
+
+  if (stats.barren.size > 0) {
+    lines.push('### Documents that produced no records');
+    lines.push('');
+    lines.push(
+      'Itemized rather than silently dropped (D7). Every document counted here is named',
+      'individually in `out/parse-notes.jsonl`.',
+    );
+    lines.push('');
+    lines.push('| Reason | Documents |');
+    lines.push('|---|---:|');
+    for (const [reason, n] of sortedCounts(stats.barren)) {
+      lines.push('| ' + reason + ' | ' + formatInt(n) + ' |');
+    }
+    lines.push('');
+  }
+
+  lines.push('## Records');
+  lines.push('');
+  lines.push('| | |');
+  lines.push('|---|---:|');
+  lines.push('| Variable occurrences | ' + formatInt(stats.variables) + ' |');
+  lines.push(
+    '| Mean per productive document | ' +
+      (stats.productive === 0 ? '—' : (stats.variables / stats.productive).toFixed(1)) +
+      ' |',
+  );
+  lines.push('| Response-category entries | ' + formatInt(stats.codes) + ' |');
+  lines.push('| `corpus.jsonl` | ' + formatBytes(stats.bytes) + ' |');
+  lines.push(
+    '| Mean bytes per record | ' +
+      (stats.variables === 0 ? '—' : formatInt(Math.round(stats.bytes / stats.variables))) +
+      ' |',
+  );
+  lines.push('');
+
+  lines.push('### Field completion');
+  lines.push('');
+  lines.push(
+    'The share of occurrences carrying a non-empty value. A low rate is not automatically a parser',
+    'failure: the dominant layout prints a fixed template, so `Question Text:` appears on nearly',
+    'every entry and is legitimately empty for derived and administrative variables that were never',
+    'asked of a respondent. `name` is omitted because it is a record’s identity and is 100% by',
+    'construction.',
+  );
+  lines.push('');
+  lines.push('| Field | Populated | Share |');
+  lines.push('|---|---:|---:|');
+  for (const field of TRACKED_FIELDS) {
+    const n = stats.filled.get(field) ?? 0;
+    lines.push('| `' + field + '` | ' + formatInt(n) + ' | ' + share(n) + ' |');
+  }
+  lines.push('');
+
+  if (stats.byLang.size > 0) {
+    lines.push('### By language');
+    lines.push('');
+    lines.push(
+      'Split out because a recall gap concentrated in one language averages away in the total —',
+      'which is how the French category-row shortfall stayed invisible until it was measured this',
+      'way.',
+    );
+    lines.push('');
+    lines.push('| Language | Documents | Occurrences | With a code list | Share coded |');
+    lines.push('|---|---:|---:|---:|---:|');
+    for (const [lang, bucket] of [...stats.byLang.entries()].sort((a, b) => (a[0] < b[0] ? -1 : 1))) {
+      lines.push(
+        '| `' +
+          lang +
+          '` | ' +
+          formatInt(bucket.docs) +
+          ' | ' +
+          formatInt(bucket.variables) +
+          ' | ' +
+          formatInt(bucket.withCodes) +
+          ' | ' +
+          formatPercent(bucket.withCodes, bucket.variables) +
+          ' |',
+      );
+    }
+    lines.push('');
+  }
+
+  lines.push('## Fidelity');
+  lines.push('');
+  lines.push('| | |');
+  lines.push('|---|---:|');
+  lines.push('| Notes | ' + formatInt(stats.notes) + ' |');
+  lines.push('| Of those, warnings | ' + formatInt(stats.warnings) + ' |');
+  lines.push('');
+  lines.push('Per-file detail is in the gitignored `out/parse-notes.jsonl`, one JSON object per note.');
+  lines.push('');
+  return lines.join('\n') + '\n';
+}
+
+/** Descending by count, then by key, so the report is stable under re-runs (D9). */
+function sortedCounts(counter: Map<string, number>): Array<[string, number]> {
+  return [...counter.entries()].sort((a, b) => b[1] - a[1] || (a[0] < b[0] ? -1 : 1));
+}
+
+/**
+ * Parse every selected dictionary into occurrence records, streaming both the records and the
+ * fidelity notes to disk as they are produced.
+ *
+ * Nothing accumulates in memory: ~185k records is well past what should sit in a heap alongside
+ * pdfjs's page caches, and the whole point of `onDoc` + `retainDocs: false` is that the run's peak
+ * memory is one document, not one corpus.
+ */
+async function parseCommand(args: CliArgs): Promise<void> {
+  const corpus = resolveCorpus(args.corpus);
+  mkdirSync(args.outDir, { recursive: true });
+  const recordsPath = path.join(args.outDir, 'corpus.jsonl');
+  const notesPath = path.join(args.outDir, 'parse-notes.jsonl');
+  const statsPath = path.join(args.outDir, 'parse-stats.json');
+
+  process.stderr.write('corpus:  ' + path.relative(REPO_ROOT, corpus).replace(/\\/g, '/') + '\n');
+  process.stderr.write('out:     ' + path.relative(REPO_ROOT, args.outDir).replace(/\\/g, '/') + '\n');
+  process.stderr.write('mode:    classify + extract + parse\n\n');
+
+  rmSync(recordsPath, { force: true });
+  rmSync(notesPath, { force: true });
+
+  const stats = newParseStats();
+  const started = Date.now();
+  let scanEnded = 0;
+  let stageEnded = 0;
+  let plan: IngestPlan | undefined;
+
+  const result = await ingestCorpus(corpus, {
+    extractText: true,
+    ...(args.kinds ? { limitDocKinds: args.kinds } : {}),
+    ...(args.tcodes ? { limitTcodes: args.tcodes } : {}),
+    ...(args.sample !== undefined ? { sampleSize: args.sample } : {}),
+    ...(args.seed !== undefined ? { sampleSeed: args.seed } : {}),
+    ...(args.max !== undefined ? { maxDocs: args.max } : {}),
+    ...(args.staging !== undefined ? { stagingDir: args.staging } : {}),
+    retainDocs: false,
+    onScan: (files) => {
+      if (files % 250 !== 0) return;
+      status('scan:    ' + formatInt(files) + ' files classified · rss ' + rssMb() + ' MB');
+    },
+    onPlan: (p) => {
+      plan = p;
+      scanEnded = Date.now();
+      endStatus(
+        'scan:    ' +
+          formatInt(p.files) +
+          ' files classified in ' +
+          formatDuration(scanEnded - started) +
+          ' · ' +
+          formatInt(p.selected) +
+          ' to parse',
+      );
+    },
+    onStage: (staged, total) => {
+      if (staged % 25 !== 0 && staged !== total) return;
+      status('stage:   ' + formatInt(staged) + '/' + formatInt(total) + ' payloads · rss ' + rssMb() + ' MB');
+      if (staged === total) stageEnded = Date.now();
+    },
+    onProgress: (done, total) => {
+      status(
+        'parse:   ' +
+          formatInt(done) +
+          '/' +
+          formatInt(total) +
+          ' docs · ' +
+          formatInt(stats.variables) +
+          ' variables · rss ' +
+          rssMb() +
+          ' MB',
+      );
+    },
+    onDoc: (doc) => {
+      stats.docs += 1;
+      const bucket = stats.byLang.get(doc.file.lang) ?? { docs: 0, variables: 0, withCodes: 0 };
+      bucket.docs += 1;
+      stats.byLang.set(doc.file.lang, bucket);
+
+      const detected = detectLayout(doc);
+      if (detected.layout !== undefined) bump(stats.layouts, detected.layout);
+
+      const { variables, notes } = parseDictionary(doc, (v) =>
+        variableRecordId(doc.file, v.name, v.position),
+      );
+
+      // One append per document rather than per record: 185k syscalls is IO-bound, 1.9k is not.
+      let payload = '';
+      for (const variable of variables) {
+        const line = JSON.stringify(variable) + '\n';
+        payload += line;
+        stats.bytes += Buffer.byteLength(line);
+        stats.variables += 1;
+        stats.codes += variable.codes.length;
+        bucket.variables += 1;
+        if (variable.codes.length > 0) bucket.withCodes += 1;
+        for (const field of TRACKED_FIELDS) {
+          const present =
+            field === 'codes'
+              ? variable.codes.length > 0
+              : typeof variable[field] === 'string' && variable[field]!.trim() !== '';
+          if (present) bump(stats.filled, field);
+        }
+      }
+      if (payload !== '') appendFileSync(recordsPath, payload);
+
+      if (variables.length > 0) stats.productive += 1;
+      else bump(stats.barren, notes[0] === undefined ? 'other' : barrenReason(notes[0].message));
+
+      let notePayload = '';
+      for (const note of notes) {
+        stats.notes += 1;
+        if (note.severity !== 'info') stats.warnings += 1;
+        notePayload += JSON.stringify(note) + '\n';
+      }
+      if (notePayload !== '') appendFileSync(notesPath, notePayload);
+    },
+  });
+
+  const finished = Date.now();
+  if (args.writeReport) {
+    mkdirSync(path.dirname(args.parseReportPath), { recursive: true });
+    writeFileSync(args.parseReportPath, renderParseReport(path.basename(corpus), plan, stats));
+  }
+
+  writeFileSync(
+    statsPath,
+    JSON.stringify(
+      {
+        corpus: path.basename(corpus),
+        files: result.files.length,
+        plan: plan ?? null,
+        docs: stats.docs,
+        productive: stats.productive,
+        variables: stats.variables,
+        codes: stats.codes,
+        bytes: stats.bytes,
+        notes: stats.notes,
+        warnings: stats.warnings,
+        layouts: Object.fromEntries(stats.layouts),
+        barren: Object.fromEntries(stats.barren),
+        filled: Object.fromEntries(stats.filled),
+        byLang: Object.fromEntries(stats.byLang),
+        timingsMs: {
+          total: finished - started,
+          scan: (scanEnded || finished) - started,
+          stage: scanEnded > 0 ? (stageEnded || finished) - scanEnded : 0,
+          parse: stageEnded > 0 ? finished - stageEnded : 0,
+        },
+        peakRssMb: rssMb(),
+        node: process.version,
+      },
+      null,
+      2,
+    ) + '\n',
+  );
+
+  const rel = (p: string): string => path.relative(REPO_ROOT, p).replace(/\\/g, '/');
+  process.stderr.write('\n');
+  process.stderr.write(
+    'done:    ' +
+      formatInt(stats.docs) +
+      ' docs · ' +
+      formatInt(stats.variables) +
+      ' variables · ' +
+      formatInt(stats.codes) +
+      ' categories · ' +
+      formatBytes(stats.bytes) +
+      ' · ' +
+      formatDuration(finished - started) +
+      '\n',
+  );
+  process.stderr.write('wrote:   ' + rel(recordsPath) + '\n');
+  process.stderr.write('wrote:   ' + rel(notesPath) + '\n');
+  if (args.writeReport) process.stderr.write('wrote:   ' + rel(args.parseReportPath) + '\n');
+  process.stderr.write('wrote:   ' + rel(statsPath) + '\n');
+}
+
+/* -------------------------------------------------------------------------------------------- *
+ * load
+ * -------------------------------------------------------------------------------------------- */
+
+/**
+ * Push `corpus.jsonl` into Supabase.
+ *
+ * Separate from `parse` on purpose: parsing is deterministic, offline, and cheap to repeat, while
+ * loading needs a write credential and touches shared state. Fusing them would mean every parser
+ * experiment either needed the service-role key or silently skipped the load.
+ */
+async function loadCommand(args: CliArgs): Promise<void> {
+  const recordsPath = args.records ?? path.join(args.outDir, 'corpus.jsonl');
+  if (!existsSync(recordsPath)) {
+    throw new Error(
+      `No records at ${recordsPath}. Run \`corpus:parse\` first, or pass --records PATH.`,
+    );
+  }
+
+  if (args.dryRun) {
+    // Projects every record without sending anything, which is what makes a schema change
+    // reviewable before it reaches a database: the failure shows up here, not mid-upload.
+    const rows = { n: 0, bytes: 0 };
+    const reader = createInterface({ input: createReadStream(recordsPath), crlfDelay: Infinity });
+    for await (const line of reader) {
+      if (line.trim() === '') continue;
+      const row = toCorpusRow(JSON.parse(line) as CorpusVariable);
+      rows.n += 1;
+      rows.bytes += Buffer.byteLength(JSON.stringify(row));
+      if (rows.n % 20000 === 0) status('project: ' + formatInt(rows.n) + ' rows');
+    }
+    endStatus(
+      'dry run: ' +
+        formatInt(rows.n) +
+        ' rows project cleanly · ' +
+        formatBytes(rows.bytes) +
+        ' of JSON · mean ' +
+        (rows.n === 0 ? '—' : formatInt(Math.round(rows.bytes / rows.n))) +
+        ' bytes/row',
+    );
+    process.stderr.write('nothing was sent (--dry-run)\n');
+    return;
+  }
+
+  const creds = credentialsFromEnv();
+  process.stderr.write('target:  ' + creds.url + '\n');
+  process.stderr.write('records: ' + path.relative(REPO_ROOT, recordsPath).replace(/\\/g, '/') + '\n\n');
+
+  const started = Date.now();
+  const result = await loadCorpusJsonl(recordsPath, creds, {
+    ...(args.batch === undefined ? {} : { batchSize: args.batch }),
+    dedupe: args.dedupe,
+    onProgress: (written) => {
+      const perSec = (written / Math.max(1, (Date.now() - started) / 1000)).toFixed(0);
+      status('load:    ' + formatInt(written) + ' rows · ' + perSec + '/s');
+    },
+  });
+
+  endStatus(
+    'done:    ' +
+      formatInt(result.rows) +
+      ' rows in ' +
+      formatInt(result.batches) +
+      ' batches' +
+      (result.skipped === 0 ? '' : ' · ' + formatInt(result.skipped) + ' repeats skipped') +
+      ' · ' +
+      formatDuration(Date.now() - started),
+  );
+}
+
+/* -------------------------------------------------------------------------------------------- *
  * main
  * -------------------------------------------------------------------------------------------- */
 
@@ -713,12 +1265,22 @@ async function main(argv: readonly string[]): Promise<number> {
     process.stderr.write(`${USAGE}\n`);
     return 0;
   }
-  if (command !== 'inventory') {
-    process.stderr.write(`Unknown command "${command}". Run with --help.\n`);
-    return 1;
+  if (command === 'inventory') {
+    await inventory(parseArgs(rest));
+    return 0;
   }
-  await inventory(parseArgs(rest));
-  return 0;
+  if (command === 'parse') {
+    // A parse run always extracts; --extract would have exactly one sensible value, so it is
+    // forced here rather than offered as a flag a caller could get wrong.
+    await parseCommand({ ...parseArgs(rest), extract: true });
+    return 0;
+  }
+  if (command === 'load') {
+    await loadCommand(parseArgs(rest));
+    return 0;
+  }
+  process.stderr.write(`Unknown command "${command}". Run with --help.\n`);
+  return 1;
 }
 
 /**

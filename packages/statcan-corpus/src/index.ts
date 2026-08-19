@@ -11,6 +11,9 @@
  * - `pdf` — pdfjs text extraction with y-bucket/x-sort row reconstruction (D2).
  * - `report` — inventory rollups, the committed Markdown report, the inventory JSONL.
  * - `ingest` — the spine that runs all of the above over the archive, plus stable record identity.
+ * - `parse` — dictionary text → `CorpusVariable` occurrences, layout detected from content.
+ * - `project` — occurrences → the flat rows the search backend stores.
+ * - `load` — streaming upsert of those rows into Supabase (service-role credentials).
  *
  * The CLI (`src/cli.ts`) is deliberately *not* re-exported: it runs a command on import.
  */
@@ -20,3 +23,6 @@ export * from './classify.js';
 export * from './pdf.js';
 export * from './report.js';
 export * from './ingest.js';
+export * from './parse.js';
+export * from './project.js';
+export * from './load.js';

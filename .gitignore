@@ -39,4 +39,5 @@ ddi-c_*/
 docs/metadatarepo/
 packages/statcan-corpus/out/
 packages/statcan-corpus/cache/
+packages/statcan-corpus/*.log
 corpus.jsonl

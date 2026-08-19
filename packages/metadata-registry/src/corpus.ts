@@ -1,0 +1,353 @@
+/**
+ * The StatCan corpus as a registry source (docs/metadata-repo-plan.md, D5/D6/D8).
+ *
+ * ### Why this lives in `metadata-registry` and not in `statcan-corpus`
+ *
+ * `statcan-corpus` is Node-only by design — it streams gigabytes and must never be reachable from
+ * an app bundle (D2). But the *browser* is what searches the corpus, so the read path has to live
+ * somewhere a browser can import. This module is that half: no filesystem, no zip, no pdfjs, no
+ * dependency beyond `fetch`.
+ *
+ * ### Why the results are `RegistryEntry`
+ *
+ * Because the designer's Library panel already consumes `RegistryEntry`, and a StatCan question
+ * that arrives in that shape can be inserted into an instrument with no change to the designer,
+ * then exported as valid DDI-XML and JSON-LD by machinery that already exists (D6). Inventing a
+ * parallel result type would have meant rebuilding all of that for a second model.
+ *
+ * ### Attribution is not decoration
+ *
+ * Every entry carries its licence, its attribution string, and the notice that it is an
+ * *adaptation* rather than the official publication. Those are obligations of the Statistics
+ * Canada Open Licence (D8), so they are attached at projection time — where they cannot be
+ * forgotten by a caller — rather than being left to whichever UI happens to render the row.
+ */
+import type { RegistryEntry, SearchHit } from './types.js';
+
+/** Licence the corpus is published under. Fixed string: it is a legal identifier, not a label. */
+export const CORPUS_LICENSE = 'Statistics Canada Open Licence';
+
+/**
+ * The notice that must accompany anything derived from these records.
+ *
+ * Three obligations in one sentence: name the source, disclaim endorsement, and identify the
+ * material as an adaptation. Kept as one constant so a UI cannot satisfy two of the three.
+ */
+export const CORPUS_ATTRIBUTION =
+  'Adapted from Statistics Canada documentation, published under the Statistics Canada Open ' +
+  'Licence. This is an adaptation; Statistics Canada does not endorse this product.';
+
+/** One response category as stored in the `codes` JSON column. Keys are short — this is bulk. */
+export interface CorpusCode {
+  c: string;
+  l: string;
+  f?: number;
+  w?: number;
+}
+
+/** A row as `corpus_search` returns it. Field names are the SQL column names, unchanged. */
+export interface CorpusSearchRow {
+  record_id: string;
+  name: string;
+  position: string | null;
+  length: string | null;
+  concept: string | null;
+  question_text: string | null;
+  universe: string | null;
+  note: string | null;
+  codes: CorpusCode[] | null;
+  code_count: number;
+  bundle: string;
+  path: string;
+  page: number;
+  tcode: string | null;
+  survey_group: string;
+  survey_acronym: string | null;
+  cycle: string | null;
+  year: number | null;
+  lang: string;
+  rank: number;
+  total_count: number;
+}
+
+/** Corpus-specific metadata, carried in `RegistryEntry.corpus` (an additive block, like `eq`). */
+export interface CorpusMeta {
+  surveyGroup: string;
+  surveyAcronym?: string;
+  cycle?: string;
+  year?: number;
+  lang: string;
+  tcode?: string;
+  /** Source document within the delivery, and the page the variable was printed on. */
+  file: string;
+  page: number;
+  variableName: string;
+  position?: string;
+  length?: string;
+  universe?: string;
+  note?: string;
+  codes: CorpusCode[];
+  /** Ready-to-render source citation, assembled once so every surface cites identically. */
+  citation: string;
+}
+
+/**
+ * Human-readable citation for one occurrence.
+ *
+ * Ordered the way a reader scans it — survey, then when, then which document, then where in it —
+ * because the first two are what identifies the source and the last two are what makes an
+ * extraction error traceable and therefore fixable (D8).
+ */
+export function corpusCitation(row: CorpusSearchRow): string {
+  const survey = row.survey_acronym ?? row.survey_group;
+  const when = row.year === null ? row.cycle : String(row.year);
+  const file = row.path.split('/').pop() ?? row.path;
+  return [
+    survey,
+    when === null || when === undefined ? undefined : when,
+    file,
+    `p. ${row.page}`,
+  ]
+    .filter((part): part is string => part !== undefined && part !== '')
+    .join(' · ');
+}
+
+function intl(lang: string, value: string): Record<string, string> {
+  return { [lang === 'fr' ? 'fr' : 'en']: value };
+}
+
+/**
+ * Project a search row onto a registry entry.
+ *
+ * `componentType` is `question` when the document recorded question wording and `variable`
+ * otherwise. That is not cosmetic: it is what makes the existing type filter mean something over
+ * corpus results, and it is honest — a derived variable with no wording was never asked, and
+ * offering it as a reusable *question* would be a small lie that a designer would discover only
+ * after inserting it.
+ */
+export function toRegistryEntry(row: CorpusSearchRow): RegistryEntry {
+  const codes = row.codes ?? [];
+  const label = row.concept ?? row.question_text ?? row.name;
+  const citation = corpusCitation(row);
+
+  return {
+    entryId: row.record_id,
+    componentType: row.question_text === null ? 'variable' : 'question',
+    payload: row,
+    searchText: [row.name, row.concept, row.question_text, row.universe]
+      .filter((part): part is string => part !== null && part !== undefined && part !== '')
+      .join(' '),
+    ddi: {
+      label: intl(row.lang, label),
+      ...(row.question_text === null ? {} : { description: intl(row.lang, row.question_text) }),
+      ...(row.universe === null ? {} : { universeRef: row.universe }),
+      ddiElementType: row.question_text === null ? 'Variable' : 'QuestionItem',
+      keywords: [row.survey_acronym, row.cycle, row.tcode].filter(
+        (k): k is string => k !== null && k !== undefined && k !== '',
+      ),
+    },
+    registry: {
+      tags: [row.survey_acronym ?? row.survey_group, row.year === null ? undefined : String(row.year)]
+        .filter((t): t is string => t !== undefined),
+      provenance: row.survey_group,
+      // Occurrences are facts from one document, not shared components — nothing "uses" them.
+      usageCount: 0,
+      license: CORPUS_LICENSE,
+      usageRights: CORPUS_ATTRIBUTION,
+      // The corpus is documentation of what was published, not a living record; a synthetic
+      // "last updated" would imply a freshness this data does not have. The reference year is in
+      // `corpus.year`, which is the date that actually means something here.
+      lastUpdated: '',
+    },
+    corpus: {
+      surveyGroup: row.survey_group,
+      ...(row.survey_acronym === null ? {} : { surveyAcronym: row.survey_acronym }),
+      ...(row.cycle === null ? {} : { cycle: row.cycle }),
+      ...(row.year === null ? {} : { year: row.year }),
+      lang: row.lang,
+      ...(row.tcode === null ? {} : { tcode: row.tcode }),
+      file: row.path,
+      page: row.page,
+      variableName: row.name,
+      ...(row.position === null ? {} : { position: row.position }),
+      ...(row.length === null ? {} : { length: row.length }),
+      ...(row.universe === null ? {} : { universe: row.universe }),
+      ...(row.note === null ? {} : { note: row.note }),
+      codes,
+      citation,
+    },
+  };
+}
+
+/* -------------------------------------------------------------------------------------------- *
+ * The remote source
+ * -------------------------------------------------------------------------------------------- */
+
+export interface CorpusFilters {
+  lang?: 'en' | 'fr';
+  /** Survey acronym or survey group — the RPC accepts either. */
+  survey?: string;
+  yearMin?: number;
+  yearMax?: number;
+  /** `true` restricts to variables carrying a response-category list, `false` excludes them. */
+  hasCodes?: boolean;
+}
+
+export interface CorpusSearchOptions extends CorpusFilters {
+  limit?: number;
+  offset?: number;
+  signal?: AbortSignal;
+}
+
+export interface CorpusSearchResult {
+  hits: SearchHit[];
+  /** Matches before paging — what the UI means by "1,240 results". */
+  total: number;
+}
+
+export interface CorpusStats {
+  variables: number;
+  surveys: number;
+  documents: number;
+  yearMin: number | null;
+  yearMax: number | null;
+  withCodes: number;
+  withQuestion: number;
+}
+
+export interface CorpusSurvey {
+  surveyGroup: string;
+  surveyAcronym: string | null;
+  variables: number;
+  documents: number;
+  yearMin: number | null;
+  yearMax: number | null;
+}
+
+export interface CorpusSourceConfig {
+  /** Supabase project URL, e.g. `https://abcdefgh.supabase.co`. */
+  url: string;
+  /** The **publishable/anon** key. This source only ever reads. */
+  anonKey: string;
+  /** Injected for tests; defaults to the global `fetch`. */
+  fetchImpl?: typeof fetch;
+}
+
+/**
+ * Search the corpus over PostgREST RPC.
+ *
+ * Deliberately not a `SupabaseClient`: `metadata-registry` has no external dependencies today and
+ * is imported by every app, so adding one to reach three read-only endpoints would be a poor
+ * trade. The three calls are each one POST.
+ */
+export class SupabaseCorpusSource {
+  readonly id = 'statcan-corpus';
+  readonly license = CORPUS_LICENSE;
+  readonly attribution = CORPUS_ATTRIBUTION;
+
+  private readonly url: string;
+  private readonly anonKey: string;
+  private readonly fetchImpl: typeof fetch;
+
+  constructor(config: CorpusSourceConfig) {
+    this.url = config.url.replace(/\/+$/, '');
+    this.anonKey = config.anonKey;
+    this.fetchImpl = config.fetchImpl ?? fetch.bind(globalThis);
+  }
+
+  private async rpc<T>(fn: string, args: unknown, signal?: AbortSignal): Promise<T> {
+    const response = await this.fetchImpl(`${this.url}/rest/v1/rpc/${fn}`, {
+      method: 'POST',
+      headers: {
+        apikey: this.anonKey,
+        Authorization: `Bearer ${this.anonKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(args),
+      ...(signal === undefined ? {} : { signal }),
+    });
+    if (!response.ok) {
+      const detail = await response.text().catch(() => '');
+      throw new Error(
+        `${fn} failed: ${response.status} ${response.statusText}` +
+          `${detail === '' ? '' : ` — ${detail.slice(0, 300)}`}`,
+      );
+    }
+    return (await response.json()) as T;
+  }
+
+  async search(query: string, options: CorpusSearchOptions = {}): Promise<CorpusSearchResult> {
+    const trimmed = query.trim();
+    if (trimmed === '') return { hits: [], total: 0 };
+
+    const rows = await this.rpc<CorpusSearchRow[]>(
+      'corpus_search',
+      {
+        q: trimmed,
+        lang_filter: options.lang ?? null,
+        survey_filter: options.survey ?? null,
+        year_min: options.yearMin ?? null,
+        year_max: options.yearMax ?? null,
+        require_codes: options.hasCodes ?? null,
+        max_rows: options.limit ?? 50,
+        row_offset: options.offset ?? 0,
+      },
+      options.signal,
+    );
+
+    return {
+      hits: rows.map((row) => ({
+        entry: toRegistryEntry(row),
+        score: row.rank,
+        // The server ranked these; it does not report which terms matched, and inventing a list
+        // client-side would be a guess presented as an explanation.
+        matched: [],
+      })),
+      total: rows[0]?.total_count ?? 0,
+    };
+  }
+
+  async stats(signal?: AbortSignal): Promise<CorpusStats> {
+    const [row] = await this.rpc<
+      Array<{
+        variables: number;
+        surveys: number;
+        documents: number;
+        year_min: number | null;
+        year_max: number | null;
+        with_codes: number;
+        with_question: number;
+      }>
+    >('corpus_stats', {}, signal);
+    return {
+      variables: row?.variables ?? 0,
+      surveys: row?.surveys ?? 0,
+      documents: row?.documents ?? 0,
+      yearMin: row?.year_min ?? null,
+      yearMax: row?.year_max ?? null,
+      withCodes: row?.with_codes ?? 0,
+      withQuestion: row?.with_question ?? 0,
+    };
+  }
+
+  async surveys(signal?: AbortSignal): Promise<CorpusSurvey[]> {
+    const rows = await this.rpc<
+      Array<{
+        survey_group: string;
+        survey_acronym: string | null;
+        variables: number;
+        documents: number;
+        year_min: number | null;
+        year_max: number | null;
+      }>
+    >('corpus_surveys', {}, signal);
+    return rows.map((row) => ({
+      surveyGroup: row.survey_group,
+      surveyAcronym: row.survey_acronym,
+      variables: row.variables,
+      documents: row.documents,
+      yearMin: row.year_min,
+      yearMax: row.year_max,
+    }));
+  }
+}

@@ -4,6 +4,7 @@
  */
 import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 import { compareInstrumentVersions, type Instrument } from '@mobilesurvey/instrument-schema';
+import { SupabaseCorpusSource } from '@mobilesurvey/metadata-registry';
 
 // ── Supabase client (lazy, only when env vars are present) ────────────────────
 
@@ -36,6 +37,40 @@ export const RUNTIME_URL =
   (isLocalhost() ? 'http://localhost:5174' : '/mobilesurvey/respondent');
 
 export const designerLink = (id: string) => `${DESIGNER_URL}/?survey=${encodeURIComponent(id)}`;
+
+// ── StatCan corpus source ─────────────────────────────────────────────────────
+
+/**
+ * The corpus may live in its own Supabase project rather than the app's.
+ *
+ * Not premature generality: the corpus is the only thing here big enough to approach the 500 MB
+ * tier cap, and it is read-only reference data with a completely different lifecycle from survey
+ * responses. Splitting it is a realistic deployment, and a deployment shape that needs a code
+ * change is one nobody adopts. Unset, these fall back to the app's project.
+ */
+const CORPUS_URL = (import.meta.env.VITE_CORPUS_URL as string | undefined) ?? SUPABASE_URL;
+const CORPUS_KEY = (import.meta.env.VITE_CORPUS_ANON_KEY as string | undefined) ?? SUPABASE_KEY;
+
+/**
+ * The StatCan metadata corpus, or `null` when this deployment has no Supabase configured.
+ *
+ * Returning `null` rather than throwing is deliberate: the corpus is an *additional* source, and
+ * the Searcher must keep working over bundled instruments on a laptop with no backend (plan §5).
+ * Callers branch on the null instead of catching.
+ *
+ * The key here is the publishable anon key and the table grants it `select` only — the loader's
+ * service-role key never reaches a browser (docs/metadata-repo-plan.md D5).
+ */
+let _corpus: SupabaseCorpusSource | null | undefined;
+export function corpusSource(): SupabaseCorpusSource | null {
+  if (_corpus === undefined) {
+    _corpus =
+      CORPUS_URL && CORPUS_KEY
+        ? new SupabaseCorpusSource({ url: CORPUS_URL, anonKey: CORPUS_KEY })
+        : null;
+  }
+  return _corpus;
+}
 export const respondentLink = (id: string) => `${RUNTIME_URL}/?survey=${encodeURIComponent(id)}`;
 
 // ── Types ─────────────────────────────────────────────────────────────────────
