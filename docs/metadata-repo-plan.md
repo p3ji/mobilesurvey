@@ -782,3 +782,136 @@ but no statement in `schema.sql` has been executed against a Postgres. There is 
 available here — no Docker, no local server, and the project host does not resolve from this
 environment (the hub's pre-existing `surveys` endpoint fails identically). Applying §9e is the
 step that proves it.
+
+---
+
+## Live in Supabase — English corpus loaded and searched (2026-08-19)
+
+The repository is running against the project's real Supabase. What follows is measured on the
+loaded table, not projected.
+
+| | |
+|---|---:|
+| Rows | **193,152** (English, deduplicated) |
+| Surveys / documents | 183 / 531 |
+| Reference years | 1982–2025 |
+| Table size | **213 MB**, 1,153.8 B/row |
+| Free-tier headroom | ~287 MB of 500 MB |
+| With a response-category list | 89,824 (46.5%) |
+| With question wording | 108,759 (56.3%) |
+
+### Scope: English only, and it costs less than it sounds
+
+Excluding French keeps the load inside the free tier without a schema change. The cost was
+measured before the decision rather than assumed: **99.8% of French records are translations of
+English records in the same survey** — only 232 French-only (survey, variable) pairs out of
+110,392, and 2 survey groups (`DCNPB_DCOBS_2020_v1`, `SELCCA_EMAGJE_2020`) that exist in French
+alone. So what is given up is the French *wording*, not coverage: every survey, variable, cycle,
+universe and code list on the English side is retained, and the longitudinal question bank is
+untouched.
+
+French is also the half parsed worst — 37.3% category coverage against English's 42.9%,
+frequencies deliberately omitted from French rows, and the open category-row recall defect — so
+the eventual French load gets a better parser. `corpus:load --lang fr --dedupe` upserts it on top;
+that is also the point at which the derived-column slimming becomes necessary (both languages
+deduplicated: 620 MB as-is against ~413 MB slim).
+
+### D5, finally settled by measurement rather than arithmetic
+
+Three estimates, two of them wrong, in both directions:
+
+| | Bytes/row | Basis |
+|---|---:|---|
+| M1 projection | ~800 | JSON bytes × assumed index ratio |
+| M2 projection | ~910 | same method, more records |
+| 25,000-row measurement | **1,764.6** | real table |
+| 193,152-row measurement | **1,153.8** | real table |
+
+The first two under-counted because the `fts` tsvector is a **stored generated column** and was
+priced as index cost only — it is 27.2% of the table, the single largest column. The third
+over-counted by 53% because GIN dedupes lexemes across rows and fixed index overhead amortizes:
+indexes were 484 B/row at 25k and 181 B/row at 193k. **A small sample cannot predict index size at
+scale, and neither can arithmetic.** `corpus_size()` exists so this is never estimated again.
+
+Composition, per row, measured with `pg_column_size`:
+
+| Column | B/row | | |
+|---|---:|---:|---|
+| `fts` | 342 | 27.2% | derived — the stored tsvector |
+| `search_text` | 246 | 19.6% | derived — duplicates the columns below |
+| `codes` | 194 | 15.5% | content |
+| `question_text` | 94 | 7.5% | content |
+| `path` / `bundle` | 91 | 7.2% | repeated (531 and 7 distinct values) |
+| `concept` / `universe` / `note` | 101 | 8.0% | content |
+
+**A third of the table is derived data carrying no information.** Dropping `search_text` and
+replacing the stored `fts` with an expression index is a pure storage optimization with no
+semantic effect. Not done yet — it is not needed at 213 MB, and it is what pays for French.
+
+### Two defects the live data exposed, both fixed
+
+**Code-list bleed.** Dictionaries print appendices tabulating other variables, and those rows are
+shaped exactly like category rows: an integer, a label, an integer. The parser read them as
+categories, so `VERDATE` — "Date of file creation" — acquired fourteen tobacco variables as its
+response categories and ranked *first* for "smoking" out of 1,667 results. Only 647 records were
+affected (0.15%), but the stolen labels are rich text and therefore outrank real questions. Fixed
+by rejecting labels that begin with an underscore-bearing mnemonic (`TBC_30A`, `LAN_B02A`);
+requiring the underscore is what keeps genuine labels like `NO - skip to Q5` intact. **10,816
+spurious categories removed**, variable count unchanged, zero listing-shaped labels remain.
+
+The first attempt at this fix was worthless, and the D9 determinism guarantee is the only reason
+it was caught: the guard went into `readCodeRow`, passed its tests, and a full re-parse produced
+**byte-identical output** — 850,912 categories before and after. Those rows are label-first and
+single-spaced, so they take the `cellFreeCodeRow` path. The tests passed because the row shape in
+them was invented rather than lifted from the corpus; they now use the real one.
+
+**Search latency, entirely self-inflicted.** `corpus_search` took ~1.5 s where the GIN index alone
+answers in ~50 ms. The mnemonic branch was written `upper(v.name) like …`, which wraps the column
+in a function no index can serve, and OR-ing it against the tsvector match cost the GIN index for
+the whole predicate — a sequential scan, which is why a 19-hit query cost as much as a 31,000-hit
+one. Rewritten as `v.name ilike corpus_mnemonic(q) || '%'`, leaving the column bare so the trigram
+index serves it, with the mnemonic test extracted into an `IMMUTABLE` function so the planner sees
+it as constant.
+
+| Query | Hits | Before | After |
+|---|---:|---:|---:|
+| `smoking` | 1,667 | 1,508 ms | **189 ms** |
+| `housing tenure` | 19 | 1,067 ms | **112 ms** |
+| `marital status` | 439 | 947 ms | **122 ms** |
+| `CIH_005` | 12 | 504 ms | **127 ms** |
+| `age` | 31,224 | 1,159 ms | 1,014 ms |
+
+`age` is the remaining cost and it is inherent: the exact `total_count` requires counting every
+match. Capping the count ("1,000+") would fix it whenever that becomes worth the imprecision.
+
+Result quality moved further than latency did. `smoking` now returns `SMK_53`, "Number of
+cigarettes usually smoked per day", with its wording, its routing universe, and its rounded
+frequencies; `housing tenure` returns `TENUR`; `CIH_005` returns itself.
+
+### Also fixed: an error that erased itself
+
+The stats and survey-facet calls scan the whole table, so they are the first thing to time out
+while a load is in flight — which happened. They shared one error slot with the search, and a
+successful search cleared it, leaving a page with no totals, an empty survey picker, and no
+explanation. They now have independent error state and a retry, and the notice says search still
+works, because it does.
+
+### Operational notes
+
+- `service_role` needs its **own** table grants. Bypassing RLS is a policy exemption, not a
+  privilege, and a new table grants nothing to anyone — without them every call returns 42501,
+  including the read-only RPCs, which are `SECURITY INVOKER` and run as their caller.
+- A whole-table `DELETE` exceeds the statement timeout at this size. Partition it — deleting by
+  `survey_group` clears 193k rows in 183 requests without trouble.
+- Deleted rows do not return their space until vacuum, so the table read 210 MB with zero rows in
+  it. A re-load reuses the space rather than adding to it.
+
+### Still not done
+
+- **French** (`--lang fr`), which needs the slimming above and the category-row fix first.
+- The **fourth dictionary layout** — 210 documents (15.4%) still produce no records, clustered by
+  survey group rather than scattered.
+- **EN↔FR pairing and concept clustering** (the rest of M3): search finds occurrences, not
+  concepts, and the cycle-to-cycle grouping in §2 is still done by the reader's eye.
+- **Designer insertion** of a corpus record has not been exercised end to end.
+- `.doc`/`.docx` (M4) — 604 files unread.

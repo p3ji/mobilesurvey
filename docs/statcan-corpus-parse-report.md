@@ -46,9 +46,9 @@ individually in `out/parse-notes.jsonl`.
 |---|---:|
 | Variable occurrences | 436,962 |
 | Mean per productive document | 377.7 |
-| Response-category entries | 850,912 |
-| `corpus.jsonl` | 284.3 MB |
-| Mean bytes per record | 682 |
+| Response-category entries | 840,096 |
+| `corpus.jsonl` | 283.3 MB |
+| Mean bytes per record | 680 |
 
 ### Field completion
 
@@ -66,7 +66,7 @@ construction.
 | `questionText` | 249,969 | 57.2% |
 | `universe` | 357,365 | 81.8% |
 | `note` | 189,249 | 43.3% |
-| `codes` | 171,143 | 39.2% |
+| `codes` | 170,963 | 39.1% |
 | `collectionName` | 7,000 | 1.6% |
 
 ### By language
@@ -77,9 +77,9 @@ way.
 
 | Language | Documents | Occurrences | With a code list | Share coded |
 |---|---:|---:|---:|---:|
-| `en` | 644 | 228,252 | 97,960 | 42.9% |
-| `fr` | 585 | 195,499 | 72,954 | 37.3% |
-| `unknown` | 139 | 13,211 | 229 | 1.7% |
+| `en` | 644 | 228,252 | 97,872 | 42.9% |
+| `fr` | 585 | 195,499 | 72,874 | 37.3% |
+| `unknown` | 139 | 13,211 | 217 | 1.6% |
 
 ## Fidelity
 

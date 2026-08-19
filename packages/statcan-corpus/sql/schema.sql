@@ -111,6 +111,32 @@ $$;
 
 grant select on corpus_variable to anon;
 
+-- The loader's role needs its own grants. `service_role` bypasses RLS, which is a *policy*
+-- exemption and not a *privilege* — and a new table grants privileges to nobody. Without this
+-- every call fails with 42501 "permission denied", including the read-only RPCs below, because
+-- they run SECURITY INVOKER and therefore as whoever called them.
+-- `delete` is included so a scope change (a language filter, a re-parse) can be applied by
+-- the loader rather than by hand in the SQL editor. It is granted to the loader role only; anon
+-- has select and nothing else.
+grant select, insert, update, delete on corpus_variable to service_role;
+
+-- ---------------------------------------------------------------------------------------------
+-- corpus_mnemonic — is this query a variable name rather than a phrase?
+--
+-- Its own function so the search predicate references it as a constant expression over the query
+-- parameter. Inlined as a CTE subquery instead, the planner could not see it as constant and fell
+-- back to a sequential scan of the whole table, which cost ~1.2 s per search against ~50 ms of
+-- actual index time.
+-- ---------------------------------------------------------------------------------------------
+create or replace function corpus_mnemonic(q text)
+returns text
+language sql
+immutable
+parallel safe
+as $$
+  select case when trim(q) ~ '^[A-Za-z][A-Za-z0-9_]{1,31}$' then upper(trim(q)) else null end;
+$$;
+
 -- ---------------------------------------------------------------------------------------------
 -- corpus_search — ranked search, called over PostgREST RPC
 --
@@ -158,36 +184,30 @@ language sql
 stable
 parallel safe
 as $$
-  with q_en as (select websearch_to_tsquery('english', coalesce(q, '')) as tsq),
-       q_fr as (select websearch_to_tsquery('french',  coalesce(q, '')) as tsq),
-       -- A bare mnemonic is a lookup, not a search. Detected rather than offered as a mode
-       -- toggle: someone pasting `DHHGAGE` should not have to know which box to paste it into.
-       needle as (select case
-                    when q ~ '^[A-Za-z][A-Za-z0-9_]{1,31}$' then upper(q)
-                    else null
-                  end as mnemonic),
-       matched as (
+  with matched as (
          select v.*,
                 greatest(
-                  ts_rank_cd(v.fts, (select tsq from q_en)),
-                  ts_rank_cd(v.fts, (select tsq from q_fr))
+                  ts_rank_cd(v.fts, websearch_to_tsquery('english', coalesce(q, ''))),
+                  ts_rank_cd(v.fts, websearch_to_tsquery('french',  coalesce(q, '')))
                 )
                 -- An exact name hit outranks any amount of prose relevance, and a prefix hit
                 -- outranks ordinary text. Additive so a record that is both still wins.
                 + case
-                    when (select mnemonic from needle) is null then 0
-                    when upper(v.name) = (select mnemonic from needle) then 10
-                    when upper(v.name) like (select mnemonic from needle) || '%' then 5
+                    when corpus_mnemonic(q) is null then 0
+                    when upper(v.name) = corpus_mnemonic(q) then 10
+                    when v.name ilike corpus_mnemonic(q) || '%' then 5
                     else 0
                   end as rank
            from corpus_variable v
+          -- Every branch here has to be index-servable. The first version wrote the mnemonic
+          -- branch as `upper(v.name) like …`, which wraps the column in a function no index can
+          -- answer, and OR-ing it with the tsvector match cost the GIN index for the whole
+          -- predicate — measured at ~1.2 s per search where the index alone answers in ~50 ms.
+          -- `v.name ilike …` leaves the column bare, so the trigram index can serve it.
           where (
-                  v.fts @@ (select tsq from q_en)
-                  or v.fts @@ (select tsq from q_fr)
-                  or (
-                    (select mnemonic from needle) is not null
-                    and upper(v.name) like (select mnemonic from needle) || '%'
-                  )
+                  v.fts @@ websearch_to_tsquery('english', coalesce(q, ''))
+                  or v.fts @@ websearch_to_tsquery('french',  coalesce(q, ''))
+                  or v.name ilike corpus_mnemonic(q) || '%'
                 )
             and (lang_filter   is null or v.lang = lang_filter)
             and (survey_filter is null or v.survey_acronym = survey_filter or v.survey_group = survey_filter)
@@ -208,6 +228,7 @@ as $$
   offset greatest(0, coalesce(row_offset, 0));
 $$;
 
+grant execute on function corpus_mnemonic(text) to anon;
 grant execute on function corpus_search(text, text, text, integer, integer, boolean, integer, integer) to anon;
 
 -- ---------------------------------------------------------------------------------------------

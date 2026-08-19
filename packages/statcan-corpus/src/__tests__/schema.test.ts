@@ -71,7 +71,7 @@ describe('sql/schema.sql', () => {
     // Asserted as a shape rather than a total so adding an index is not a test edit, but losing
     // the table, a function, or a GRANT is.
     expect(kinds.CreateStmt).toBe(1);
-    expect(kinds.CreateFunctionStmt).toBe(5);
+    expect(kinds.CreateFunctionStmt).toBe(6);
     expect(kinds.CreateExtensionStmt).toBe(1);
     expect(kinds.AlterTableStmt).toBe(1);
     expect(kinds.GrantStmt).toBeGreaterThanOrEqual(4);
@@ -84,7 +84,7 @@ describe('sql/schema.sql', () => {
     const bodies = [
       ...schema.matchAll(/create or replace function\s+(\w+)[\s\S]*?as \$\$([\s\S]*?)\$\$;/g),
     ];
-    expect(bodies.length).toBe(5);
+    expect(bodies.length).toBe(6);
 
     for (const [, name, body] of bodies) {
       const result = pg.parse(body!);
@@ -96,15 +96,31 @@ describe('sql/schema.sql', () => {
     }
   });
 
-  it('grants select to anon and never anything more', () => {
-    // The browser holds the publishable key. An insert/update/delete grant here would hand every
-    // visitor write access to the corpus, and RLS would not save it — the policy is `using (true)`.
-    const grants = [...schema.matchAll(/grant\s+([a-z, ]+?)\s+on\s+(\S+)/gi)];
-    for (const [, privileges, target] of grants) {
+  it('never grants anon more than select', () => {
+    // The browser holds the publishable key and the RLS policy is `using (true)`, so a write
+    // grant to anon would let any visitor rewrite the corpus with no second line of defence.
+    // The invariant is about the *role*, which is why this filters on it rather than on the
+    // statement — the loader's role legitimately needs more.
+    const grants = [...schema.matchAll(/grant\s+([a-z, ]+?)\s+on\s+(.+?)\s+to\s+(\w+)/gi)];
+    expect(grants.length).toBeGreaterThan(0);
+
+    for (const [, privileges, target, role] of grants) {
+      if (role !== 'anon') continue;
       const allowed = target!.startsWith('function') ? 'execute' : 'select';
       expect(privileges!.trim().toLowerCase()).toBe(allowed);
     }
     expect(schema).toMatch(/grant select on corpus_variable to anon/);
+  });
+
+  it('grants the loader role what it needs to write', () => {
+    // Missing this cost a round trip: `service_role` bypassing RLS is a policy exemption, not a
+    // privilege, and a new table grants nothing to anyone. Without it every call returns 42501 —
+    // including the read-only RPCs, which are SECURITY INVOKER and so run as their caller.
+    const loader = /grant\s+([a-z, ]+)\s+on\s+corpus_variable\s+to\s+service_role/i.exec(schema);
+    expect(loader).not.toBeNull();
+    for (const privilege of ['select', 'insert', 'update', 'delete']) {
+      expect(loader![1]!.toLowerCase()).toContain(privilege);
+    }
   });
 
   it('keeps the RETURNS TABLE columns in step with the client row type', () => {

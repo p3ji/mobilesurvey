@@ -357,3 +357,45 @@ describe.skipIf(!existsSync(CORPUS))('real corpus delivery (on-demand, 2.4 GB, n
     expect(notApplicable?.label).toBe('Not applicable');
   }, 120_000);
 });
+
+describe('variable-listing rows are not response categories', () => {
+  it('rejects a row whose label starts with a mnemonic', () => {
+    // Dictionaries tabulate other variables in appendices, and the shape is identical to a
+    // category row. Read as one, the listing's position column becomes a frequency and the
+    // categories attach to whichever variable block the appendix fell inside.
+    expect(readCodeRow('1    TBC_30A Nb of cigarettes smoked - day    13')).toBeUndefined();
+    expect(readCodeRow('1    LAN_B02A (Aboriginal language spoken -    0    0')).toBeUndefined();
+    expect(readCodeRow('2    ED1_05C Grades attended in First Nations community - Grade    145')).toBeUndefined();
+  });
+
+  it('still reads ordinary categories, including capitalized ones', () => {
+    // The guard requires an underscore precisely so these survive: dropping a real category is as
+    // damaging as inventing one.
+    expect(readCodeRow('1    Yes    10,137')).toMatchObject({ code: '1', label: 'Yes' });
+    expect(readCodeRow('70    COMPLETE    1,204')).toMatchObject({ code: '70', label: 'COMPLETE' });
+    expect(readCodeRow('2    NO - skip to Q5    88')).toMatchObject({ label: 'NO - skip to Q5' });
+    expect(readCodeRow('99999995    Not applicable    0    0')).toMatchObject({
+      label: 'Not applicable',
+    });
+  });
+});
+
+describe('variable-listing rows on the single-space path', () => {
+  it('rejects them where they actually occur', () => {
+    // These rows reach `cellFreeCodeRow`, not the cell-separated reader — they are label-first and
+    // single-spaced. Guarding only the other path left the defect completely untouched across a
+    // full 20-minute re-parse, and the byte-identical output was the proof. Hence this test names
+    // the row shape from the corpus rather than an idealized one.
+    expect(readCodeRow('TBC_30A Nb of cigarettes smoked - day    1    13')).toBeUndefined();
+    expect(readCodeRow('LAN_B02A (Aboriginal language spoken -    1    0    0')).toBeUndefined();
+  });
+
+  it('leaves genuine label-first categories alone', () => {
+    expect(readCodeRow('Yes    1    10,137')).toMatchObject({ code: '1', label: 'Yes' });
+    expect(readCodeRow('NO - skip to Q5    2    88')).toMatchObject({ label: 'NO - skip to Q5' });
+    expect(readCodeRow('Not applicable    99999995    0    0')).toMatchObject({
+      code: '99999995',
+      label: 'Not applicable',
+    });
+  });
+});

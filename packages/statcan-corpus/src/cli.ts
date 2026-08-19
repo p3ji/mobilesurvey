@@ -102,6 +102,9 @@ Options:
   --batch N        load: rows per request. Default: 500
   --limit N        load: stop after N rows. For measuring a real table before committing to a
                    full load; the rest upserts on top afterwards.
+  --lang LIST      load: only these languages (en, fr, unknown). 99.8% of French records are
+                   translations of English ones, so one language keeps every survey, variable
+                   and code list — the other language upserts on top later.
   --dry-run        load: project every record and report size, but send nothing.
   --dedupe         load: keep one row per distinct fact instead of one per document that
                    repeated it. The delivery ships some dictionaries more than once.
@@ -163,6 +166,7 @@ interface CliArgs {
   records?: string;
   batch?: number;
   limit?: number;
+  langs?: string[];
   dryRun: boolean;
   dedupe: boolean;
   writeReport: boolean;
@@ -277,6 +281,14 @@ function parseArgs(argv: readonly string[]): CliArgs {
         args.limit = parseCount('--limit', next);
         i += 1;
         break;
+      case '--lang': {
+        if (next === undefined) throw new Error('--lang needs a comma-separated list, e.g. en or en,fr');
+        const langs = next.split(',').map((part) => part.trim()).filter((part) => part !== '');
+        if (langs.length === 0) throw new Error('--lang needs at least one language');
+        args.langs = langs;
+        i += 1;
+        break;
+      }
       case '--dry-run':
         args.dryRun = true;
         break;
@@ -1244,6 +1256,7 @@ async function loadCommand(args: CliArgs): Promise<void> {
   const result = await loadCorpusJsonl(recordsPath, creds, {
     ...(args.batch === undefined ? {} : { batchSize: args.batch }),
     ...(args.limit === undefined ? {} : { limit: args.limit }),
+    ...(args.langs === undefined ? {} : { langs: args.langs }),
     dedupe: args.dedupe,
     onProgress: (written) => {
       const perSec = (written / Math.max(1, (Date.now() - started) / 1000)).toFixed(0);
@@ -1258,6 +1271,7 @@ async function loadCommand(args: CliArgs): Promise<void> {
       formatInt(result.batches) +
       ' batches' +
       (result.skipped === 0 ? '' : ' · ' + formatInt(result.skipped) + ' repeats skipped') +
+      (result.filtered === 0 ? '' : ' · ' + formatInt(result.filtered) + ' filtered by language') +
       ' · ' +
       formatDuration(Date.now() - started),
   );

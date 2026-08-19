@@ -50,6 +50,24 @@ const CELL = /\s{2,}/;
  */
 const VAR_NAME = /^[A-Za-z][A-Za-z0-9_]{1,31}$/;
 
+/**
+ * A row lifted from a *variable listing* rather than a response-category table.
+ *
+ * Dictionaries print appendices that tabulate other variables — `1  TBC_30A Nb of cigarettes
+ * smoked - day  13` — and the shape is indistinguishable from a category row: an integer, a
+ * label, an integer. Read as a category it produces a code list belonging to a different
+ * variable, and the listing's *position* column is recorded as a frequency.
+ *
+ * The tell is the label's first token: a StatCan mnemonic carrying an underscore
+ * (`TBC_30A`, `ED1_05C`, `LAN_B02A`). Requiring the underscore is what keeps this safe —
+ * matching bare capitals would swallow genuine labels like `NO  Skip to Q5`, and a category
+ * silently dropped is as bad as a category invented.
+ *
+ * Found by searching the loaded corpus, where a "Date of file creation" variable ranked first
+ * for "smoking" because it had absorbed fourteen tobacco variables as its categories.
+ */
+const VARIABLE_LISTING_ROW = /^[A-Z][A-Z0-9]*_[A-Z0-9_]+\s+\S/;
+
 /** Table furniture and total rows, in both languages. */
 const NOT_A_CATEGORY =
   /^(?:answer categories?|cat[ée]gories?(?: de r[ée]ponse)?|content|contenu|code|freq(?:uency)?|fr[ée]q(?:uence)?|wtd|weighted(?: frequency)?|pond[ée]r[ée]e?|sample|[ée]chantillon|population|total|%|n)$/i;
@@ -196,6 +214,10 @@ function cellFreeCodeRow(row: string): CodeEntry | undefined {
   if (m === null) return undefined;
   const label = m[1]!.trim();
   if (!/[A-Za-zÀ-ÿ]/.test(label) || NOT_A_CATEGORY.test(label)) return undefined;
+  // Same variable-listing rows as in `readCodeRow`, reaching here by the single-space path — which
+  // is in fact the path they actually take. Guarding only the cell-separated reader left the
+  // defect untouched across a full re-parse, with byte-identical output as the proof.
+  if (VARIABLE_LISTING_ROW.test(label)) return undefined;
   const tail = m[3]!;
   // The trailing run must at least look like count columns; prose ending in a digit is not a
   // category row.
@@ -266,6 +288,7 @@ export function readCodeRow(row: string): CodeEntry | undefined {
   }
 
   if (NOT_A_CATEGORY.test(label) || label.length > 120) return undefined;
+  if (VARIABLE_LISTING_ROW.test(label)) return undefined;
   const frequency = num(counts[0]);
   if (frequency === undefined) return undefined;
   return { code: code.trim(), label, frequency, weighted: num(counts[1]) };

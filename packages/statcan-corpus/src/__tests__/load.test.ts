@@ -145,7 +145,7 @@ describe('loadCorpusJsonl', () => {
       fetchImpl: fetchImpl as unknown as typeof fetch,
     });
 
-    expect(result).toEqual({ rows: 5, batches: 3, skipped: 0 });
+    expect(result).toEqual({ rows: 5, batches: 3, skipped: 0, filtered: 0 });
     expect(seen).toEqual([2, 4, 5]);
   });
 
@@ -300,5 +300,46 @@ describe('envWithFile', () => {
   it('returns the environment untouched when there is no file', () => {
     const env = { A: '1' };
     expect(envWithFile(path.join(tmpdir(), 'definitely-absent-corpus-env'), env)).toBe(env);
+  });
+});
+
+describe('language filter', () => {
+  const inLang = (name: string, lang: 'en' | 'fr') => {
+    const r = record(name);
+    return { ...r, source: { ...r.source, lang } };
+  };
+
+  it('loads only the requested languages', async () => {
+    const fetchImpl = vi.fn(async () => new Response(null, { status: 201 }));
+    const file = jsonlFile([inLang('A', 'en'), inLang('B', 'fr'), inLang('C', 'en')]);
+
+    const result = await loadCorpusJsonl(file, CREDS, {
+      langs: ['en'],
+      fetchImpl: fetchImpl as unknown as typeof fetch,
+    });
+    expect(result).toMatchObject({ rows: 2, filtered: 1 });
+  });
+
+  it('filters before taking the dedupe key', async () => {
+    // Otherwise an excluded record claims the fact first and suppresses the included record that
+    // repeats it — the load would silently lose rows it was asked to keep.
+    const en = inLang('A', 'en');
+    const fr = { ...inLang('A', 'fr'), recordId: 'fr-id', source: { ...en.source, lang: 'fr' as const } };
+    const fetchImpl = vi.fn(async () => new Response(null, { status: 201 }));
+
+    const result = await loadCorpusJsonl(jsonlFile([fr, en]), CREDS, {
+      langs: ['en'],
+      dedupe: true,
+      fetchImpl: fetchImpl as unknown as typeof fetch,
+    });
+    expect(result).toMatchObject({ rows: 1, filtered: 1, skipped: 0 });
+  });
+
+  it('loads every language when no filter is given', async () => {
+    const fetchImpl = vi.fn(async () => new Response(null, { status: 201 }));
+    const result = await loadCorpusJsonl(jsonlFile([inLang('A', 'en'), inLang('B', 'fr')]), CREDS, {
+      fetchImpl: fetchImpl as unknown as typeof fetch,
+    });
+    expect(result).toMatchObject({ rows: 2, filtered: 0 });
   });
 });

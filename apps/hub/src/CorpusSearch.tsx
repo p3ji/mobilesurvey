@@ -137,6 +137,15 @@ export function CorpusSearch({ source }: CorpusSearchProps) {
   const [surveys, setSurveys] = useState<CorpusSurvey[]>([]);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  /**
+   * Failure of the stats/survey-facet calls, kept apart from `error`.
+   *
+   * They were one field, and a successful search cleared the flag — so a stats call that failed on
+   * mount left the page with no summary, an empty survey picker, and nothing saying why. Two
+   * independent calls need two independent error slots, and this one must not hide the results.
+   */
+  const [metaError, setMetaError] = useState<string | null>(null);
+  const [metaAttempt, setMetaAttempt] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);
 
   // Debounce the query; every filter change resets to the first page, because page 3 of the old
@@ -161,15 +170,17 @@ export function CorpusSearch({ source }: CorpusSearchProps) {
         ]);
         setStats(s);
         setSurveys(list);
+        setMetaError(null);
       } catch (err) {
-        // A failed stats call means the table is missing or unreachable; say so rather than
-        // rendering an empty search box that looks like "no results for everything".
-        if (!controller.signal.aborted) setError(describe(err));
+        // These two calls scan the whole table, so they are the first thing to time out while a
+        // load is in flight. That is transient, and it must not look like the corpus is missing —
+        // hence a retryable notice rather than the blocking error banner.
+        if (!controller.signal.aborted) setMetaError(describe(err));
       }
     })();
     inputRef.current?.focus();
     return () => controller.abort();
-  }, [source]);
+  }, [source, metaAttempt]);
 
   useEffect(() => {
     if (debounced.trim() === '') {
@@ -266,6 +277,14 @@ export function CorpusSearch({ source }: CorpusSearchProps) {
         </label>
 
         {summary !== null && <span className="cs-summary">{summary}</span>}
+        {metaError !== null && (
+          <span className="cs-summary cs-summary--warn">
+            Totals and the survey list are unavailable — search still works.{' '}
+            <button type="button" className="cs-link" onClick={() => setMetaAttempt((n) => n + 1)}>
+              Retry
+            </button>
+          </span>
+        )}
       </div>
 
       {error !== null && (
