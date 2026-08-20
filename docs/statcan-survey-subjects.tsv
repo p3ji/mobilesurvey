@@ -1,0 +1,200 @@
+# StatCan survey → subject mapping. EDIT THE `subjects` COLUMN (the last one).
+#
+# The taxonomy is Statistics Canada’s, captured from their subject facet. The assignment is
+# ours and is not published anywhere fetchable, so this file is the source of truth for it.
+#
+# Format: pipe-separate multiple subjects, e.g.  Health|Children and youth
+#         leave blank to leave a survey unclassified (shown as unclassified, not guessed).
+# Spelling must match the taxonomy exactly; the loader reports anything it does not recognize.
+#
+# suggest_name    — from the official survey title. Higher precision; a title is a deliberate label.
+# suggest_content — from variable text. Lower precision: it filed CHMS under Languages and put
+#                   Transportation on CCHS. Offered for reference, not as an answer.
+#
+survey_group	acronym	records	official_name	suggest_name	subjects	suggest_content
+GSS_ESG_12-32	GSS	27298	General Social Survey - Caregiving and Care Receiving (GSS)	Society and community		
+CCHS_ESCC	CCHS	14651	Canadian Community Health Survey - Annual Component (CCHS)	Health|Society and community		Health|Transportation
+LSIC_ELIC	LSIC	6973				Immigration and ethnocultural diversity|Languages|Labour|Education, training and learning
+CIS_ECR_2012-2019_rebased	CIS	6791	Canadian Income Survey (CIS)	Income, pensions, spending and wealth		Income, pensions, spending and wealth|Labour
+CHMS_ECMS	CHMS	6658	Canadian Health Measures Survey (CHMS)	Health		
+CIS_ECR_2022	CIS	5175	Canadian Income Survey (CIS)	Income, pensions, spending and wealth		Income, pensions, spending and wealth
+CIS_ECR_2023	CIS	4944	Canadian Income Survey (CIS)	Income, pensions, spending and wealth		Income, pensions, spending and wealth
+APS_EAPA_2012	APS	3564				Education, training and learning|Indigenous peoples|Languages
+SOLMP-EPLOSM	SOLMP	3339	Survey on the Official Language Minority Population (SOLMP)	Languages|Population and demography		Languages|Immigration and ethnocultural diversity|Children and youth|Education, training and learning
+GSS_ESG_34	GSS	3187	General Social Survey - Caregiving and Care Receiving (GSS)	Society and community		Crime and justice|Families, households and marital status
+LISA_ELIA_2016	LISA	2964				Labour|Families, households and marital status|Population and demography|Education, training and learning
+CSD_ECI_2017	CSD	2779	Canadian Survey on Disability (CSD)	Health		Labour|Education, training and learning|Income, pensions, spending and wealth
+CIS_ECR_2021	CIS	2689	Canadian Income Survey (CIS)	Income, pensions, spending and wealth		Income, pensions, spending and wealth
+CSD_ECI_2012	CSD	2626	Canadian Survey on Disability (CSD)	Health		Education, training and learning|Labour
+CIS_ECR_2020	CIS	2547	Canadian Income Survey (CIS)	Income, pensions, spending and wealth		Income, pensions, spending and wealth|Labour
+SHS_EDM	SHS	2498	Survey of Household Spending (SHS)	Income, pensions, spending and wealth|Families, households and marital status		Income, pensions, spending and wealth|Families, households and marital status|Transportation
+CSIT_ECCI	CSIT	2291	Canadian Survey on Interprovincial Trade (CSIT)			Business performance and ownership
+CHSCY_ECSEJ_2023	CHSCY	2079	Canadian Health Survey on Children and Youth (CHSCY)	Health|Children and youth		Children and youth|Health|Transportation
+CSD_ECI_2022	CSD	2044	Canadian Survey on Disability (CSD)	Health		Labour|Income, pensions, spending and wealth|Education, training and learning
+SISPSP_ESIPEP_2019	SISPSP	1991				Education, training and learning|Transportation
+APS_EAPA_2006	APS	1985				Indigenous peoples|Education, training and learning|Health|Labour
+SLCDC_EPMCC_2014	SLCDC	1856				Health
+OCHS_ESJO_2014	OCHS	1850				Education, training and learning|Children and youth
+CIS_ECR_2024	CIS	1809	Canadian Income Survey (CIS)	Income, pensions, spending and wealth		Income, pensions, spending and wealth
+IPS_EAPA	IPS	1732	Indigenous Peoples Survey (IPS)	Indigenous peoples		Children and youth|Education, training and learning|Indigenous peoples|Transportation
+CHS_ECL_AllYears	CHS	1730				Housing|Families, households and marital status|Population and demography
+SFS_ESF_2023	SFS	1683	Survey of Financial Security (SFS)	Income, pensions, spending and wealth		Families, households and marital status|Income, pensions, spending and wealth|Housing
+SIBS_EISE_allyears	SIBS	1656				Business performance and ownership|Science and technology
+SAT_ETP_AllYears	SAT	1614	Survey of Advanced Technology (SAT)	Science and technology		Business performance and ownership
+LISA_ELIA_2018	LISA	1591				Children and youth|Families, households and marital status|Labour|Transportation
+CAFVMHS_ESSMFACM_2018	CAFVMHS	1467				Health
+SFGSME_EFCPME	SFGSME	1455				Business performance and ownership
+SGVP_EDBP_2023	SGVP	1444	Survey on Giving&#44; Volunteering and Participating (SGVP)	Society and community		Society and community
+CHSCY_ECSEJ_2019	CHSCY	1425	Canadian Health Survey on Children and Youth (CHSCY)	Health|Children and youth		Children and youth|Health
+CSCSC_ECCC_2019_v1	CSCSC	1371	Canadian Survey of Cyber Security and Cybercrime (CSCSC)	Crime and justice|Digital economy and society		Digital economy and society|Business performance and ownership
+CIS_ECR_2019	CIS	1360	Canadian Income Survey (CIS)	Income, pensions, spending and wealth		Income, pensions, spending and wealth|Labour
+GSS_ESG_37	GSS	1348	General Social Survey - Caregiving and Care Receiving (GSS)	Society and community		Families, households and marital status|Transportation|Labour
+CIS_ECR_2018	CIS	1346	Canadian Income Survey (CIS)	Income, pensions, spending and wealth		Income, pensions, spending and wealth|Labour
+MHACS_ESMAS_2022	MHACS	1296	Mental Health and Access to Care Survey (MHACS)	Health		Health
+APS_EAPA_2017_NIS_SIN	APS	1258				Labour|Education, training and learning|Languages
+BC_CB_K12	BC	1255				Education, training and learning|Languages
+SFS_ESF_2019	SFS	1181	Survey of Financial Security (SFS)	Income, pensions, spending and wealth		Income, pensions, spending and wealth|Families, households and marital status|Housing
+LISA_ELIA_2020	LISA	1164				Children and youth|Labour|Transportation|Population and demography
+CSCSC_ECCC_2023	CSCSC	1105	Canadian Survey of Cyber Security and Cybercrime (CSCSC)	Crime and justice|Digital economy and society		Digital economy and society|Business performance and ownership
+SFS_ESF_2016	SFS	1101	Survey of Financial Security (SFS)	Income, pensions, spending and wealth		Income, pensions, spending and wealth|Housing
+NGES_EFGN	NGES	1075				Labour|Indigenous peoples|Education, training and learning|Languages
+APS_EAPA_2017	APS	1068				Education, training and learning|Languages|Labour|Housing
+SDTIU_ETNUI_2023	SDTIU	1024	Survey of Digital Technology and Internet Use (SDTIU)	Science and technology|Digital economy and society		Business performance and ownership|Digital economy and society
+SSMW_EIST_2020	SSMW	1016	Survey on Sexual Misconduct at Work (SSMW)			Labour|Transportation
+SYC_EJC_2010	SYC	1011				Children and youth|Languages|Transportation|Families, households and marital status
+LISA_ELIA_2012	LISA	996				Labour|Population and demography|Housing|Education, training and learning
+PES_EEP_2024	PES	976				Population and demography|Health|Transportation|Families, households and marital status
+CHSCY_ECSEJ_2024	CHSCY	953	Canadian Health Survey on Children and Youth (CHSCY)	Health|Children and youth		Children and youth|Health|Transportation|Population and demography
+CIS_ECR_2015	CIS	901	Canadian Income Survey (CIS)	Income, pensions, spending and wealth		Income, pensions, spending and wealth|Labour
+PIAAC_PEICA	PIAAC	882	Programme for the International Assessment of Adult Competencies (PIAAC)			Labour|Education, training and learning|Housing
+CIS_ECR_2016	CIS	881	Canadian Income Survey (CIS)	Income, pensions, spending and wealth		Income, pensions, spending and wealth|Labour
+SDTIU_ETNUI_2021	SDTIU	876	Survey of Digital Technology and Internet Use (SDTIU)	Science and technology|Digital economy and society		Business performance and ownership|Digital economy and society
+SSPPS_ESEPP_2018	SSPPS	873	Survey of Safety in Public and Private Spaces (SSPPS)			Crime and justice|Families, households and marital status
+CIS_ECR_2017	CIS	861	Canadian Income Survey (CIS)	Income, pensions, spending and wealth		Income, pensions, spending and wealth|Labour
+ACS_EEA_2006	ACS	856	Adult Correctional Services (ACS)	Crime and justice		Children and youth|Indigenous peoples|Languages|Transportation
+CSCSC_ECCC_2021	CSCSC	802	Canadian Survey of Cyber Security and Cybercrime (CSCSC)	Crime and justice|Digital economy and society		Digital economy and society|Business performance and ownership
+SDTIU_ETNUI_2019	SDTIU	802	Survey of Digital Technology and Internet Use (SDTIU)	Science and technology|Digital economy and society		Business performance and ownership|Digital economy and society
+HES_ALL_2006	HES	744	Households and the Environment Survey (HES)	Families, households and marital status|Environment		Environment|Families, households and marital status|Housing
+GSS_ESG_33	GSS	726	General Social Survey - Caregiving and Care Receiving (GSS)	Society and community		Society and community
+ICC_RCC_Covid19	ICC	617				Health
+GSS_ESG_35	GSS	604	General Social Survey - Caregiving and Care Receiving (GSS)	Society and community		Immigration and ethnocultural diversity|Families, households and marital status
+CAFHS_ESFAC_2019	CAFHS	562				Health|Labour
+SSMCAF_SISFAC_2022	SSMCAF	555				
+SFS_ESF_2012	SFS	553	Survey of Financial Security (SFS)	Income, pensions, spending and wealth		Income, pensions, spending and wealth|Housing|Families, households and marital status|Labour
+CNICS_ENCVE_2021	CNICS	547	Childhood National Immunization Coverage Survey (CNICS)	Children and youth		Children and youth|Health
+SEPR_EPUR_2014	SEPR	540				Society and community
+CLPS_ECPJ_2021	CLPS	534	Canadian Legal Problems Survey (CLPS)			Crime and justice|Health
+IFPI_IITA	IFPI	520				Business performance and ownership
+HES_EME_2019	HES	512	Households and the Environment Survey (HES)	Families, households and marital status|Environment		Environment|Housing
+CCHS_ESCC_2024_RR_SCH2TAL2	CCHS	511	Canadian Community Health Survey - Annual Component (CCHS)	Health|Society and community		Health|Transportation
+SFT_ETF_2024	SFT	505	Survey on Family Transitions (SFT)	Families, households and marital status		Families, households and marital status|Housing|Population and demography|Children and youth
+HES_EME_2013	HES	495	Households and the Environment Survey (HES)	Families, households and marital status|Environment		Environment|Families, households and marital status|Housing
+SEFJ_EECF	SEFJ	492				Labour|Business performance and ownership
+CNICS_ENCVE_2019	CNICS	486	Childhood National Immunization Coverage Survey (CNICS)	Children and youth		Children and youth|Health
+NGS_END_2018	NGS	485	National Graduates Survey (NGS)	Education, training and learning		Education, training and learning|Labour
+CIUS_ECUI_2018	CIUS	483	Canadian Internet Use Survey (CIUS)	Digital economy and society		Digital economy and society
+NGS_END_2023	NGS	480	National Graduates Survey (NGS)	Education, training and learning		Education, training and learning|Labour
+CIS_ECR_2014	CIS	480	Canadian Income Survey (CIS)	Income, pensions, spending and wealth		Income, pensions, spending and wealth|Labour
+CAFTWS_ETBFAC_2017	CAFTWS	475				Families, households and marital status|Health
+CIS_ECR_2013	CIS	472	Canadian Income Survey (CIS)	Income, pensions, spending and wealth		Income, pensions, spending and wealth|Labour
+CIS_ECR_2012	CIS	466	Canadian Income Survey (CIS)	Income, pensions, spending and wealth		Income, pensions, spending and wealth|Labour
+SMHSE_ESMES	SMHSE	460				Health
+PSES_SAFF_2024	PSES	444	Public Service Employee Survey (PSES)			Labour
+CIUS_ECUI_2020	CIUS	441	Canadian Internet Use Survey (CIUS)	Digital economy and society		Digital economy and society
+CCAHS_ECSAC_2023	CCAHS	437	Canadian COVID-19 Antibody and Health Survey (CCAHS)	Health		Health
+CTADS_ECTAD_2017	CTADS	434	Canadian Tobacco&#44; Alcohol and Drugs Survey (CTADS)	Health		Health
+PSSCSC_ESPCC_2022	PSSCSC	422				Digital economy and society|Housing|Families, households and marital status
+CADS_ECAD_2019	CADS	421	Canadian Alcohol and Drugs Survey (CADS)	Health		Health
+CIUS_ECUI_2022	CIUS	420	Canadian Internet Use Survey (CIUS)	Digital economy and society		Digital economy and society
+PSES_SAFF_2017	PSES	404	Public Service Employee Survey (PSES)			Labour
+RAIS_SIAI_08_16	RAIS	396	Registered Apprenticeship Information System (RAIS)	Labour		Education, training and learning|Housing|Labour
+HES_EME_2015	HES	379	Households and the Environment Survey (HES)	Families, households and marital status|Environment		Environment|Families, households and marital status|Housing
+PSES_SAFF_2022	PSES	377	Public Service Employee Survey (PSES)			Labour
+CSELCC_ECAGJE_2023	CSELCC	369	Canadian Survey on Early Learning and Child Care (CSELCC)	Education, training and learning|Children and youth		Children and youth|Transportation|Families, households and marital status|Labour
+CTADS_ECTAD_2015	CTADS	359	Canadian Tobacco&#44; Alcohol and Drugs Survey (CTADS)	Health		Health
+EWHS_STSCS_2021	EWHS	348				Labour|Health
+CTADS_ECTAD_2013	CTADS	346	Canadian Tobacco&#44; Alcohol and Drugs Survey (CTADS)	Health		Health
+EICS_ECAE_2023	EICS	344	Employment Insurance Coverage Survey (EICS)	Labour		Labour|Families, households and marital status|Children and youth
+EICS_ECAE_2024	EICS	344	Employment Insurance Coverage Survey (EICS)	Labour		Labour|Families, households and marital status|Population and demography|Children and youth
+CNHS_EBAS_2013	CNHS	338				
+EICS_ECAE_2017	EICS	334	Employment Insurance Coverage Survey (EICS)	Labour		Labour|Families, households and marital status|Children and youth|Housing
+EICS_ECAE_2016	EICS	333	Employment Insurance Coverage Survey (EICS)	Labour		Labour|Families, households and marital status|Children and youth
+SIMT_ETFI_2018	SIMT	333				
+EICS_ECAE_2013	EICS	332	Employment Insurance Coverage Survey (EICS)	Labour		Labour|Families, households and marital status|Children and youth
+LASS_EVAS_2019	LASS	332				Health
+EICS_ECAE_2014	EICS	332	Employment Insurance Coverage Survey (EICS)	Labour		Labour|Families, households and marital status|Children and youth
+PSES_SAFF_2014	PSES	313	Public Service Employee Survey (PSES)			Labour|Languages
+LASS_EVAS_2016	LASS	302				Health
+EICS_ECAE_2021	EICS	301	Employment Insurance Coverage Survey (EICS)	Labour		Labour|Families, households and marital status|Children and youth|Population and demography
+EICS_ECAE_2020	EICS	299	Employment Insurance Coverage Survey (EICS)	Labour		Labour|Families, households and marital status|Population and demography|Children and youth
+SAHCPDP_EASSPPP_2021	SAHCPDP	290				Health|Transportation
+LASS_EVAS_2013	LASS	284				Health
+LISA_ELIA_AllYears	LISA	274				Families, households and marital status|Income, pensions, spending and wealth
+SNPS_SDIP_2021	SNPS	268				
+SELCCA_CLDC_2023	SELCCA	268	Survey on Early Learning and Child Care Arrangements (SELCCA)	Education, training and learning|Children and youth		Children and youth|Transportation|Families, households and marital status
+SSPCW2_SEGCV2_2023	SSPCW2	268				Labour
+NTS_ENV_AllYears	NTS	263	National Travel Survey (NTS)	Travel and tourism		Income, pensions, spending and wealth|Transportation
+CSSW2_ESCV2_2023	CSSW2	259				Health|Transportation
+CSSW4_ESCV4_2023	CSSW4	254				Health|Transportation|Society and community|Families, households and marital status
+CNICS_ENCVE_2017	CNICS	245	Childhood National Immunization Coverage Survey (CNICS)	Children and youth		Children and youth
+PSIS_SIEP	PSIS	237	Postsecondary Student Information System (PSIS)	Education, training and learning		Education, training and learning
+CSSCW_ESCCB_2021	CSSCW	229				Health
+SELCCA_EMAGJE_2025	SELCCA	228	Survey on Early Learning and Child Care Arrangements (SELCCA)	Education, training and learning|Children and youth		Children and youth|Transportation|Education, training and learning|Families, households and marital status
+NCS_ENC_2018	NCS	227				Health
+SCMH_ECSM_2020	SCMH	218				Health
+CPSS_SEPC_2020_S6	CPSS	214	Canadian Perspectives Survey Series (CPSS)			Older adults and population aging|Health
+CVCS_ECVC_2021	CVCS	212				Health|Society and community|Population and demography
+CSSW2_ESCV2_2024	CSSW2	195				Health|Housing
+SSPCW4_SEGCV4_2023	SSPCW4	193				Society and community
+SBASCC_EMGAAEC	SBASCC	188	Survey on Before and After School Care in Canada (SBASCC)	Education, training and learning		Transportation|Children and youth|Education, training and learning|Families, households and marital status
+SAPM_ETIA_2023	SAPM	185				Digital economy and society
+CSSW4_ESCV4_2024	CSSW4	182				Transportation|Housing|Families, households and marital status
+SSFNPMI_SEPNMI	SSFNPMI	179	Survey Series on First Nations People&#44; M&#233;tis and Inuit (SSFNPMI)	Indigenous peoples		Health|Transportation|Indigenous peoples
+CNICS_ENCVE_2015	CNICS	179	Childhood National Immunization Coverage Survey (CNICS)	Children and youth		Children and youth
+CSSW3_ESCV3_2024	CSSW3	177				Housing
+SNPS_SDIP_2018	SNPS	177				
+CCAHS_ECSAC_2021	CCAHS	175	Canadian COVID-19 Antibody and Health Survey (CCAHS)	Health		Health
+CNICS_ECVNE_2011	CNICS	172	Childhood National Immunization Coverage Survey (CNICS)	Children and youth		
+CSSW1_ESCV1_2024	CSSW1	168				Health|Society and community
+CNICS_ECVNE_2013	CNICS	164	Childhood National Immunization Coverage Survey (CNICS)	Children and youth		Children and youth
+COHS_ECSB_C1	COHS	159	Canadian Oral Health Survey (COHS)	Health		Transportation|Families, households and marital status
+CSSW3_ESCV3_2021	CSSW3	156				Families, households and marital status
+CSSW2_ESCV2_2022	CSSW2	155				Transportation|Labour|Families, households and marital status|Children and youth
+SSPCW5_SEGCV5_2024	SSPCW5	145				Immigration and ethnocultural diversity
+NCS_ENC_2019	NCS	144				
+CSSW1_ESCV1_2025	CSSW1	144				Environment|Society and community
+CSSW4_ESCV4_2021	CSSW4	144				Families, households and marital status|Children and youth
+CTNS_ECTN_2022	CTNS	141	Canadian Tobacco and Nicotine Survey (CTNS)	Health		Health
+CSSW1_ESCV1_2022	CSSW1	140				Population and demography|Society and community|Immigration and ethnocultural diversity|Housing
+SSPCW1_SEGCV1_2023	SSPCW1	137				Society and community|Immigration and ethnocultural diversity
+SELCCA_EMAGJE_2023	SELCCA	137	Survey on Early Learning and Child Care Arrangements (SELCCA)	Education, training and learning|Children and youth		Children and youth|Transportation|Families, households and marital status|Education, training and learning
+CSSW1_ESCV1_2023	CSSW1	136				Families, households and marital status|Housing
+SELCCA_EMAGJE_2019	SELCCA	133	Survey on Early Learning and Child Care Arrangements (SELCCA)	Education, training and learning|Children and youth		Transportation|Children and youth|Families, households and marital status|Education, training and learning
+CSEW_ECBE_2013	CSEW	131				Families, households and marital status|Labour|Income, pensions, spending and wealth
+CHS_ECL_2021_APIM	CHS	131				Families, households and marital status|Income, pensions, spending and wealth
+SELCCA_EMAGJE_2022	SELCCA	131	Survey on Early Learning and Child Care Arrangements (SELCCA)	Education, training and learning|Children and youth		Children and youth|Transportation|Families, households and marital status|Education, training and learning
+SEWS_EECP	SEWS	129				Business performance and ownership|Education, training and learning
+CSSW3_ESCV3_2022	CSSW3	128				Society and community
+CHS_ECL_2008_2017_T1FF_T4	CHS	122				Income, pensions, spending and wealth|Families, households and marital status
+SSPCW3_SEGCV3_2023	SSPCW3	121				Society and community
+CHMS Biobank	CHMS	118	Canadian Health Measures Survey (CHMS)	Health		Transportation
+CTNS_ECTN_2021	CTNS	118	Canadian Tobacco and Nicotine Survey (CTNS)	Health		Health
+PCS_PSC_2021	PCS	116				Population and demography
+CTNS_ECTN_2020	CTNS	115	Canadian Tobacco and Nicotine Survey (CTNS)	Health		Health
+NCS_ENC_2020	NCS	108				
+SSPC_SEGC_2022	SSPC	107				Society and community|Immigration and ethnocultural diversity
+CNICS_ENCVE_2019_PW	CNICS	100	Childhood National Immunization Coverage Survey (CNICS)	Children and youth		Population and demography|Children and youth|Health|Transportation
+CSSW3_ESCV3_2023	CSSW3	95				
+SSPD_EEPH_2020	SSPD	94				Health
+DES_EEN_2018	DES	93				Digital economy and society|Income, pensions, spending and wealth|Labour
+CHS_ECL_2018_ID_v2	CHS	90				Income, pensions, spending and wealth|Families, households and marital status
+SOA_ESO_2017	SOA	71				Families, households and marital status
+CHIRP_ENPIR_AllYears	CHIRP	66				Population and demography|Children and youth|Housing|Families, households and marital status
+IMDB_BDIM	IMDB	63	Longitudinal Immigration Database (IMDB)	Immigration and ethnocultural diversity|Population and demography		
+PSEW_EPBQ_2021	PSEW	53				Income, pensions, spending and wealth|Families, households and marital status
+SAFSO_EAOSP	SAFSO	51	Survey on Accessibility in Federal Sector Organizations (SAFSO)			Transportation
+VSSBD_SECM	VSSBD	44				Population and demography
+SHRP_EPRS	SHRP	42				Science and technology|Health
+FTD_UAD_0405	FTD	37				
+NHS_SNL_Linkage_AllYears	NHS	22	National Household Survey (NHS)	Families, households and marital status		Transportation|Education, training and learning
+CSD_ECI_R_2022	CSD	7	Canadian Survey on Disability (CSD)	Health		Population and demography

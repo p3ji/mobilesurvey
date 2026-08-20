@@ -27,4 +27,5 @@ export * from './parse.js';
 export * from './project.js';
 export * from './documents.js';
 export * from './lexicon.js';
+export * from './subjects.js';
 export * from './load.js';
