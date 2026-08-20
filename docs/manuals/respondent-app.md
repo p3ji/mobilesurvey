@@ -15,9 +15,10 @@ operators** (how access codes, resume, and paradata behavior work).
 ## Contents
 1. [Signing in with an access code](#signing-in-with-an-access-code)
 2. [Answering the survey](#answering-the-survey)
-3. [Saving and resuming](#saving-and-resuming)
-4. [Submitting](#submitting)
-5. [For survey operators](#for-survey-operators)
+3. [Sensor questions (location & photo)](#sensor-questions-location--photo)
+4. [Saving and resuming](#saving-and-resuming)
+5. [Submitting](#submitting)
+6. [For survey operators](#for-survey-operators)
 
 ---
 
@@ -43,7 +44,8 @@ Once you're in, the survey runs **one page at a time**:
 - A **progress bar** and **"Page N of M"** show how far along you are. The total can change as you
   answer — some pages only appear based on earlier answers.
 - **Question types** include number entry, text boxes, single-choice and multiple-choice lists,
-  yes/no, dates, and "mark all that apply" checkboxes.
+  yes/no, dates, "mark all that apply" checkboxes, and (where the survey uses them) **location**
+  and **photo** questions — see [Sensor questions](#sensor-questions-location--photo) below.
 - **Required questions** are marked with a red asterisk (**\***).
 - **Helpful instructions** appear under some questions.
 - **Language** — switch between available languages (e.g. **EN / FR**) at the top right at any time;
@@ -62,6 +64,25 @@ rule), you'll see:
 
 Correct the highlighted items and **Next** re-enables. Some checks are **warnings** only — they
 explain a concern (e.g. an unusually high value) but still let you continue.
+
+---
+
+## Sensor questions (location & photo)
+
+Some surveys include questions that use your device's GPS or camera. Each one asks for your
+**consent separately, right before it's needed** — declining is always an option and never blocks
+the rest of the survey:
+
+- **Location** — shows a dial for the precision the survey needs (e.g. neighbourhood-level vs.
+  exact) before requesting your device's location. If you decline, or your device can't provide
+  location, you can enter it manually where the survey allows.
+- **Photo** — opens your camera or file picker. The photo has its metadata (EXIF — time, device,
+  and any embedded GPS) stripped in your browser before it's uploaded; the server never sees the
+  original file. Some surveys then show you an automatic best-guess reading of the photo (e.g.
+  identifying food items) that you can correct or confirm before continuing — it's never saved
+  without your confirmation.
+
+Try both on the last page of the Feature Demo Survey (`?survey=demo`).
 
 ---
 

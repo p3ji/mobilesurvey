@@ -61,9 +61,17 @@ The basic loop is: **select something on the left → edit it in the centre → 
     questions and routing. (Pages and advanced constructs like rosters are only editable in Pro Mode.)
 - **💾 Save** — if the instrument was opened from the hub (via `?survey=<id>`), this button saves
   your edits back to the hub's database. (Unsaved changes are persistent in your browser session.)
-- **Export ▾** — export the instrument in multiple formats:
+- **Import / Export ▾** — move the instrument in and out of the tool, in several formats:
+  - **⬆ Import instrument JSON** / **⬆ Import DDI-XML** — load an instrument from a JSON file or a
+    DDI-Lifecycle 3.3 XML file (e.g. exported from another agency's Colectica-style repository).
   - **⬇ HTML Questionnaire** — a static HTML preview, suitable for printing or sharing.
   - **⬇ Instrument JSON** — the raw JSON file; import this into another designer instance.
+  - **⬇ DDI-XML (DDI-L 3.3)** — a schema-valid DDI-Lifecycle 3.3 export, self-contained.
+  - **⬇ DDI-XML (FragmentInstance, for repositories)** — the same content packaged so schemes
+    reference their children by ID rather than inlining them, for import into a metadata
+    repository (e.g. Colectica).
+  - **⬇ JSON-LD (linked data, FAIR)** — a FAIR-aligned JSON-LD graph (DDI/SKOS/DCTerms vocabulary)
+    using the same stable URNs as the DDI-XML export.
   - **⬇ JSON Schema** — the instrument's JSON Schema (for validation elsewhere).
   - **🖨 PDF Spec** — a formal specification (pages, questions, edit rules, variable dictionary).
 - **? Help** — open this manual in a new tab.
@@ -182,6 +190,28 @@ Set a question's **Response domain → Type**. Options:
 | **lookup** | Search-as-you-type from a code list | Category scheme |
 | **markAll** | "Mark all that apply" checkboxes | Category scheme, Variable prefix |
 | **table** | Spreadsheet-like grid of numeric cells | Row/column count, unit caption, min/max/decimals per cell, disabled cells, computed totals |
+| **geolocation** | Requests device GPS, with a precision dial and manual fallback | Precision (rounding), manual-entry toggle |
+| **photo** | Camera / file picker, EXIF-stripped client-side before upload | Facing camera, allow-library toggle, optional ML-assisted coding |
+
+### Sensor questions (geolocation & photo)
+
+Both **geolocation** and **photo** are consent-gated: adding either to an instrument requires (and
+the Inspector will offer to create) a matching entry in the instrument's `sensors` config plus a
+root-scoped consent variable (`CONSENT_GEOLOCATION` / `CONSENT_CAMERA`) that the respondent
+approves once before the first sensor question runs. Beyond the base variable, each generates
+sub-variables automatically:
+
+- **geolocation** → `{base}_LAT`, `{base}_LON`, `{base}_ACC` (accuracy), `{base}_TS`, `{base}_SRC`
+  (device vs. manual entry).
+- **photo** → the base variable holds an attachment reference (never image bytes); `{base}_TS`,
+  `{base}_SRC`, and — if ML-assisted coding is turned on — `{prefix}_N_ITEMS` plus
+  `{prefix}_I{i}_LABEL` / `_QTY` / `_UNIT` / `_CONF` per detected item, all respondent-confirmed
+  before saving.
+
+A **required** sensor question needs a decline path (a manual-entry fallback for geolocation, or
+`visible when` tied to the consent variable) — otherwise the JSON Spec panel's validation flags it
+as a consent trap: a respondent who declines consent would be stuck unable to satisfy a required
+question. See [sensor-module-plan.md](../sensor-module-plan.md) for the full design.
 
 ### markAll (DDI-compliant "mark all that apply")
 
@@ -322,8 +352,8 @@ The **JSON Spec** tab displays the instrument's complete JSON, with validation a
 - **Validation status** — a green "✓ Instrument is valid" banner, or a red list of issues with the
   exact path and message (e.g. a question pointing at a missing variable, or a code question with no
   category scheme). This validates **live** as you edit, catching broken references immediately.
-- **⬇ Download instrument.json** — save the instrument to a file (also available via the **Export ▾**
-  menu in the toolbar).
+- **⬇ Download instrument.json** — save the instrument to a file (also available via the
+  **Import / Export ▾** menu in the toolbar).
 - **⬇ JSON Schema** — download the generated JSON Schema (for validating instruments elsewhere).
 - **Import instrument JSON** — load an existing instrument from a JSON file. Click the input area,
   paste JSON or upload a file, and click **Validate & load**. If valid, it replaces the current
@@ -390,7 +420,8 @@ and resume, see the [respondent app manual](respondent-app.md).
   valid condition.
 - **Watch the validation banner.** Keep the JSON Spec tab green; red issues are exactly what would
   break the survey at runtime.
-- **Save your work.** Download `instrument.json` regularly — there is no auto-save server in this
-  iteration.
+- **Save your work.** If you opened the designer from the hub, click **Save** — it isn't automatic.
+  Opened standalone (no `?survey=<id>`), there's nowhere to save to server-side; download
+  `instrument.json` regularly instead.
 - **Test with Preview and Render.** Preview is great for poking at one screen; Render is the honest
   end-to-end walkthrough.

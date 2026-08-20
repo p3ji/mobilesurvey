@@ -6,7 +6,7 @@ managing surveys, viewing respondent data, and accessing authoring and analysis 
 > Open it at <https://p3ji.github.io/mobilesurvey/> (production) or
 > `pnpm --filter @mobilesurvey/hub dev` (local, → <http://localhost:5175>).
 
-The hub home screen displays six modules. Four are live; two are coming soon:
+The hub home screen displays a grid of modules, most of them live, a few still on the roadmap:
 
 ## Live modules
 
@@ -40,33 +40,59 @@ surveys (Household & Employment Survey, Feature Demo) in read-only mode. Switch 
 
 ### 🔍 Searcher — Search and reuse survey metadata
 
-Find and reuse questions, variables, and code lists across all surveys in the hub.
+Find and reuse questions, variables, and code lists — either across your own surveys, or against a
+real external corpus of Statistics Canada variables.
 
-**Key features:**
+**Two scopes**, selected by tab at the top of Searcher (each is a separate search — results aren't
+merged, since usage counts and citations mean different things in each):
 
-- **Search box** — type a keyword (e.g. "employment", "age", "Canada") to find matching components.
-- **Type filter** — narrow results by component type:
-  - **Instruments** — whole surveys
-  - **Questions** — individual survey items
-  - **Variables** — named data slots
-  - **Code Lists** — reusable category schemes (e.g. industry codes, marital status)
-- **Search results** — each hit shows:
-  - The component's label and type.
-  - Which survey it came from (if applicable).
-  - Usage count (how many other surveys reference this component).
-  - A code-list preview (if it's a category scheme).
-  - Matching terms highlighted.
-- **Browse mode** — leave the search box empty to browse all entries of a selected type.
-- **Open in Designer** — click any hit to open the source survey in the Designer for inspection
-  or reuse.
+- **Your surveys** — searches the surveys in this hub.
+  - **Type filter** narrows results to **Instruments**, **Questions**, **Variables**, or **Code
+    Lists** (reusable category schemes, e.g. industry codes, marital status).
+  - Each hit shows its label, type, source survey, usage count (how many other surveys reference
+    it), a code-list preview where applicable, and matching terms highlighted.
+  - Leave the search box empty to browse all entries of the selected type.
+  - Click any hit to open the source survey in the Designer for inspection or reuse.
+- **Statistics Canada** — searches ~195,000 real variable occurrences extracted from ~580 StatCan
+  RDC survey documentation dictionaries (1982–2025), loaded under the Statistics Canada Open
+  Licence.
+  - A **subject facet rail** (StatCan's own 31-subject taxonomy) filters results; suggested
+    (unconfirmed) subject tags are marked with a dot.
+  - Misspelled queries get an automatic **did-you-mean** correction (a 15k-word corpus vocabulary,
+    e.g. `opiod` → `opioid`), with the original query offered back.
+  - Every record cites its source survey, cycle, and variable, and an **"Open source"** link opens
+    the original dictionary PDF at the exact cited page.
+  - A **Concepts** sub-view groups variables into a DDI-style concept cascade (Concept →
+    Conceptual Variable → Represented Variable) and shows a timeline of which survey cycles
+    changed a variable's wording or coding.
 
-**Use case:** When authoring a new survey, search for similar questions from past surveys (e.g.
-"employment status") and copy them into your new instrument to maintain consistency and save
-authoring time.
+**Use case:** When authoring a new survey, search your own past surveys for similar questions to
+maintain consistency, or search the Statistics Canada corpus to align a new variable's wording and
+coding with an established StatCan standard.
 
 ---
 
-### 📱 Designer — Pro Mode, Easy Mode, and Business Collection (coming soon)
+### 📄 Migrator — Turn an existing questionnaire into a live survey
+
+Paste or upload a plain-text, Word, or PDF questionnaire — including Statistics Canada
+electronic-questionnaire exports — and get back a working instrument.
+
+- Extracts questions, infers response types (numeric, choice, text, date, etc.), and converts
+  routing/skip-logic hints into instrument branches.
+- Shows a preview table of extracted questions before you commit.
+- Unsupported constructs are flagged with a warning rather than guessed at.
+- Opens the result directly in the Designer for review and cleanup.
+
+---
+
+### 🎓 Training Hub — Videos and guides
+
+Video overviews and walkthroughs for learning the suite, from first survey to collection
+management.
+
+---
+
+### 📱 Designer — Pro Mode, Easy Mode, and Business Collection
 
 Entry points to the survey authoring tool. (See [authoring-tool.md](authoring-tool.md) for the
 full manual.)
@@ -75,8 +101,9 @@ full manual.)
   and flowchart view. Best for complex surveys.
 - **Designer — Easy Mode** — simple question-by-question editor. Best for quick surveys and
   questionnaire testing.
-- **Designer — Business Collection** (coming soon) — optimized for business data collection and
-  establishment surveys.
+- **Designer — Business Collection** — a form-first designer for establishment surveys: numeric
+  data tables with live totals, paste-from-Excel entry, and balance edits across sections, modeled
+  on Statistics Canada's Federal Science Expenditures and Personnel (FSEP) questionnaire.
 
 All three open a blank instrument (or load a survey if you click "Edit in Designer" on a Collector
 survey). Your edits are saved back to the hub when you click **Save**.
@@ -88,17 +115,67 @@ click "Open in Pro Mode" or "Open in Easy Mode" to explore the designer's interf
 
 ### 📊 Analyzer — Descriptive statistics and response overview
 
-(Coming in Phase 13.) Explore collected response data with charts, frequency tables, and
-descriptive stats.
+Explore collected response data: completion funnels, frequency distributions, and field-level
+charts built from live responses. Export responses or paradata as CSV.
+
+---
+
+### ✅ Validator — Flag, confront, and correct collected data
+
+Post-collection data editing over a survey's responses, run after collection to catch errors
+before analysis:
+
+- **Metadata-derived checks** — range, type, and skip-logic consistency inferred straight from the
+  instrument definition.
+- **Re-run of collection-time edits** — the same soft/hard edits the respondent saw, re-evaluated
+  against the stored data.
+- **Robust statistical outliers** — values flagged against the response distribution, not fixed
+  thresholds.
+- **Cross-source confrontation** — upload a reference dataset and define mappings to flag
+  mismatches against an external source of truth.
+- **Analyst-authored rules** — write additional checks as expressions, promotable from a flag you
+  triaged.
+- Optional **LLM-assisted** review (requires `VITE_ANTHROPIC_API_KEY` — see
+  [DEPLOYMENT.md](../../DEPLOYMENT.md) security notes before enabling in a real deployment).
+
+All checks feed one scored, prioritized **flag queue** where you disposition (accept/correct/
+suppress) each flag; accepted corrections and suppressions are remembered so they don't resurface
+on the next run unless the underlying value changes.
+
+---
+
+### 📍 Sensor Data Collection — Consent-gated GPS and camera questions
+
+Location and photo question types for the respondent app, each gated by its own respondent
+consent toggle before the question is shown:
+
+- **Geolocation** — captures coordinates at an author-configured precision, with a manual
+  fallback for respondents who decline device location.
+- **Photo** — captures a photo, strips EXIF metadata client-side before upload, and optionally
+  runs ML-assisted coding (e.g. identifying food items for a nutrition study) that the respondent
+  always reviews and confirms before it's saved.
+
+Try the last page of the Feature Demo Survey (`?survey=demo` in the respondent app) to see both in
+action. Authoring these questions is covered in
+[authoring-tool.md](authoring-tool.md).
 
 ---
 
 ## Upcoming modules
 
-### 🏢 Designer — Business Collection
+### 🎧 Interviewer Mode & Supervisor Dashboard
 
-Optimized for business and establishment surveys. Includes structured inputs, validation rules, and
-integration with business registers. (Currently in testing.)
+CATI (computer-assisted telephone interviewing) workflows: a case queue with call-back scheduling
+for interviewers, and a dashboard for supervisors to monitor completion/outcome rates and
+reassign cases. On-premises / local-API only (not part of the Supabase-backed hosted demo).
+
+### 🧪 Questionnaire Tester
+
+Walks every path through a web survey automatically, catching dead ends, routing errors, and gaps
+between the designed instrument and the rendered form. The underlying engine
+(`packages/questionnaire-bot`) has path enumeration, a Playwright driver, and HTML reports working
+against a static fixture and a CLI; a hub tile and a run against a live `apps/runtime` server are
+still on the roadmap.
 
 ---
 
