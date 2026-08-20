@@ -76,23 +76,31 @@ alter table corpus_conceptual_variable  enable row level security;
 alter table corpus_represented_variable enable row level security;
 alter table corpus_variable_cluster     enable row level security;
 
-do $$
-declare t text;
-begin
-  foreach t in array array[
-    'corpus_concept', 'corpus_conceptual_variable',
-    'corpus_represented_variable', 'corpus_variable_cluster'
-  ] loop
-    if not exists (select 1 from pg_policies where tablename = t and policyname = 'anon select') then
-      execute format('create policy "anon select" on %I for select to anon using (true)', t);
-    end if;
-    execute format('grant select on %I to anon', t);
-    -- The loader's role needs its own privileges: bypassing RLS is a policy exemption, not a
-    -- privilege, and a new table grants nothing to anyone.
-    execute format('grant select, insert, update, delete on %I to service_role', t);
-  end loop;
-end
-$$;
+-- Written out rather than looped. A `do $$ … foreach … $$` block did the same sixteen statements
+-- in six lines, and failed in the SQL editor without a message anyone could act on — plpgsql is
+-- the one construct the parse test cannot verify. Repetition that applies beats concision that
+-- has to be debugged through a browser.
+drop policy if exists "anon select" on corpus_concept;
+drop policy if exists "anon select" on corpus_conceptual_variable;
+drop policy if exists "anon select" on corpus_represented_variable;
+drop policy if exists "anon select" on corpus_variable_cluster;
+
+create policy "anon select" on corpus_concept              for select to anon using (true);
+create policy "anon select" on corpus_conceptual_variable  for select to anon using (true);
+create policy "anon select" on corpus_represented_variable for select to anon using (true);
+create policy "anon select" on corpus_variable_cluster     for select to anon using (true);
+
+grant select on corpus_concept              to anon;
+grant select on corpus_conceptual_variable  to anon;
+grant select on corpus_represented_variable to anon;
+grant select on corpus_variable_cluster     to anon;
+
+-- The loader role needs its own privileges: bypassing RLS is a policy exemption, not a privilege,
+-- and a new table grants nothing to anyone.
+grant select, insert, update, delete on corpus_concept              to service_role;
+grant select, insert, update, delete on corpus_conceptual_variable  to service_role;
+grant select, insert, update, delete on corpus_represented_variable to service_role;
+grant select, insert, update, delete on corpus_variable_cluster     to service_role;
 
 -- ---------------------------------------------------------------------------------------------
 -- corpus_timeline — one conceptual variable, as it was asked across cycles

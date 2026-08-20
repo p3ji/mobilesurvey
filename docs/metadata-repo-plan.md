@@ -995,3 +995,92 @@ and `smoking` from 189 ms to 1.5 s, because every scan now walks the dead tuples
 returned until vacuum, which is why the table read 210 MB with zero rows in it earlier. **Any full
 refresh of this table should be followed by a vacuum**, and the D5 headroom figures assume a
 vacuumed table.
+
+---
+
+## M3 concept clustering — DDI's variable cascade, live (2026-08-19)
+
+D3 planned one `CorpusConcept`: a bag of occurrences judged to be "the same question across
+time". DDI-Lifecycle already models this, and models it as **three** objects rather than one.
+Adhering to the standard turned out to be the better engineering answer, not a compliance tax.
+
+| DDI | | Ours |
+|---|---|---|
+| `c:Concept` | a unit of meaning | 70,750 |
+| `l:ConceptualVariable` | a Concept applied to a Universe | 85,363 |
+| `l:RepresentedVariable` | a ConceptualVariable given one coding | 94,901 |
+| `l:Variable` | the variable in one dataset | the occurrence |
+
+### Why the split earns its keep
+
+**It makes the interesting question a property rather than a query.** "Which cycles changed the
+wording or the coding?" — the question §2 was written around — is a ConceptualVariable whose
+`representations` exceeds one. Collapsed into a single cluster, that has to be reconstructed by
+comparing members pairwise, every time anyone asks.
+
+**It measures better than the plan's own fallback.** Against grouping by survey plus variable
+name:
+
+| | Cross-cycle groups | Cross-survey |
+|---|---:|---:|
+| DDI cascade | **13,466** | **9,841** |
+| survey + variable name | 4,759 | 0 — impossible by construction |
+
+Name matching cannot cross surveys at all, because the mnemonic is what changes when a question
+moves between programmes. The cascade keys on meaning, so it can.
+
+**The universe is load-bearing.** Marital status of everyone 15 and over is not the same measure
+as marital status of lone parents, and DDI is explicit that the pair (Concept, Universe) is what
+constitutes a ConceptualVariable. Keying on the concept label alone would have merged them.
+
+### Deliberate exclusions
+
+**Frequencies are not part of a representation signature.** Every cycle of an identically-coded
+question carries different counts, so including them would make each cycle its own representation
+and fire the "coding changed" signal on all 13,466 groups — noise indistinguishable from signal.
+
+**Normalization is shallow** — case, punctuation, whitespace, and nothing else. No stemming, no
+synonyms. A looser key merges genuinely different measures with no way for a reader to notice,
+while a stricter key leaves two groups that are visibly the same thing side by side. Only the
+second failure is self-correcting, so the bias is toward splitting.
+
+**8.8% of occurrences are left unplaced** — 17,037 records carrying no concept and no question
+wording. Grouping them by variable name would put unrelated administrative fields from different
+surveys together: a confident answer with no evidence behind it.
+
+### D3 is respected strictly
+
+Membership lives in `corpus_variable_cluster`, keyed by `record_id`. Nothing in the clustering
+path writes to `corpus_variable`. Occurrences are what a document said; clusters are our inference
+about what several documents meant, and that inference will sometimes be wrong — so re-clustering
+is a truncate of four small tables, and a clustering bug cannot reach an extracted fact. The
+schema test asserts the absence of any `alter table corpus_variable` in `clusters.sql`.
+
+### One inconsistency caught before it shipped
+
+Clustering initially ran over all 230,034 English occurrences while the load had deduplicated to
+194,507 — so ~17k memberships would have pointed at rows that do not exist, and every occurrence
+count in the concept view would have been inflated. A group claiming 66 members that can only show
+54 is worse than one that never claimed them. `cluster` now takes the same `--lang` and `--dedupe`
+filters as `load`: 177,470 memberships + 17,037 unplaced = exactly 194,507.
+
+### Verified live
+
+`SMKDVSTY` — "Smoking status (type 2), traditional definition" — renders as **2015–2025, 11 years,
+16 occurrences, 2 surveys, 2 codings**, with the single coding change flagged at the year it
+happens. `corpus_concepts` answers in 380 ms, `corpus_timeline` in 210 ms.
+
+### A stat label to fix
+
+`corpus_cluster_stats` reports `coding_changed` over *all* conceptual variables (7,850), while the
+meaningful figure is over those spanning more than one year (2,807). Both are true; the names do
+not distinguish them, and a reader comparing the two would be misled. The UI avoids the ambiguity
+by asking `corpus_concepts(changed_only, min_years:2)` for the number it displays, but the function
+should be renamed or re-scoped the next time the SQL is touched.
+
+### Operational note
+
+The `do $$ … foreach … $$` block that created the policies and grants in six lines **failed in the
+Supabase SQL editor with no actionable message**, and plpgsql is the one construct the parse test
+cannot verify. It is now sixteen plain statements. Repetition that applies beats concision that has
+to be debugged through a browser.

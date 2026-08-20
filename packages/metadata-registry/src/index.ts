@@ -21,4 +21,8 @@ export {
   type CorpusStats,
   type CorpusSurvey,
   type CorpusFilters,
+  type CorpusConceptualVariable,
+  type CorpusTimelineEntry,
+  type CorpusConceptQuery,
+  type CorpusConceptResult,
 } from './corpus.js';

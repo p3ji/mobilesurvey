@@ -210,7 +210,29 @@ describe('sql/clusters.sql', () => {
   });
 
   it('gives anon select and the loader role write, on every new table', () => {
-    expect(clusters).toMatch(/grant select on %I to anon/);
-    expect(clusters).toMatch(/grant select, insert, update, delete on %I to service_role/);
+    // Written out per table rather than looped: the plpgsql loop this replaced is the one thing
+    // the parser cannot check, and it failed in the editor with nothing actionable.
+    for (const table of [
+      'corpus_concept',
+      'corpus_conceptual_variable',
+      'corpus_represented_variable',
+      'corpus_variable_cluster',
+    ]) {
+      // Literal containment, not a regex: the gap before `to` is alignment padding, and three
+      // attempts at escaping `\s` through a shell arrived as `s`, a backspace, and nothing.
+      const flat = clusters.replace(/ {2,}/g, ' ');
+      expect(flat).toContain(`grant select on ${table} to anon;`);
+      expect(flat).toContain(`grant select, insert, update, delete on ${table} to service_role;`);
+    }
+    // The plpgsql loop these replaced is the one construct the parse test cannot verify, and it
+    // failed in the editor with no actionable message. It must not come back.
+    //
+    // Comments are stripped first because the note explaining *why* it was removed mentions the
+    // construct by name — and the first version of this assertion duly failed on that comment.
+    const statements = clusters
+      .split('\n')
+      .filter((line) => !line.trimStart().startsWith('--'))
+      .join('\n');
+    expect(statements).not.toContain('do $$');
   });
 });

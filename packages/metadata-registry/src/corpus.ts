@@ -330,6 +330,88 @@ export class SupabaseCorpusSource {
     };
   }
 
+  /**
+   * Browse or search the cascade rather than the occurrences.
+   *
+   * `minYears` defaults to 2 because a "concept" observed in a single year is not a history, and
+   * listing 85,363 of them ahead of the 13,466 that actually span cycles would bury the thing the
+   * cascade exists to surface.
+   */
+  async concepts(query: CorpusConceptQuery = {}): Promise<CorpusConceptResult> {
+    const rows = await this.rpc<
+      Array<{
+        conceptual_variable_id: string;
+        concept_id: string;
+        label: string;
+        universe: string | null;
+        occurrences: number;
+        surveys: number;
+        representations: number;
+        years: number;
+        year_min: number | null;
+        year_max: number | null;
+        total_count: number;
+      }>
+    >(
+      'corpus_concepts',
+      {
+        q: query.q === undefined || query.q.trim() === '' ? null : query.q,
+        min_years: query.minYears ?? 2,
+        changed_only: query.changedOnly ?? false,
+        max_rows: query.limit ?? 50,
+        row_offset: query.offset ?? 0,
+      },
+      query.signal,
+    );
+    return {
+      concepts: rows.map((r) => ({
+        conceptualVariableId: r.conceptual_variable_id,
+        conceptId: r.concept_id,
+        label: r.label,
+        universe: r.universe,
+        occurrences: r.occurrences,
+        surveys: r.surveys,
+        representations: r.representations,
+        years: r.years,
+        yearMin: r.year_min,
+        yearMax: r.year_max,
+      })),
+      total: rows[0]?.total_count ?? 0,
+    };
+  }
+
+  /** Every occurrence of one conceptual variable, in chronological order. */
+  async timeline(
+    conceptualVariableId: string,
+    signal?: AbortSignal,
+  ): Promise<CorpusTimelineEntry[]> {
+    const rows = await this.rpc<CorpusSearchRow[]>(
+      'corpus_timeline',
+      { cv_id: conceptualVariableId },
+      signal,
+    );
+    return rows.map((r) => ({
+      recordId: r.record_id,
+      representedVariableId: (r as unknown as { represented_variable_id: string })
+        .represented_variable_id,
+      name: r.name,
+      questionText: r.question_text,
+      universe: r.universe,
+      codes: r.codes ?? [],
+      codeCount: r.code_count,
+      surveyGroup: r.survey_group,
+      surveyAcronym: r.survey_acronym,
+      cycle: r.cycle,
+      year: r.year,
+      path: r.path,
+      page: r.page,
+      lang: r.lang,
+      // Assembled with the same function search hits use, so one record cites identically
+      // wherever it is shown.
+      citation: corpusCitation(r),
+    }));
+  }
+
   async surveys(signal?: AbortSignal): Promise<CorpusSurvey[]> {
     const rows = await this.rpc<
       Array<{
@@ -350,4 +432,64 @@ export class SupabaseCorpusSource {
       yearMax: row.year_max,
     }));
   }
+}
+
+/* -------------------------------------------------------------------------------------------- *
+ * The DDI variable cascade
+ *
+ * `c:Concept` → `l:ConceptualVariable` → `l:RepresentedVariable` → the occurrences themselves.
+ * The level worth putting in front of a reader is the ConceptualVariable: it is one measure,
+ * traced across every cycle that asked it, and the count of its representations is exactly the
+ * "did the coding change?" answer without anyone having to compare members by eye.
+ * -------------------------------------------------------------------------------------------- */
+
+/** `l:ConceptualVariable` — a Concept applied to a Universe, with the span of its occurrences. */
+export interface CorpusConceptualVariable {
+  conceptualVariableId: string;
+  conceptId: string;
+  label: string;
+  universe: string | null;
+  occurrences: number;
+  surveys: number;
+  /** Distinct codings. Greater than one means the coding changed between cycles. */
+  representations: number;
+  years: number;
+  yearMin: number | null;
+  yearMax: number | null;
+}
+
+/** One occurrence on a conceptual variable's timeline. */
+export interface CorpusTimelineEntry {
+  recordId: string;
+  representedVariableId: string;
+  name: string;
+  questionText: string | null;
+  universe: string | null;
+  codes: CorpusCode[];
+  codeCount: number;
+  surveyGroup: string;
+  surveyAcronym: string | null;
+  cycle: string | null;
+  year: number | null;
+  path: string;
+  page: number;
+  lang: string;
+  /** Ready-to-render citation, assembled the same way as a search hit's. */
+  citation: string;
+}
+
+export interface CorpusConceptQuery {
+  q?: string;
+  /** Minimum distinct years. Defaults to 2 — a "concept" seen once is not a history. */
+  minYears?: number;
+  /** Restrict to conceptual variables whose coding changed. */
+  changedOnly?: boolean;
+  limit?: number;
+  offset?: number;
+  signal?: AbortSignal;
+}
+
+export interface CorpusConceptResult {
+  concepts: CorpusConceptualVariable[];
+  total: number;
 }

@@ -43,6 +43,7 @@ import {
   type SearchHit,
 } from '@mobilesurvey/metadata-registry';
 import { CorpusSearch } from './CorpusSearch.js';
+import { CorpusConcepts } from './CorpusConcepts.js';
 import {
   corpusSource,
   createSurvey,
@@ -1135,7 +1136,7 @@ function HitCard({ hit, surveyTitles }: { hit: SearchHit; surveyTitles: Record<s
  * force one relevance scale onto two different kinds of claim, and would put the licence notice
  * somewhere it does not always apply.
  */
-type SearchScope = 'local' | 'corpus';
+type SearchScope = 'local' | 'corpus' | 'concepts';
 
 function SearcherView({ onBack }: { onBack: () => void }) {
   const corpus = useMemo(() => corpusSource(), []);
@@ -1243,11 +1244,22 @@ function SearcherView({ onBack }: { onBack: () => void }) {
             >
               Statistics Canada
             </button>
+            <button
+              type="button"
+              role="tab"
+              aria-selected={scope === 'concepts'}
+              className={`sr-scope ${scope === 'concepts' ? 'sr-scope--active' : ''}`}
+              onClick={() => setScope('concepts')}
+            >
+              Concepts over time
+            </button>
           </div>
         )}
 
         {scope === 'corpus' && corpus !== null ? (
           <CorpusSearch source={corpus} />
+        ) : scope === 'concepts' && corpus !== null ? (
+          <CorpusConcepts source={corpus} />
         ) : (
         <>
         {/* Search bar */}
