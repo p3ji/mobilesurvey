@@ -1084,3 +1084,66 @@ The `do $$ … foreach … $$` block that created the policies and grants in six
 Supabase SQL editor with no actionable message**, and plpgsql is the one construct the parse test
 cannot verify. It is now sixteen plain statements. Repetition that applies beats concision that has
 to be debugged through a browser.
+
+---
+
+## Deferred to a second iteration — measured and costed, not built (2026-08-19)
+
+French is **wishlisted**, by decision, not by blocker. Recording the measurements here so the next
+session does not re-derive them, and so the deferral is a choice with a price attached rather than
+a vague "later".
+
+### The size arithmetic, on the vacuumed table
+
+`corpus_variable` holds 194,507 English rows in 207 MB — **1,114.7 B/row measured**, of which
+**420.3 B/row (37.7%) is derived data carrying no information**:
+
+| Column | B/row | Size | What it is |
+|---|---:|---:|---|
+| `fts` | 239.3 | 44 MB | a stored tsvector, computable from `search_text` + `lang` |
+| `search_text` | 181.0 | 34 MB | a copy of concept + question + universe + note + category labels |
+
+French adds roughly 175,000 deduplicated rows:
+
+| | Rows | `corpus_variable` | + cascade | Total |
+|---|---:|---:|---:|---:|
+| Today, English only | 194,507 | 207 MB | ~56 MB | **~263 MB** |
+| Add French, as-is | ~370,000 | 393 MB | ~95 MB | **~488 MB** — at the tier limit with app tables on top |
+| Add French, slimmed | ~370,000 | 245 MB | ~95 MB | **~340 MB** — fits, ~160 MB spare |
+
+So the free tier is not what blocks French. **Slimming is worth ~148 MB at that scale**, which is
+more than French costs.
+
+### The wishlist, in the order it should be done
+
+1. **Slim the storage.** Drop `search_text`; replace the stored `fts` generated column with an
+   expression index over the real columns. Zero information loss — both are pure derivations.
+   Costs: a schema change, a full re-load (~3 min), a re-cluster (~3 min), and a vacuum. The trap
+   to watch is that `corpus_search`'s predicate must use the **byte-identical** expression or the
+   index silently stops being used — the same failure that cost 1.5 s per query before, and one
+   that shows up as slowness rather than as an error.
+2. **Load French** (`corpus:load --lang fr --dedupe`, then `corpus:cluster --lang en,fr --dedupe`).
+   Optional extra saving: drop `codes` from French rows only. French category coverage is 37.3%
+   against English's 42.9%, and French frequencies are deliberately omitted anyway because
+   `2 400 461 000` is ambiguous between one value and three once row reconstruction has flattened
+   the columns — so those lists are the weakest data in the corpus and cost ~34 MB.
+3. **EN↔FR pairing.** Deliberately *after* the load: its purpose is to let a French record inherit
+   its English concept cluster instead of forming a parallel one, so building it first would be
+   writing code with nothing to run against. Signals in confidence order are unchanged from D4 —
+   the `EN_FR` folder acronym swap, then identical variable name and position within paired files,
+   then filename language tags.
+
+### Also still open
+
+- **The remaining 184 documents that produce no records.** Not one problem: `IMDB_BDIM`'s 52 are
+  annexes with no variable entries to find, `CCR_RCC`'s 15 use a wrapped two-row header, and the
+  census files bury entries in 1,753 pages of prose. Separating "will never yield records" from
+  "layout not yet written" is worth more than the next parser.
+- **French category-row recall**, which is the largest single parse defect and would be worth
+  fixing before French is loaded rather than after.
+- **`corpus_cluster_stats.coding_changed`** counts over all conceptual variables (7,850) where the
+  meaningful figure is over those spanning more than one year (2,807). The UI avoids it; the
+  function should be re-scoped.
+- **Designer insertion of a corpus record** has never been exercised end to end, though the
+  `RegistryEntry` projection that makes it work is covered by tests.
+- **`.doc`/`.docx`** — 604 files unread (M4).
