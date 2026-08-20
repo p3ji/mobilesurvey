@@ -73,6 +73,8 @@ export interface CorpusSearchRow {
 /** Corpus-specific metadata, carried in `RegistryEntry.corpus` (an additive block, like `eq`). */
 export interface CorpusMeta {
   surveyGroup: string;
+  /** The delivery bundle the document sits in — half of the key that resolves it. */
+  bundle: string;
   surveyAcronym?: string;
   cycle?: string;
   year?: number;
@@ -161,6 +163,7 @@ export function toRegistryEntry(row: CorpusSearchRow): RegistryEntry {
     },
     corpus: {
       surveyGroup: row.survey_group,
+      bundle: row.bundle,
       ...(row.survey_acronym === null ? {} : { surveyAcronym: row.survey_acronym }),
       ...(row.cycle === null ? {} : { cycle: row.cycle }),
       ...(row.year === null ? {} : { year: row.year }),
@@ -240,6 +243,56 @@ export interface CorpusSourceConfig {
  * is imported by every app, so adding one to reach three read-only endpoints would be a poor
  * trade. The three calls are each one POST.
  */
+
+/* -------------------------------------------------------------------------------------------- *
+ * Source documents
+ *
+ * A citation identifies a document; this is what makes it openable. The dictionary around a
+ * variable carries context the variable's own block does not — derivation notes, universe
+ * definitions, the appendices that explain a code — and for 95.5% of these documents there is no
+ * public URL to link out to, so the text is served from the corpus's own Storage bucket.
+ * -------------------------------------------------------------------------------------------- */
+
+/** `r:OtherMaterial` + `r:Citation`: the document a record was lifted from. */
+export interface CorpusDocument {
+  documentId: string;
+  title: string;
+  surveyGroup: string;
+  surveyAcronym: string | null;
+  cycle: string | null;
+  year: number | null;
+  lang: string;
+  tcode: string | null;
+  docKind: string;
+  pages: number;
+  characters: number;
+  /** Records loaded from this document. */
+  records: number;
+  /** False when the row exists but no text was uploaded — say so rather than 404 at the reader. */
+  hasText: boolean;
+}
+
+/** One page of reconstructed text. */
+export interface CorpusDocumentPage {
+  page: number;
+  text: string;
+}
+
+/**
+ * Pages per stored object. Must match the ETL's `PAGES_PER_CHUNK`.
+ *
+ * Duplicated rather than imported because `statcan-corpus` is Node-only and must never enter a
+ * browser bundle (D2). The cost of the duplication is this comment and the test that pins the
+ * value; the cost of importing it would be pdfjs and a zip reader in the client.
+ */
+export const CORPUS_PAGES_PER_CHUNK = 100;
+
+/** First page of the chunk holding `page`. The client repeats the ETL's arithmetic exactly. */
+export function corpusChunkStart(page: number): number {
+  const safe = Math.max(1, Math.trunc(page));
+  return Math.floor((safe - 1) / CORPUS_PAGES_PER_CHUNK) * CORPUS_PAGES_PER_CHUNK + 1;
+}
+
 export class SupabaseCorpusSource {
   readonly id = 'statcan-corpus';
   readonly license = CORPUS_LICENSE;
@@ -412,6 +465,78 @@ export class SupabaseCorpusSource {
     }));
   }
 
+  /**
+   * The document a record came from, looked up by the path the record already carries.
+   *
+   * Returns null when the document has not been published rather than throwing: a record whose
+   * source was never uploaded is a normal state, not an error, and the panel should say so.
+   */
+  async document(
+    bundle: string,
+    path: string,
+    signal?: AbortSignal,
+  ): Promise<CorpusDocument | null> {
+    const rows = await this.rpc<
+      Array<{
+        document_id: string;
+        title: string;
+        survey_group: string;
+        survey_acronym: string | null;
+        cycle: string | null;
+        year: number | null;
+        lang: string;
+        tcode: string | null;
+        doc_kind: string;
+        pages: number;
+        characters: number;
+        records: number;
+        has_text: boolean;
+      }>
+    >('corpus_document_at', { p_bundle: bundle, p_path: path }, signal);
+    const row = rows[0];
+    if (row === undefined) return null;
+    return {
+      documentId: row.document_id,
+      title: row.title,
+      surveyGroup: row.survey_group,
+      surveyAcronym: row.survey_acronym,
+      cycle: row.cycle,
+      year: row.year,
+      lang: row.lang,
+      tcode: row.tcode,
+      docKind: row.doc_kind,
+      pages: row.pages,
+      characters: row.characters,
+      records: row.records,
+      hasText: row.has_text,
+    };
+  }
+
+  /**
+   * The chunk of reconstructed text containing `page`.
+   *
+   * Fetched straight from Storage rather than through PostgREST — the text is not in the
+   * database. Bounded to ~100 pages regardless of document size, which matters because the
+   * corpus holds a 3,567-page document and a citation should not move six megabytes to show one
+   * screen.
+   */
+  async documentPages(
+    documentId: string,
+    page: number,
+    signal?: AbortSignal,
+  ): Promise<CorpusDocumentPage[]> {
+    const from = corpusChunkStart(page);
+    const response = await this.fetchImpl(
+      `${this.url}/storage/v1/object/public/corpus-documents/${documentId}/${from}.json`,
+      signal === undefined ? {} : { signal },
+    );
+    if (response.status === 404) return [];
+    if (!response.ok) {
+      throw new Error(`Document text unavailable: ${response.status} ${response.statusText}`);
+    }
+    const chunk = (await response.json()) as { pages?: CorpusDocumentPage[] };
+    return chunk.pages ?? [];
+  }
   async surveys(signal?: AbortSignal): Promise<CorpusSurvey[]> {
     const rows = await this.rpc<
       Array<{

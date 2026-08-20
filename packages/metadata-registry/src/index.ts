@@ -25,4 +25,8 @@ export {
   type CorpusTimelineEntry,
   type CorpusConceptQuery,
   type CorpusConceptResult,
+  type CorpusDocument,
+  type CorpusDocumentPage,
+  corpusChunkStart,
+  CORPUS_PAGES_PER_CHUNK,
 } from './corpus.js';

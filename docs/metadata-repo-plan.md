@@ -1147,3 +1147,85 @@ more than French costs.
 - **Designer insertion of a corpus record** has never been exercised end to end, though the
   `RegistryEntry` projection that makes it work is covered by tests.
 - **`.doc`/`.docx`** — 604 files unread (M4).
+
+---
+
+## Source documents — a citation you can open (2026-08-19)
+
+A record cited `CCHS · 2015 · cchs_2015_f1_T15.6_v1.pdf · p. 176`, which identifies a document and
+resolves to nothing. The dictionary around a variable carries context its own block does not, and
+sometimes that context exists nowhere else.
+
+### Linking out does not work, and this was measured before designing
+
+| | |
+|---|---:|
+| English documents behind the records | 581 |
+| Filenames carrying an SDDS survey number | **26 (4.5%)** |
+| Mean document length | 183 pages (largest 3,567) |
+
+For 95.5% of documents there is no derivable public URL, and the 4.5% that have one resolve to a
+survey landing page rather than to the dictionary. Reaching the source therefore means serving it.
+
+### The DDI construct, and where the bytes go
+
+A data dictionary is not a `pi:PhysicalInstance` — we hold the documentation, not the microdata it
+documents. It is **`r:OtherMaterial`**: material related to a study, carrying an `r:Citation` and
+an `r:ExternalURLReference`. `corpus_document` is that, flattened.
+
+The text does **not** go in Postgres. 223 MB of reconstructed text would consume nearly half the
+database tier that the records themselves live in; Supabase Storage is a **separate 1 GB quota**,
+and that separation is the entire reason for the split:
+
+| | |
+|---|---:|
+| Postgres | 581 rows — identity and citation only |
+| Storage | 1,477 chunks · 113,678 pages · **~257 MB of 1 GB** |
+| Publish run | 33 minutes, **0 upload failures** |
+
+Nothing touches `corpus_variable`. The join is `(bundle, path)`, which every search result already
+returns, so linking documents cost the occurrence table no schema change at all (D3).
+
+### Chunked at 100 pages
+
+The corpus holds a 3,567-page dictionary. Fetching it whole to show the page a citation names
+would move six megabytes to fill one screen. Chunking bounds a page fetch to ~180 KB regardless of
+document size, and the chunk containing page *N* is arithmetic — no index to fetch first, and no
+index to keep in step with the objects. The client repeats that arithmetic in
+`corpusChunkStart`, duplicated from the ETL rather than imported because `statcan-corpus` is
+Node-only and importing it would pull pdfjs and a zip reader into the browser (D2). The duplication
+is pinned by tests on both sides.
+
+### One thing caught before it shipped
+
+`corpus_timeline` returns `path` but not `bundle`, so timeline entries could not have resolved
+their document under a `(bundle, path)` lookup. Caught while the SQL was still unapplied, so
+`corpus_document_at` takes a **nullable** bundle and matches on path alone when it is absent —
+which cost nothing then, and would have cost a second trip through the SQL editor afterwards.
+
+### What it actually buys
+
+The parsed record for `SMK_53` carries the concept and its categories. The document page also
+carries the routing universe (`SMK_12 = 2 and SMK_21A = 1`), the `Source:` field, and the full
+weighted-frequency table with percentages — none of which the extraction keeps:
+
+```
+CHMS 2014 - Data Dictionary
+Universe: SMK_12 = 2 and SMK_21A = 1
+Answer Categories        Code  Frequency  Weighted Frequency    %
+Number of days          00-30        130            723,500   2.2
+Valid skip                 96      5,650         31,484,000  97.5
+```
+
+That is the case for having built this rather than improving the parser: some context is only ever
+going to live in the document.
+
+### Deliberately not done
+
+- **The PDFs themselves are not republished.** What is served is demonstrably our row-reconstructed
+  extraction, which is easier to characterise as an adaptation than a byte-identical copy would be,
+  and the reader says so above every page.
+- **No OCR**, so image-only scans have a `corpus_document` row with `has_text: false` and the
+  reader says the text was not published rather than meeting a 404.
+- **`VITE_CORPUS_DOCS_BASE` is not built.** The escape hatch for a deployment that hosts the real
+  PDFs elsewhere remains a design note; nothing needs it yet.

@@ -24,6 +24,7 @@ import {
   type CorpusTimelineEntry,
   type SupabaseCorpusSource,
 } from '@mobilesurvey/metadata-registry';
+import { CorpusDocumentReader } from './CorpusDocument.js';
 
 const DEBOUNCE_MS = 250;
 const PAGE_SIZE = 25;
@@ -66,10 +67,12 @@ function Timeline({
   source,
   cv,
   onClose,
+  onRead,
 }: {
   source: SupabaseCorpusSource;
   cv: CorpusConceptualVariable;
   onClose: () => void;
+  onRead: (path: string, page: number) => void;
 }) {
   const [entries, setEntries] = useState<CorpusTimelineEntry[] | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -143,7 +146,16 @@ function Timeline({
                 </div>
                 {e.questionText !== null && <p className="cc-entry__q">{e.questionText}</p>}
                 <Codes codes={e.codes} />
-                <p className="cs-hit__cite">{e.citation}</p>
+                <p className="cs-hit__cite">
+                  {e.citation}
+                  <button
+                    type="button"
+                    className="cs-link cs-hit__open"
+                    onClick={() => onRead(e.path, e.page)}
+                  >
+                    Open source ↗
+                  </button>
+                </p>
               </div>
             </li>
           ))}
@@ -165,6 +177,7 @@ export function CorpusConcepts({ source }: { source: SupabaseCorpusSource }) {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [open, setOpen] = useState<CorpusConceptualVariable | null>(null);
+  const [reading, setReading] = useState<{ path: string; page: number } | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -213,8 +226,29 @@ export function CorpusConcepts({ source }: { source: SupabaseCorpusSource }) {
     inputRef.current?.focus();
   }, []);
 
+  if (reading !== null) {
+    return (
+      <CorpusDocumentReader
+        source={source}
+        // Timeline entries carry only the path — corpus_document_at takes a null bundle and
+        // matches on path alone, which is why it was written that way.
+        bundle={null}
+        path={reading.path}
+        page={reading.page}
+        onClose={() => setReading(null)}
+      />
+    );
+  }
+
   if (open !== null) {
-    return <Timeline source={source} cv={open} onClose={() => setOpen(null)} />;
+    return (
+      <Timeline
+        source={source}
+        cv={open}
+        onClose={() => setOpen(null)}
+        onRead={(path, page) => setReading({ path, page })}
+      />
+    );
   }
 
   return (

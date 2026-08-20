@@ -496,6 +496,48 @@ The UI satisfies all three (a notice above the results, a per-record citation on
 `CORPUS_ATTRIBUTION` in `packages/metadata-registry/src/corpus.ts` is the single string that
 carries the obligations — do not paraphrase it per surface.
 
+### 9f. Source documents (optional — powers “Open source” on every corpus record)
+
+A corpus record cites `CCHS · 2015 · cchs_2015_f1_T15.6_v1.pdf · p. 176`, which identifies a
+document and resolves to nothing. The dictionary around a variable carries context its own block
+does not — derivation notes, universe definitions, the appendices that explain a code — and
+linking out to Statistics Canada does not work: **26 of 581 documents (4.5%)** carry an SDDS
+number in their filename, and even those resolve to a survey landing page rather than the
+dictionary. So the text is served from the project’s own Storage.
+
+Without this section the Searcher works normally; the “Open source” link reports that the
+document has not been published.
+
+**1. Create the bucket** — Dashboard → Storage → New bucket, name `corpus-documents`,
+**Public bucket ON**. Public because the browser reads the text directly and the content is
+Statistics Canada Open Licence material, which permits redistribution with attribution; signed
+URLs would add a round trip and an expiry for no protection the licence asks for. Restrict it to
+`application/json` with a 5 MB file limit so a runaway upload fails loudly rather than filling the
+quota.
+
+**2. Apply the schema** — SQL Editor → paste `packages/statcan-corpus/sql/documents.sql`. It adds
+`corpus_document` (DDI `r:OtherMaterial` + `r:Citation`, flattened) plus `corpus_document_at` and
+`corpus_documents`. Nothing here touches `corpus_variable`: the join is on `(bundle, path)`, which
+every search result already returns.
+
+**3. Publish** — needs the delivery in `docs/metadatarepo/` and the service-role key:
+
+```bash
+pnpm --filter @mobilesurvey/statcan-corpus corpus:documents -- --lang en
+```
+
+Extracts every document that produced loaded records, stages the text to `out/documents/`, and
+uploads it chunked at 100 pages. Staging to disk first is deliberate: the upload phase is ~1,500
+network calls, and a failure part-way through should be retryable without re-extracting.
+
+**Measured (2026-08-19):** 581 documents · 113,678 pages · 223 MB of text · 1,477 chunks · 0
+failures · 33 minutes. **Storage holds ~257 MB of the 1 GB quota, which is a separate quota from
+the database’s 500 MB** — that separation is the whole reason the text lives here rather than in
+a column.
+
+Chunking bounds a page fetch to ~180 KB no matter the document: the corpus holds a 3,567-page
+dictionary, and opening a citation should not move six megabytes to show one screen.
+
 ---
 
 ## Security notes

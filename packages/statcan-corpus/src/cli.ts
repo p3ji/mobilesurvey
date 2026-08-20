@@ -31,6 +31,7 @@ import {
   existsSync,
   mkdirSync,
   readdirSync,
+  readFileSync,
   rmSync,
   writeFileSync,
 } from 'node:fs';
@@ -49,12 +50,19 @@ import { toCorpusRow } from './project.js';
 import {
   credentialsFromEnv,
   DEFAULT_BATCH,
+  DOCUMENTS_BUCKET,
   envWithFile,
   factKey,
   loadCorpusJsonl,
+  uploadObject,
   upsertRows,
 } from './load.js';
 import { buildClusters } from './cluster.js';
+import {
+  toChunks,
+  toDocumentRow,
+  type CorpusDocumentRow,
+} from './documents.js';
 import { renderInventoryJsonl, renderReportMarkdown } from './report.js';
 import type { CorpusVariable, DocKind, ExtractedDoc } from './types.js';
 
@@ -84,6 +92,7 @@ Usage:
   tsx src/cli.ts parse     [options]   Classify, extract, and parse dictionaries into records.
   tsx src/cli.ts load      [options]   Upsert parsed records into Supabase.
   tsx src/cli.ts cluster   [options]   Build the DDI variable cascade and load it.
+  tsx src/cli.ts documents [options]   Publish the source documents behind the loaded records.
 
 Classifies every file in the corpus delivery and, with --extract, pulls row-reconstructed text
 out of the selected documents. Writes <out>/inventory.jsonl (gitignored) and the committed
@@ -1390,6 +1399,140 @@ async function clusterCommand(args: CliArgs): Promise<void> {
 }
 
 /* -------------------------------------------------------------------------------------------- *
+ * documents
+ * -------------------------------------------------------------------------------------------- */
+
+/**
+ * Publish the source documents behind the loaded records: a citation row per document, and its
+ * reconstructed text in Storage, chunked so "p. 176" fetches one chunk rather than a whole book.
+ *
+ * Only documents that actually produced loaded records are published. Extracting all 1,368 would
+ * upload text nothing links to, and the 184 that produce nothing include the annexes and the
+ * 1,753-page census guides — the largest files in the delivery and the least useful to a reader
+ * who arrived from a variable.
+ *
+ * Chunks are staged to disk between extraction and upload rather than held in memory. 581
+ * documents of page text is ~184 MB, which is the one thing `retainDocs: false` exists to avoid —
+ * and staging makes the upload phase retryable on its own, which matters when it is ~1,100 network
+ * calls that can fail individually.
+ */
+async function documentsCommand(args: CliArgs): Promise<void> {
+  const corpus = resolveCorpus(args.corpus);
+  const recordsPath = args.records ?? path.join(args.outDir, 'corpus.jsonl');
+  if (!existsSync(recordsPath)) {
+    throw new Error(`No records at ${recordsPath}. Run \`corpus:parse\` first, or pass --records PATH.`);
+  }
+  const stageDir = path.join(args.outDir, 'documents');
+
+  const langs = args.langs === undefined ? undefined : new Set(args.langs);
+  process.stderr.write(`corpus:  ${path.relative(REPO_ROOT, corpus).replace(/\\/g, '/')}\n`);
+  process.stderr.write(`records: ${path.relative(REPO_ROOT, recordsPath).replace(/\\/g, '/')}\n`);
+  process.stderr.write(`langs:   ${args.langs?.join(', ') ?? 'all'}\n\n`);
+
+  // Which documents produced records, and how many. Read from the parse output rather than the
+  // database so a --dry-run needs no credentials.
+  const wanted = new Map<string, number>();
+  const reader = createInterface({ input: createReadStream(recordsPath), crlfDelay: Infinity });
+  for await (const line of reader) {
+    if (line.trim() === '') continue;
+    const v = JSON.parse(line) as CorpusVariable;
+    if (langs !== undefined && !langs.has(v.source.lang)) continue;
+    const key = `${v.source.bundle} ${v.source.path}`;
+    wanted.set(key, (wanted.get(key) ?? 0) + 1);
+  }
+  endStatus(`select:  ${formatInt(wanted.size)} documents produced records`);
+
+  if (args.dryRun) {
+    process.stderr.write(
+      `dry run: would publish ${formatInt(wanted.size)} documents; nothing extracted or sent\n`,
+    );
+    return;
+  }
+
+  const creds = credentialsFromEnv(envWithFile(path.join(PACKAGE_DIR, '.env.local')));
+  process.stderr.write(`target:  ${creds.url}\n`);
+  process.stderr.write(`stage:   ${path.relative(REPO_ROOT, stageDir).replace(/\\/g, '/')}\n\n`);
+
+  rmSync(stageDir, { recursive: true, force: true });
+  mkdirSync(stageDir, { recursive: true });
+
+  const started = Date.now();
+  const rows: CorpusDocumentRow[] = [];
+  let extracted = 0;
+  let staged = 0;
+  let characters = 0;
+
+  await ingestCorpus(corpus, {
+    extractText: true,
+    // No kind or T-code filter: selection is "did this produce records", not classification.
+    retainDocs: false,
+    ...(args.staging !== undefined ? { stagingDir: args.staging } : {}),
+    onScan: (files) => {
+      if (files % 500 === 0) status(`scan:    ${formatInt(files)} files`);
+    },
+    onPlan: (p) => endStatus(`scan:    ${formatInt(p.files)} files · ${formatInt(p.selected)} extractable`),
+    onDoc: (doc) => {
+      const records = wanted.get(`${doc.file.bundle} ${doc.file.path}`);
+      if (records === undefined) return;
+      const documentId = documentRecordId(doc.file);
+      rows.push(toDocumentRow(documentId, doc.file, doc, records));
+      mkdirSync(path.join(stageDir, documentId), { recursive: true });
+      for (const chunk of toChunks(documentId, doc)) {
+        writeFileSync(path.join(stageDir, documentId, `${chunk.from}.json`), JSON.stringify(chunk));
+        staged += 1;
+      }
+      extracted += 1;
+      characters += doc.charCount;
+      status(
+        `extract: ${formatInt(extracted)}/${formatInt(wanted.size)} docs · ` +
+          `${formatInt(staged)} chunks · ${formatInt(characters)} chars`,
+      );
+    },
+  });
+  endStatus(
+    `extract: ${formatInt(extracted)}/${formatInt(wanted.size)} docs · ${formatInt(staged)} chunks`,
+  );
+
+  let uploaded = 0;
+  let failed = 0;
+  for (const row of rows) {
+    const dir = path.join(stageDir, row.document_id);
+    if (!existsSync(dir)) continue;
+    for (const name of readdirSync(dir).sort()) {
+      try {
+        await uploadObject(
+          creds,
+          DOCUMENTS_BUCKET,
+          `${row.document_id}/${name}`,
+          readFileSync(path.join(dir, name), 'utf8'),
+        );
+        uploaded += 1;
+      } catch (err) {
+        failed += 1;
+        row.has_text = false;
+        if (failed <= 3) process.stderr.write(`\nupload failed: ${(err as Error).message}\n`);
+      }
+      if ((uploaded + failed) % 25 === 0) {
+        status(`upload:  ${formatInt(uploaded)}/${formatInt(staged)} chunks · ${formatInt(failed)} failed`);
+      }
+    }
+  }
+  endStatus(`upload:  ${formatInt(uploaded)}/${formatInt(staged)} chunks · ${formatInt(failed)} failed`);
+
+  for (let i = 0; i < rows.length; i += args.batch ?? DEFAULT_BATCH) {
+    await upsertRows(
+      creds,
+      'corpus_document',
+      'document_id',
+      rows.slice(i, i + (args.batch ?? DEFAULT_BATCH)),
+    );
+  }
+  endStatus(`rows:    ${formatInt(rows.length)} documents recorded`);
+
+  process.stderr.write(`\ndone:    ${formatDuration(Date.now() - started)}\n`);
+}
+
+/* -------------------------------------------------------------------------------------------- *
  * main
  * -------------------------------------------------------------------------------------------- */
 
@@ -1419,6 +1562,10 @@ async function main(argv: readonly string[]): Promise<number> {
   }
   if (command === 'cluster') {
     await clusterCommand(parseArgs(rest));
+    return 0;
+  }
+  if (command === 'documents') {
+    await documentsCommand(parseArgs(rest));
     return 0;
   }
   process.stderr.write(`Unknown command "${command}". Run with --help.\n`);

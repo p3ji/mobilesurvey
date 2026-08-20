@@ -25,4 +25,5 @@ export * from './report.js';
 export * from './ingest.js';
 export * from './parse.js';
 export * from './project.js';
+export * from './documents.js';
 export * from './load.js';

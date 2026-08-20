@@ -30,6 +30,7 @@ import {
   type SearchHit,
   type SupabaseCorpusSource,
 } from '@mobilesurvey/metadata-registry';
+import { CorpusDocumentReader } from './CorpusDocument.js';
 
 const DEBOUNCE_MS = 250;
 const PAGE_SIZE = 25;
@@ -69,7 +70,7 @@ function CodeList({ codes }: { codes: CorpusCode[] }) {
   );
 }
 
-function CorpusHit({ hit }: { hit: SearchHit }) {
+function CorpusHit({ hit, onOpen }: { hit: SearchHit; onOpen: () => void }) {
   const meta = hit.entry.corpus as CorpusMeta | undefined;
   if (meta === undefined) return null;
 
@@ -114,6 +115,12 @@ function CorpusHit({ hit }: { hit: SearchHit }) {
         {meta.citation}
         {meta.position === undefined ? '' : ` · position ${meta.position}`}
         {meta.length === undefined ? '' : `, length ${meta.length}`}
+        {/* The citation names the document; this opens it at the page it names. The dictionary
+            around a variable carries context the variable's own block does not, and for these
+            documents there is no public URL to link out to. */}
+        <button type="button" className="cs-link cs-hit__open" onClick={onOpen}>
+          Open source ↗
+        </button>
       </p>
     </article>
   );
@@ -130,6 +137,9 @@ export function CorpusSearch({ source }: CorpusSearchProps) {
   const [survey, setSurvey] = useState<string>('all');
   const [codesOnly, setCodesOnly] = useState(false);
   const [page, setPage] = useState(0);
+  const [reading, setReading] = useState<{ bundle: string; path: string; page: number } | null>(
+    null,
+  );
 
   const [hits, setHits] = useState<SearchHit[]>([]);
   const [total, setTotal] = useState(0);
@@ -228,6 +238,18 @@ export function CorpusSearch({ source }: CorpusSearchProps) {
     setQuery(term);
     inputRef.current?.focus();
   }, []);
+
+  if (reading !== null) {
+    return (
+      <CorpusDocumentReader
+        source={source}
+        bundle={reading.bundle}
+        path={reading.path}
+        page={reading.page}
+        onClose={() => setReading(null)}
+      />
+    );
+  }
 
   return (
     <div className="cs">
@@ -330,7 +352,14 @@ export function CorpusSearch({ source }: CorpusSearchProps) {
 
           <div className="sr-results">
             {hits.map((hit) => (
-              <CorpusHit key={hit.entry.entryId} hit={hit} />
+              <CorpusHit
+                key={hit.entry.entryId}
+                hit={hit}
+                onOpen={() => {
+                  const m = hit.entry.corpus;
+                  if (m !== undefined) setReading({ bundle: m.bundle, path: m.file, page: m.page });
+                }}
+              />
             ))}
           </div>
 
