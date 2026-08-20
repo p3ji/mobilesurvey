@@ -32,6 +32,7 @@ import {
   type SupabaseCorpusSource,
 } from '@mobilesurvey/metadata-registry';
 import { CorpusDocumentReader } from './CorpusDocument.js';
+import { CorpusSubjects } from './CorpusSubjects.js';
 
 const DEBOUNCE_MS = 250;
 const PAGE_SIZE = 25;
@@ -195,6 +196,7 @@ export function CorpusSearch({ source }: CorpusSearchProps) {
   const [lang, setLang] = useState<LangFilter>('all');
   const [survey, setSurvey] = useState<string>('all');
   const [codesOnly, setCodesOnly] = useState(false);
+  const [subject, setSubject] = useState<string | null>(null);
   const [page, setPage] = useState(0);
   const [reading, setReading] = useState<{ bundle: string; path: string; page: number } | null>(
     null,
@@ -238,7 +240,7 @@ export function CorpusSearch({ source }: CorpusSearchProps) {
     return () => clearTimeout(timer);
   }, [query]);
 
-  useEffect(() => setPage(0), [lang, survey, codesOnly]);
+  useEffect(() => setPage(0), [lang, survey, codesOnly, subject]);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -276,6 +278,7 @@ export function CorpusSearch({ source }: CorpusSearchProps) {
           ...(lang === 'all' ? {} : { lang }),
           ...(survey === 'all' ? {} : { survey }),
           ...(codesOnly ? { hasCodes: true } : {}),
+          ...(subject === null ? {} : { subject }),
           limit: PAGE_SIZE,
           offset: page * PAGE_SIZE,
           signal: controller.signal,
@@ -290,6 +293,7 @@ export function CorpusSearch({ source }: CorpusSearchProps) {
               ...(lang === 'all' ? {} : { lang }),
               ...(survey === 'all' ? {} : { survey }),
               ...(codesOnly ? { hasCodes: true } : {}),
+              ...(subject === null ? {} : { subject }),
               limit: PAGE_SIZE,
               offset: 0,
               signal: controller.signal,
@@ -320,7 +324,7 @@ export function CorpusSearch({ source }: CorpusSearchProps) {
       }
     })();
     return () => controller.abort();
-  }, [source, debounced, lang, survey, codesOnly, page, literal]);
+  }, [source, debounced, lang, survey, codesOnly, subject, page, literal]);
 
   const pages = Math.ceil(total / PAGE_SIZE);
   const summary = useMemo(() => {
@@ -348,7 +352,9 @@ export function CorpusSearch({ source }: CorpusSearchProps) {
   }
 
   return (
-    <div className="cs">
+    <div className="cs cs--railed">
+      <CorpusSubjects source={source} selected={subject} onSelect={setSubject} />
+      <div className="cs__main">
       <p className="cs-notice">
         <strong>Source:</strong> {CORPUS_ATTRIBUTION}
       </p>
@@ -505,6 +511,7 @@ export function CorpusSearch({ source }: CorpusSearchProps) {
           )}
         </>
       )}
+      </div>
     </div>
   );
 }

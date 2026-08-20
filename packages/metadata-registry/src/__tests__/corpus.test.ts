@@ -143,6 +143,7 @@ describe('SupabaseCorpusSource', () => {
       require_codes: true,
       max_rows: 10,
       row_offset: 0,
+      subject_filter: null,
     });
   });
 
@@ -224,5 +225,49 @@ describe('SupabaseCorpusSource', () => {
       fetchImpl: stubFetch([]),
     });
     expect(await source.stats()).toMatchObject({ variables: 0, yearMin: null });
+  });
+});
+
+describe('subject facet', () => {
+  it('passes a chosen subject through to the search', () => {
+    // Subject is a property of a survey, not of a record, so the filter is resolved server-side
+    // against the mapping table rather than by narrowing what the client already has.
+    const fetchImpl = stubFetch([]);
+    const source = new SupabaseCorpusSource({ url: 'https://p.supabase.co', anonKey: 'a', fetchImpl });
+    return source.search('smoking', { subject: 'Health' }).then(() => {
+      const [, init] = (fetchImpl as unknown as ReturnType<typeof vi.fn>).mock.calls[0] as [
+        string,
+        RequestInit,
+      ];
+      expect(JSON.parse(init.body as string).subject_filter).toBe('Health');
+    });
+  });
+
+  it('maps the facet out of its SQL column names', async () => {
+    const source = new SupabaseCorpusSource({
+      url: 'https://p.supabase.co',
+      anonKey: 'a',
+      fetchImpl: stubFetch([{ subject: 'Health', variables: 37852, surveys: 22, confirmed: 0 }]),
+    });
+    expect(await source.subjects()).toEqual([
+      { subject: 'Health', variables: 37852, surveys: 22, confirmed: 0 },
+    ]);
+  });
+
+  it('reports what the facet cannot reach', async () => {
+    // A facet list that silently omitted a third of the corpus would read as a complete index.
+    const source = new SupabaseCorpusSource({
+      url: 'https://p.supabase.co',
+      anonKey: 'a',
+      fetchImpl: stubFetch([
+        { variables: 58719, surveys: 91, total_variables: 194507, total_surveys: 186 },
+      ]),
+    });
+    expect(await source.unclassified()).toEqual({
+      variables: 58719,
+      surveys: 91,
+      totalVariables: 194507,
+      totalSurveys: 186,
+    });
   });
 });

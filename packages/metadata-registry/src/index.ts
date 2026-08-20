@@ -26,6 +26,8 @@ export {
   type CorpusConceptQuery,
   type CorpusConceptResult,
   type CorpusSuggestion,
+  type CorpusSubjectFacet,
+  type CorpusUnclassified,
   type CorpusDocument,
   type CorpusDocumentPage,
   corpusChunkStart,

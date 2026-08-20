@@ -194,6 +194,8 @@ export interface CorpusFilters {
   yearMax?: number;
   /** `true` restricts to variables carrying a response-category list, `false` excludes them. */
   hasCodes?: boolean;
+  /** One of Statistics Canada's subjects. Matches surveys assigned to it. */
+  subject?: string;
 }
 
 export interface CorpusSearchOptions extends CorpusFilters {
@@ -234,6 +236,24 @@ export interface CorpusSuggestion {
   records: number;
   similarity: number;
   score: number;
+}
+
+/** One row of the subject facet, with the counts a reader needs to judge it. */
+export interface CorpusSubjectFacet {
+  subject: string;
+  /** Variables, not surveys: it tells a reader how far this filter narrows things. */
+  variables: number;
+  surveys: number;
+  /** Surveys whose assignment a person confirmed, as opposed to derived from the survey title. */
+  confirmed: number;
+}
+
+/** How much of the corpus the subject facet cannot reach. */
+export interface CorpusUnclassified {
+  variables: number;
+  surveys: number;
+  totalVariables: number;
+  totalSurveys: number;
 }
 
 export interface CorpusSourceConfig {
@@ -351,6 +371,7 @@ export class SupabaseCorpusSource {
         year_min: options.yearMin ?? null,
         year_max: options.yearMax ?? null,
         require_codes: options.hasCodes ?? null,
+        subject_filter: options.subject ?? null,
         max_rows: options.limit ?? 50,
         row_offset: options.offset ?? 0,
       },
@@ -573,6 +594,42 @@ export class SupabaseCorpusSource {
     }));
   }
 
+  /**
+   * The subject facet.
+   *
+   * Subject is a property of a *survey*, not of a variable: a survey is about something, a
+   * variable inside it need not be. So this joins through a mapping table of a few hundred rows
+   * rather than reading a column on 194,507.
+   */
+  async subjects(signal?: AbortSignal): Promise<CorpusSubjectFacet[]> {
+    const rows = await this.rpc<
+      Array<{ subject: string; variables: number; surveys: number; confirmed: number }>
+    >('corpus_subjects', {}, signal);
+    return rows.map((r) => ({
+      subject: r.subject,
+      variables: r.variables,
+      surveys: r.surveys,
+      confirmed: r.confirmed,
+    }));
+  }
+
+  /**
+   * What the facet cannot reach.
+   *
+   * Fetched so the sidebar can say it out loud. A facet list that silently omits a third of the
+   * corpus reads as a complete index of it, which would be the most misleading thing on the page.
+   */
+  async unclassified(signal?: AbortSignal): Promise<CorpusUnclassified> {
+    const [row] = await this.rpc<
+      Array<{ variables: number; surveys: number; total_variables: number; total_surveys: number }>
+    >('corpus_unclassified', {}, signal);
+    return {
+      variables: row?.variables ?? 0,
+      surveys: row?.surveys ?? 0,
+      totalVariables: row?.total_variables ?? 0,
+      totalSurveys: row?.total_surveys ?? 0,
+    };
+  }
   async surveys(signal?: AbortSignal): Promise<CorpusSurvey[]> {
     const rows = await this.rpc<
       Array<{

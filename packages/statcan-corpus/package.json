@@ -18,7 +18,8 @@
     "corpus:load": "tsx src/cli.ts load",
     "corpus:cluster": "tsx src/cli.ts cluster",
     "corpus:documents": "tsx src/cli.ts documents",
-    "corpus:lexicon": "tsx src/cli.ts lexicon"
+    "corpus:lexicon": "tsx src/cli.ts lexicon",
+    "corpus:subjects": "tsx src/cli.ts subjects"
   },
   "dependencies": {
     "@mobilesurvey/ddi-xml": "workspace:*",

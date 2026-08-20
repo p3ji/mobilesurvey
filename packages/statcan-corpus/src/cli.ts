@@ -59,6 +59,7 @@ import {
 } from './load.js';
 import { buildClusters } from './cluster.js';
 import { buildLexicon, MIN_RECORDS, rankSuggestions } from './lexicon.js';
+import { isStatCanSubject, parseSurveySubjects } from './subjects.js';
 import {
   toChunks,
   toDocumentRow,
@@ -95,6 +96,7 @@ Usage:
   tsx src/cli.ts cluster   [options]   Build the DDI variable cascade and load it.
   tsx src/cli.ts documents [options]   Publish the source documents behind the loaded records.
   tsx src/cli.ts lexicon   [options]   Build the vocabulary that powers typo correction.
+  tsx src/cli.ts subjects  [options]   Load docs/statcan-survey-subjects.tsv into the facet.
 
 Classifies every file in the corpus delivery and, with --extract, pulls row-reconstructed text
 out of the selected documents. Writes <out>/inventory.jsonl (gitignored) and the committed
@@ -1612,6 +1614,105 @@ async function lexiconCommand(args: CliArgs): Promise<void> {
 }
 
 /* -------------------------------------------------------------------------------------------- *
+ * subjects
+ * -------------------------------------------------------------------------------------------- */
+
+/**
+ * Load the survey → subject mapping.
+ *
+ * Reads `docs/statcan-survey-subjects.tsv`, which is edited by hand. A row whose `subjects` cell
+ * is filled loads as **confirmed**; a row left blank falls back to the suggestion derived from the
+ * survey's official title and loads as **suggested**.
+ *
+ * The fallback exists so the facet is usable before anyone has tagged anything, and the
+ * distinction is carried into the table rather than flattened, so the UI can say which kind of
+ * claim a reader is looking at. A blank cell that produced no title suggestion either loads
+ * nothing at all — the survey stays unclassified, which is true.
+ */
+async function subjectsCommand(args: CliArgs): Promise<void> {
+  const mappingPath = path.join(REPO_ROOT, 'docs', 'statcan-survey-subjects.tsv');
+  if (!existsSync(mappingPath)) {
+    throw new Error(`No mapping at ${mappingPath}.`);
+  }
+  const tsv = readFileSync(mappingPath, 'utf8');
+  const { rows: confirmed, unknownSubjects } = parseSurveySubjects(tsv);
+
+  if (unknownSubjects.length > 0) {
+    // Reported rather than dropped: a misspelt subject would create a facet nobody can select,
+    // and nothing else in the pipeline would notice.
+    process.stderr.write(
+      `\nNOT a Statistics Canada subject — these rows were skipped:\n` +
+        unknownSubjects.map((s) => `  ${s}\n`).join(''),
+    );
+  }
+
+  const confirmedFor = new Map(confirmed.map((r) => [r.surveyGroup, r.subjects]));
+  const out: Array<{ survey_group: string; subject: string; source: string }> = [];
+  let suggestedGroups = 0;
+  let unclassified = 0;
+
+  for (const line of tsv.split(/\r?\n/)) {
+    if (line.trim() === '' || line.startsWith('#')) continue;
+    const cells = line.split('\t');
+    const group = cells[0]?.trim();
+    if (group === undefined || group === '' || group === 'survey_group') continue;
+
+    const byHand = confirmedFor.get(group);
+    if (byHand !== undefined) {
+      for (const subject of byHand) out.push({ survey_group: group, subject, source: 'confirmed' });
+      continue;
+    }
+    const suggested = (cells[4] ?? '')
+      .split('|')
+      .map((s) => s.trim())
+      .filter((s) => s !== '' && isStatCanSubject(s));
+    if (suggested.length === 0) {
+      unclassified += 1;
+      continue;
+    }
+    suggestedGroups += 1;
+    for (const subject of suggested) out.push({ survey_group: group, subject, source: 'suggested' });
+  }
+
+  process.stderr.write(
+    `\nmapping: ${formatInt(confirmedFor.size)} surveys tagged by hand · ` +
+      `${formatInt(suggestedGroups)} from the official title · ` +
+      `${formatInt(unclassified)} unclassified\n` +
+      `         ${formatInt(out.length)} rows\n`,
+  );
+
+  if (args.dryRun) {
+    process.stderr.write('nothing was sent (--dry-run)\n');
+    return;
+  }
+
+  const creds = credentialsFromEnv(envWithFile(path.join(PACKAGE_DIR, '.env.local')));
+  process.stderr.write(`target:  ${creds.url}\n`);
+
+  // Cleared first: an assignment removed from the file must disappear from the facet, and an
+  // upsert alone would leave it behind forever.
+  const wipe = await fetch(`${creds.url}/rest/v1/corpus_survey_subject?survey_group=not.is.null`, {
+    method: 'DELETE',
+    headers: {
+      apikey: creds.serviceRoleKey,
+      Authorization: `Bearer ${creds.serviceRoleKey}`,
+      Prefer: 'return=minimal',
+    },
+  });
+  if (!wipe.ok) throw new Error(`Could not clear the mapping: ${wipe.status} ${wipe.statusText}`);
+
+  for (let i = 0; i < out.length; i += args.batch ?? DEFAULT_BATCH) {
+    await upsertRows(
+      creds,
+      'corpus_survey_subject',
+      'survey_group,subject',
+      out.slice(i, i + (args.batch ?? DEFAULT_BATCH)),
+    );
+  }
+  endStatus(`load:    ${formatInt(out.length)} assignments`);
+}
+
+/* -------------------------------------------------------------------------------------------- *
  * main
  * -------------------------------------------------------------------------------------------- */
 
@@ -1649,6 +1750,10 @@ async function main(argv: readonly string[]): Promise<number> {
   }
   if (command === 'lexicon') {
     await lexiconCommand(parseArgs(rest));
+    return 0;
+  }
+  if (command === 'subjects') {
+    await subjectsCommand(parseArgs(rest));
     return 0;
   }
   process.stderr.write(`Unknown command "${command}". Run with --help.\n`);
