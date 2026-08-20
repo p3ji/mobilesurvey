@@ -17,7 +17,8 @@
     "corpus:parse": "tsx src/cli.ts parse",
     "corpus:load": "tsx src/cli.ts load",
     "corpus:cluster": "tsx src/cli.ts cluster",
-    "corpus:documents": "tsx src/cli.ts documents"
+    "corpus:documents": "tsx src/cli.ts documents",
+    "corpus:lexicon": "tsx src/cli.ts lexicon"
   },
   "dependencies": {
     "@mobilesurvey/ddi-xml": "workspace:*",

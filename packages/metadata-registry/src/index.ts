@@ -25,6 +25,7 @@ export {
   type CorpusTimelineEntry,
   type CorpusConceptQuery,
   type CorpusConceptResult,
+  type CorpusSuggestion,
   type CorpusDocument,
   type CorpusDocumentPage,
   corpusChunkStart,

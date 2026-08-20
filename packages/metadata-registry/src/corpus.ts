@@ -227,6 +227,15 @@ export interface CorpusSurvey {
   yearMax: number | null;
 }
 
+/** A candidate correction for a query the corpus does not contain. */
+export interface CorpusSuggestion {
+  term: string;
+  /** Records the word appears in. Shown so a reader can judge the suggestion, not just take it. */
+  records: number;
+  similarity: number;
+  score: number;
+}
+
 export interface CorpusSourceConfig {
   /** Supabase project URL, e.g. `https://abcdefgh.supabase.co`. */
   url: string;
@@ -537,6 +546,33 @@ export class SupabaseCorpusSource {
     const chunk = (await response.json()) as { pages?: CorpusDocumentPage[] };
     return chunk.pages ?? [];
   }
+  /**
+   * Corrections for a query the corpus does not contain.
+   *
+   * Ranked server-side by trigram similarity blended with how many records the word appears in,
+   * because similarity alone corrects `maritial` to `martial` (6 records) over `marital` (459).
+   *
+   * Returns an empty list rather than a weak guess when nothing is close. `narcotic` is not a
+   * misspelling of anything here — StatCan writes `opioid`, `codeine`, `fentanyl` — and offering
+   * a bad correction would imply we found something.
+   */
+  async suggest(
+    query: string,
+    { limit = 5, minSimilarity = 0.3, signal }: { limit?: number; minSimilarity?: number; signal?: AbortSignal } = {},
+  ): Promise<CorpusSuggestion[]> {
+    const trimmed = query.trim();
+    if (trimmed === '') return [];
+    const rows = await this.rpc<
+      Array<{ term: string; records: number; similarity: number; score: number }>
+    >('corpus_suggest', { q: trimmed, min_similarity: minSimilarity, max_rows: limit }, signal);
+    return rows.map((r) => ({
+      term: r.term,
+      records: r.records,
+      similarity: r.similarity,
+      score: r.score,
+    }));
+  }
+
   async surveys(signal?: AbortSignal): Promise<CorpusSurvey[]> {
     const rows = await this.rpc<
       Array<{

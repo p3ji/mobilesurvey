@@ -26,6 +26,7 @@ import {
   type CorpusCode,
   type CorpusMeta,
   type CorpusStats,
+  type CorpusSuggestion,
   type CorpusSurvey,
   type SearchHit,
   type SupabaseCorpusSource,
@@ -67,6 +68,64 @@ function CodeList({ codes }: { codes: CorpusCode[] }) {
         </button>
       )}
     </div>
+  );
+}
+
+/**
+ * What to offer when a query finds nothing and auto-correction did not fire.
+ *
+ * Distinct from the correction path above: this runs when the best suggestion also returned zero,
+ * or when the reader has insisted on their spelling. It lists near words rather than applying one,
+ * because at that point the system has already been wrong once.
+ *
+ * An empty list is rendered as a statement about the corpus — `narcotic` is not a typo, it is a
+ * word Statistics Canada does not use — rather than as silence.
+ */
+function Suggestions({
+  source,
+  query,
+  onPick,
+}: {
+  source: SupabaseCorpusSource;
+  query: string;
+  onPick: (term: string) => void;
+}) {
+  const [terms, setTerms] = useState<CorpusSuggestion[] | null>(null);
+
+  useEffect(() => {
+    const controller = new AbortController();
+    setTerms(null);
+    source
+      .suggest(query, { limit: 6, signal: controller.signal })
+      .then(setTerms)
+      .catch(() => {
+        if (!controller.signal.aborted) setTerms([]);
+      });
+    return () => controller.abort();
+  }, [source, query]);
+
+  if (terms === null) return null;
+  if (terms.length === 0) {
+    return (
+      <p className="cs-suggest cs-suggest--none">
+        No close match in the corpus vocabulary either — Statistics Canada may simply use different
+        wording for this. Try a related term, or browse <strong>Concepts over time</strong>.
+      </p>
+    );
+  }
+  return (
+    <p className="cs-suggest">
+      Words the corpus does use:{' '}
+      {terms.map((t, i) => (
+        <span key={t.term}>
+          {i > 0 && ', '}
+          <button type="button" className="cs-link" onClick={() => onPick(t.term)}>
+            {t.term}
+          </button>
+          <span className="cs-suggest__n"> ({formatInt(t.records)})</span>
+        </span>
+      ))}
+    </p>
   );
 }
 
@@ -156,6 +215,17 @@ export function CorpusSearch({ source }: CorpusSearchProps) {
    */
   const [metaError, setMetaError] = useState<string | null>(null);
   const [metaAttempt, setMetaAttempt] = useState(0);
+  /**
+   * A correction applied on the reader's behalf, and the query it replaced.
+   *
+   * Applied rather than merely offered, because a zero-result page with a suggestion under it
+   * makes the reader do the work twice. `corrected.from` is kept so the page can say what it did
+   * and offer to undo it — a correction the reader cannot see or refuse is the failure mode this
+   * pattern has.
+   */
+  const [corrected, setCorrected] = useState<{ from: string; to: string } | null>(null);
+  /** Set when the reader insists on their original spelling. */
+  const [literal, setLiteral] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
   // Debounce the query; every filter change resets to the first page, because page 3 of the old
@@ -210,13 +280,39 @@ export function CorpusSearch({ source }: CorpusSearchProps) {
           offset: page * PAGE_SIZE,
           signal: controller.signal,
         });
+        // Nothing found, and the reader has not insisted on this spelling: ask the vocabulary
+        // whether they meant something else, and if the answer is confident, run it. A zero-result
+        // page with a suggestion printed underneath makes the reader do the work twice.
+        if (result.total === 0 && debounced !== literal) {
+          const [best] = await source.suggest(debounced, { limit: 1, signal: controller.signal });
+          if (best !== undefined) {
+            const retry = await source.search(best.term, {
+              ...(lang === 'all' ? {} : { lang }),
+              ...(survey === 'all' ? {} : { survey }),
+              ...(codesOnly ? { hasCodes: true } : {}),
+              limit: PAGE_SIZE,
+              offset: 0,
+              signal: controller.signal,
+            });
+            if (retry.total > 0) {
+              setHits(retry.hits);
+              setTotal(retry.total);
+              setCorrected({ from: debounced, to: best.term });
+              setError(null);
+              return;
+            }
+          }
+        }
+
         setHits(result.hits);
         setTotal(result.total);
+        setCorrected(null);
         setError(null);
       } catch (err) {
         if (!controller.signal.aborted) {
           setHits([]);
           setTotal(0);
+          setCorrected(null);
           setError(describe(err));
         }
       } finally {
@@ -224,7 +320,7 @@ export function CorpusSearch({ source }: CorpusSearchProps) {
       }
     })();
     return () => controller.abort();
-  }, [source, debounced, lang, survey, codesOnly, page]);
+  }, [source, debounced, lang, survey, codesOnly, page, literal]);
 
   const pages = Math.ceil(total / PAGE_SIZE);
   const summary = useMemo(() => {
@@ -346,9 +442,30 @@ export function CorpusSearch({ source }: CorpusSearchProps) {
               ? 'Searching…'
               : total === 0
                 ? `No results for "${debounced}".`
-                : `${formatInt(total)} result${total === 1 ? '' : 's'} for "${debounced}"` +
-                  (pages > 1 ? ` · page ${page + 1} of ${formatInt(pages)}` : '')}
+                : `${formatInt(total)} result${total === 1 ? '' : 's'} for "${
+                    corrected?.to ?? debounced
+                  }"` + (pages > 1 ? ` · page ${page + 1} of ${formatInt(pages)}` : '')}
+            {/* A correction the reader can neither see nor refuse is how this pattern goes wrong,
+                so it says what it did and offers the original back. */}
+            {!busy && corrected !== null && (
+              <span className="cs-corrected">
+                {' '}
+                — corrected from “{corrected.from}”.{' '}
+                <button
+                  type="button"
+                  className="cs-link"
+                  onClick={() => {
+                    setLiteral(corrected.from);
+                    setCorrected(null);
+                  }}
+                >
+                  Search “{corrected.from}” instead
+                </button>
+              </span>
+            )}
           </p>
+
+          {!busy && total === 0 && <Suggestions source={source} query={debounced} onPick={onExample} />}
 
           <div className="sr-results">
             {hits.map((hit) => (

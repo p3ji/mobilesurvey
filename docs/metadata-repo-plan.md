@@ -1229,3 +1229,69 @@ going to live in the document.
   reader says the text was not published rather than meeting a 404.
 - **`VITE_CORPUS_DOCS_BASE` is not built.** The escape hatch for a deployment that hosts the real
   PDFs elsewhere remains a design note; nothing needs it yet.
+
+---
+
+## Hybrid search, stage 1: typo tolerance (2026-08-19)
+
+Reported: typing `opiod` returns nothing. Diagnosed as **two unrelated failures** that look
+identical to a reader:
+
+| Query | Hits | Cause |
+|---|---:|---|
+| `opioid` | 96 | works |
+| `opiod` | **0** | FTS matches lexemes exactly — no typo tolerance |
+| `narcotic` | **0** | the word appears nowhere in the corpus — a vocabulary gap |
+| `painkiller` | 0 | same |
+
+Only the first is fixable lexically. `narcotic` is not a misspelling of anything; StatCan writes
+`opioid`, `codeine`, `fentanyl`. That is stage 2.
+
+### A vocabulary, not a trigram index on the text
+
+A `gin_trgm_ops` index over `search_text` would work and would cost tens of megabytes against the
+binding constraint. The vocabulary is **15,294 words, 298 KB** — three orders of magnitude smaller,
+because 194,507 records say the same words repeatedly. Correcting a query is a lookup in the
+vocabulary, not a scan of the corpus.
+
+### The ranking blends similarity with frequency, and has to
+
+Similarity alone picks the wrong word on exactly the queries people type:
+
+| Typo | Similarity says | Records | Right answer |
+|---|---|---|---|
+| `maritial` | `marital` and `martial` tie at 0.55 | 459 vs 6 | `marital` |
+| `diabetis` | `diabetic` 0.64 beats `diabetes` 0.50 | 48 vs 380 | `diabetes` |
+| `hosuing` | `hosting` 0.45 beats `housing` 0.33 | 12 vs 300+ | `housing` |
+
+`similarity × (1 + ln(records))` reverses all three without a special case for any: a rare word
+being lexically closer is normally coincidence, a common word being nearly as close is normally
+the intent.
+
+### Two defects, both from feeding it text that is not prose
+
+| Vocabulary built from | `opiod` corrected to | Why |
+|---|---|---|
+| everything `search_text` indexes | `opi` (93 records) | `OPI_40F` fragments at the underscore |
+| …minus `name` | `opi` (63 records) | `universe` is full of routing conditions — `OPI_35 = 1` |
+| …minus any token with a digit or underscore | **`opioids` / `opioid`** | — |
+
+The lesson generalizes: a *word* vocabulary must be built from prose. Mnemonics are served by the
+trigram index on `corpus_variable.name` and by `corpus_mnemonic`, so excluding them loses nothing.
+
+### The correction is applied, not merely offered
+
+A zero-result page with a suggestion printed under it makes the reader do the work twice. The
+search retries with the best correction and reports what it did — *"96 results for 'opioids' —
+corrected from 'opiod'. Search 'opiod' instead"* — because a correction the reader can neither see
+nor refuse is how this pattern goes wrong.
+
+When no correction helps, the empty state is a statement about the corpus rather than silence:
+*"No close match in the corpus vocabulary either — Statistics Canada may simply use different
+wording for this."* That is the honest answer for `narcotic`, and it is what stage 2 replaces.
+
+### Ranking note, deliberately not tuned away
+
+`opiod` corrects to `opioids` (62 records) rather than `opioid` (35). Both stem to the same lexeme
+so either returns the same 96 records; weighting similarity harder would put `opioid` first and
+would simultaneously break `diabetis`, which is a real error where this is a cosmetic one.

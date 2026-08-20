@@ -58,6 +58,7 @@ import {
   upsertRows,
 } from './load.js';
 import { buildClusters } from './cluster.js';
+import { buildLexicon, MIN_RECORDS, rankSuggestions } from './lexicon.js';
 import {
   toChunks,
   toDocumentRow,
@@ -93,6 +94,7 @@ Usage:
   tsx src/cli.ts load      [options]   Upsert parsed records into Supabase.
   tsx src/cli.ts cluster   [options]   Build the DDI variable cascade and load it.
   tsx src/cli.ts documents [options]   Publish the source documents behind the loaded records.
+  tsx src/cli.ts lexicon   [options]   Build the vocabulary that powers typo correction.
 
 Classifies every file in the corpus delivery and, with --extract, pulls row-reconstructed text
 out of the selected documents. Writes <out>/inventory.jsonl (gitignored) and the committed
@@ -1533,6 +1535,83 @@ async function documentsCommand(args: CliArgs): Promise<void> {
 }
 
 /* -------------------------------------------------------------------------------------------- *
+ * lexicon
+ * -------------------------------------------------------------------------------------------- */
+
+/**
+ * Build the corpus vocabulary and load it, so a mistyped query can be corrected.
+ *
+ * Runs over the same records and the same fields the search index covers — a word in the
+ * vocabulary that the search cannot then find would be a correction leading to a second empty
+ * page, which is worse than no correction at all. That is also why it takes the same `--lang` and
+ * `--dedupe` filters as the load.
+ */
+async function lexiconCommand(args: CliArgs): Promise<void> {
+  const recordsPath = args.records ?? path.join(args.outDir, 'corpus.jsonl');
+  if (!existsSync(recordsPath)) {
+    throw new Error(`No records at ${recordsPath}. Run \`corpus:parse\` first, or pass --records PATH.`);
+  }
+
+  const langs = args.langs === undefined ? undefined : new Set(args.langs);
+  process.stderr.write(`records: ${path.relative(REPO_ROOT, recordsPath).replace(/\\/g, '/')}\n`);
+  process.stderr.write(`langs:   ${args.langs?.join(', ') ?? 'all'}\n`);
+  process.stderr.write(`dedupe:  ${args.dedupe ? 'on' : 'off'}\n\n`);
+
+  const started = Date.now();
+  const records: CorpusVariable[] = [];
+  const seen = args.dedupe ? new Set<string>() : undefined;
+  const reader = createInterface({ input: createReadStream(recordsPath), crlfDelay: Infinity });
+  for await (const line of reader) {
+    if (line.trim() === '') continue;
+    const v = JSON.parse(line) as CorpusVariable;
+    if (langs !== undefined && !langs.has(v.source.lang)) continue;
+    if (seen !== undefined) {
+      const key = factKey(toCorpusRow(v));
+      if (seen.has(key)) continue;
+      seen.add(key);
+    }
+    records.push(v);
+    if (records.length % 50000 === 0) status(`read:    ${formatInt(records.length)} occurrences`);
+  }
+  endStatus(`read:    ${formatInt(records.length)} occurrences`);
+
+  const lexicon = buildLexicon(records);
+  const bytes = lexicon.reduce((sum, t) => sum + t.term.length + 12, 0);
+  process.stderr.write(
+    `\nvocabulary: ${formatInt(lexicon.length)} words · ${formatBytes(bytes)} · ` +
+      `min ${MIN_RECORDS} records\n`,
+  );
+
+  // A quick sanity read on the corrections the vocabulary can actually make, printed because a
+  // vocabulary that loads cleanly and corrects nothing is a silent failure.
+  process.stderr.write('\ncorrections this vocabulary supports:\n');
+  for (const typo of ['opiod', 'smokeing', 'maritial', 'diabetis']) {
+    const best = rankSuggestions(typo, lexicon, { limit: 2 });
+    process.stderr.write(
+      `  ${typo.padEnd(10)} → ${
+        best.map((b) => `${b.term} (${b.similarity.toFixed(2)}, ${formatInt(b.records)} recs)`).join(', ') ||
+        'nothing'
+      }\n`,
+    );
+  }
+
+  if (args.dryRun) {
+    process.stderr.write('\nnothing was sent (--dry-run)\n');
+    return;
+  }
+
+  const creds = credentialsFromEnv(envWithFile(path.join(PACKAGE_DIR, '.env.local')));
+  process.stderr.write(`\ntarget:  ${creds.url}\n`);
+
+  for (let i = 0; i < lexicon.length; i += args.batch ?? DEFAULT_BATCH) {
+    await upsertRows(creds, 'corpus_term', 'term', lexicon.slice(i, i + (args.batch ?? DEFAULT_BATCH)));
+    status(`load:    ${formatInt(Math.min(i + (args.batch ?? DEFAULT_BATCH), lexicon.length))}/${formatInt(lexicon.length)}`);
+  }
+  endStatus(`load:    ${formatInt(lexicon.length)} words`);
+  process.stderr.write(`\ndone:    ${formatDuration(Date.now() - started)}\n`);
+}
+
+/* -------------------------------------------------------------------------------------------- *
  * main
  * -------------------------------------------------------------------------------------------- */
 
@@ -1566,6 +1645,10 @@ async function main(argv: readonly string[]): Promise<number> {
   }
   if (command === 'documents') {
     await documentsCommand(parseArgs(rest));
+    return 0;
+  }
+  if (command === 'lexicon') {
+    await lexiconCommand(parseArgs(rest));
     return 0;
   }
   process.stderr.write(`Unknown command "${command}". Run with --help.\n`);
