@@ -33,6 +33,7 @@ import {
 } from '@mobilesurvey/metadata-registry';
 import { CorpusDocumentReader } from './CorpusDocument.js';
 import { CorpusSubjects } from './CorpusSubjects.js';
+import { classifyHit } from './graphClassifier.js';
 
 const DEBOUNCE_MS = 250;
 const PAGE_SIZE = 25;
@@ -130,13 +131,22 @@ function Suggestions({
   );
 }
 
-function CorpusHit({ hit, onOpen }: { hit: SearchHit; onOpen: () => void }) {
+function CorpusHit({
+  hit,
+  onOpen,
+  onSelectVar,
+}: {
+  hit: SearchHit;
+  onOpen: () => void;
+  onSelectVar?: (name: string) => void;
+}) {
   const meta = hit.entry.corpus as CorpusMeta | undefined;
   if (meta === undefined) return null;
 
   const label =
     (hit.entry.ddi.label as Record<string, string> | undefined)?.[meta.lang === 'fr' ? 'fr' : 'en'] ??
     meta.variableName;
+  const classification = classifyHit(meta, label);
   const question = (hit.entry.ddi.description as Record<string, string> | undefined)?.[
     meta.lang === 'fr' ? 'fr' : 'en'
   ];
@@ -145,9 +155,23 @@ function CorpusHit({ hit, onOpen }: { hit: SearchHit; onOpen: () => void }) {
     <article className="cs-hit">
       <div className="cs-hit__head">
         <code className="cs-hit__name">{meta.variableName}</code>
-        <span className={`cs-hit__kind cs-hit__kind--${hit.entry.componentType}`}>
-          {hit.entry.componentType === 'question' ? 'question' : 'derived / admin'}
+        <span
+          className={`cs-hit__kind cs-hit__kind--${classification.role}`}
+          title={`GSIM: ${classification.origin} origin, ${classification.derivation} status`}
+        >
+          {classification.role === 'collected'
+            ? 'Question'
+            : classification.role === 'derived'
+              ? 'Derived DV'
+              : classification.role === 'administrative'
+                ? 'Admin Link'
+                : 'Paradata / Weight'}
         </span>
+        {classification.isGrouped && (
+          <span className="cs-hit__badge--grouped" title="PUMF Grouped Recode">
+            PUMF (G)
+          </span>
+        )}
         <span className="cs-hit__survey">
           {meta.surveyAcronym ?? meta.surveyGroup}
           {meta.year === undefined ? '' : ` · ${meta.year}`}
@@ -157,6 +181,23 @@ function CorpusHit({ hit, onOpen }: { hit: SearchHit; onOpen: () => void }) {
 
       <p className="cs-hit__label">{label}</p>
       {question !== undefined && question !== label && <p className="cs-hit__question">{question}</p>}
+
+      {classification.derivedInputs.length > 0 && (
+        <div className="cs-hit__lineage">
+          <span className="cs-hit__lineage-label">Inputs (prov:wasDerivedFrom):</span>
+          {classification.derivedInputs.map((inp) => (
+            <button
+              key={inp}
+              type="button"
+              className="cs-hit__lineage-btn"
+              onClick={() => onSelectVar?.(inp)}
+              title={`Search for source variable ${inp}`}
+            >
+              <code>{inp}</code>
+            </button>
+          ))}
+        </div>
+      )}
 
       {meta.universe !== undefined && (
         <p className="cs-hit__field">
@@ -175,9 +216,6 @@ function CorpusHit({ hit, onOpen }: { hit: SearchHit; onOpen: () => void }) {
         {meta.citation}
         {meta.position === undefined ? '' : ` · position ${meta.position}`}
         {meta.length === undefined ? '' : `, length ${meta.length}`}
-        {/* The citation names the document; this opens it at the page it names. The dictionary
-            around a variable carries context the variable's own block does not, and for these
-            documents there is no public URL to link out to. */}
         <button type="button" className="cs-link cs-hit__open" onClick={onOpen}>
           Open source ↗
         </button>
@@ -188,13 +226,21 @@ function CorpusHit({ hit, onOpen }: { hit: SearchHit; onOpen: () => void }) {
 
 export interface CorpusSearchProps {
   source: SupabaseCorpusSource;
+  initialQuery?: string;
+  initialSurvey?: string;
 }
 
-export function CorpusSearch({ source }: CorpusSearchProps) {
-  const [query, setQuery] = useState('');
-  const [debounced, setDebounced] = useState('');
+export function CorpusSearch({
+  source,
+  initialQuery = '',
+  initialSurvey = 'all',
+}: CorpusSearchProps) {
+  const [query, setQuery] = useState(initialQuery);
+  const [debounced, setDebounced] = useState(initialQuery);
   const [lang, setLang] = useState<LangFilter>('all');
-  const [survey, setSurvey] = useState<string>('all');
+  const [survey, setSurvey] = useState<string>(initialSurvey);
+  const [roleFilter, setRoleFilter] = useState<'all' | 'collected' | 'derived' | 'administrative'>('all');
+  const [hideProcess, setHideProcess] = useState(true);
   const [codesOnly, setCodesOnly] = useState(false);
   const [subject, setSubject] = useState<string | null>(null);
   const [page, setPage] = useState(0);
@@ -240,7 +286,33 @@ export function CorpusSearch({ source }: CorpusSearchProps) {
     return () => clearTimeout(timer);
   }, [query]);
 
-  useEffect(() => setPage(0), [lang, survey, codesOnly, subject]);
+  useEffect(() => {
+    if (initialQuery !== undefined && initialQuery !== query) {
+      setQuery(initialQuery);
+      setDebounced(initialQuery);
+      setPage(0);
+    }
+  }, [initialQuery]);
+
+  useEffect(() => {
+    if (initialSurvey !== undefined && initialSurvey !== survey) {
+      setSurvey(initialSurvey);
+      setPage(0);
+    }
+  }, [initialSurvey]);
+
+  useEffect(() => setPage(0), [lang, survey, codesOnly, subject, roleFilter, hideProcess]);
+
+  const displayedHits = useMemo(() => {
+    return hits.filter((h) => {
+      const m = h.entry.corpus as CorpusMeta | undefined;
+      if (!m) return true;
+      const c = classifyHit(m);
+      if (hideProcess && c.role === 'process') return false;
+      if (roleFilter !== 'all' && c.role !== roleFilter) return false;
+      return true;
+    });
+  }, [hits, hideProcess, roleFilter]);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -395,6 +467,21 @@ export function CorpusSearch({ source }: CorpusSearchProps) {
           </select>
         </label>
 
+        <label className="cs-filter">
+          <span className="cs-filter__label">GSIM Role</span>
+          <select value={roleFilter} onChange={(e) => setRoleFilter(e.target.value as any)}>
+            <option value="all">All Roles</option>
+            <option value="collected">Questions Only</option>
+            <option value="derived">Derived (DV) Only</option>
+            <option value="administrative">Administrative Links</option>
+          </select>
+        </label>
+
+        <label className="cs-filter cs-filter--check" title="Exclude replicate bootstrap weights (BSW*), flags, and operational paradata">
+          <input type="checkbox" checked={hideProcess} onChange={(e) => setHideProcess(e.target.checked)} />
+          <span>Hide paradata / weights</span>
+        </label>
+
         <label className="cs-filter cs-filter--check">
           <input type="checkbox" checked={codesOnly} onChange={(e) => setCodesOnly(e.target.checked)} />
           <span>Has response categories</span>
@@ -473,14 +560,26 @@ export function CorpusSearch({ source }: CorpusSearchProps) {
 
           {!busy && total === 0 && <Suggestions source={source} query={debounced} onPick={onExample} />}
 
+          {displayedHits.length === 0 && hits.length > 0 && (
+            <p className="cs-suggest">
+              All {hits.length} matches on this page were hidden by the current GSIM Role / Paradata filter.
+              Try unchecking "Hide paradata / weights" or selecting "All Roles".
+            </p>
+          )}
+
           <div className="sr-results">
-            {hits.map((hit) => (
+            {displayedHits.map((hit) => (
               <CorpusHit
                 key={hit.entry.entryId}
                 hit={hit}
                 onOpen={() => {
                   const m = hit.entry.corpus;
                   if (m !== undefined) setReading({ bundle: m.bundle, path: m.file, page: m.page });
+                }}
+                onSelectVar={(vName) => {
+                  setQuery(vName);
+                  setDebounced(vName);
+                  inputRef.current?.focus();
                 }}
               />
             ))}

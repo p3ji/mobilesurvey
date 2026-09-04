@@ -1,0 +1,7392 @@
+{
+  "generatedAt": "2026-09-04T01:04:41.961Z",
+  "totalVariables": 438931,
+  "totalSurveys": 113,
+  "totalCycles": 260,
+  "globalStats": {
+    "total": 438931,
+    "roles": {
+      "collected": 354683,
+      "derived": 47127,
+      "process": 25554,
+      "administrative": 11567
+    },
+    "origins": {
+      "collected": 396465,
+      "administrative": 16912,
+      "process": 25554
+    },
+    "derivations": {
+      "base": 390423,
+      "derived": 48508
+    },
+    "pumfGroupedCount": 15134,
+    "identifierCount": 1914,
+    "derivationsExtracted": 12210
+  },
+  "surveys": [
+    {
+      "acronym": "CIS",
+      "title": "CIS_ECR_2012-2019_rebased",
+      "total": 73887,
+      "cycles": [
+        "2012",
+        "2013",
+        "2014",
+        "2015",
+        "2016",
+        "2017",
+        "2018",
+        "2019",
+        "2020",
+        "2021",
+        "2022",
+        "2023",
+        "2024"
+      ],
+      "roles": {
+        "collected": 50987,
+        "derived": 12427,
+        "process": 1268,
+        "administrative": 9205
+      },
+      "origins": {
+        "collected": 59035,
+        "administrative": 13584,
+        "process": 1268
+      },
+      "derivations": {
+        "base": 61168,
+        "derived": 12719
+      },
+      "derivationsExtracted": 2978,
+      "pumfGroupedCount": 7815,
+      "identifierCount": 532,
+      "topModules": [
+        {
+          "code": "CFC",
+          "count": 2305
+        },
+        {
+          "code": "HHC",
+          "count": 2305
+        },
+        {
+          "code": "EFC",
+          "count": 2153
+        },
+        {
+          "code": "EFA",
+          "count": 2100
+        },
+        {
+          "code": "LIM",
+          "count": 1782
+        },
+        {
+          "code": "HHA",
+          "count": 1368
+        },
+        {
+          "code": "UCN",
+          "count": 1363
+        },
+        {
+          "code": "CFA",
+          "count": 1188
+        }
+      ]
+    },
+    {
+      "acronym": "GSS",
+      "title": "GSS_ESG_12-32",
+      "total": 55544,
+      "cycles": [
+        "33",
+        "34",
+        "35",
+        "37",
+        "unknown"
+      ],
+      "roles": {
+        "collected": 49552,
+        "derived": 1815,
+        "process": 3927,
+        "administrative": 250
+      },
+      "origins": {
+        "collected": 51365,
+        "administrative": 252,
+        "process": 3927
+      },
+      "derivations": {
+        "base": 53680,
+        "derived": 1864
+      },
+      "derivationsExtracted": 174,
+      "pumfGroupedCount": 1030,
+      "identifierCount": 90,
+      "topModules": [
+        {
+          "code": "CG6",
+          "count": 4026
+        },
+        {
+          "code": "CG4",
+          "count": 3811
+        },
+        {
+          "code": "WVC",
+          "count": 3002
+        },
+        {
+          "code": "DUR",
+          "count": 1794
+        },
+        {
+          "code": "CR",
+          "count": 1350
+        },
+        {
+          "code": "EPI",
+          "count": 1222
+        },
+        {
+          "code": "DSQ",
+          "count": 1110
+        },
+        {
+          "code": "AGE",
+          "count": 1018
+        }
+      ]
+    },
+    {
+      "acronym": "CCHS",
+      "title": "CCHS_ESCC",
+      "total": 25906,
+      "cycles": [
+        "2015",
+        "2015_NU",
+        "2016",
+        "2017",
+        "2018",
+        "2019",
+        "2020",
+        "2021",
+        "2022",
+        "2023",
+        "2023_2024",
+        "2024",
+        "2024_RR_SCH2TAL2",
+        "RR_AMU_2018",
+        "RR_BPA_2017",
+        "RR_GAM_2025"
+      ],
+      "roles": {
+        "collected": 19612,
+        "derived": 3862,
+        "process": 2376,
+        "administrative": 56
+      },
+      "origins": {
+        "collected": 23098,
+        "administrative": 432,
+        "process": 2376
+      },
+      "derivations": {
+        "base": 21807,
+        "derived": 4099
+      },
+      "derivationsExtracted": 167,
+      "pumfGroupedCount": 483,
+      "identifierCount": 111,
+      "topModules": [
+        {
+          "code": "HMC",
+          "count": 1711
+        },
+        {
+          "code": "INC",
+          "count": 1204
+        },
+        {
+          "code": "CCC",
+          "count": 1161
+        },
+        {
+          "code": "ACC",
+          "count": 1120
+        },
+        {
+          "code": "SDC",
+          "count": 914
+        },
+        {
+          "code": "MEX",
+          "count": 833
+        },
+        {
+          "code": "PAA",
+          "count": 823
+        },
+        {
+          "code": "CAN",
+          "count": 772
+        }
+      ]
+    },
+    {
+      "acronym": "CSD",
+      "title": "CSD_ECI_2012",
+      "total": 23768,
+      "cycles": [
+        "2012",
+        "2017",
+        "2022",
+        "R_2022"
+      ],
+      "roles": {
+        "collected": 19257,
+        "derived": 2641,
+        "process": 1713,
+        "administrative": 157
+      },
+      "origins": {
+        "collected": 21878,
+        "administrative": 177,
+        "process": 1713
+      },
+      "derivations": {
+        "base": 21074,
+        "derived": 2694
+      },
+      "derivationsExtracted": 28,
+      "pumfGroupedCount": 671,
+      "identifierCount": 48,
+      "topModules": [
+        {
+          "code": "AAD",
+          "count": 3004
+        },
+        {
+          "code": "ADM",
+          "count": 1458
+        },
+        {
+          "code": "DSQ",
+          "count": 1146
+        },
+        {
+          "code": "EMO",
+          "count": 960
+        },
+        {
+          "code": "AADA",
+          "count": 854
+        },
+        {
+          "code": "EDU",
+          "count": 832
+        },
+        {
+          "code": "AADV",
+          "count": 818
+        },
+        {
+          "code": "AADH",
+          "count": 652
+        }
+      ]
+    },
+    {
+      "acronym": "APS",
+      "title": "APS_EAPA_2006",
+      "total": 17044,
+      "cycles": [
+        "2006",
+        "2012",
+        "2017",
+        "2017_NIS_SIN"
+      ],
+      "roles": {
+        "collected": 15620,
+        "derived": 1288,
+        "process": 100,
+        "administrative": 36
+      },
+      "origins": {
+        "collected": 16896,
+        "administrative": 48,
+        "process": 100
+      },
+      "derivations": {
+        "base": 15742,
+        "derived": 1302
+      },
+      "derivationsExtracted": 212,
+      "pumfGroupedCount": 712,
+      "identifierCount": 20,
+      "topModules": [
+        {
+          "code": "MOB",
+          "count": 536
+        },
+        {
+          "code": "ED1",
+          "count": 448
+        },
+        {
+          "code": "DFL",
+          "count": 436
+        },
+        {
+          "code": "TA",
+          "count": 376
+        },
+        {
+          "code": "GH2",
+          "count": 348
+        },
+        {
+          "code": "ED3",
+          "count": 260
+        },
+        {
+          "code": "ED2",
+          "count": 252
+        },
+        {
+          "code": "SAT",
+          "count": 248
+        }
+      ]
+    },
+    {
+      "acronym": "SFGSME",
+      "title": "SFGSME_EFCPME",
+      "total": 16370,
+      "cycles": [
+        "2020"
+      ],
+      "roles": {
+        "collected": 12289,
+        "derived": 403,
+        "process": 3678,
+        "administrative": 0
+      },
+      "origins": {
+        "collected": 12692,
+        "administrative": 0,
+        "process": 3678
+      },
+      "derivations": {
+        "base": 15967,
+        "derived": 403
+      },
+      "derivationsExtracted": 0,
+      "pumfGroupedCount": 95,
+      "identifierCount": 38,
+      "topModules": [
+        {
+          "code": "C20",
+          "count": 1976
+        },
+        {
+          "code": "I20",
+          "count": 1843
+        },
+        {
+          "code": "C03",
+          "count": 1767
+        },
+        {
+          "code": "I03",
+          "count": 1710
+        },
+        {
+          "code": "C09",
+          "count": 1672
+        },
+        {
+          "code": "I09",
+          "count": 1558
+        },
+        {
+          "code": "C30",
+          "count": 874
+        },
+        {
+          "code": "I30",
+          "count": 855
+        }
+      ]
+    },
+    {
+      "acronym": "LSIC",
+      "title": "LSIC_ELIC",
+      "total": 13992,
+      "cycles": [
+        "1",
+        "2",
+        "3"
+      ],
+      "roles": {
+        "collected": 13067,
+        "derived": 901,
+        "process": 16,
+        "administrative": 8
+      },
+      "origins": {
+        "collected": 13968,
+        "administrative": 8,
+        "process": 16
+      },
+      "derivations": {
+        "base": 13091,
+        "derived": 901
+      },
+      "derivationsExtracted": 859,
+      "pumfGroupedCount": 0,
+      "identifierCount": 12,
+      "topModules": [
+        {
+          "code": "EM1",
+          "count": 1318
+        },
+        {
+          "code": "ED1",
+          "count": 914
+        },
+        {
+          "code": "EM3",
+          "count": 794
+        },
+        {
+          "code": "EM2",
+          "count": 758
+        },
+        {
+          "code": "HL1",
+          "count": 650
+        },
+        {
+          "code": "HS1",
+          "count": 500
+        },
+        {
+          "code": "SI1",
+          "count": 450
+        },
+        {
+          "code": "SI2",
+          "count": 440
+        }
+      ]
+    },
+    {
+      "acronym": "CHMS",
+      "title": "CHMS Biobank",
+      "total": 13560,
+      "cycles": [
+        "2019",
+        "Biobank",
+        "C6_W2",
+        "C7",
+        "Cycle_1",
+        "Cycle_2",
+        "Cycle_3",
+        "Cycle_4",
+        "Cycle_5",
+        "Cycle_6_Wave_3",
+        "Cycle_6_w2"
+      ],
+      "roles": {
+        "collected": 10630,
+        "derived": 2856,
+        "process": 58,
+        "administrative": 16
+      },
+      "origins": {
+        "collected": 13486,
+        "administrative": 16,
+        "process": 58
+      },
+      "derivations": {
+        "base": 10697,
+        "derived": 2863
+      },
+      "derivationsExtracted": 32,
+      "pumfGroupedCount": 140,
+      "identifierCount": 0,
+      "topModules": [
+        {
+          "code": "FSF",
+          "count": 1144
+        },
+        {
+          "code": "FRH",
+          "count": 870
+        },
+        {
+          "code": "AMM",
+          "count": 636
+        },
+        {
+          "code": "FDT",
+          "count": 612
+        },
+        {
+          "code": "PHR",
+          "count": 456
+        },
+        {
+          "code": "PAY",
+          "count": 436
+        },
+        {
+          "code": "CCC",
+          "count": 396
+        },
+        {
+          "code": "GFV",
+          "count": 384
+        }
+      ]
+    },
+    {
+      "acronym": "LISA",
+      "title": "LISA_ELIA_2012",
+      "total": 13035,
+      "cycles": [
+        "2012",
+        "2016",
+        "2018",
+        "2020",
+        "AllYears",
+        "FF_2014"
+      ],
+      "roles": {
+        "collected": 11393,
+        "derived": 1195,
+        "process": 242,
+        "administrative": 205
+      },
+      "origins": {
+        "collected": 12577,
+        "administrative": 216,
+        "process": 242
+      },
+      "derivations": {
+        "base": 11825,
+        "derived": 1210
+      },
+      "derivationsExtracted": 180,
+      "pumfGroupedCount": 286,
+      "identifierCount": 117,
+      "topModules": [
+        {
+          "code": "FCP",
+          "count": 504
+        },
+        {
+          "code": "CHC",
+          "count": 460
+        },
+        {
+          "code": "FI",
+          "count": 297
+        },
+        {
+          "code": "CHI",
+          "count": 276
+        },
+        {
+          "code": "REL",
+          "count": 240
+        },
+        {
+          "code": "FTOID",
+          "count": 240
+        },
+        {
+          "code": "NB",
+          "count": 240
+        },
+        {
+          "code": "CC",
+          "count": 240
+        }
+      ]
+    },
+    {
+      "acronym": "SHS",
+      "title": "SHS_EDM",
+      "total": 12124,
+      "cycles": [
+        "2021",
+        "2023"
+      ],
+      "roles": {
+        "collected": 10388,
+        "derived": 1664,
+        "process": 56,
+        "administrative": 16
+      },
+      "origins": {
+        "collected": 12052,
+        "administrative": 16,
+        "process": 56
+      },
+      "derivations": {
+        "base": 10460,
+        "derived": 1664
+      },
+      "derivationsExtracted": 1392,
+      "pumfGroupedCount": 72,
+      "identifierCount": 48,
+      "topModules": [
+        {
+          "code": "INC",
+          "count": 768
+        },
+        {
+          "code": "PIN",
+          "count": 768
+        },
+        {
+          "code": "SH0",
+          "count": 624
+        },
+        {
+          "code": "FD8",
+          "count": 624
+        },
+        {
+          "code": "TR0",
+          "count": 596
+        },
+        {
+          "code": "RE0",
+          "count": 452
+        },
+        {
+          "code": "FD4",
+          "count": 392
+        },
+        {
+          "code": "HC0",
+          "count": 328
+        }
+      ]
+    },
+    {
+      "acronym": "CHSCY",
+      "title": "CHSCY_ECSEJ_2019",
+      "total": 11086,
+      "cycles": [
+        "2019",
+        "2023",
+        "2024"
+      ],
+      "roles": {
+        "collected": 8428,
+        "derived": 2464,
+        "process": 176,
+        "administrative": 18
+      },
+      "origins": {
+        "collected": 10677,
+        "administrative": 233,
+        "process": 176
+      },
+      "derivations": {
+        "base": 8612,
+        "derived": 2474
+      },
+      "derivationsExtracted": 5,
+      "pumfGroupedCount": 93,
+      "identifierCount": 42,
+      "topModules": [
+        {
+          "code": "LTC",
+          "count": 1054
+        },
+        {
+          "code": "PAI",
+          "count": 854
+        },
+        {
+          "code": "AHC",
+          "count": 714
+        },
+        {
+          "code": "WSH",
+          "count": 574
+        },
+        {
+          "code": "IMM",
+          "count": 408
+        },
+        {
+          "code": "AH",
+          "count": 396
+        },
+        {
+          "code": "INC",
+          "count": 370
+        },
+        {
+          "code": "EDS",
+          "count": 304
+        }
+      ]
+    },
+    {
+      "acronym": "SFS",
+      "title": "SFS_ESF_2012",
+      "total": 11046,
+      "cycles": [
+        "2012",
+        "2016",
+        "2019",
+        "2023"
+      ],
+      "roles": {
+        "collected": 8209,
+        "derived": 1522,
+        "process": 1296,
+        "administrative": 19
+      },
+      "origins": {
+        "collected": 9731,
+        "administrative": 19,
+        "process": 1296
+      },
+      "derivations": {
+        "base": 9419,
+        "derived": 1627
+      },
+      "derivationsExtracted": 8,
+      "pumfGroupedCount": 552,
+      "identifierCount": 36,
+      "topModules": [
+        {
+          "code": "ASR",
+          "count": 1102
+        },
+        {
+          "code": "ASS",
+          "count": 928
+        },
+        {
+          "code": "BUS",
+          "count": 680
+        },
+        {
+          "code": "DBT",
+          "count": 604
+        },
+        {
+          "code": "DV",
+          "count": 338
+        },
+        {
+          "code": "ATT",
+          "count": 316
+        },
+        {
+          "code": "PVC",
+          "count": 309
+        },
+        {
+          "code": "LFC",
+          "count": 224
+        }
+      ]
+    },
+    {
+      "acronym": "CAFVMHS",
+      "title": "CAFVMHS_ESSMFACM_2018",
+      "total": 7330,
+      "cycles": [
+        "2018"
+      ],
+      "roles": {
+        "collected": 6337,
+        "derived": 905,
+        "process": 81,
+        "administrative": 7
+      },
+      "origins": {
+        "collected": 7242,
+        "administrative": 7,
+        "process": 81
+      },
+      "derivations": {
+        "base": 6405,
+        "derived": 925
+      },
+      "derivationsExtracted": 69,
+      "pumfGroupedCount": 48,
+      "identifierCount": 10,
+      "topModules": [
+        {
+          "code": "SR1",
+          "count": 1180
+        },
+        {
+          "code": "DEP",
+          "count": 790
+        },
+        {
+          "code": "PNC",
+          "count": 690
+        },
+        {
+          "code": "GAD",
+          "count": 575
+        },
+        {
+          "code": "PTS",
+          "count": 475
+        },
+        {
+          "code": "SOP",
+          "count": 415
+        },
+        {
+          "code": "PAD",
+          "count": 395
+        },
+        {
+          "code": "SUB",
+          "count": 340
+        }
+      ]
+    },
+    {
+      "acronym": "SOLMP",
+      "title": "SOLMP-EPLOSM",
+      "total": 6682,
+      "cycles": [
+        "2022"
+      ],
+      "roles": {
+        "collected": 5406,
+        "derived": 752,
+        "process": 288,
+        "administrative": 236
+      },
+      "origins": {
+        "collected": 6141,
+        "administrative": 253,
+        "process": 288
+      },
+      "derivations": {
+        "base": 5926,
+        "derived": 756
+      },
+      "derivationsExtracted": 44,
+      "pumfGroupedCount": 122,
+      "identifierCount": 4,
+      "topModules": [
+        {
+          "code": "EDC",
+          "count": 496
+        },
+        {
+          "code": "TRA",
+          "count": 420
+        },
+        {
+          "code": "EDU",
+          "count": 416
+        },
+        {
+          "code": "CHD",
+          "count": 338
+        },
+        {
+          "code": "CH",
+          "count": 326
+        },
+        {
+          "code": "LAB",
+          "count": 264
+        },
+        {
+          "code": "INT",
+          "count": 250
+        },
+        {
+          "code": "PAR",
+          "count": 178
+        }
+      ]
+    },
+    {
+      "acronym": "CSCSC",
+      "title": "CSCSC_ECCC_2019_v1",
+      "total": 6570,
+      "cycles": [
+        "2019_v1",
+        "2021",
+        "2023"
+      ],
+      "roles": {
+        "collected": 4572,
+        "derived": 4,
+        "process": 1994,
+        "administrative": 0
+      },
+      "origins": {
+        "collected": 4576,
+        "administrative": 0,
+        "process": 1994
+      },
+      "derivations": {
+        "base": 6562,
+        "derived": 8
+      },
+      "derivationsExtracted": 0,
+      "pumfGroupedCount": 8,
+      "identifierCount": 16,
+      "topModules": [
+        {
+          "code": "C26",
+          "count": 464
+        },
+        {
+          "code": "I26",
+          "count": 464
+        },
+        {
+          "code": "C25",
+          "count": 194
+        },
+        {
+          "code": "I25",
+          "count": 194
+        },
+        {
+          "code": "C39",
+          "count": 156
+        },
+        {
+          "code": "I39",
+          "count": 156
+        },
+        {
+          "code": "C21",
+          "count": 126
+        },
+        {
+          "code": "I21",
+          "count": 126
+        }
+      ]
+    },
+    {
+      "acronym": "SDTIU",
+      "title": "SDTIU_ETNUI_2019",
+      "total": 5404,
+      "cycles": [
+        "2019",
+        "2021",
+        "2023"
+      ],
+      "roles": {
+        "collected": 4016,
+        "derived": 3,
+        "process": 1361,
+        "administrative": 24
+      },
+      "origins": {
+        "collected": 4019,
+        "administrative": 24,
+        "process": 1361
+      },
+      "derivations": {
+        "base": 5398,
+        "derived": 6
+      },
+      "derivationsExtracted": 0,
+      "pumfGroupedCount": 6,
+      "identifierCount": 12,
+      "topModules": [
+        {
+          "code": "C51",
+          "count": 114
+        },
+        {
+          "code": "I51",
+          "count": 114
+        },
+        {
+          "code": "C52",
+          "count": 104
+        },
+        {
+          "code": "I52",
+          "count": 104
+        },
+        {
+          "code": "C67",
+          "count": 84
+        },
+        {
+          "code": "I67",
+          "count": 84
+        },
+        {
+          "code": "C18",
+          "count": 74
+        },
+        {
+          "code": "I18",
+          "count": 74
+        }
+      ]
+    },
+    {
+      "acronym": "EICS",
+      "title": "EICS_ECAE_2013",
+      "total": 5238,
+      "cycles": [
+        "2013",
+        "2014",
+        "2016",
+        "2017",
+        "2020",
+        "2021",
+        "2023",
+        "2024"
+      ],
+      "roles": {
+        "collected": 4237,
+        "derived": 937,
+        "process": 30,
+        "administrative": 34
+      },
+      "origins": {
+        "collected": 5150,
+        "administrative": 58,
+        "process": 30
+      },
+      "derivations": {
+        "base": 4289,
+        "derived": 949
+      },
+      "derivationsExtracted": 627,
+      "pumfGroupedCount": 248,
+      "identifierCount": 28,
+      "topModules": [
+        {
+          "code": "OWN",
+          "count": 296
+        },
+        {
+          "code": "WA",
+          "count": 296
+        },
+        {
+          "code": "AF",
+          "count": 288
+        },
+        {
+          "code": "BE",
+          "count": 240
+        },
+        {
+          "code": "JS",
+          "count": 224
+        },
+        {
+          "code": "PR",
+          "count": 208
+        },
+        {
+          "code": "IS",
+          "count": 200
+        },
+        {
+          "code": "SP",
+          "count": 168
+        }
+      ]
+    },
+    {
+      "acronym": "CHS",
+      "title": "CHS_ECL_2008_2017_T1FF_T4",
+      "total": 5030,
+      "cycles": [
+        "2008_2017_T1FF_T4",
+        "2018",
+        "2018_ID_v2",
+        "2021",
+        "2021_APIM",
+        "2022",
+        "T4_T1FF_Hist_ID_AllYears"
+      ],
+      "roles": {
+        "collected": 4288,
+        "derived": 544,
+        "process": 138,
+        "administrative": 60
+      },
+      "origins": {
+        "collected": 4816,
+        "administrative": 76,
+        "process": 138
+      },
+      "derivations": {
+        "base": 4455,
+        "derived": 575
+      },
+      "derivationsExtracted": 173,
+      "pumfGroupedCount": 173,
+      "identifierCount": 94,
+      "topModules": [
+        {
+          "code": "SCR",
+          "count": 240
+        },
+        {
+          "code": "HOM",
+          "count": 192
+        },
+        {
+          "code": "PAC",
+          "count": 178
+        },
+        {
+          "code": "PG",
+          "count": 120
+        },
+        {
+          "code": "LAN",
+          "count": 118
+        },
+        {
+          "code": "DV",
+          "count": 112
+        },
+        {
+          "code": "EMP",
+          "count": 94
+        },
+        {
+          "code": "DWS",
+          "count": 90
+        }
+      ]
+    },
+    {
+      "acronym": "HES",
+      "title": "HES_ALL_2006",
+      "total": 4758,
+      "cycles": [
+        "2006",
+        "2013",
+        "2015",
+        "2019"
+      ],
+      "roles": {
+        "collected": 4396,
+        "derived": 330,
+        "process": 21,
+        "administrative": 11
+      },
+      "origins": {
+        "collected": 4726,
+        "administrative": 11,
+        "process": 21
+      },
+      "derivations": {
+        "base": 4424,
+        "derived": 334
+      },
+      "derivationsExtracted": 0,
+      "pumfGroupedCount": 114,
+      "identifierCount": 14,
+      "topModules": [
+        {
+          "code": "HW",
+          "count": 856
+        },
+        {
+          "code": "WA",
+          "count": 548
+        },
+        {
+          "code": "EH",
+          "count": 460
+        },
+        {
+          "code": "NN",
+          "count": 394
+        },
+        {
+          "code": "GP",
+          "count": 248
+        },
+        {
+          "code": "IE",
+          "count": 238
+        },
+        {
+          "code": "WD",
+          "count": 202
+        },
+        {
+          "code": "L_A",
+          "count": 138
+        }
+      ]
+    },
+    {
+      "acronym": "CSIT",
+      "title": "CSIT_ECCI",
+      "total": 4592,
+      "cycles": [
+        "2023"
+      ],
+      "roles": {
+        "collected": 3436,
+        "derived": 12,
+        "process": 1144,
+        "administrative": 0
+      },
+      "origins": {
+        "collected": 3448,
+        "administrative": 0,
+        "process": 1144
+      },
+      "derivations": {
+        "base": 4578,
+        "derived": 14
+      },
+      "derivationsExtracted": 0,
+      "pumfGroupedCount": 12,
+      "identifierCount": 8,
+      "topModules": [
+        {
+          "code": "C35",
+          "count": 104
+        },
+        {
+          "code": "I35",
+          "count": 104
+        },
+        {
+          "code": "C33",
+          "count": 100
+        },
+        {
+          "code": "I33",
+          "count": 100
+        },
+        {
+          "code": "C13",
+          "count": 96
+        },
+        {
+          "code": "C15",
+          "count": 96
+        },
+        {
+          "code": "I13",
+          "count": 96
+        },
+        {
+          "code": "I15",
+          "count": 96
+        }
+      ]
+    },
+    {
+      "acronym": "CNICS",
+      "title": "CNICS_ECVNE_2011",
+      "total": 4382,
+      "cycles": [
+        "2011",
+        "2013",
+        "2015",
+        "2017",
+        "2019",
+        "2019_PW",
+        "2021",
+        "PW_FE_2021"
+      ],
+      "roles": {
+        "collected": 4172,
+        "derived": 119,
+        "process": 55,
+        "administrative": 36
+      },
+      "origins": {
+        "collected": 4282,
+        "administrative": 45,
+        "process": 55
+      },
+      "derivations": {
+        "base": 4247,
+        "derived": 135
+      },
+      "derivationsExtracted": 121,
+      "pumfGroupedCount": 26,
+      "identifierCount": 30,
+      "topModules": [
+        {
+          "code": "KB2",
+          "count": 1120
+        },
+        {
+          "code": "KN1",
+          "count": 268
+        },
+        {
+          "code": "SOR",
+          "count": 214
+        },
+        {
+          "code": "ING",
+          "count": 184
+        },
+        {
+          "code": "KB1",
+          "count": 176
+        },
+        {
+          "code": "VAX",
+          "count": 162
+        },
+        {
+          "code": "PER",
+          "count": 114
+        },
+        {
+          "code": "KB4",
+          "count": 108
+        }
+      ]
+    },
+    {
+      "acronym": "SGVP",
+      "title": "SGVP_EDBP_2023",
+      "total": 3982,
+      "cycles": [
+        "2023"
+      ],
+      "roles": {
+        "collected": 3664,
+        "derived": 110,
+        "process": 200,
+        "administrative": 8
+      },
+      "origins": {
+        "collected": 3774,
+        "administrative": 8,
+        "process": 200
+      },
+      "derivations": {
+        "base": 3858,
+        "derived": 124
+      },
+      "derivationsExtracted": 4,
+      "pumfGroupedCount": 62,
+      "identifierCount": 8,
+      "topModules": [
+        {
+          "code": "WTBS",
+          "count": 1002
+        },
+        {
+          "code": "VD1",
+          "count": 292
+        },
+        {
+          "code": "GS1",
+          "count": 224
+        },
+        {
+          "code": "DSQ",
+          "count": 164
+        },
+        {
+          "code": "FG1",
+          "count": 160
+        },
+        {
+          "code": "IVS",
+          "count": 128
+        },
+        {
+          "code": "GSA",
+          "count": 120
+        },
+        {
+          "code": "MV1",
+          "count": 96
+        }
+      ]
+    },
+    {
+      "acronym": "SISPSP",
+      "title": "SISPSP_ESIPEP_2019",
+      "total": 3982,
+      "cycles": [
+        "2019"
+      ],
+      "roles": {
+        "collected": 3723,
+        "derived": 237,
+        "process": 16,
+        "administrative": 6
+      },
+      "origins": {
+        "collected": 3960,
+        "administrative": 6,
+        "process": 16
+      },
+      "derivations": {
+        "base": 3742,
+        "derived": 240
+      },
+      "derivationsExtracted": 3,
+      "pumfGroupedCount": 40,
+      "identifierCount": 4,
+      "topModules": [
+        {
+          "code": "ID1",
+          "count": 390
+        },
+        {
+          "code": "ID2",
+          "count": 390
+        },
+        {
+          "code": "ID3",
+          "count": 390
+        },
+        {
+          "code": "ID4",
+          "count": 390
+        },
+        {
+          "code": "BD1",
+          "count": 312
+        },
+        {
+          "code": "BD2",
+          "count": 312
+        },
+        {
+          "code": "BD3",
+          "count": 312
+        },
+        {
+          "code": "BD4",
+          "count": 312
+        }
+      ]
+    },
+    {
+      "acronym": "PSES",
+      "title": "PSES_SAFF_2014",
+      "total": 3884,
+      "cycles": [
+        "2014",
+        "2017",
+        "2022",
+        "2024"
+      ],
+      "roles": {
+        "collected": 3384,
+        "derived": 433,
+        "process": 45,
+        "administrative": 22
+      },
+      "origins": {
+        "collected": 3805,
+        "administrative": 34,
+        "process": 45
+      },
+      "derivations": {
+        "base": 3441,
+        "derived": 443
+      },
+      "derivationsExtracted": 85,
+      "pumfGroupedCount": 168,
+      "identifierCount": 18,
+      "topModules": [
+        {
+          "code": "I_Q",
+          "count": 292
+        },
+        {
+          "code": "G_Q",
+          "count": 290
+        },
+        {
+          "code": "Q11",
+          "count": 210
+        },
+        {
+          "code": "A_Q",
+          "count": 166
+        },
+        {
+          "code": "FOL",
+          "count": 152
+        },
+        {
+          "code": "M_Q",
+          "count": 130
+        },
+        {
+          "code": "E_Q",
+          "count": 96
+        },
+        {
+          "code": "J_Q",
+          "count": 94
+        }
+      ]
+    },
+    {
+      "acronym": "OCHS",
+      "title": "OCHS_ESJO_2014",
+      "total": 3714,
+      "cycles": [
+        "2014"
+      ],
+      "roles": {
+        "collected": 3310,
+        "derived": 324,
+        "process": 74,
+        "administrative": 6
+      },
+      "origins": {
+        "collected": 3634,
+        "administrative": 6,
+        "process": 74
+      },
+      "derivations": {
+        "base": 3380,
+        "derived": 334
+      },
+      "derivationsExtracted": 134,
+      "pumfGroupedCount": 41,
+      "identifierCount": 36,
+      "topModules": [
+        {
+          "code": "TEA",
+          "count": 232
+        },
+        {
+          "code": "PGQ",
+          "count": 196
+        },
+        {
+          "code": "PAR",
+          "count": 190
+        },
+        {
+          "code": "FBC",
+          "count": 152
+        },
+        {
+          "code": "MXS",
+          "count": 122
+        },
+        {
+          "code": "MXT",
+          "count": 66
+        },
+        {
+          "code": "HLT",
+          "count": 62
+        },
+        {
+          "code": "SHS",
+          "count": 62
+        }
+      ]
+    },
+    {
+      "acronym": "SLCDC",
+      "title": "SLCDC_EPMCC_2014",
+      "total": 3712,
+      "cycles": [
+        "2014"
+      ],
+      "roles": {
+        "collected": 3132,
+        "derived": 337,
+        "process": 235,
+        "administrative": 8
+      },
+      "origins": {
+        "collected": 3435,
+        "administrative": 42,
+        "process": 235
+      },
+      "derivations": {
+        "base": 3307,
+        "derived": 405
+      },
+      "derivationsExtracted": 156,
+      "pumfGroupedCount": 76,
+      "identifierCount": 6,
+      "topModules": [
+        {
+          "code": "ACC",
+          "count": 326
+        },
+        {
+          "code": "PAC",
+          "count": 172
+        },
+        {
+          "code": "HMC",
+          "count": 116
+        },
+        {
+          "code": "SDC",
+          "count": 114
+        },
+        {
+          "code": "IDG",
+          "count": 106
+        },
+        {
+          "code": "SMMX",
+          "count": 94
+        },
+        {
+          "code": "INC",
+          "count": 88
+        },
+        {
+          "code": "SFR",
+          "count": 84
+        }
+      ]
+    },
+    {
+      "acronym": "IPS",
+      "title": "IPS_EAPA",
+      "total": 3474,
+      "cycles": [
+        "2022"
+      ],
+      "roles": {
+        "collected": 3183,
+        "derived": 248,
+        "process": 31,
+        "administrative": 12
+      },
+      "origins": {
+        "collected": 3429,
+        "administrative": 14,
+        "process": 31
+      },
+      "derivations": {
+        "base": 3218,
+        "derived": 256
+      },
+      "derivationsExtracted": 22,
+      "pumfGroupedCount": 136,
+      "identifierCount": 8,
+      "topModules": [
+        {
+          "code": "EDC",
+          "count": 210
+        },
+        {
+          "code": "CHC",
+          "count": 148
+        },
+        {
+          "code": "VIC",
+          "count": 120
+        },
+        {
+          "code": "PMK",
+          "count": 100
+        },
+        {
+          "code": "GH2",
+          "count": 100
+        },
+        {
+          "code": "SER",
+          "count": 90
+        },
+        {
+          "code": "EH4",
+          "count": 86
+        },
+        {
+          "code": "DSQ",
+          "count": 82
+        }
+      ]
+    },
+    {
+      "acronym": "SIBS",
+      "title": "SIBS_EISE_allyears",
+      "total": 3312,
+      "cycles": [
+        "allyears"
+      ],
+      "roles": {
+        "collected": 2475,
+        "derived": 4,
+        "process": 833,
+        "administrative": 0
+      },
+      "origins": {
+        "collected": 2479,
+        "administrative": 0,
+        "process": 833
+      },
+      "derivations": {
+        "base": 3308,
+        "derived": 4
+      },
+      "derivationsExtracted": 0,
+      "pumfGroupedCount": 4,
+      "identifierCount": 6,
+      "topModules": [
+        {
+          "code": "C06",
+          "count": 194
+        },
+        {
+          "code": "I06",
+          "count": 194
+        },
+        {
+          "code": "C62",
+          "count": 162
+        },
+        {
+          "code": "I62",
+          "count": 162
+        },
+        {
+          "code": "C31",
+          "count": 88
+        },
+        {
+          "code": "I31",
+          "count": 88
+        },
+        {
+          "code": "C57",
+          "count": 76
+        },
+        {
+          "code": "I57",
+          "count": 76
+        }
+      ]
+    },
+    {
+      "acronym": "SAT",
+      "title": "SAT_ETP_AllYears",
+      "total": 3228,
+      "cycles": [
+        "AllYears"
+      ],
+      "roles": {
+        "collected": 2183,
+        "derived": 240,
+        "process": 805,
+        "administrative": 0
+      },
+      "origins": {
+        "collected": 2415,
+        "administrative": 8,
+        "process": 805
+      },
+      "derivations": {
+        "base": 2926,
+        "derived": 302
+      },
+      "derivationsExtracted": 0,
+      "pumfGroupedCount": 114,
+      "identifierCount": 2,
+      "topModules": [
+        {
+          "code": "CE0",
+          "count": 200
+        },
+        {
+          "code": "ZNA",
+          "count": 122
+        },
+        {
+          "code": "IT0",
+          "count": 116
+        },
+        {
+          "code": "ZIT",
+          "count": 116
+        },
+        {
+          "code": "NA0",
+          "count": 114
+        },
+        {
+          "code": "GG0",
+          "count": 110
+        },
+        {
+          "code": "ZG",
+          "count": 110
+        },
+        {
+          "code": "ZAI",
+          "count": 110
+        }
+      ]
+    },
+    {
+      "acronym": "NGES",
+      "title": "NGES_EFGN",
+      "total": 3202,
+      "cycles": [
+        "2021"
+      ],
+      "roles": {
+        "collected": 3062,
+        "derived": 113,
+        "process": 27,
+        "administrative": 0
+      },
+      "origins": {
+        "collected": 3175,
+        "administrative": 0,
+        "process": 27
+      },
+      "derivations": {
+        "base": 3083,
+        "derived": 119
+      },
+      "derivationsExtracted": 128,
+      "pumfGroupedCount": 8,
+      "identifierCount": 12,
+      "topModules": [
+        {
+          "code": "WPL",
+          "count": 444
+        },
+        {
+          "code": "EMB",
+          "count": 354
+        },
+        {
+          "code": "CAR",
+          "count": 318
+        },
+        {
+          "code": "HIR",
+          "count": 288
+        },
+        {
+          "code": "REL",
+          "count": 258
+        },
+        {
+          "code": "LAN",
+          "count": 240
+        },
+        {
+          "code": "WE",
+          "count": 228
+        },
+        {
+          "code": "INR",
+          "count": 210
+        }
+      ]
+    },
+    {
+      "acronym": "LASS",
+      "title": "LASS_EVAS_2013",
+      "total": 2834,
+      "cycles": [
+        "2013",
+        "2016",
+        "2019"
+      ],
+      "roles": {
+        "collected": 2362,
+        "derived": 433,
+        "process": 29,
+        "administrative": 10
+      },
+      "origins": {
+        "collected": 2795,
+        "administrative": 10,
+        "process": 29
+      },
+      "derivations": {
+        "base": 2397,
+        "derived": 437
+      },
+      "derivationsExtracted": 50,
+      "pumfGroupedCount": 37,
+      "identifierCount": 22,
+      "topModules": [
+        {
+          "code": "CCC",
+          "count": 300
+        },
+        {
+          "code": "UCN",
+          "count": 222
+        },
+        {
+          "code": "INC",
+          "count": 154
+        },
+        {
+          "code": "SPS",
+          "count": 150
+        },
+        {
+          "code": "HUI1",
+          "count": 142
+        },
+        {
+          "code": "CHP",
+          "count": 134
+        },
+        {
+          "code": "SUI",
+          "count": 130
+        },
+        {
+          "code": "HWT",
+          "count": 120
+        }
+      ]
+    },
+    {
+      "acronym": "CIUS",
+      "title": "CIUS_ECUI_2018",
+      "total": 2688,
+      "cycles": [
+        "2018",
+        "2020",
+        "2022"
+      ],
+      "roles": {
+        "collected": 2350,
+        "derived": 275,
+        "process": 29,
+        "administrative": 34
+      },
+      "origins": {
+        "collected": 2625,
+        "administrative": 34,
+        "process": 29
+      },
+      "derivations": {
+        "base": 2411,
+        "derived": 277
+      },
+      "derivationsExtracted": 36,
+      "pumfGroupedCount": 29,
+      "identifierCount": 6,
+      "topModules": [
+        {
+          "code": "EC",
+          "count": 488
+        },
+        {
+          "code": "UI",
+          "count": 360
+        },
+        {
+          "code": "SP",
+          "count": 274
+        },
+        {
+          "code": "AC",
+          "count": 224
+        },
+        {
+          "code": "DS",
+          "count": 198
+        },
+        {
+          "code": "GV",
+          "count": 190
+        },
+        {
+          "code": "DV",
+          "count": 106
+        },
+        {
+          "code": "OW",
+          "count": 94
+        }
+      ]
+    },
+    {
+      "acronym": "MHACS",
+      "title": "MHACS_ESMAS_2022",
+      "total": 2592,
+      "cycles": [
+        "2022"
+      ],
+      "roles": {
+        "collected": 1965,
+        "derived": 542,
+        "process": 81,
+        "administrative": 4
+      },
+      "origins": {
+        "collected": 2497,
+        "administrative": 14,
+        "process": 81
+      },
+      "derivations": {
+        "base": 1997,
+        "derived": 595
+      },
+      "derivationsExtracted": 304,
+      "pumfGroupedCount": 29,
+      "identifierCount": 6,
+      "topModules": [
+        {
+          "code": "SR1",
+          "count": 330
+        },
+        {
+          "code": "DEP",
+          "count": 308
+        },
+        {
+          "code": "SUD",
+          "count": 262
+        },
+        {
+          "code": "GAD",
+          "count": 228
+        },
+        {
+          "code": "PNC",
+          "count": 216
+        },
+        {
+          "code": "MIA",
+          "count": 204
+        },
+        {
+          "code": "SOP",
+          "count": 162
+        },
+        {
+          "code": "AUD",
+          "count": 108
+        }
+      ]
+    },
+    {
+      "acronym": "CTADS",
+      "title": "CTADS_ECTAD_2013",
+      "total": 2294,
+      "cycles": [
+        "2013",
+        "2015",
+        "2017"
+      ],
+      "roles": {
+        "collected": 2017,
+        "derived": 215,
+        "process": 50,
+        "administrative": 12
+      },
+      "origins": {
+        "collected": 2226,
+        "administrative": 18,
+        "process": 50
+      },
+      "derivations": {
+        "base": 2071,
+        "derived": 223
+      },
+      "derivationsExtracted": 60,
+      "pumfGroupedCount": 93,
+      "identifierCount": 26,
+      "topModules": [
+        {
+          "code": "CAN",
+          "count": 154
+        },
+        {
+          "code": "PR",
+          "count": 136
+        },
+        {
+          "code": "ALC",
+          "count": 114
+        },
+        {
+          "code": "STI",
+          "count": 114
+        },
+        {
+          "code": "HS",
+          "count": 108
+        },
+        {
+          "code": "TP",
+          "count": 108
+        },
+        {
+          "code": "DHA",
+          "count": 102
+        },
+        {
+          "code": "PP",
+          "count": 92
+        }
+      ]
+    },
+    {
+      "acronym": "SELCCA",
+      "title": "SELCCA_CLDC_2023",
+      "total": 2082,
+      "cycles": [
+        "2019",
+        "2020",
+        "2022",
+        "2023",
+        "2025"
+      ],
+      "roles": {
+        "collected": 1980,
+        "derived": 55,
+        "process": 37,
+        "administrative": 10
+      },
+      "origins": {
+        "collected": 2035,
+        "administrative": 10,
+        "process": 37
+      },
+      "derivations": {
+        "base": 2015,
+        "derived": 67
+      },
+      "derivationsExtracted": 27,
+      "pumfGroupedCount": 14,
+      "identifierCount": 22,
+      "topModules": [
+        {
+          "code": "ARR",
+          "count": 1428
+        },
+        {
+          "code": "DCA",
+          "count": 124
+        },
+        {
+          "code": "COST",
+          "count": 48
+        },
+        {
+          "code": "PMK",
+          "count": 38
+        },
+        {
+          "code": "AGE",
+          "count": 38
+        },
+        {
+          "code": "ABM",
+          "count": 28
+        },
+        {
+          "code": "USE",
+          "count": 24
+        },
+        {
+          "code": "NES",
+          "count": 18
+        }
+      ]
+    },
+    {
+      "acronym": "SSMW",
+      "title": "SSMW_EIST_2020",
+      "total": 2032,
+      "cycles": [
+        "2020"
+      ],
+      "roles": {
+        "collected": 1933,
+        "derived": 78,
+        "process": 21,
+        "administrative": 0
+      },
+      "origins": {
+        "collected": 2011,
+        "administrative": 0,
+        "process": 21
+      },
+      "derivations": {
+        "base": 1951,
+        "derived": 81
+      },
+      "derivationsExtracted": 7,
+      "pumfGroupedCount": 26,
+      "identifierCount": 4,
+      "topModules": [
+        {
+          "code": "BD2",
+          "count": 256
+        },
+        {
+          "code": "ID1",
+          "count": 198
+        },
+        {
+          "code": "ID2",
+          "count": 174
+        },
+        {
+          "code": "BD1",
+          "count": 144
+        },
+        {
+          "code": "BD",
+          "count": 136
+        },
+        {
+          "code": "ID",
+          "count": 90
+        },
+        {
+          "code": "PSL",
+          "count": 84
+        },
+        {
+          "code": "DSQ",
+          "count": 82
+        }
+      ]
+    },
+    {
+      "acronym": "SYC",
+      "title": "SYC_EJC_2010",
+      "total": 2024,
+      "cycles": [
+        "2010"
+      ],
+      "roles": {
+        "collected": 1778,
+        "derived": 240,
+        "process": 6,
+        "administrative": 0
+      },
+      "origins": {
+        "collected": 2018,
+        "administrative": 0,
+        "process": 6
+      },
+      "derivations": {
+        "base": 1784,
+        "derived": 240
+      },
+      "derivationsExtracted": 171,
+      "pumfGroupedCount": 2,
+      "identifierCount": 6,
+      "topModules": [
+        {
+          "code": "CAR",
+          "count": 226
+        },
+        {
+          "code": "HLC",
+          "count": 146
+        },
+        {
+          "code": "SDC",
+          "count": 136
+        },
+        {
+          "code": "BEH",
+          "count": 122
+        },
+        {
+          "code": "SDP",
+          "count": 122
+        },
+        {
+          "code": "SDS",
+          "count": 122
+        },
+        {
+          "code": "EDC",
+          "count": 100
+        },
+        {
+          "code": "PAR",
+          "count": 94
+        }
+      ]
+    },
+    {
+      "acronym": "PES",
+      "title": "PES_EEP_2024",
+      "total": 1956,
+      "cycles": [
+        "2024"
+      ],
+      "roles": {
+        "collected": 1649,
+        "derived": 259,
+        "process": 40,
+        "administrative": 8
+      },
+      "origins": {
+        "collected": 1892,
+        "administrative": 24,
+        "process": 40
+      },
+      "derivations": {
+        "base": 1687,
+        "derived": 269
+      },
+      "derivationsExtracted": 0,
+      "pumfGroupedCount": 16,
+      "identifierCount": 8,
+      "topModules": [
+        {
+          "code": "MH",
+          "count": 348
+        },
+        {
+          "code": "LBI",
+          "count": 200
+        },
+        {
+          "code": "INF",
+          "count": 200
+        },
+        {
+          "code": "MHO",
+          "count": 172
+        },
+        {
+          "code": "HP",
+          "count": 136
+        },
+        {
+          "code": "HBP",
+          "count": 76
+        },
+        {
+          "code": "EXP",
+          "count": 76
+        },
+        {
+          "code": "PGB",
+          "count": 68
+        }
+      ]
+    },
+    {
+      "acronym": "NGS",
+      "title": "NGS_END_2018",
+      "total": 1934,
+      "cycles": [
+        "2018",
+        "2023"
+      ],
+      "roles": {
+        "collected": 1746,
+        "derived": 126,
+        "process": 38,
+        "administrative": 24
+      },
+      "origins": {
+        "collected": 1872,
+        "administrative": 24,
+        "process": 38
+      },
+      "derivations": {
+        "base": 1804,
+        "derived": 130
+      },
+      "derivationsExtracted": 42,
+      "pumfGroupedCount": 72,
+      "identifierCount": 10,
+      "topModules": [
+        {
+          "code": "STL",
+          "count": 224
+        },
+        {
+          "code": "PGM",
+          "count": 208
+        },
+        {
+          "code": "DSQ",
+          "count": 164
+        },
+        {
+          "code": "BEF",
+          "count": 154
+        },
+        {
+          "code": "DEM",
+          "count": 134
+        },
+        {
+          "code": "EDU",
+          "count": 106
+        },
+        {
+          "code": "LFW",
+          "count": 92
+        },
+        {
+          "code": "COV",
+          "count": 76
+        }
+      ]
+    },
+    {
+      "acronym": "LLLI",
+      "title": "LLLI_ACRE_VMLEV_ASEC",
+      "total": 1808,
+      "cycles": [
+        "VMLEV_ASEC"
+      ],
+      "roles": {
+        "collected": 1278,
+        "derived": 524,
+        "process": 4,
+        "administrative": 2
+      },
+      "origins": {
+        "collected": 1798,
+        "administrative": 6,
+        "process": 4
+      },
+      "derivations": {
+        "base": 1282,
+        "derived": 526
+      },
+      "derivationsExtracted": 1,
+      "pumfGroupedCount": 36,
+      "identifierCount": 2,
+      "topModules": [
+        {
+          "code": "SRH",
+          "count": 228
+        },
+        {
+          "code": "TIM",
+          "count": 120
+        },
+        {
+          "code": "PLN",
+          "count": 114
+        },
+        {
+          "code": "SRHC",
+          "count": 114
+        },
+        {
+          "code": "MOP",
+          "count": 110
+        },
+        {
+          "code": "ASM",
+          "count": 108
+        },
+        {
+          "code": "CGSC",
+          "count": 62
+        },
+        {
+          "code": "PLNC",
+          "count": 60
+        }
+      ]
+    },
+    {
+      "acronym": "NCS",
+      "title": "NCS_ENC_2018",
+      "total": 1784,
+      "cycles": [
+        "2018",
+        "2019",
+        "2020"
+      ],
+      "roles": {
+        "collected": 1592,
+        "derived": 126,
+        "process": 36,
+        "administrative": 30
+      },
+      "origins": {
+        "collected": 1703,
+        "administrative": 45,
+        "process": 36
+      },
+      "derivations": {
+        "base": 1640,
+        "derived": 144
+      },
+      "derivationsExtracted": 61,
+      "pumfGroupedCount": 83,
+      "identifierCount": 36,
+      "topModules": [
+        {
+          "code": "CAN",
+          "count": 1586
+        },
+        {
+          "code": "DEM",
+          "count": 108
+        },
+        {
+          "code": "PROV",
+          "count": 36
+        },
+        {
+          "code": "MAS",
+          "count": 18
+        },
+        {
+          "code": "SYS",
+          "count": 18
+        },
+        {
+          "code": "WTS",
+          "count": 18
+        }
+      ]
+    },
+    {
+      "acronym": "PIAAC",
+      "title": "PIAAC_PEICA",
+      "total": 1764,
+      "cycles": [
+        "2022"
+      ],
+      "roles": {
+        "collected": 1531,
+        "derived": 151,
+        "process": 82,
+        "administrative": 0
+      },
+      "origins": {
+        "collected": 1682,
+        "administrative": 0,
+        "process": 82
+      },
+      "derivations": {
+        "base": 1613,
+        "derived": 151
+      },
+      "derivationsExtracted": 0,
+      "pumfGroupedCount": 25,
+      "identifierCount": 0,
+      "topModules": [
+        {
+          "code": "B_Q",
+          "count": 176
+        },
+        {
+          "code": "SP",
+          "count": 162
+        },
+        {
+          "code": "D_Q",
+          "count": 94
+        },
+        {
+          "code": "H_Q",
+          "count": 84
+        },
+        {
+          "code": "J_Q",
+          "count": 72
+        },
+        {
+          "code": "C_Q",
+          "count": 66
+        },
+        {
+          "code": "F_Q",
+          "count": 60
+        },
+        {
+          "code": "K_Q",
+          "count": 60
+        }
+      ]
+    },
+    {
+      "acronym": "SSPPS",
+      "title": "SSPPS_ESEPP_2018",
+      "total": 1746,
+      "cycles": [
+        "2018"
+      ],
+      "roles": {
+        "collected": 1562,
+        "derived": 154,
+        "process": 26,
+        "administrative": 4
+      },
+      "origins": {
+        "collected": 1715,
+        "administrative": 5,
+        "process": 26
+      },
+      "derivations": {
+        "base": 1589,
+        "derived": 157
+      },
+      "derivationsExtracted": 86,
+      "pumfGroupedCount": 51,
+      "identifierCount": 4,
+      "topModules": [
+        {
+          "code": "PA",
+          "count": 136
+        },
+        {
+          "code": "IPV",
+          "count": 132
+        },
+        {
+          "code": "SA",
+          "count": 120
+        },
+        {
+          "code": "IPD",
+          "count": 116
+        },
+        {
+          "code": "IP",
+          "count": 96
+        },
+        {
+          "code": "PAD",
+          "count": 88
+        },
+        {
+          "code": "SAD",
+          "count": 86
+        },
+        {
+          "code": "DSQ",
+          "count": 82
+        }
+      ]
+    },
+    {
+      "acronym": "ACS",
+      "title": "ACS_EEA_2006",
+      "total": 1712,
+      "cycles": [
+        "2006"
+      ],
+      "roles": {
+        "collected": 1597,
+        "derived": 111,
+        "process": 4,
+        "administrative": 0
+      },
+      "origins": {
+        "collected": 1708,
+        "administrative": 0,
+        "process": 4
+      },
+      "derivations": {
+        "base": 1601,
+        "derived": 111
+      },
+      "derivationsExtracted": 158,
+      "pumfGroupedCount": 44,
+      "identifierCount": 2,
+      "topModules": [
+        {
+          "code": "K01",
+          "count": 50
+        },
+        {
+          "code": "C13",
+          "count": 48
+        },
+        {
+          "code": "I11",
+          "count": 40
+        },
+        {
+          "code": "I10",
+          "count": 38
+        },
+        {
+          "code": "J01",
+          "count": 38
+        },
+        {
+          "code": "J02",
+          "count": 38
+        },
+        {
+          "code": "J03",
+          "count": 38
+        },
+        {
+          "code": "J04",
+          "count": 38
+        }
+      ]
+    },
+    {
+      "acronym": "BC",
+      "title": "BC_CB_K12",
+      "total": 1685,
+      "cycles": [
+        "K-12_AllYears",
+        "K12",
+        "K_12_v2"
+      ],
+      "roles": {
+        "collected": 97,
+        "derived": 23,
+        "process": 1525,
+        "administrative": 40
+      },
+      "origins": {
+        "collected": 120,
+        "administrative": 40,
+        "process": 1525
+      },
+      "derivations": {
+        "base": 1659,
+        "derived": 26
+      },
+      "derivationsExtracted": 1660,
+      "pumfGroupedCount": 15,
+      "identifierCount": 0,
+      "topModules": [
+        {
+          "code": "PCT",
+          "count": 100
+        },
+        {
+          "code": "SPC",
+          "count": 75
+        },
+        {
+          "code": "HL",
+          "count": 55
+        },
+        {
+          "code": "PHY",
+          "count": 54
+        },
+        {
+          "code": "SCH",
+          "count": 48
+        },
+        {
+          "code": "COM",
+          "count": 33
+        },
+        {
+          "code": "ENG10",
+          "count": 29
+        },
+        {
+          "code": "ENG12",
+          "count": 29
+        }
+      ]
+    },
+    {
+      "acronym": "CPSS",
+      "title": "CPSS_SEPC_2020_S6",
+      "total": 1596,
+      "cycles": [
+        "2020",
+        "2020_S6",
+        "unknown"
+      ],
+      "roles": {
+        "collected": 1297,
+        "derived": 268,
+        "process": 29,
+        "administrative": 2
+      },
+      "origins": {
+        "collected": 1565,
+        "administrative": 2,
+        "process": 29
+      },
+      "derivations": {
+        "base": 1316,
+        "derived": 280
+      },
+      "derivationsExtracted": 21,
+      "pumfGroupedCount": 36,
+      "identifierCount": 24,
+      "topModules": [
+        {
+          "code": "BH",
+          "count": 270
+        },
+        {
+          "code": "CS",
+          "count": 244
+        },
+        {
+          "code": "LM",
+          "count": 130
+        },
+        {
+          "code": "HR",
+          "count": 76
+        },
+        {
+          "code": "FC",
+          "count": 62
+        },
+        {
+          "code": "PM",
+          "count": 58
+        },
+        {
+          "code": "COV",
+          "count": 48
+        },
+        {
+          "code": "CAN",
+          "count": 46
+        }
+      ]
+    },
+    {
+      "acronym": "CCAHS",
+      "title": "CCAHS_ECSAC_2021",
+      "total": 1570,
+      "cycles": [
+        "2021",
+        "2023"
+      ],
+      "roles": {
+        "collected": 1353,
+        "derived": 170,
+        "process": 37,
+        "administrative": 10
+      },
+      "origins": {
+        "collected": 1523,
+        "administrative": 10,
+        "process": 37
+      },
+      "derivations": {
+        "base": 1400,
+        "derived": 170
+      },
+      "derivationsExtracted": 7,
+      "pumfGroupedCount": 20,
+      "identifierCount": 2,
+      "topModules": [
+        {
+          "code": "CS",
+          "count": 306
+        },
+        {
+          "code": "CHS",
+          "count": 232
+        },
+        {
+          "code": "CHC",
+          "count": 154
+        },
+        {
+          "code": "IPH",
+          "count": 82
+        },
+        {
+          "code": "PG",
+          "count": 72
+        },
+        {
+          "code": "HWT",
+          "count": 62
+        },
+        {
+          "code": "VX",
+          "count": 60
+        },
+        {
+          "code": "HR",
+          "count": 56
+        }
+      ]
+    },
+    {
+      "acronym": "ICC",
+      "title": "ICC_RCC_Covid19",
+      "total": 1446,
+      "cycles": [
+        "2020",
+        "RCC_CEA",
+        "RCC_DV",
+        "RCC_PDP",
+        "RCC_PS",
+        "RCC_SM",
+        "RCC_VPSLDI",
+        "unknown"
+      ],
+      "roles": {
+        "collected": 1127,
+        "derived": 207,
+        "process": 87,
+        "administrative": 25
+      },
+      "origins": {
+        "collected": 1324,
+        "administrative": 35,
+        "process": 87
+      },
+      "derivations": {
+        "base": 1211,
+        "derived": 235
+      },
+      "derivationsExtracted": 146,
+      "pumfGroupedCount": 43,
+      "identifierCount": 40,
+      "topModules": [
+        {
+          "code": "BH",
+          "count": 234
+        },
+        {
+          "code": "TST",
+          "count": 100
+        },
+        {
+          "code": "DIS",
+          "count": 78
+        },
+        {
+          "code": "DEM",
+          "count": 64
+        },
+        {
+          "code": "TR",
+          "count": 60
+        },
+        {
+          "code": "HCS",
+          "count": 56
+        },
+        {
+          "code": "DEM1",
+          "count": 48
+        },
+        {
+          "code": "DTS",
+          "count": 48
+        }
+      ]
+    },
+    {
+      "acronym": "CSSW2",
+      "title": "CSSW2_ESCV2_2022",
+      "total": 1218,
+      "cycles": [
+        "2022",
+        "2023",
+        "2024"
+      ],
+      "roles": {
+        "collected": 1045,
+        "derived": 149,
+        "process": 19,
+        "administrative": 5
+      },
+      "origins": {
+        "collected": 1191,
+        "administrative": 8,
+        "process": 19
+      },
+      "derivations": {
+        "base": 1066,
+        "derived": 152
+      },
+      "derivationsExtracted": 78,
+      "pumfGroupedCount": 34,
+      "identifierCount": 6,
+      "topModules": [
+        {
+          "code": "EHI",
+          "count": 178
+        },
+        {
+          "code": "VIR",
+          "count": 100
+        },
+        {
+          "code": "INF",
+          "count": 100
+        },
+        {
+          "code": "DIS",
+          "count": 60
+        },
+        {
+          "code": "LTC",
+          "count": 48
+        },
+        {
+          "code": "CHR",
+          "count": 44
+        },
+        {
+          "code": "PMDI",
+          "count": 44
+        },
+        {
+          "code": "CHD",
+          "count": 36
+        }
+      ]
+    },
+    {
+      "acronym": "CSSW1",
+      "title": "CSSW1_ESCV1_2022",
+      "total": 1178,
+      "cycles": [
+        "2022",
+        "2023",
+        "2024",
+        "2025"
+      ],
+      "roles": {
+        "collected": 946,
+        "derived": 200,
+        "process": 27,
+        "administrative": 5
+      },
+      "origins": {
+        "collected": 1141,
+        "administrative": 10,
+        "process": 27
+      },
+      "derivations": {
+        "base": 974,
+        "derived": 204
+      },
+      "derivationsExtracted": 121,
+      "pumfGroupedCount": 36,
+      "identifierCount": 10,
+      "topModules": [
+        {
+          "code": "DIS",
+          "count": 116
+        },
+        {
+          "code": "LTC",
+          "count": 64
+        },
+        {
+          "code": "LAN",
+          "count": 56
+        },
+        {
+          "code": "IRP",
+          "count": 54
+        },
+        {
+          "code": "EA",
+          "count": 52
+        },
+        {
+          "code": "PMDI",
+          "count": 44
+        },
+        {
+          "code": "SRH",
+          "count": 38
+        },
+        {
+          "code": "CC",
+          "count": 36
+        }
+      ]
+    },
+    {
+      "acronym": "CSSW4",
+      "title": "CSSW4_ESCV4_2021",
+      "total": 1162,
+      "cycles": [
+        "2021",
+        "2023",
+        "2024"
+      ],
+      "roles": {
+        "collected": 965,
+        "derived": 171,
+        "process": 22,
+        "administrative": 4
+      },
+      "origins": {
+        "collected": 1132,
+        "administrative": 8,
+        "process": 22
+      },
+      "derivations": {
+        "base": 988,
+        "derived": 174
+      },
+      "derivationsExtracted": 92,
+      "pumfGroupedCount": 24,
+      "identifierCount": 8,
+      "topModules": [
+        {
+          "code": "GIV",
+          "count": 116
+        },
+        {
+          "code": "DIS",
+          "count": 114
+        },
+        {
+          "code": "RCV",
+          "count": 92
+        },
+        {
+          "code": "PMDI",
+          "count": 66
+        },
+        {
+          "code": "EV",
+          "count": 56
+        },
+        {
+          "code": "CIM",
+          "count": 48
+        },
+        {
+          "code": "THR",
+          "count": 44
+        },
+        {
+          "code": "SRH",
+          "count": 38
+        }
+      ]
+    },
+    {
+      "acronym": "CAFHS",
+      "title": "CAFHS_ESFAC_2019",
+      "total": 1124,
+      "cycles": [
+        "2019"
+      ],
+      "roles": {
+        "collected": 980,
+        "derived": 131,
+        "process": 11,
+        "administrative": 2
+      },
+      "origins": {
+        "collected": 1111,
+        "administrative": 2,
+        "process": 11
+      },
+      "derivations": {
+        "base": 986,
+        "derived": 138
+      },
+      "derivationsExtracted": 12,
+      "pumfGroupedCount": 6,
+      "identifierCount": 4,
+      "topModules": [
+        {
+          "code": "INJ",
+          "count": 154
+        },
+        {
+          "code": "AUD",
+          "count": 108
+        },
+        {
+          "code": "CCC",
+          "count": 82
+        },
+        {
+          "code": "PA",
+          "count": 80
+        },
+        {
+          "code": "CMH",
+          "count": 66
+        },
+        {
+          "code": "MPA",
+          "count": 66
+        },
+        {
+          "code": "DEXP",
+          "count": 56
+        },
+        {
+          "code": "SMK",
+          "count": 52
+        }
+      ]
+    },
+    {
+      "acronym": "SSMCAF",
+      "title": "SSMCAF_SISFAC_2022",
+      "total": 1114,
+      "cycles": [
+        "2022"
+      ],
+      "roles": {
+        "collected": 957,
+        "derived": 150,
+        "process": 7,
+        "administrative": 0
+      },
+      "origins": {
+        "collected": 1107,
+        "administrative": 0,
+        "process": 7
+      },
+      "derivations": {
+        "base": 964,
+        "derived": 150
+      },
+      "derivationsExtracted": 72,
+      "pumfGroupedCount": 23,
+      "identifierCount": 6,
+      "topModules": [
+        {
+          "code": "BDC",
+          "count": 226
+        },
+        {
+          "code": "IDC",
+          "count": 224
+        },
+        {
+          "code": "HAR",
+          "count": 142
+        },
+        {
+          "code": "SDB",
+          "count": 40
+        },
+        {
+          "code": "DVH",
+          "count": 38
+        },
+        {
+          "code": "DVC",
+          "count": 34
+        },
+        {
+          "code": "DM1",
+          "count": 30
+        },
+        {
+          "code": "CLT10",
+          "count": 30
+        }
+      ]
+    },
+    {
+      "acronym": "CSSW3",
+      "title": "CSSW3_ESCV3_2021",
+      "total": 1112,
+      "cycles": [
+        "2021",
+        "2022",
+        "2023",
+        "2024"
+      ],
+      "roles": {
+        "collected": 893,
+        "derived": 189,
+        "process": 24,
+        "administrative": 6
+      },
+      "origins": {
+        "collected": 1078,
+        "administrative": 10,
+        "process": 24
+      },
+      "derivations": {
+        "base": 919,
+        "derived": 193
+      },
+      "derivationsExtracted": 106,
+      "pumfGroupedCount": 41,
+      "identifierCount": 8,
+      "topModules": [
+        {
+          "code": "DIS",
+          "count": 170
+        },
+        {
+          "code": "LTC",
+          "count": 50
+        },
+        {
+          "code": "CST",
+          "count": 48
+        },
+        {
+          "code": "LAN",
+          "count": 44
+        },
+        {
+          "code": "PMDI",
+          "count": 44
+        },
+        {
+          "code": "HASP",
+          "count": 42
+        },
+        {
+          "code": "DEM1",
+          "count": 32
+        },
+        {
+          "code": "CIM",
+          "count": 32
+        }
+      ]
+    },
+    {
+      "acronym": "SEPR",
+      "title": "SEPR_EPUR_2014",
+      "total": 1080,
+      "cycles": [
+        "2014"
+      ],
+      "roles": {
+        "collected": 1006,
+        "derived": 56,
+        "process": 8,
+        "administrative": 10
+      },
+      "origins": {
+        "collected": 1062,
+        "administrative": 10,
+        "process": 8
+      },
+      "derivations": {
+        "base": 1021,
+        "derived": 59
+      },
+      "derivationsExtracted": 77,
+      "pumfGroupedCount": 25,
+      "identifierCount": 4,
+      "topModules": [
+        {
+          "code": "RSK",
+          "count": 524
+        },
+        {
+          "code": "PED",
+          "count": 170
+        },
+        {
+          "code": "PPB",
+          "count": 64
+        },
+        {
+          "code": "CVE",
+          "count": 52
+        },
+        {
+          "code": "SNR",
+          "count": 42
+        },
+        {
+          "code": "TRU",
+          "count": 28
+        },
+        {
+          "code": "PG",
+          "count": 26
+        },
+        {
+          "code": "PEDS",
+          "count": 16
+        }
+      ]
+    },
+    {
+      "acronym": "CLPS",
+      "title": "CLPS_ECPJ_2021",
+      "total": 1068,
+      "cycles": [
+        "2021"
+      ],
+      "roles": {
+        "collected": 1001,
+        "derived": 54,
+        "process": 12,
+        "administrative": 1
+      },
+      "origins": {
+        "collected": 1054,
+        "administrative": 2,
+        "process": 12
+      },
+      "derivations": {
+        "base": 1012,
+        "derived": 56
+      },
+      "derivationsExtracted": 31,
+      "pumfGroupedCount": 28,
+      "identifierCount": 4,
+      "topModules": [
+        {
+          "code": "CNC",
+          "count": 344
+        },
+        {
+          "code": "DSH",
+          "count": 98
+        },
+        {
+          "code": "AST",
+          "count": 86
+        },
+        {
+          "code": "COV",
+          "count": 82
+        },
+        {
+          "code": "PRI",
+          "count": 76
+        },
+        {
+          "code": "CST",
+          "count": 58
+        },
+        {
+          "code": "LGA",
+          "count": 38
+        },
+        {
+          "code": "HLT",
+          "count": 36
+        }
+      ]
+    },
+    {
+      "acronym": "IFPI",
+      "title": "IFPI_IITA",
+      "total": 1040,
+      "cycles": [
+        "2023"
+      ],
+      "roles": {
+        "collected": 766,
+        "derived": 16,
+        "process": 258,
+        "administrative": 0
+      },
+      "origins": {
+        "collected": 782,
+        "administrative": 0,
+        "process": 258
+      },
+      "derivations": {
+        "base": 1024,
+        "derived": 16
+      },
+      "derivationsExtracted": 0,
+      "pumfGroupedCount": 4,
+      "identifierCount": 4,
+      "topModules": [
+        {
+          "code": "C21",
+          "count": 36
+        },
+        {
+          "code": "I21",
+          "count": 34
+        },
+        {
+          "code": "C48",
+          "count": 28
+        },
+        {
+          "code": "C05",
+          "count": 26
+        },
+        {
+          "code": "I05",
+          "count": 26
+        },
+        {
+          "code": "I48",
+          "count": 26
+        },
+        {
+          "code": "C26",
+          "count": 24
+        },
+        {
+          "code": "C46",
+          "count": 24
+        }
+      ]
+    },
+    {
+      "acronym": "SFT",
+      "title": "SFT_ETF_2024",
+      "total": 1010,
+      "cycles": [
+        "2024"
+      ],
+      "roles": {
+        "collected": 897,
+        "derived": 81,
+        "process": 21,
+        "administrative": 11
+      },
+      "origins": {
+        "collected": 978,
+        "administrative": 11,
+        "process": 21
+      },
+      "derivations": {
+        "base": 927,
+        "derived": 83
+      },
+      "derivationsExtracted": 0,
+      "pumfGroupedCount": 41,
+      "identifierCount": 2,
+      "topModules": [
+        {
+          "code": "HPU",
+          "count": 260
+        },
+        {
+          "code": "AGE",
+          "count": 34
+        },
+        {
+          "code": "RPC",
+          "count": 32
+        },
+        {
+          "code": "HCH",
+          "count": 30
+        },
+        {
+          "code": "HCU",
+          "count": 28
+        },
+        {
+          "code": "GEN",
+          "count": 24
+        },
+        {
+          "code": "PG",
+          "count": 24
+        },
+        {
+          "code": "VMP",
+          "count": 24
+        }
+      ]
+    },
+    {
+      "acronym": "SEFJ",
+      "title": "SEFJ_EECF",
+      "total": 984,
+      "cycles": [
+        "2022"
+      ],
+      "roles": {
+        "collected": 923,
+        "derived": 51,
+        "process": 8,
+        "administrative": 2
+      },
+      "origins": {
+        "collected": 971,
+        "administrative": 5,
+        "process": 8
+      },
+      "derivations": {
+        "base": 930,
+        "derived": 54
+      },
+      "derivationsExtracted": 0,
+      "pumfGroupedCount": 36,
+      "identifierCount": 4,
+      "topModules": [
+        {
+          "code": "LB",
+          "count": 212
+        },
+        {
+          "code": "CJ",
+          "count": 162
+        },
+        {
+          "code": "HVD",
+          "count": 120
+        },
+        {
+          "code": "DEM",
+          "count": 94
+        },
+        {
+          "code": "WLB",
+          "count": 80
+        },
+        {
+          "code": "DISC",
+          "count": 72
+        },
+        {
+          "code": "OHS",
+          "count": 56
+        },
+        {
+          "code": "OT",
+          "count": 46
+        }
+      ]
+    },
+    {
+      "acronym": "CAFTWS",
+      "title": "CAFTWS_ETBFAC_2017",
+      "total": 952,
+      "cycles": [
+        "2017"
+      ],
+      "roles": {
+        "collected": 903,
+        "derived": 35,
+        "process": 12,
+        "administrative": 2
+      },
+      "origins": {
+        "collected": 938,
+        "administrative": 2,
+        "process": 12
+      },
+      "derivations": {
+        "base": 913,
+        "derived": 39
+      },
+      "derivationsExtracted": 13,
+      "pumfGroupedCount": 16,
+      "identifierCount": 8,
+      "topModules": [
+        {
+          "code": "TWS",
+          "count": 340
+        },
+        {
+          "code": "ES",
+          "count": 128
+        },
+        {
+          "code": "HCS",
+          "count": 64
+        },
+        {
+          "code": "TE",
+          "count": 50
+        },
+        {
+          "code": "FS",
+          "count": 32
+        },
+        {
+          "code": "PSOS",
+          "count": 32
+        },
+        {
+          "code": "FMS",
+          "count": 32
+        },
+        {
+          "code": "CC2M",
+          "count": 20
+        }
+      ]
+    },
+    {
+      "acronym": "SMHSE",
+      "title": "SMHSE_ESMES",
+      "total": 920,
+      "cycles": [
+        "2021",
+        "2023"
+      ],
+      "roles": {
+        "collected": 715,
+        "derived": 180,
+        "process": 21,
+        "administrative": 4
+      },
+      "origins": {
+        "collected": 879,
+        "administrative": 20,
+        "process": 21
+      },
+      "derivations": {
+        "base": 736,
+        "derived": 184
+      },
+      "derivationsExtracted": 10,
+      "pumfGroupedCount": 38,
+      "identifierCount": 8,
+      "topModules": [
+        {
+          "code": "PTS",
+          "count": 246
+        },
+        {
+          "code": "SR1",
+          "count": 116
+        },
+        {
+          "code": "MHS",
+          "count": 72
+        },
+        {
+          "code": "SPS",
+          "count": 64
+        },
+        {
+          "code": "LMA",
+          "count": 48
+        },
+        {
+          "code": "BH",
+          "count": 36
+        },
+        {
+          "code": "CCC",
+          "count": 28
+        },
+        {
+          "code": "SIP",
+          "count": 28
+        }
+      ]
+    },
+    {
+      "acronym": "SNPS",
+      "title": "SNPS_SDIP_2018",
+      "total": 890,
+      "cycles": [
+        "2018",
+        "2021"
+      ],
+      "roles": {
+        "collected": 632,
+        "derived": 231,
+        "process": 23,
+        "administrative": 4
+      },
+      "origins": {
+        "collected": 861,
+        "administrative": 6,
+        "process": 23
+      },
+      "derivations": {
+        "base": 653,
+        "derived": 237
+      },
+      "derivationsExtracted": 68,
+      "pumfGroupedCount": 44,
+      "identifierCount": 8,
+      "topModules": [
+        {
+          "code": "MAN",
+          "count": 210
+        },
+        {
+          "code": "ALL",
+          "count": 110
+        },
+        {
+          "code": "ADV",
+          "count": 102
+        },
+        {
+          "code": "STA",
+          "count": 102
+        },
+        {
+          "code": "DSQ",
+          "count": 82
+        },
+        {
+          "code": "HMN",
+          "count": 62
+        },
+        {
+          "code": "GEN",
+          "count": 28
+        },
+        {
+          "code": "PG",
+          "count": 24
+        }
+      ]
+    },
+    {
+      "acronym": "SHCAE",
+      "title": "SHCAE_PSC_EASSES_SPS",
+      "total": 886,
+      "cycles": [
+        "EASSES_SPS"
+      ],
+      "roles": {
+        "collected": 568,
+        "derived": 295,
+        "process": 23,
+        "administrative": 0
+      },
+      "origins": {
+        "collected": 843,
+        "administrative": 20,
+        "process": 23
+      },
+      "derivations": {
+        "base": 586,
+        "derived": 300
+      },
+      "derivationsExtracted": 0,
+      "pumfGroupedCount": 29,
+      "identifierCount": 6,
+      "topModules": [
+        {
+          "code": "IN",
+          "count": 164
+        },
+        {
+          "code": "HC2",
+          "count": 78
+        },
+        {
+          "code": "UCN",
+          "count": 78
+        },
+        {
+          "code": "HC4",
+          "count": 76
+        },
+        {
+          "code": "HC1",
+          "count": 64
+        },
+        {
+          "code": "PHC",
+          "count": 48
+        },
+        {
+          "code": "CHR",
+          "count": 46
+        },
+        {
+          "code": "PEX",
+          "count": 36
+        }
+      ]
+    },
+    {
+      "acronym": "PSSCSC",
+      "title": "PSSCSC_ESPCC_2022",
+      "total": 844,
+      "cycles": [
+        "2022"
+      ],
+      "roles": {
+        "collected": 838,
+        "derived": 4,
+        "process": 2,
+        "administrative": 0
+      },
+      "origins": {
+        "collected": 842,
+        "administrative": 0,
+        "process": 2
+      },
+      "derivations": {
+        "base": 840,
+        "derived": 4
+      },
+      "derivationsExtracted": 0,
+      "pumfGroupedCount": 4,
+      "identifierCount": 2,
+      "topModules": [
+        {
+          "code": "C26",
+          "count": 154
+        },
+        {
+          "code": "C25",
+          "count": 56
+        },
+        {
+          "code": "C36",
+          "count": 34
+        },
+        {
+          "code": "C21",
+          "count": 28
+        },
+        {
+          "code": "C33",
+          "count": 28
+        },
+        {
+          "code": "C04",
+          "count": 26
+        },
+        {
+          "code": "C12",
+          "count": 24
+        },
+        {
+          "code": "C24",
+          "count": 24
+        }
+      ]
+    },
+    {
+      "acronym": "CADS",
+      "title": "CADS_ECAD_2019",
+      "total": 842,
+      "cycles": [
+        "2019"
+      ],
+      "roles": {
+        "collected": 676,
+        "derived": 148,
+        "process": 15,
+        "administrative": 3
+      },
+      "origins": {
+        "collected": 822,
+        "administrative": 5,
+        "process": 15
+      },
+      "derivations": {
+        "base": 689,
+        "derived": 153
+      },
+      "derivationsExtracted": 121,
+      "pumfGroupedCount": 24,
+      "identifierCount": 4,
+      "topModules": [
+        {
+          "code": "CAN",
+          "count": 172
+        },
+        {
+          "code": "ALC",
+          "count": 100
+        },
+        {
+          "code": "PR",
+          "count": 58
+        },
+        {
+          "code": "TT",
+          "count": 42
+        },
+        {
+          "code": "DEM",
+          "count": 36
+        },
+        {
+          "code": "STI",
+          "count": 34
+        },
+        {
+          "code": "SED",
+          "count": 28
+        },
+        {
+          "code": "OD",
+          "count": 22
+        }
+      ]
+    },
+    {
+      "acronym": "SCMH",
+      "title": "SCMH_ECSM_2020",
+      "total": 838,
+      "cycles": [
+        "2020"
+      ],
+      "roles": {
+        "collected": 674,
+        "derived": 138,
+        "process": 22,
+        "administrative": 4
+      },
+      "origins": {
+        "collected": 796,
+        "administrative": 20,
+        "process": 22
+      },
+      "derivations": {
+        "base": 696,
+        "derived": 142
+      },
+      "derivationsExtracted": 22,
+      "pumfGroupedCount": 16,
+      "identifierCount": 8,
+      "topModules": [
+        {
+          "code": "PTS",
+          "count": 116
+        },
+        {
+          "code": "DIS",
+          "count": 68
+        },
+        {
+          "code": "IM",
+          "count": 64
+        },
+        {
+          "code": "ALC",
+          "count": 64
+        },
+        {
+          "code": "DEP",
+          "count": 60
+        },
+        {
+          "code": "PS",
+          "count": 60
+        },
+        {
+          "code": "CAN",
+          "count": 56
+        },
+        {
+          "code": "ANX",
+          "count": 40
+        }
+      ]
+    },
+    {
+      "acronym": "CVCS",
+      "title": "CVCS_ECVC_2021",
+      "total": 818,
+      "cycles": [
+        "2021"
+      ],
+      "roles": {
+        "collected": 552,
+        "derived": 236,
+        "process": 24,
+        "administrative": 6
+      },
+      "origins": {
+        "collected": 788,
+        "administrative": 6,
+        "process": 24
+      },
+      "derivations": {
+        "base": 567,
+        "derived": 251
+      },
+      "derivationsExtracted": 103,
+      "pumfGroupedCount": 61,
+      "identifierCount": 12,
+      "topModules": [
+        {
+          "code": "DV",
+          "count": 196
+        },
+        {
+          "code": "KB",
+          "count": 144
+        },
+        {
+          "code": "VX",
+          "count": 102
+        },
+        {
+          "code": "HL",
+          "count": 72
+        },
+        {
+          "code": "PG",
+          "count": 72
+        },
+        {
+          "code": "OS",
+          "count": 48
+        },
+        {
+          "code": "DEM1",
+          "count": 30
+        },
+        {
+          "code": "ABM",
+          "count": 24
+        }
+      ]
+    },
+    {
+      "acronym": "RAIS",
+      "title": "RAIS_SIAI_08_16",
+      "total": 792,
+      "cycles": [
+        "08_16"
+      ],
+      "roles": {
+        "collected": 558,
+        "derived": 198,
+        "process": 36,
+        "administrative": 0
+      },
+      "origins": {
+        "collected": 756,
+        "administrative": 0,
+        "process": 36
+      },
+      "derivations": {
+        "base": 585,
+        "derived": 207
+      },
+      "derivationsExtracted": 0,
+      "pumfGroupedCount": 63,
+      "identifierCount": 18,
+      "topModules": [
+        {
+          "code": "TEC",
+          "count": 90
+        },
+        {
+          "code": "DAT",
+          "count": 72
+        },
+        {
+          "code": "JOB",
+          "count": 72
+        },
+        {
+          "code": "TRA",
+          "count": 54
+        },
+        {
+          "code": "RE",
+          "count": 54
+        },
+        {
+          "code": "NOC",
+          "count": 54
+        },
+        {
+          "code": "PRO",
+          "count": 36
+        },
+        {
+          "code": "DUR",
+          "count": 36
+        }
+      ]
+    },
+    {
+      "acronym": "SBASCC",
+      "title": "SBASCC_EMGAAEC",
+      "total": 752,
+      "cycles": [
+        "2022"
+      ],
+      "roles": {
+        "collected": 676,
+        "derived": 54,
+        "process": 18,
+        "administrative": 4
+      },
+      "origins": {
+        "collected": 730,
+        "administrative": 4,
+        "process": 18
+      },
+      "derivations": {
+        "base": 690,
+        "derived": 62
+      },
+      "derivationsExtracted": 64,
+      "pumfGroupedCount": 2,
+      "identifierCount": 8,
+      "topModules": [
+        {
+          "code": "ARR",
+          "count": 564
+        },
+        {
+          "code": "COST",
+          "count": 32
+        },
+        {
+          "code": "SUB",
+          "count": 32
+        },
+        {
+          "code": "AGE",
+          "count": 16
+        },
+        {
+          "code": "PMK",
+          "count": 16
+        },
+        {
+          "code": "ABM",
+          "count": 16
+        },
+        {
+          "code": "CHILD",
+          "count": 8
+        },
+        {
+          "code": "USE",
+          "count": 8
+        }
+      ]
+    },
+    {
+      "acronym": "CTNS",
+      "title": "CTNS_ECTN_2020",
+      "total": 748,
+      "cycles": [
+        "2020",
+        "2021",
+        "2022"
+      ],
+      "roles": {
+        "collected": 645,
+        "derived": 84,
+        "process": 13,
+        "administrative": 6
+      },
+      "origins": {
+        "collected": 726,
+        "administrative": 9,
+        "process": 13
+      },
+      "derivations": {
+        "base": 660,
+        "derived": 88
+      },
+      "derivationsExtracted": 32,
+      "pumfGroupedCount": 26,
+      "identifierCount": 10,
+      "topModules": [
+        {
+          "code": "TBC",
+          "count": 208
+        },
+        {
+          "code": "VAP",
+          "count": 172
+        },
+        {
+          "code": "CAN",
+          "count": 136
+        },
+        {
+          "code": "DV",
+          "count": 36
+        },
+        {
+          "code": "OTP",
+          "count": 30
+        },
+        {
+          "code": "DEM",
+          "count": 26
+        },
+        {
+          "code": "PG",
+          "count": 24
+        },
+        {
+          "code": "DEM2",
+          "count": 12
+        }
+      ]
+    },
+    {
+      "acronym": "CSELCC",
+      "title": "CSELCC_ECAGJE_2023",
+      "total": 738,
+      "cycles": [
+        "2023"
+      ],
+      "roles": {
+        "collected": 600,
+        "derived": 129,
+        "process": 6,
+        "administrative": 3
+      },
+      "origins": {
+        "collected": 729,
+        "administrative": 3,
+        "process": 6
+      },
+      "derivations": {
+        "base": 606,
+        "derived": 132
+      },
+      "derivationsExtracted": 66,
+      "pumfGroupedCount": 67,
+      "identifierCount": 4,
+      "topModules": [
+        {
+          "code": "ARR",
+          "count": 202
+        },
+        {
+          "code": "CHG",
+          "count": 52
+        },
+        {
+          "code": "EWB",
+          "count": 48
+        },
+        {
+          "code": "ABS",
+          "count": 30
+        },
+        {
+          "code": "LMA",
+          "count": 28
+        },
+        {
+          "code": "HH",
+          "count": 28
+        },
+        {
+          "code": "ABM",
+          "count": 24
+        },
+        {
+          "code": "COST",
+          "count": 12
+        }
+      ]
+    },
+    {
+      "acronym": "EWHS",
+      "title": "EWHS_STSCS_2021",
+      "total": 696,
+      "cycles": [
+        "2021"
+      ],
+      "roles": {
+        "collected": 618,
+        "derived": 69,
+        "process": 7,
+        "administrative": 2
+      },
+      "origins": {
+        "collected": 687,
+        "administrative": 2,
+        "process": 7
+      },
+      "derivations": {
+        "base": 623,
+        "derived": 73
+      },
+      "derivationsExtracted": 34,
+      "pumfGroupedCount": 23,
+      "identifierCount": 4,
+      "topModules": [
+        {
+          "code": "HAR",
+          "count": 94
+        },
+        {
+          "code": "CCM",
+          "count": 88
+        },
+        {
+          "code": "PA",
+          "count": 70
+        },
+        {
+          "code": "VWS",
+          "count": 36
+        },
+        {
+          "code": "PRP",
+          "count": 32
+        },
+        {
+          "code": "EFF",
+          "count": 24
+        },
+        {
+          "code": "DIS",
+          "count": 24
+        },
+        {
+          "code": "PG",
+          "count": 24
+        }
+      ]
+    },
+    {
+      "acronym": "CNHS",
+      "title": "CNHS_EBAS_2013",
+      "total": 684,
+      "cycles": [
+        "2013"
+      ],
+      "roles": {
+        "collected": 617,
+        "derived": 53,
+        "process": 12,
+        "administrative": 2
+      },
+      "origins": {
+        "collected": 670,
+        "administrative": 2,
+        "process": 12
+      },
+      "derivations": {
+        "base": 631,
+        "derived": 53
+      },
+      "derivationsExtracted": 4,
+      "pumfGroupedCount": 18,
+      "identifierCount": 10,
+      "topModules": [
+        {
+          "code": "SW",
+          "count": 92
+        },
+        {
+          "code": "PNS",
+          "count": 88
+        },
+        {
+          "code": "PSQ",
+          "count": 68
+        },
+        {
+          "code": "WHO",
+          "count": 54
+        },
+        {
+          "code": "BPM",
+          "count": 48
+        },
+        {
+          "code": "HEC",
+          "count": 48
+        },
+        {
+          "code": "BP1",
+          "count": 38
+        },
+        {
+          "code": "BP2",
+          "count": 36
+        }
+      ]
+    },
+    {
+      "acronym": "SIMT",
+      "title": "SIMT_ETFI_2018",
+      "total": 666,
+      "cycles": [
+        "2018"
+      ],
+      "roles": {
+        "collected": 509,
+        "derived": 143,
+        "process": 13,
+        "administrative": 1
+      },
+      "origins": {
+        "collected": 650,
+        "administrative": 3,
+        "process": 13
+      },
+      "derivations": {
+        "base": 521,
+        "derived": 145
+      },
+      "derivationsExtracted": 120,
+      "pumfGroupedCount": 23,
+      "identifierCount": 4,
+      "topModules": [
+        {
+          "code": "REM",
+          "count": 172
+        },
+        {
+          "code": "LST",
+          "count": 106
+        },
+        {
+          "code": "SDC",
+          "count": 60
+        },
+        {
+          "code": "FRQ",
+          "count": 52
+        },
+        {
+          "code": "EXP",
+          "count": 40
+        },
+        {
+          "code": "RYN1",
+          "count": 28
+        },
+        {
+          "code": "LST1",
+          "count": 28
+        },
+        {
+          "code": "INC",
+          "count": 22
+        }
+      ]
+    },
+    {
+      "acronym": "SAHCPDP",
+      "title": "SAHCPDP_EASSPPP_2021",
+      "total": 580,
+      "cycles": [
+        "2021"
+      ],
+      "roles": {
+        "collected": 521,
+        "derived": 41,
+        "process": 15,
+        "administrative": 3
+      },
+      "origins": {
+        "collected": 562,
+        "administrative": 3,
+        "process": 15
+      },
+      "derivations": {
+        "base": 535,
+        "derived": 45
+      },
+      "derivationsExtracted": 0,
+      "pumfGroupedCount": 15,
+      "identifierCount": 2,
+      "topModules": [
+        {
+          "code": "AH",
+          "count": 128
+        },
+        {
+          "code": "AHC",
+          "count": 84
+        },
+        {
+          "code": "MEU",
+          "count": 74
+        },
+        {
+          "code": "CS",
+          "count": 48
+        },
+        {
+          "code": "BHC",
+          "count": 38
+        },
+        {
+          "code": "CHR",
+          "count": 36
+        },
+        {
+          "code": "OHC",
+          "count": 28
+        },
+        {
+          "code": "PG",
+          "count": 24
+        }
+      ]
+    },
+    {
+      "acronym": "NTS",
+      "title": "NTS_ENV_AllYears",
+      "total": 548,
+      "cycles": [
+        "AllYears"
+      ],
+      "roles": {
+        "collected": 475,
+        "derived": 41,
+        "process": 22,
+        "administrative": 10
+      },
+      "origins": {
+        "collected": 513,
+        "administrative": 13,
+        "process": 22
+      },
+      "derivations": {
+        "base": 500,
+        "derived": 48
+      },
+      "derivationsExtracted": 23,
+      "pumfGroupedCount": 24,
+      "identifierCount": 12,
+      "topModules": [
+        {
+          "code": "ACT",
+          "count": 68
+        },
+        {
+          "code": "SPI",
+          "count": 52
+        },
+        {
+          "code": "SPD",
+          "count": 48
+        },
+        {
+          "code": "PKI",
+          "count": 46
+        },
+        {
+          "code": "PKD",
+          "count": 26
+        },
+        {
+          "code": "VS",
+          "count": 26
+        },
+        {
+          "code": "ROS",
+          "count": 14
+        },
+        {
+          "code": "RE",
+          "count": 12
+        }
+      ]
+    },
+    {
+      "acronym": "SSFNPMI",
+      "title": "SSFNPMI_SEPNMI",
+      "total": 544,
+      "cycles": [
+        "2024"
+      ],
+      "roles": {
+        "collected": 503,
+        "derived": 30,
+        "process": 11,
+        "administrative": 0
+      },
+      "origins": {
+        "collected": 533,
+        "administrative": 0,
+        "process": 11
+      },
+      "derivations": {
+        "base": 514,
+        "derived": 30
+      },
+      "derivationsExtracted": 3,
+      "pumfGroupedCount": 12,
+      "identifierCount": 6,
+      "topModules": [
+        {
+          "code": "IRP",
+          "count": 78
+        },
+        {
+          "code": "EWD",
+          "count": 74
+        },
+        {
+          "code": "DHC",
+          "count": 68
+        },
+        {
+          "code": "HCA",
+          "count": 48
+        },
+        {
+          "code": "PPB",
+          "count": 36
+        },
+        {
+          "code": "HCN",
+          "count": 28
+        },
+        {
+          "code": "MEU",
+          "count": 28
+        },
+        {
+          "code": "DHL",
+          "count": 12
+        }
+      ]
+    },
+    {
+      "acronym": "SSPCW2",
+      "title": "SSPCW2_SEGCV2_2023",
+      "total": 536,
+      "cycles": [
+        "2023"
+      ],
+      "roles": {
+        "collected": 474,
+        "derived": 51,
+        "process": 9,
+        "administrative": 2
+      },
+      "origins": {
+        "collected": 525,
+        "administrative": 2,
+        "process": 9
+      },
+      "derivations": {
+        "base": 484,
+        "derived": 52
+      },
+      "derivationsExtracted": 24,
+      "pumfGroupedCount": 5,
+      "identifierCount": 2,
+      "topModules": [
+        {
+          "code": "SPA",
+          "count": 122
+        },
+        {
+          "code": "DBH",
+          "count": 84
+        },
+        {
+          "code": "VBR",
+          "count": 66
+        },
+        {
+          "code": "REP",
+          "count": 54
+        },
+        {
+          "code": "PMDI",
+          "count": 22
+        },
+        {
+          "code": "CIM",
+          "count": 16
+        },
+        {
+          "code": "LTC",
+          "count": 16
+        },
+        {
+          "code": "SVR",
+          "count": 12
+        }
+      ]
+    },
+    {
+      "acronym": "CSSCW",
+      "title": "CSSCW_ESCCB_2021",
+      "total": 470,
+      "cycles": [
+        "2021"
+      ],
+      "roles": {
+        "collected": 330,
+        "derived": 124,
+        "process": 14,
+        "administrative": 2
+      },
+      "origins": {
+        "collected": 452,
+        "administrative": 4,
+        "process": 14
+      },
+      "derivations": {
+        "base": 342,
+        "derived": 128
+      },
+      "derivationsExtracted": 102,
+      "pumfGroupedCount": 16,
+      "identifierCount": 4,
+      "topModules": [
+        {
+          "code": "HBO",
+          "count": 48
+        },
+        {
+          "code": "LVL",
+          "count": 36
+        },
+        {
+          "code": "CAS",
+          "count": 32
+        },
+        {
+          "code": "FIN",
+          "count": 32
+        },
+        {
+          "code": "LTC05",
+          "count": 28
+        },
+        {
+          "code": "GEN2",
+          "count": 24
+        },
+        {
+          "code": "COV",
+          "count": 24
+        },
+        {
+          "code": "RES",
+          "count": 20
+        }
+      ]
+    },
+    {
+      "acronym": "PSIS",
+      "title": "PSIS_SIEP",
+      "total": 452,
+      "cycles": [
+        "2019",
+        "2020",
+        "2021",
+        "2022",
+        "2023"
+      ],
+      "roles": {
+        "collected": 225,
+        "derived": 153,
+        "process": 45,
+        "administrative": 29
+      },
+      "origins": {
+        "collected": 368,
+        "administrative": 39,
+        "process": 45
+      },
+      "derivations": {
+        "base": 299,
+        "derived": 153
+      },
+      "derivationsExtracted": 0,
+      "pumfGroupedCount": 123,
+      "identifierCount": 10,
+      "topModules": [
+        {
+          "code": "PRO",
+          "count": 43
+        },
+        {
+          "code": "AGE",
+          "count": 38
+        },
+        {
+          "code": "CIP",
+          "count": 33
+        },
+        {
+          "code": "INS",
+          "count": 30
+        },
+        {
+          "code": "PR",
+          "count": 30
+        },
+        {
+          "code": "REG",
+          "count": 20
+        },
+        {
+          "code": "IMM",
+          "count": 20
+        },
+        {
+          "code": "PER",
+          "count": 20
+        }
+      ]
+    },
+    {
+      "acronym": "ESDC",
+      "title": "ESDC_EWS_SMP_EDSC_2022",
+      "total": 442,
+      "cycles": [
+        "SMP_EDSC_2022"
+      ],
+      "roles": {
+        "collected": 382,
+        "derived": 52,
+        "process": 6,
+        "administrative": 2
+      },
+      "origins": {
+        "collected": 434,
+        "administrative": 2,
+        "process": 6
+      },
+      "derivations": {
+        "base": 388,
+        "derived": 54
+      },
+      "derivationsExtracted": 32,
+      "pumfGroupedCount": 18,
+      "identifierCount": 4,
+      "topModules": [
+        {
+          "code": "ESD",
+          "count": 42
+        },
+        {
+          "code": "ORG",
+          "count": 34
+        },
+        {
+          "code": "BO",
+          "count": 32
+        },
+        {
+          "code": "BN",
+          "count": 24
+        },
+        {
+          "code": "PG",
+          "count": 24
+        },
+        {
+          "code": "SS",
+          "count": 20
+        },
+        {
+          "code": "WE",
+          "count": 20
+        },
+        {
+          "code": "WS",
+          "count": 16
+        }
+      ]
+    },
+    {
+      "acronym": "SSC",
+      "title": "SSC_WC_ELS_BC",
+      "total": 432,
+      "cycles": [
+        "ELS_BC"
+      ],
+      "roles": {
+        "collected": 373,
+        "derived": 51,
+        "process": 6,
+        "administrative": 2
+      },
+      "origins": {
+        "collected": 422,
+        "administrative": 4,
+        "process": 6
+      },
+      "derivations": {
+        "base": 380,
+        "derived": 52
+      },
+      "derivationsExtracted": 30,
+      "pumfGroupedCount": 9,
+      "identifierCount": 2,
+      "topModules": [
+        {
+          "code": "DIS",
+          "count": 56
+        },
+        {
+          "code": "CER",
+          "count": 36
+        },
+        {
+          "code": "SVR",
+          "count": 24
+        },
+        {
+          "code": "PMDI",
+          "count": 22
+        },
+        {
+          "code": "PGR",
+          "count": 22
+        },
+        {
+          "code": "CWR",
+          "count": 18
+        },
+        {
+          "code": "CWF",
+          "count": 18
+        },
+        {
+          "code": "CII",
+          "count": 18
+        }
+      ]
+    },
+    {
+      "acronym": "SSPCW4",
+      "title": "SSPCW4_SEGCV4_2023",
+      "total": 386,
+      "cycles": [
+        "2023"
+      ],
+      "roles": {
+        "collected": 322,
+        "derived": 53,
+        "process": 9,
+        "administrative": 2
+      },
+      "origins": {
+        "collected": 375,
+        "administrative": 2,
+        "process": 9
+      },
+      "derivations": {
+        "base": 332,
+        "derived": 54
+      },
+      "derivationsExtracted": 22,
+      "pumfGroupedCount": 4,
+      "identifierCount": 2,
+      "topModules": [
+        {
+          "code": "EXS",
+          "count": 132
+        },
+        {
+          "code": "COM",
+          "count": 34
+        },
+        {
+          "code": "ROL",
+          "count": 32
+        },
+        {
+          "code": "PMDI",
+          "count": 22
+        },
+        {
+          "code": "CIM",
+          "count": 16
+        },
+        {
+          "code": "LTC",
+          "count": 16
+        },
+        {
+          "code": "TST",
+          "count": 8
+        },
+        {
+          "code": "SPO",
+          "count": 8
+        }
+      ]
+    },
+    {
+      "acronym": "SAPM",
+      "title": "SAPM_ETIA_2023",
+      "total": 370,
+      "cycles": [
+        "2023"
+      ],
+      "roles": {
+        "collected": 354,
+        "derived": 10,
+        "process": 4,
+        "administrative": 2
+      },
+      "origins": {
+        "collected": 364,
+        "administrative": 2,
+        "process": 4
+      },
+      "derivations": {
+        "base": 360,
+        "derived": 10
+      },
+      "derivationsExtracted": 0,
+      "pumfGroupedCount": 0,
+      "identifierCount": 2,
+      "topModules": [
+        {
+          "code": "ALT",
+          "count": 108
+        },
+        {
+          "code": "AAD",
+          "count": 88
+        },
+        {
+          "code": "TIU",
+          "count": 42
+        },
+        {
+          "code": "ADL",
+          "count": 12
+        },
+        {
+          "code": "DPM",
+          "count": 8
+        },
+        {
+          "code": "TRN",
+          "count": 4
+        },
+        {
+          "code": "COV",
+          "count": 4
+        },
+        {
+          "code": "MAR",
+          "count": 4
+        }
+      ]
+    },
+    {
+      "acronym": "COHS",
+      "title": "COHS_ECSB_C1",
+      "total": 322,
+      "cycles": [
+        "C1"
+      ],
+      "roles": {
+        "collected": 194,
+        "derived": 115,
+        "process": 13,
+        "administrative": 0
+      },
+      "origins": {
+        "collected": 293,
+        "administrative": 16,
+        "process": 13
+      },
+      "derivations": {
+        "base": 200,
+        "derived": 122
+      },
+      "derivationsExtracted": 2,
+      "pumfGroupedCount": 15,
+      "identifierCount": 4,
+      "topModules": [
+        {
+          "code": "AWI",
+          "count": 56
+        },
+        {
+          "code": "OHH",
+          "count": 38
+        },
+        {
+          "code": "DHH",
+          "count": 26
+        },
+        {
+          "code": "PG",
+          "count": 24
+        },
+        {
+          "code": "INS",
+          "count": 18
+        },
+        {
+          "code": "IMG",
+          "count": 18
+        },
+        {
+          "code": "GEO",
+          "count": 16
+        },
+        {
+          "code": "CIM",
+          "count": 16
+        }
+      ]
+    },
+    {
+      "acronym": "CSSWAPT",
+      "title": "CSSWAPT_ESCBEAPT_2021",
+      "total": 308,
+      "cycles": [
+        "2021"
+      ],
+      "roles": {
+        "collected": 264,
+        "derived": 36,
+        "process": 7,
+        "administrative": 1
+      },
+      "origins": {
+        "collected": 299,
+        "administrative": 2,
+        "process": 7
+      },
+      "derivations": {
+        "base": 271,
+        "derived": 37
+      },
+      "derivationsExtracted": 27,
+      "pumfGroupedCount": 7,
+      "identifierCount": 2,
+      "topModules": [
+        {
+          "code": "DIS",
+          "count": 56
+        },
+        {
+          "code": "UI",
+          "count": 34
+        },
+        {
+          "code": "ODA",
+          "count": 26
+        },
+        {
+          "code": "DOS",
+          "count": 20
+        },
+        {
+          "code": "TCS",
+          "count": 20
+        },
+        {
+          "code": "LCD",
+          "count": 18
+        },
+        {
+          "code": "LTC05",
+          "count": 14
+        },
+        {
+          "code": "DEM1",
+          "count": 8
+        }
+      ]
+    },
+    {
+      "acronym": "SSPCW5",
+      "title": "SSPCW5_SEGCV5_2024",
+      "total": 290,
+      "cycles": [
+        "2024"
+      ],
+      "roles": {
+        "collected": 232,
+        "derived": 47,
+        "process": 9,
+        "administrative": 2
+      },
+      "origins": {
+        "collected": 279,
+        "administrative": 2,
+        "process": 9
+      },
+      "derivations": {
+        "base": 242,
+        "derived": 48
+      },
+      "derivationsExtracted": 19,
+      "pumfGroupedCount": 5,
+      "identifierCount": 2,
+      "topModules": [
+        {
+          "code": "ERD",
+          "count": 84
+        },
+        {
+          "code": "PMDI",
+          "count": 22
+        },
+        {
+          "code": "CIM",
+          "count": 16
+        },
+        {
+          "code": "LTC",
+          "count": 16
+        },
+        {
+          "code": "FTO",
+          "count": 14
+        },
+        {
+          "code": "TST",
+          "count": 8
+        },
+        {
+          "code": "POB",
+          "count": 6
+        },
+        {
+          "code": "FOC",
+          "count": 6
+        }
+      ]
+    },
+    {
+      "acronym": "SSPCW1",
+      "title": "SSPCW1_SEGCV1_2023",
+      "total": 274,
+      "cycles": [
+        "2023"
+      ],
+      "roles": {
+        "collected": 211,
+        "derived": 52,
+        "process": 9,
+        "administrative": 2
+      },
+      "origins": {
+        "collected": 263,
+        "administrative": 2,
+        "process": 9
+      },
+      "derivations": {
+        "base": 221,
+        "derived": 53
+      },
+      "derivationsExtracted": 20,
+      "pumfGroupedCount": 9,
+      "identifierCount": 2,
+      "topModules": [
+        {
+          "code": "CER",
+          "count": 48
+        },
+        {
+          "code": "PMDI",
+          "count": 22
+        },
+        {
+          "code": "CIM",
+          "count": 16
+        },
+        {
+          "code": "LTC",
+          "count": 16
+        },
+        {
+          "code": "TIP",
+          "count": 16
+        },
+        {
+          "code": "CII",
+          "count": 16
+        },
+        {
+          "code": "TST",
+          "count": 8
+        },
+        {
+          "code": "GRP",
+          "count": 8
+        }
+      ]
+    },
+    {
+      "acronym": "CSEW",
+      "title": "CSEW_ECBE_2013",
+      "total": 262,
+      "cycles": [
+        "2013"
+      ],
+      "roles": {
+        "collected": 241,
+        "derived": 12,
+        "process": 8,
+        "administrative": 1
+      },
+      "origins": {
+        "collected": 253,
+        "administrative": 1,
+        "process": 8
+      },
+      "derivations": {
+        "base": 250,
+        "derived": 12
+      },
+      "derivationsExtracted": 1,
+      "pumfGroupedCount": 1,
+      "identifierCount": 6,
+      "topModules": [
+        {
+          "code": "MD",
+          "count": 70
+        },
+        {
+          "code": "HI",
+          "count": 32
+        },
+        {
+          "code": "EFA",
+          "count": 12
+        },
+        {
+          "code": "EH",
+          "count": 10
+        },
+        {
+          "code": "LAN",
+          "count": 6
+        },
+        {
+          "code": "CNT",
+          "count": 4
+        },
+        {
+          "code": "COW",
+          "count": 4
+        },
+        {
+          "code": "DUR",
+          "count": 4
+        }
+      ]
+    },
+    {
+      "acronym": "SEWS",
+      "title": "SEWS_EECP",
+      "total": 258,
+      "cycles": [
+        "2021"
+      ],
+      "roles": {
+        "collected": 248,
+        "derived": 6,
+        "process": 2,
+        "administrative": 2
+      },
+      "origins": {
+        "collected": 254,
+        "administrative": 2,
+        "process": 2
+      },
+      "derivations": {
+        "base": 252,
+        "derived": 6
+      },
+      "derivationsExtracted": 0,
+      "pumfGroupedCount": 4,
+      "identifierCount": 2,
+      "topModules": [
+        {
+          "code": "C30",
+          "count": 26
+        },
+        {
+          "code": "C20",
+          "count": 24
+        },
+        {
+          "code": "C25",
+          "count": 22
+        },
+        {
+          "code": "C32",
+          "count": 22
+        },
+        {
+          "code": "C17",
+          "count": 20
+        },
+        {
+          "code": "C27",
+          "count": 14
+        },
+        {
+          "code": "C28",
+          "count": 14
+        },
+        {
+          "code": "C31",
+          "count": 14
+        }
+      ]
+    },
+    {
+      "acronym": "SSPCW3",
+      "title": "SSPCW3_SEGCV3_2023",
+      "total": 242,
+      "cycles": [
+        "2023"
+      ],
+      "roles": {
+        "collected": 185,
+        "derived": 46,
+        "process": 9,
+        "administrative": 2
+      },
+      "origins": {
+        "collected": 231,
+        "administrative": 2,
+        "process": 9
+      },
+      "derivations": {
+        "base": 195,
+        "derived": 47
+      },
+      "derivationsExtracted": 19,
+      "pumfGroupedCount": 4,
+      "identifierCount": 2,
+      "topModules": [
+        {
+          "code": "MIS",
+          "count": 50
+        },
+        {
+          "code": "PMDI",
+          "count": 22
+        },
+        {
+          "code": "CIM",
+          "count": 16
+        },
+        {
+          "code": "LTC",
+          "count": 16
+        },
+        {
+          "code": "TST",
+          "count": 8
+        },
+        {
+          "code": "POB",
+          "count": 6
+        },
+        {
+          "code": "CS",
+          "count": 4
+        },
+        {
+          "code": "SAC",
+          "count": 4
+        }
+      ]
+    },
+    {
+      "acronym": "PCS",
+      "title": "PCS_PSC_2021",
+      "total": 232,
+      "cycles": [
+        "2021",
+        "IRP_HRP_2021"
+      ],
+      "roles": {
+        "collected": 172,
+        "derived": 41,
+        "process": 15,
+        "administrative": 4
+      },
+      "origins": {
+        "collected": 213,
+        "administrative": 4,
+        "process": 15
+      },
+      "derivations": {
+        "base": 187,
+        "derived": 45
+      },
+      "derivationsExtracted": 4,
+      "pumfGroupedCount": 12,
+      "identifierCount": 8,
+      "topModules": [
+        {
+          "code": "IRP",
+          "count": 54
+        },
+        {
+          "code": "DOS",
+          "count": 18
+        },
+        {
+          "code": "AGE",
+          "count": 12
+        },
+        {
+          "code": "LAN",
+          "count": 12
+        },
+        {
+          "code": "IM",
+          "count": 12
+        },
+        {
+          "code": "GEN",
+          "count": 8
+        },
+        {
+          "code": "VIS",
+          "count": 8
+        },
+        {
+          "code": "MAS",
+          "count": 4
+        }
+      ]
+    },
+    {
+      "acronym": "SSPC",
+      "title": "SSPC_SEGC_2022",
+      "total": 214,
+      "cycles": [
+        "2022"
+      ],
+      "roles": {
+        "collected": 177,
+        "derived": 29,
+        "process": 6,
+        "administrative": 2
+      },
+      "origins": {
+        "collected": 206,
+        "administrative": 2,
+        "process": 6
+      },
+      "derivations": {
+        "base": 184,
+        "derived": 30
+      },
+      "derivationsExtracted": 14,
+      "pumfGroupedCount": 9,
+      "identifierCount": 2,
+      "topModules": [
+        {
+          "code": "CER",
+          "count": 48
+        },
+        {
+          "code": "LTC",
+          "count": 16
+        },
+        {
+          "code": "TIP",
+          "count": 16
+        },
+        {
+          "code": "CII",
+          "count": 16
+        },
+        {
+          "code": "TST",
+          "count": 8
+        },
+        {
+          "code": "GRP",
+          "count": 8
+        },
+        {
+          "code": "CS",
+          "count": 4
+        },
+        {
+          "code": "SAC",
+          "count": 4
+        }
+      ]
+    },
+    {
+      "acronym": "PSEW",
+      "title": "PSEW_EPBQ_2021",
+      "total": 212,
+      "cycles": [
+        "2021"
+      ],
+      "roles": {
+        "collected": 128,
+        "derived": 48,
+        "process": 32,
+        "administrative": 4
+      },
+      "origins": {
+        "collected": 176,
+        "administrative": 4,
+        "process": 32
+      },
+      "derivations": {
+        "base": 158,
+        "derived": 54
+      },
+      "derivationsExtracted": 20,
+      "pumfGroupedCount": 24,
+      "identifierCount": 8,
+      "topModules": [
+        {
+          "code": "ESM",
+          "count": 72
+        },
+        {
+          "code": "INT",
+          "count": 16
+        },
+        {
+          "code": "LAN",
+          "count": 16
+        },
+        {
+          "code": "AGE",
+          "count": 12
+        },
+        {
+          "code": "REC",
+          "count": 8
+        },
+        {
+          "code": "VIS",
+          "count": 8
+        },
+        {
+          "code": "HHS",
+          "count": 8
+        },
+        {
+          "code": "INC",
+          "count": 8
+        }
+      ]
+    },
+    {
+      "acronym": "SSPD",
+      "title": "SSPD_EEPH_2020",
+      "total": 188,
+      "cycles": [
+        "2020"
+      ],
+      "roles": {
+        "collected": 177,
+        "derived": 6,
+        "process": 4,
+        "administrative": 1
+      },
+      "origins": {
+        "collected": 183,
+        "administrative": 1,
+        "process": 4
+      },
+      "derivations": {
+        "base": 182,
+        "derived": 6
+      },
+      "derivationsExtracted": 0,
+      "pumfGroupedCount": 0,
+      "identifierCount": 2,
+      "topModules": [
+        {
+          "code": "DTC",
+          "count": 152
+        },
+        {
+          "code": "ABM",
+          "count": 8
+        },
+        {
+          "code": "IMM",
+          "count": 8
+        },
+        {
+          "code": "DV",
+          "count": 6
+        },
+        {
+          "code": "INC",
+          "count": 4
+        },
+        {
+          "code": "MAS",
+          "count": 2
+        },
+        {
+          "code": "ED",
+          "count": 2
+        },
+        {
+          "code": "MAC",
+          "count": 2
+        }
+      ]
+    },
+    {
+      "acronym": "DES",
+      "title": "DES_EEN_2018",
+      "total": 186,
+      "cycles": [
+        "2018"
+      ],
+      "roles": {
+        "collected": 177,
+        "derived": 1,
+        "process": 5,
+        "administrative": 3
+      },
+      "origins": {
+        "collected": 178,
+        "administrative": 3,
+        "process": 5
+      },
+      "derivations": {
+        "base": 183,
+        "derived": 3
+      },
+      "derivationsExtracted": 0,
+      "pumfGroupedCount": 1,
+      "identifierCount": 4,
+      "topModules": [
+        {
+          "code": "DES",
+          "count": 168
+        },
+        {
+          "code": "DEM",
+          "count": 10
+        },
+        {
+          "code": "MAS",
+          "count": 2
+        },
+        {
+          "code": "PROV",
+          "count": 2
+        },
+        {
+          "code": "SYS",
+          "count": 2
+        },
+        {
+          "code": "WTS",
+          "count": 2
+        }
+      ]
+    },
+    {
+      "acronym": "CEEDD",
+      "title": "CEEDD_BDCDEE",
+      "total": 184,
+      "cycles": [
+        "unknown"
+      ],
+      "roles": {
+        "collected": 14,
+        "derived": 82,
+        "process": 88,
+        "administrative": 0
+      },
+      "origins": {
+        "collected": 81,
+        "administrative": 15,
+        "process": 88
+      },
+      "derivations": {
+        "base": 99,
+        "derived": 85
+      },
+      "derivationsExtracted": 74,
+      "pumfGroupedCount": 2,
+      "identifierCount": 0,
+      "topModules": [
+        {
+          "code": "T1",
+          "count": 8
+        },
+        {
+          "code": "NUM",
+          "count": 7
+        },
+        {
+          "code": "DIS",
+          "count": 5
+        },
+        {
+          "code": "TOT",
+          "count": 5
+        },
+        {
+          "code": "UI",
+          "count": 5
+        },
+        {
+          "code": "NET",
+          "count": 4
+        },
+        {
+          "code": "PERM",
+          "count": 4
+        },
+        {
+          "code": "TEMP",
+          "count": 4
+        }
+      ]
+    },
+    {
+      "acronym": "DCNPB",
+      "title": "DCNPB_DCOBS_2020_v1",
+      "total": 176,
+      "cycles": [
+        "2020_v1"
+      ],
+      "roles": {
+        "collected": 138,
+        "derived": 23,
+        "process": 13,
+        "administrative": 2
+      },
+      "origins": {
+        "collected": 160,
+        "administrative": 3,
+        "process": 13
+      },
+      "derivations": {
+        "base": 150,
+        "derived": 26
+      },
+      "derivationsExtracted": 18,
+      "pumfGroupedCount": 4,
+      "identifierCount": 4,
+      "topModules": [
+        {
+          "code": "ACT",
+          "count": 82
+        },
+        {
+          "code": "LTC",
+          "count": 16
+        },
+        {
+          "code": "OM",
+          "count": 8
+        },
+        {
+          "code": "INF",
+          "count": 8
+        },
+        {
+          "code": "DEM1",
+          "count": 8
+        },
+        {
+          "code": "GDR",
+          "count": 4
+        },
+        {
+          "code": "DEM",
+          "count": 4
+        },
+        {
+          "code": "AGEGR",
+          "count": 4
+        }
+      ]
+    },
+    {
+      "acronym": "VITAL_DEATH",
+      "title": "Vital Statistics Death Database",
+      "total": 149,
+      "cycles": [
+        "2014",
+        "2017",
+        "2020",
+        "2022",
+        "2024"
+      ],
+      "roles": {
+        "collected": 0,
+        "derived": 1,
+        "process": 0,
+        "administrative": 148
+      },
+      "origins": {
+        "collected": 0,
+        "administrative": 149,
+        "process": 0
+      },
+      "derivations": {
+        "base": 148,
+        "derived": 1
+      },
+      "derivationsExtracted": 10,
+      "pumfGroupedCount": 1,
+      "identifierCount": 0,
+      "topModules": [
+        {
+          "code": "MOT",
+          "count": 18
+        },
+        {
+          "code": "PLA",
+          "count": 15
+        },
+        {
+          "code": "FAT",
+          "count": 15
+        },
+        {
+          "code": "AUT",
+          "count": 15
+        },
+        {
+          "code": "EVENT",
+          "count": 10
+        },
+        {
+          "code": "AGE",
+          "count": 10
+        },
+        {
+          "code": "SPO",
+          "count": 10
+        },
+        {
+          "code": "INJ",
+          "count": 10
+        }
+      ]
+    },
+    {
+      "acronym": "SOA",
+      "title": "SOA_ESO_2017",
+      "total": 142,
+      "cycles": [
+        "2017"
+      ],
+      "roles": {
+        "collected": 129,
+        "derived": 7,
+        "process": 5,
+        "administrative": 1
+      },
+      "origins": {
+        "collected": 134,
+        "administrative": 3,
+        "process": 5
+      },
+      "derivations": {
+        "base": 133,
+        "derived": 9
+      },
+      "derivationsExtracted": 4,
+      "pumfGroupedCount": 3,
+      "identifierCount": 4,
+      "topModules": [
+        {
+          "code": "OPI",
+          "count": 120
+        },
+        {
+          "code": "DEM",
+          "count": 8
+        },
+        {
+          "code": "MAS",
+          "count": 2
+        },
+        {
+          "code": "PROV",
+          "count": 2
+        },
+        {
+          "code": "STO",
+          "count": 2
+        },
+        {
+          "code": "HHL",
+          "count": 2
+        },
+        {
+          "code": "OPP",
+          "count": 2
+        },
+        {
+          "code": "SYS",
+          "count": 2
+        }
+      ]
+    },
+    {
+      "acronym": "VSSBD",
+      "title": "VSSBD_SECM",
+      "total": 132,
+      "cycles": [
+        "2023",
+        "unknown"
+      ],
+      "roles": {
+        "collected": 3,
+        "derived": 0,
+        "process": 0,
+        "administrative": 129
+      },
+      "origins": {
+        "collected": 3,
+        "administrative": 129,
+        "process": 0
+      },
+      "derivations": {
+        "base": 132,
+        "derived": 0
+      },
+      "derivationsExtracted": 0,
+      "pumfGroupedCount": 0,
+      "identifierCount": 0,
+      "topModules": [
+        {
+          "code": "FAT",
+          "count": 21
+        },
+        {
+          "code": "MOT",
+          "count": 18
+        },
+        {
+          "code": "IMP",
+          "count": 18
+        },
+        {
+          "code": "AUT",
+          "count": 9
+        },
+        {
+          "code": "FETUS",
+          "count": 9
+        },
+        {
+          "code": "PLA",
+          "count": 6
+        },
+        {
+          "code": "BORN",
+          "count": 6
+        },
+        {
+          "code": "EVENT",
+          "count": 3
+        }
+      ]
+    },
+    {
+      "acronym": "MC",
+      "title": "MC_CM_AllYears",
+      "total": 109,
+      "cycles": [
+        "AllYears"
+      ],
+      "roles": {
+        "collected": 0,
+        "derived": 0,
+        "process": 0,
+        "administrative": 109
+      },
+      "origins": {
+        "collected": 0,
+        "administrative": 109,
+        "process": 0
+      },
+      "derivations": {
+        "base": 109,
+        "derived": 0
+      },
+      "derivationsExtracted": 5,
+      "pumfGroupedCount": 0,
+      "identifierCount": 0,
+      "topModules": [
+        {
+          "code": "FAT",
+          "count": 17
+        },
+        {
+          "code": "MOT",
+          "count": 15
+        },
+        {
+          "code": "IMP",
+          "count": 12
+        },
+        {
+          "code": "PLA",
+          "count": 6
+        },
+        {
+          "code": "AUT",
+          "count": 6
+        },
+        {
+          "code": "EVENT",
+          "count": 4
+        },
+        {
+          "code": "BORN",
+          "count": 4
+        },
+        {
+          "code": "STI",
+          "count": 4
+        }
+      ]
+    },
+    {
+      "acronym": "MOTHER_CENTRIC",
+      "title": "Mother Centric",
+      "total": 109,
+      "cycles": [
+        "1993"
+      ],
+      "roles": {
+        "collected": 0,
+        "derived": 0,
+        "process": 0,
+        "administrative": 109
+      },
+      "origins": {
+        "collected": 0,
+        "administrative": 109,
+        "process": 0
+      },
+      "derivations": {
+        "base": 109,
+        "derived": 0
+      },
+      "derivationsExtracted": 5,
+      "pumfGroupedCount": 0,
+      "identifierCount": 0,
+      "topModules": [
+        {
+          "code": "FAT",
+          "count": 17
+        },
+        {
+          "code": "MOT",
+          "count": 15
+        },
+        {
+          "code": "IMP",
+          "count": 12
+        },
+        {
+          "code": "PLA",
+          "count": 6
+        },
+        {
+          "code": "AUT",
+          "count": 6
+        },
+        {
+          "code": "EVENT",
+          "count": 4
+        },
+        {
+          "code": "BORN",
+          "count": 4
+        },
+        {
+          "code": "STI",
+          "count": 4
+        }
+      ]
+    },
+    {
+      "acronym": "SAFSO",
+      "title": "SAFSO_EAOSP",
+      "total": 102,
+      "cycles": [
+        "2021"
+      ],
+      "roles": {
+        "collected": 93,
+        "derived": 3,
+        "process": 5,
+        "administrative": 1
+      },
+      "origins": {
+        "collected": 95,
+        "administrative": 2,
+        "process": 5
+      },
+      "derivations": {
+        "base": 97,
+        "derived": 5
+      },
+      "derivationsExtracted": 0,
+      "pumfGroupedCount": 0,
+      "identifierCount": 4,
+      "topModules": [
+        {
+          "code": "FSI",
+          "count": 22
+        },
+        {
+          "code": "BET",
+          "count": 18
+        },
+        {
+          "code": "LTC",
+          "count": 12
+        },
+        {
+          "code": "TRA",
+          "count": 10
+        },
+        {
+          "code": "COM",
+          "count": 10
+        },
+        {
+          "code": "BEI",
+          "count": 8
+        },
+        {
+          "code": "THI",
+          "count": 4
+        },
+        {
+          "code": "MAS",
+          "count": 2
+        }
+      ]
+    },
+    {
+      "acronym": "LISE",
+      "title": "LISE_ESLI",
+      "total": 86,
+      "cycles": [
+        "unknown"
+      ],
+      "roles": {
+        "collected": 43,
+        "derived": 30,
+        "process": 9,
+        "administrative": 4
+      },
+      "origins": {
+        "collected": 71,
+        "administrative": 6,
+        "process": 9
+      },
+      "derivations": {
+        "base": 56,
+        "derived": 30
+      },
+      "derivationsExtracted": 0,
+      "pumfGroupedCount": 24,
+      "identifierCount": 2,
+      "topModules": [
+        {
+          "code": "PRO",
+          "count": 8
+        },
+        {
+          "code": "AGE",
+          "count": 8
+        },
+        {
+          "code": "INS",
+          "count": 6
+        },
+        {
+          "code": "PR",
+          "count": 6
+        },
+        {
+          "code": "CIP",
+          "count": 6
+        },
+        {
+          "code": "REG",
+          "count": 4
+        },
+        {
+          "code": "IMM",
+          "count": 4
+        },
+        {
+          "code": "PER",
+          "count": 4
+        }
+      ]
+    },
+    {
+      "acronym": "SHRP",
+      "title": "SHRP_EPRS",
+      "total": 84,
+      "cycles": [
+        "2019"
+      ],
+      "roles": {
+        "collected": 67,
+        "derived": 9,
+        "process": 5,
+        "administrative": 3
+      },
+      "origins": {
+        "collected": 74,
+        "administrative": 5,
+        "process": 5
+      },
+      "derivations": {
+        "base": 73,
+        "derived": 11
+      },
+      "derivationsExtracted": 0,
+      "pumfGroupedCount": 5,
+      "identifierCount": 4,
+      "topModules": [
+        {
+          "code": "SHR",
+          "count": 48
+        },
+        {
+          "code": "ABM",
+          "count": 8
+        },
+        {
+          "code": "PROV",
+          "count": 4
+        },
+        {
+          "code": "DM2",
+          "count": 4
+        },
+        {
+          "code": "DM1",
+          "count": 4
+        },
+        {
+          "code": "MAS",
+          "count": 2
+        },
+        {
+          "code": "GDR",
+          "count": 2
+        },
+        {
+          "code": "AGE",
+          "count": 2
+        }
+      ]
+    },
+    {
+      "acronym": "VSBD",
+      "title": "VSBD_SECN_2023",
+      "total": 72,
+      "cycles": [
+        "2023",
+        "2024"
+      ],
+      "roles": {
+        "collected": 0,
+        "derived": 0,
+        "process": 0,
+        "administrative": 72
+      },
+      "origins": {
+        "collected": 0,
+        "administrative": 72,
+        "process": 0
+      },
+      "derivations": {
+        "base": 72,
+        "derived": 0
+      },
+      "derivationsExtracted": 4,
+      "pumfGroupedCount": 0,
+      "identifierCount": 0,
+      "topModules": [
+        {
+          "code": "MOT",
+          "count": 14
+        },
+        {
+          "code": "FAT",
+          "count": 14
+        },
+        {
+          "code": "IMP",
+          "count": 12
+        },
+        {
+          "code": "BORN",
+          "count": 4
+        },
+        {
+          "code": "STI",
+          "count": 4
+        },
+        {
+          "code": "EVENT",
+          "count": 2
+        },
+        {
+          "code": "REG",
+          "count": 2
+        },
+        {
+          "code": "NAM",
+          "count": 2
+        }
+      ]
+    },
+    {
+      "acronym": "CHIRP",
+      "title": "CHIRP_ENPIR_AllYears",
+      "total": 66,
+      "cycles": [
+        "AllYears"
+      ],
+      "roles": {
+        "collected": 0,
+        "derived": 0,
+        "process": 0,
+        "administrative": 66
+      },
+      "origins": {
+        "collected": 0,
+        "administrative": 66,
+        "process": 0
+      },
+      "derivations": {
+        "base": 66,
+        "derived": 0
+      },
+      "derivationsExtracted": 4,
+      "pumfGroupedCount": 0,
+      "identifierCount": 0,
+      "topModules": [
+        {
+          "code": "MOT",
+          "count": 11
+        },
+        {
+          "code": "FAT",
+          "count": 10
+        },
+        {
+          "code": "IMP",
+          "count": 6
+        },
+        {
+          "code": "PLA",
+          "count": 4
+        },
+        {
+          "code": "EVENT",
+          "count": 3
+        },
+        {
+          "code": "AUT",
+          "count": 3
+        },
+        {
+          "code": "REG",
+          "count": 2
+        },
+        {
+          "code": "NAM",
+          "count": 2
+        }
+      ]
+    },
+    {
+      "acronym": "IMDB",
+      "title": "IMDB_BDIM",
+      "total": 63,
+      "cycles": [
+        "2016",
+        "2018",
+        "2020",
+        "2021",
+        "2022",
+        "2023",
+        "2024"
+      ],
+      "roles": {
+        "collected": 7,
+        "derived": 0,
+        "process": 56,
+        "administrative": 0
+      },
+      "origins": {
+        "collected": 7,
+        "administrative": 0,
+        "process": 56
+      },
+      "derivations": {
+        "base": 63,
+        "derived": 0
+      },
+      "derivationsExtracted": 0,
+      "pumfGroupedCount": 0,
+      "identifierCount": 0,
+      "topModules": [
+        {
+          "code": "DES",
+          "count": 21
+        },
+        {
+          "code": "IMM",
+          "count": 7
+        },
+        {
+          "code": "NOC4",
+          "count": 7
+        },
+        {
+          "code": "NOC5",
+          "count": 7
+        },
+        {
+          "code": "LMIA",
+          "count": 7
+        },
+        {
+          "code": "MOT",
+          "count": 7
+        },
+        {
+          "code": "SEL",
+          "count": 7
+        }
+      ]
+    },
+    {
+      "acronym": "VITAL_BIRTH",
+      "title": "Vital Statistics Birth Database",
+      "total": 58,
+      "cycles": [
+        "2014",
+        "2017"
+      ],
+      "roles": {
+        "collected": 0,
+        "derived": 0,
+        "process": 0,
+        "administrative": 58
+      },
+      "origins": {
+        "collected": 0,
+        "administrative": 58,
+        "process": 0
+      },
+      "derivations": {
+        "base": 58,
+        "derived": 0
+      },
+      "derivationsExtracted": 3,
+      "pumfGroupedCount": 0,
+      "identifierCount": 0,
+      "topModules": [
+        {
+          "code": "IMP",
+          "count": 12
+        },
+        {
+          "code": "FAT",
+          "count": 8
+        },
+        {
+          "code": "MOT",
+          "count": 6
+        },
+        {
+          "code": "BORN",
+          "count": 4
+        },
+        {
+          "code": "STI",
+          "count": 4
+        },
+        {
+          "code": "EVENT",
+          "count": 2
+        },
+        {
+          "code": "REG",
+          "count": 2
+        },
+        {
+          "code": "NAM",
+          "count": 2
+        }
+      ]
+    },
+    {
+      "acronym": "NHS",
+      "title": "NHS_SNL_Linkage_AllYears",
+      "total": 44,
+      "cycles": [
+        "Linkage_AllYears"
+      ],
+      "roles": {
+        "collected": 42,
+        "derived": 0,
+        "process": 2,
+        "administrative": 0
+      },
+      "origins": {
+        "collected": 42,
+        "administrative": 0,
+        "process": 2
+      },
+      "derivations": {
+        "base": 44,
+        "derived": 0
+      },
+      "derivationsExtracted": 0,
+      "pumfGroupedCount": 0,
+      "identifierCount": 2,
+      "topModules": [
+        {
+          "code": "INDB",
+          "count": 20
+        },
+        {
+          "code": "PROX",
+          "count": 20
+        },
+        {
+          "code": "MAS",
+          "count": 2
+        },
+        {
+          "code": "AMEN",
+          "count": 2
+        }
+      ]
+    },
+    {
+      "acronym": "FTD",
+      "title": "FTD_UAD_0405",
+      "total": 37,
+      "cycles": [
+        "0405"
+      ],
+      "roles": {
+        "collected": 0,
+        "derived": 35,
+        "process": 2,
+        "administrative": 0
+      },
+      "origins": {
+        "collected": 28,
+        "administrative": 7,
+        "process": 2
+      },
+      "derivations": {
+        "base": 2,
+        "derived": 35
+      },
+      "derivationsExtracted": 35,
+      "pumfGroupedCount": 0,
+      "identifierCount": 0,
+      "topModules": [
+        {
+          "code": "SEI",
+          "count": 2
+        },
+        {
+          "code": "EDU",
+          "count": 2
+        },
+        {
+          "code": "BOX42",
+          "count": 1
+        },
+        {
+          "code": "XTI",
+          "count": 1
+        },
+        {
+          "code": "AFT",
+          "count": 1
+        },
+        {
+          "code": "T4E",
+          "count": 1
+        },
+        {
+          "code": "OEI",
+          "count": 1
+        },
+        {
+          "code": "EXI",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "acronym": "CPAC",
+      "title": "CPAC_AllYears",
+      "total": 29,
+      "cycles": [
+        "AllYears"
+      ],
+      "roles": {
+        "collected": 0,
+        "derived": 0,
+        "process": 0,
+        "administrative": 29
+      },
+      "origins": {
+        "collected": 0,
+        "administrative": 29,
+        "process": 0
+      },
+      "derivations": {
+        "base": 29,
+        "derived": 0
+      },
+      "derivationsExtracted": 2,
+      "pumfGroupedCount": 0,
+      "identifierCount": 0,
+      "topModules": [
+        {
+          "code": "PLA",
+          "count": 3
+        },
+        {
+          "code": "FAT",
+          "count": 3
+        },
+        {
+          "code": "MOT",
+          "count": 3
+        },
+        {
+          "code": "AUT",
+          "count": 3
+        },
+        {
+          "code": "EVENT",
+          "count": 2
+        },
+        {
+          "code": "AGE",
+          "count": 2
+        },
+        {
+          "code": "SPO",
+          "count": 2
+        },
+        {
+          "code": "INJ",
+          "count": 2
+        }
+      ]
+    }
+  ],
+  "harmonizedConcepts": [
+    {
+      "key": "age",
+      "label": "Age & Age Groupings",
+      "totalMatches": 7422,
+      "topSurveys": [
+        {
+          "survey": "CIS",
+          "count": 1846
+        },
+        {
+          "survey": "GSS",
+          "count": 1025
+        },
+        {
+          "survey": "CCHS",
+          "count": 439
+        },
+        {
+          "survey": "CSD",
+          "count": 427
+        },
+        {
+          "survey": "CHMS",
+          "count": 361
+        },
+        {
+          "survey": "CHSCY",
+          "count": 306
+        },
+        {
+          "survey": "IPS",
+          "count": 261
+        },
+        {
+          "survey": "APS",
+          "count": 242
+        },
+        {
+          "survey": "CNICS",
+          "count": 224
+        },
+        {
+          "survey": "SFS",
+          "count": 221
+        }
+      ]
+    },
+    {
+      "key": "sex",
+      "label": "Sex & Gender",
+      "totalMatches": 5735,
+      "topSurveys": [
+        {
+          "survey": "SISPSP",
+          "count": 1344
+        },
+        {
+          "survey": "GSS",
+          "count": 765
+        },
+        {
+          "survey": "CIS",
+          "count": 686
+        },
+        {
+          "survey": "SSMW",
+          "count": 494
+        },
+        {
+          "survey": "APS",
+          "count": 247
+        },
+        {
+          "survey": "CHSCY",
+          "count": 181
+        },
+        {
+          "survey": "CCHS",
+          "count": 167
+        },
+        {
+          "survey": "LISA",
+          "count": 117
+        },
+        {
+          "survey": "LSIC",
+          "count": 109
+        },
+        {
+          "survey": "SSPPS",
+          "count": 93
+        }
+      ]
+    },
+    {
+      "key": "indigenous",
+      "label": "Indigenous Identity & Band Status",
+      "totalMatches": 6880,
+      "topSurveys": [
+        {
+          "survey": "APS",
+          "count": 3037
+        },
+        {
+          "survey": "CIS",
+          "count": 608
+        },
+        {
+          "survey": "ACS",
+          "count": 442
+        },
+        {
+          "survey": "NGES",
+          "count": 315
+        },
+        {
+          "survey": "CSD",
+          "count": 286
+        },
+        {
+          "survey": "IPS",
+          "count": 277
+        },
+        {
+          "survey": "GSS",
+          "count": 263
+        },
+        {
+          "survey": "CCHS",
+          "count": 202
+        },
+        {
+          "survey": "CHSCY",
+          "count": 188
+        },
+        {
+          "survey": "CHS",
+          "count": 61
+        }
+      ]
+    },
+    {
+      "key": "disability",
+      "label": "Disability & Activity Limitations",
+      "totalMatches": 6753,
+      "topSurveys": [
+        {
+          "survey": "CSD",
+          "count": 2514
+        },
+        {
+          "survey": "CIS",
+          "count": 936
+        },
+        {
+          "survey": "GSS",
+          "count": 676
+        },
+        {
+          "survey": "LISA",
+          "count": 375
+        },
+        {
+          "survey": "APS",
+          "count": 344
+        },
+        {
+          "survey": "CHSCY",
+          "count": 216
+        },
+        {
+          "survey": "CCHS",
+          "count": 194
+        },
+        {
+          "survey": "PSES",
+          "count": 149
+        },
+        {
+          "survey": "CHMS",
+          "count": 123
+        },
+        {
+          "survey": "SGVP",
+          "count": 122
+        }
+      ]
+    },
+    {
+      "key": "immigration",
+      "label": "Immigrant Status, Landing & Credentials",
+      "totalMatches": 3047,
+      "topSurveys": [
+        {
+          "survey": "CIS",
+          "count": 606
+        },
+        {
+          "survey": "LSIC",
+          "count": 393
+        },
+        {
+          "survey": "SOLMP",
+          "count": 273
+        },
+        {
+          "survey": "CHSCY",
+          "count": 231
+        },
+        {
+          "survey": "CCHS",
+          "count": 166
+        },
+        {
+          "survey": "CSD",
+          "count": 165
+        },
+        {
+          "survey": "GSS",
+          "count": 158
+        },
+        {
+          "survey": "CHS",
+          "count": 93
+        },
+        {
+          "survey": "LISA",
+          "count": 80
+        },
+        {
+          "survey": "CLPS",
+          "count": 59
+        }
+      ]
+    },
+    {
+      "key": "income",
+      "label": "Income, Assets, Debts & Wealth",
+      "totalMatches": 35081,
+      "topSurveys": [
+        {
+          "survey": "CIS",
+          "count": 21954
+        },
+        {
+          "survey": "CSD",
+          "count": 2395
+        },
+        {
+          "survey": "SFS",
+          "count": 1811
+        },
+        {
+          "survey": "CCHS",
+          "count": 1354
+        },
+        {
+          "survey": "LISA",
+          "count": 1183
+        },
+        {
+          "survey": "APS",
+          "count": 806
+        },
+        {
+          "survey": "SHS",
+          "count": 792
+        },
+        {
+          "survey": "CHS",
+          "count": 727
+        },
+        {
+          "survey": "GSS",
+          "count": 600
+        },
+        {
+          "survey": "LSIC",
+          "count": 350
+        }
+      ]
+    },
+    {
+      "key": "labour",
+      "label": "Labour Force, Employment & Wages",
+      "totalMatches": 35220,
+      "topSurveys": [
+        {
+          "survey": "CIS",
+          "count": 9260
+        },
+        {
+          "survey": "CSD",
+          "count": 4766
+        },
+        {
+          "survey": "LSIC",
+          "count": 2550
+        },
+        {
+          "survey": "APS",
+          "count": 2400
+        },
+        {
+          "survey": "LISA",
+          "count": 2355
+        },
+        {
+          "survey": "GSS",
+          "count": 2337
+        },
+        {
+          "survey": "EICS",
+          "count": 1319
+        },
+        {
+          "survey": "NGES",
+          "count": 1153
+        },
+        {
+          "survey": "CCHS",
+          "count": 999
+        },
+        {
+          "survey": "PSES",
+          "count": 728
+        }
+      ]
+    },
+    {
+      "key": "education",
+      "label": "Education, Degrees & Qualifications",
+      "totalMatches": 7848,
+      "topSurveys": [
+        {
+          "survey": "APS",
+          "count": 1512
+        },
+        {
+          "survey": "LSIC",
+          "count": 926
+        },
+        {
+          "survey": "CSD",
+          "count": 839
+        },
+        {
+          "survey": "GSS",
+          "count": 619
+        },
+        {
+          "survey": "LISA",
+          "count": 522
+        },
+        {
+          "survey": "CIS",
+          "count": 392
+        },
+        {
+          "survey": "CHSCY",
+          "count": 245
+        },
+        {
+          "survey": "SOLMP",
+          "count": 233
+        },
+        {
+          "survey": "OCHS",
+          "count": 215
+        },
+        {
+          "survey": "BC",
+          "count": 213
+        }
+      ]
+    },
+    {
+      "key": "health",
+      "label": "Health Status, Chronic Conditions & Biomarkers",
+      "totalMatches": 8502,
+      "topSurveys": [
+        {
+          "survey": "CCHS",
+          "count": 1678
+        },
+        {
+          "survey": "APS",
+          "count": 571
+        },
+        {
+          "survey": "CHSCY",
+          "count": 570
+        },
+        {
+          "survey": "CIS",
+          "count": 565
+        },
+        {
+          "survey": "CHMS",
+          "count": 492
+        },
+        {
+          "survey": "CSD",
+          "count": 442
+        },
+        {
+          "survey": "GSS",
+          "count": 392
+        },
+        {
+          "survey": "LSIC",
+          "count": 260
+        },
+        {
+          "survey": "CAFVMHS",
+          "count": 220
+        },
+        {
+          "survey": "SLCDC",
+          "count": 208
+        }
+      ]
+    },
+    {
+      "key": "geography",
+      "label": "Geography, Province & CMA",
+      "totalMatches": 5514,
+      "topSurveys": [
+        {
+          "survey": "CIS",
+          "count": 1390
+        },
+        {
+          "survey": "GSS",
+          "count": 491
+        },
+        {
+          "survey": "LSIC",
+          "count": 417
+        },
+        {
+          "survey": "LISA",
+          "count": 322
+        },
+        {
+          "survey": "CSD",
+          "count": 234
+        },
+        {
+          "survey": "CCHS",
+          "count": 233
+        },
+        {
+          "survey": "APS",
+          "count": 215
+        },
+        {
+          "survey": "SOLMP",
+          "count": 183
+        },
+        {
+          "survey": "CHS",
+          "count": 158
+        },
+        {
+          "survey": "SIMT",
+          "count": 155
+        }
+      ]
+    }
+  ]
+}

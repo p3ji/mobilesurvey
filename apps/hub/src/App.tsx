@@ -44,6 +44,7 @@ import {
 } from '@mobilesurvey/metadata-registry';
 import { CorpusSearch } from './CorpusSearch.js';
 import { CorpusConcepts } from './CorpusConcepts.js';
+import { CorpusGraphExplorer } from './CorpusGraphExplorer.js';
 import {
   corpusSource,
   createSurvey,
@@ -1136,11 +1137,13 @@ function HitCard({ hit, surveyTitles }: { hit: SearchHit; surveyTitles: Record<s
  * force one relevance scale onto two different kinds of claim, and would put the licence notice
  * somewhere it does not always apply.
  */
-type SearchScope = 'local' | 'corpus' | 'concepts';
+type SearchScope = 'local' | 'corpus' | 'concepts' | 'graph';
 
 function SearcherView({ onBack }: { onBack: () => void }) {
   const corpus = useMemo(() => corpusSource(), []);
   const [scope, setScope] = useState<SearchScope>('local');
+  const [corpusQuery, setCorpusQuery] = useState('');
+  const [corpusSurvey, setCorpusSurvey] = useState('all');
   const [query, setQuery] = useState('');
   const [typeFilter, setTypeFilter] = useState<ComponentType | 'all'>('all');
   const [index, setIndex] = useState<SearchIndex | null>(null);
@@ -1253,13 +1256,30 @@ function SearcherView({ onBack }: { onBack: () => void }) {
             >
               Concepts over time
             </button>
+            <button
+              type="button"
+              role="tab"
+              aria-selected={scope === 'graph'}
+              className={`sr-scope ${scope === 'graph' ? 'sr-scope--active' : ''}`}
+              onClick={() => setScope('graph')}
+            >
+              Knowledge Graph
+            </button>
           </div>
         )}
 
         {scope === 'corpus' && corpus !== null ? (
-          <CorpusSearch source={corpus} />
+          <CorpusSearch source={corpus} initialQuery={corpusQuery} initialSurvey={corpusSurvey} />
         ) : scope === 'concepts' && corpus !== null ? (
           <CorpusConcepts source={corpus} />
+        ) : scope === 'graph' ? (
+          <CorpusGraphExplorer
+            onSelectSearch={(q, s) => {
+              setCorpusQuery(q);
+              if (s) setCorpusSurvey(s);
+              setScope('corpus');
+            }}
+          />
         ) : (
         <>
         {/* Search bar */}
