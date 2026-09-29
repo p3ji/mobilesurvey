@@ -37,6 +37,7 @@ import { draftRulesFromAnnotation, explainFlag, llmConfigured } from './validato
 import { CorpusSearch } from './CorpusSearch.js';
 import { CorpusConcepts } from './CorpusConcepts.js';
 import { CorpusGraphExplorer } from './CorpusGraphExplorer.js';
+import type { CorpusLineageTarget } from '@mobilesurvey/metadata-registry';
 import {
   corpusSource,
   createSurvey,
@@ -1040,6 +1041,8 @@ function SearcherView({ onBack }: { onBack: () => void }) {
   const [scope, setScope] = useState<SearchScope>('variables');
   const [corpusQuery, setCorpusQuery] = useState('');
   const [corpusSurvey, setCorpusSurvey] = useState('all');
+  const [conceptId, setConceptId] = useState<string | null>(null);
+  const [lineageTarget, setLineageTarget] = useState<CorpusLineageTarget | null>(null);
 
   return (
     <div className="hub">
@@ -1075,7 +1078,7 @@ function SearcherView({ onBack }: { onBack: () => void }) {
                 role="tab"
                 aria-selected={scope === 'concepts'}
                 className={`sr-scope ${scope === 'concepts' ? 'sr-scope--active' : ''}`}
-                onClick={() => setScope('concepts')}
+                onClick={() => { setConceptId(null); setScope('concepts'); }}
               >
                 Concepts over time
               </button>
@@ -1084,19 +1087,30 @@ function SearcherView({ onBack }: { onBack: () => void }) {
                 role="tab"
                 aria-selected={scope === 'graph'}
                 className={`sr-scope ${scope === 'graph' ? 'sr-scope--active' : ''}`}
-                onClick={() => setScope('graph')}
+                onClick={() => { setLineageTarget(null); setScope('graph'); }}
               >
                 Knowledge Graph
               </button>
             </div>
 
             {scope === 'variables' ? (
-              <CorpusSearch source={corpus} initialQuery={corpusQuery} initialSurvey={corpusSurvey} />
+              <CorpusSearch
+                source={corpus}
+                initialQuery={corpusQuery}
+                initialSurvey={corpusSurvey}
+                onSearchStateChange={(query, survey) => {
+                  setCorpusQuery(query);
+                  setCorpusSurvey(survey);
+                }}
+                onOpenConcept={(id) => { setConceptId(id); setScope('concepts'); }}
+                onOpenGraph={(target) => { setLineageTarget(target); setScope('graph'); }}
+              />
             ) : scope === 'concepts' ? (
-              <CorpusConcepts source={corpus} />
+              <CorpusConcepts source={corpus} initialConceptId={conceptId} />
             ) : (
               <CorpusGraphExplorer
                 source={corpus}
+                initialLineageTarget={lineageTarget}
                 onSelectSearch={(q, survey) => {
                   setCorpusQuery(q);
                   setCorpusSurvey(survey ?? 'all');

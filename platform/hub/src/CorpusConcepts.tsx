@@ -165,7 +165,7 @@ function Timeline({
   );
 }
 
-export function CorpusConcepts({ source }: { source: SupabaseCorpusSource }) {
+export function CorpusConcepts({ source, initialConceptId }: { source: SupabaseCorpusSource; initialConceptId?: string | null }) {
   const [query, setQuery] = useState('');
   const [debounced, setDebounced] = useState('');
   const [changedOnly, setChangedOnly] = useState(false);
@@ -179,6 +179,22 @@ export function CorpusConcepts({ source }: { source: SupabaseCorpusSource }) {
   const [open, setOpen] = useState<CorpusConceptualVariable | null>(null);
   const [reading, setReading] = useState<{ path: string; page: number } | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (!initialConceptId) return;
+    const controller = new AbortController();
+    source.conceptualVariable(initialConceptId, controller.signal)
+      .then((concept) => {
+        if (!controller.signal.aborted) {
+          setOpen(concept);
+          if (concept === null) setError('This concept is no longer available.');
+        }
+      })
+      .catch((err) => {
+        if (!controller.signal.aborted) setError(describe(err));
+      });
+    return () => controller.abort();
+  }, [source, initialConceptId]);
 
   useEffect(() => {
     const timer = setTimeout(() => {

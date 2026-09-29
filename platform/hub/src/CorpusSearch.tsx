@@ -23,6 +23,7 @@ import {
   CORPUS_ATTRIBUTION,
   type CorpusCode,
   type CorpusDirectInput,
+  type CorpusLineageTarget,
   type CorpusMeta,
   type CorpusStats,
   type CorpusSuggestion,
@@ -136,11 +137,17 @@ function CorpusHit({
   inputs,
   onOpen,
   onSelectVar,
+  conceptId,
+  onOpenConcept,
+  onOpenGraph,
 }: {
   hit: SearchHit;
   inputs: CorpusDirectInput[];
   onOpen: () => void;
   onSelectVar?: (name: string) => void;
+  conceptId?: string;
+  onOpenConcept?: (id: string) => void;
+  onOpenGraph?: (target: CorpusLineageTarget) => void;
 }) {
   const meta = hit.entry.corpus as CorpusMeta | undefined;
   if (meta === undefined) return null;
@@ -220,6 +227,29 @@ function CorpusHit({
 
       <CodeList codes={meta.codes} />
 
+      {(conceptId !== undefined || inputs.length > 0) && (
+        <div className="cs-hit__connections">
+          {conceptId !== undefined && (
+            <button type="button" className="cs-link" onClick={() => onOpenConcept?.(conceptId)}>
+              View concept over time ↗
+            </button>
+          )}
+          {inputs.length > 0 && (
+            <button type="button" className="cs-link" onClick={() => onOpenGraph?.({
+              recordId: hit.entry.entryId,
+              name: meta.variableName,
+              label,
+              surveyAcronym: meta.surveyAcronym ?? null,
+              cycle: meta.cycle ?? null,
+              year: meta.year ?? null,
+              inputCount: inputs.length,
+            })}>
+              View derivation graph ↗
+            </button>
+          )}
+        </div>
+      )}
+
       <p className="cs-hit__cite" title={meta.file}>
         {meta.citation}
         {meta.position === undefined ? '' : ` · position ${meta.position}`}
@@ -236,12 +266,18 @@ export interface CorpusSearchProps {
   source: SupabaseCorpusSource;
   initialQuery?: string;
   initialSurvey?: string;
+  onSearchStateChange?: (query: string, survey: string) => void;
+  onOpenConcept?: (id: string) => void;
+  onOpenGraph?: (target: CorpusLineageTarget) => void;
 }
 
 export function CorpusSearch({
   source,
   initialQuery = '',
   initialSurvey = 'all',
+  onSearchStateChange,
+  onOpenConcept,
+  onOpenGraph,
 }: CorpusSearchProps) {
   const [query, setQuery] = useState(initialQuery);
   const [debounced, setDebounced] = useState(initialQuery);
@@ -258,6 +294,7 @@ export function CorpusSearch({
 
   const [hits, setHits] = useState<SearchHit[]>([]);
   const [directInputs, setDirectInputs] = useState<CorpusDirectInput[]>([]);
+  const [clusters, setClusters] = useState<Map<string, string>>(new Map());
   const [lineageError, setLineageError] = useState(false);
   const [total, setTotal] = useState(0);
   const [stats, setStats] = useState<CorpusStats | null>(null);
@@ -285,6 +322,10 @@ export function CorpusSearch({
   /** Set when the reader insists on their original spelling. */
   const [literal, setLiteral] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    onSearchStateChange?.(query, survey);
+  }, [query, survey, onSearchStateChange]);
 
   const clearFilters = () => {
     setLang('all');
@@ -436,6 +477,17 @@ export function CorpusSearch({
     source.directInputs(recordIds, controller.signal)
       .then((inputs) => { if (!controller.signal.aborted) setDirectInputs(inputs); })
       .catch(() => { if (!controller.signal.aborted) setLineageError(true); });
+    return () => controller.abort();
+  }, [source, hits]);
+
+  useEffect(() => {
+    const recordIds = hits.map((hit) => hit.entry.entryId);
+    setClusters(new Map());
+    if (recordIds.length === 0) return;
+    const controller = new AbortController();
+    source.clustersOf(recordIds, controller.signal)
+      .then((memberships) => { if (!controller.signal.aborted) setClusters(memberships); })
+      .catch(() => { /* Search remains usable if concept metadata is unavailable. */ });
     return () => controller.abort();
   }, [source, hits]);
 
@@ -630,6 +682,9 @@ export function CorpusSearch({
                 <CorpusHit
                   hit={group.hits[0]!}
                   inputs={inputsByTarget.get(group.hits[0]!.entry.entryId) ?? []}
+                  conceptId={clusters.get(group.hits[0]!.entry.entryId)}
+                  onOpenConcept={onOpenConcept}
+                  onOpenGraph={onOpenGraph}
                   onOpen={() => {
                     const m = group.hits[0]!.entry.corpus;
                     if (m !== undefined) setReading({ bundle: m.bundle, path: m.file, page: m.page });
@@ -644,6 +699,9 @@ export function CorpusSearch({
                         key={hit.entry.entryId}
                         hit={hit}
                         inputs={inputsByTarget.get(hit.entry.entryId) ?? []}
+                        conceptId={clusters.get(hit.entry.entryId)}
+                        onOpenConcept={onOpenConcept}
+                        onOpenGraph={onOpenGraph}
                         onOpen={() => {
                           const m = hit.entry.corpus;
                           if (m !== undefined) setReading({ bundle: m.bundle, path: m.file, page: m.page });

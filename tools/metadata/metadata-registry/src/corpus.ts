@@ -588,6 +588,54 @@ export class SupabaseCorpusSource {
     };
   }
 
+  /** Resolve the concept memberships of one visible search page. Unclustered records are omitted. */
+  async clustersOf(recordIds: string[], signal?: AbortSignal): Promise<Map<string, string>> {
+    if (recordIds.length === 0) return new Map();
+    const rows = await this.rpc<Array<{
+      record_id: string;
+      conceptual_variable_id: string;
+    }>>('corpus_cluster_of', { record_ids: recordIds }, signal);
+    return new Map(rows.map((row) => [row.record_id, row.conceptual_variable_id]));
+  }
+
+  /** Load one conceptual variable by its stable ID so navigation does not depend on search filters. */
+  async conceptualVariable(id: string, signal?: AbortSignal): Promise<CorpusConceptualVariable | null> {
+    const params = new URLSearchParams({
+      select: 'conceptual_variable_id,concept_id,label,universe,occurrences,surveys,representations,years,year_min,year_max',
+      conceptual_variable_id: `eq.${id}`,
+      limit: '1',
+    });
+    const response = await this.fetchImpl(`${this.url}/rest/v1/corpus_conceptual_variable?${params}`, {
+      headers: { apikey: this.anonKey, Authorization: `Bearer ${this.anonKey}` },
+      ...(signal === undefined ? {} : { signal }),
+    });
+    if (!response.ok) throw new Error(`Concept lookup failed: ${response.status} ${response.statusText}`);
+    const [row] = await response.json() as Array<{
+      conceptual_variable_id: string;
+      concept_id: string;
+      label: string;
+      universe: string | null;
+      occurrences: number;
+      surveys: number;
+      representations: number;
+      years: number;
+      year_min: number | null;
+      year_max: number | null;
+    }>;
+    return row === undefined ? null : {
+      conceptualVariableId: row.conceptual_variable_id,
+      conceptId: row.concept_id,
+      label: row.label,
+      universe: row.universe,
+      occurrences: row.occurrences,
+      surveys: row.surveys,
+      representations: row.representations,
+      years: row.years,
+      yearMin: row.year_min,
+      yearMax: row.year_max,
+    };
+  }
+
   /** Every occurrence of one conceptual variable, in chronological order. */
   async timeline(
     conceptualVariableId: string,

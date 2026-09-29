@@ -12,19 +12,24 @@ const PAGE_SIZE = 20;
 interface CorpusLineageProps {
   source: SupabaseCorpusSource;
   onSelectSearch?: (query: string, survey?: string) => void;
+  initialTarget?: CorpusLineageTarget | null;
 }
 
-export function CorpusLineage({ source, onSelectSearch }: CorpusLineageProps) {
+export function CorpusLineage({ source, onSelectSearch, initialTarget }: CorpusLineageProps) {
   const [query, setQuery] = useState('');
   const [search, setSearch] = useState('');
   const [page, setPage] = useState(0);
   const [results, setResults] = useState<CorpusLineageTargetsPage | null>(null);
-  const [selected, setSelected] = useState<CorpusLineageTarget | null>(null);
+  const [selected, setSelected] = useState<CorpusLineageTarget | null>(initialTarget ?? null);
   const [edges, setEdges] = useState<CorpusLineageEdge[]>([]);
   const [listLoading, setListLoading] = useState(true);
   const [graphLoading, setGraphLoading] = useState(false);
   const [listError, setListError] = useState<string | null>(null);
   const [graphError, setGraphError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (initialTarget) setSelected(initialTarget);
+  }, [initialTarget]);
 
   useEffect(() => {
     const timer = window.setTimeout(() => setSearch(query.trim()), 250);
@@ -38,7 +43,9 @@ export function CorpusLineage({ source, onSelectSearch }: CorpusLineageProps) {
     source.lineageTargets(search, PAGE_SIZE, page * PAGE_SIZE, controller.signal)
       .then((next) => {
         setResults(next);
-        setSelected(next.targets[0] ?? null);
+        setSelected((current) => current?.recordId === initialTarget?.recordId
+          ? current
+          : next.targets[0] ?? null);
         setListLoading(false);
       })
       .catch((error: unknown) => {
@@ -49,7 +56,7 @@ export function CorpusLineage({ source, onSelectSearch }: CorpusLineageProps) {
         setListLoading(false);
       });
     return () => controller.abort();
-  }, [source, search, page]);
+  }, [source, search, page, initialTarget]);
 
   useEffect(() => {
     if (selected === null) {

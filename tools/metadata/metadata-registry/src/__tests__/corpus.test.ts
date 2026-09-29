@@ -119,6 +119,31 @@ function stubFetch(payload: unknown, status = 200) {
 }
 
 describe('SupabaseCorpusSource', () => {
+  it('resolves a variable to its exact concept without relying on a text search', async () => {
+    const memberships = stubFetch([{ record_id: 'record-1', conceptual_variable_id: 'cv-1' }]);
+    const source = new SupabaseCorpusSource({ url: 'https://p.supabase.co', anonKey: 'a', fetchImpl: memberships });
+    expect(await source.clustersOf(['record-1', 'record-2'])).toEqual(new Map([['record-1', 'cv-1']]));
+    const [rpcUrl, rpcInit] = (memberships as unknown as ReturnType<typeof vi.fn>).mock.calls[0] as [string, RequestInit];
+    expect(rpcUrl).toBe('https://p.supabase.co/rest/v1/rpc/corpus_cluster_of');
+    expect(JSON.parse(rpcInit.body as string)).toEqual({ record_ids: ['record-1', 'record-2'] });
+    expect(await source.clustersOf([])).toEqual(new Map());
+    expect(memberships).toHaveBeenCalledTimes(1);
+
+    const lookup = stubFetch([{
+      conceptual_variable_id: 'cv-1', concept_id: 'c-1', label: 'Smoking status',
+      universe: 'Adults', occurrences: 8, surveys: 2, representations: 2,
+      years: 4, year_min: 2001, year_max: 2023,
+    }]);
+    const lookupSource = new SupabaseCorpusSource({ url: 'https://p.supabase.co', anonKey: 'a', fetchImpl: lookup });
+    expect(await lookupSource.conceptualVariable('cv-1')).toMatchObject({
+      conceptualVariableId: 'cv-1', conceptId: 'c-1', label: 'Smoking status', years: 4,
+    });
+    const [getUrl, getInit] = (lookup as unknown as ReturnType<typeof vi.fn>).mock.calls[0] as [string, RequestInit];
+    expect(getUrl).toContain('/rest/v1/corpus_conceptual_variable?');
+    expect(new URL(getUrl).searchParams.get('conceptual_variable_id')).toBe('eq.cv-1');
+    expect(getInit.method).toBeUndefined();
+  });
+
   it('pages linked targets using the database total and edge count', async () => {
     const fetchImpl = stubFetch([{
       record_id: 'target-1', name: 'BMI', label: 'Body mass index',
