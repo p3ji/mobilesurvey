@@ -222,6 +222,31 @@ export interface CorpusDirectInput {
   statcanNote: string;
 }
 
+/** One derived variable with published, verified input links. */
+export interface CorpusLineageTarget {
+  recordId: string;
+  name: string;
+  label: string;
+  surveyAcronym: string | null;
+  cycle: string | null;
+  year: number | null;
+  inputCount: number;
+}
+
+export interface CorpusLineageTargetsPage {
+  targets: CorpusLineageTarget[];
+  total: number;
+  edges: number;
+}
+
+/** A verified edge in the bounded upstream graph, with source and target labels. */
+export interface CorpusLineageEdge extends Omit<CorpusDirectInput, 'sourceRecordId'> {
+  sourceRecordId: string | null;
+  targetName: string;
+  sourceLabel: string;
+  depth: number;
+}
+
 export interface CorpusStats {
   variables: number;
   surveys: number;
@@ -424,6 +449,69 @@ export class SupabaseCorpusSource {
       derivationType: row.derivation_type,
       expressionSummary: row.ai_expression_summary,
       statcanNote: row.statcan_verbatim_note,
+    }));
+  }
+
+  async lineageTargets(query = '', limit = 20, offset = 0, signal?: AbortSignal): Promise<CorpusLineageTargetsPage> {
+    const rows = await this.rpc<Array<{
+      record_id: string;
+      name: string;
+      label: string;
+      survey_acronym: string | null;
+      cycle: string | null;
+      year: number | null;
+      input_count: number;
+      total_count: number;
+      edge_count: number;
+    }>>('corpus_list_lineage_targets', {
+      p_query: query.trim() || null,
+      p_limit: limit,
+      p_offset: offset,
+    }, signal);
+    return {
+      targets: rows.map((row) => ({
+        recordId: row.record_id,
+        name: row.name,
+        label: row.label,
+        surveyAcronym: row.survey_acronym,
+        cycle: row.cycle,
+        year: row.year,
+        inputCount: row.input_count,
+      })),
+      total: rows[0]?.total_count ?? 0,
+      edges: rows[0]?.edge_count ?? 0,
+    };
+  }
+
+  async lineageGraph(rootRecordId: string, maxDepth = 4, signal?: AbortSignal): Promise<CorpusLineageEdge[]> {
+    const rows = await this.rpc<Array<{
+      edge_id: string;
+      target_record_id: string;
+      target_name: string;
+      source_record_id: string | null;
+      source_var_name: string;
+      source_label: string;
+      data_authority: CorpusDirectInput['dataAuthority'];
+      derivation_type: string;
+      ai_expression_summary: string | null;
+      statcan_verbatim_note: string;
+      depth: number;
+    }>>('corpus_get_lineage_graph', {
+      p_root_record_id: rootRecordId,
+      p_max_depth: maxDepth,
+    }, signal);
+    return rows.map((row) => ({
+      edgeId: row.edge_id,
+      targetRecordId: row.target_record_id,
+      targetName: row.target_name,
+      sourceRecordId: row.source_record_id,
+      sourceVarName: row.source_var_name,
+      sourceLabel: row.source_label,
+      dataAuthority: row.data_authority,
+      derivationType: row.derivation_type,
+      expressionSummary: row.ai_expression_summary,
+      statcanNote: row.statcan_verbatim_note,
+      depth: row.depth,
     }));
   }
 

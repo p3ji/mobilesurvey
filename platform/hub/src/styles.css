@@ -2126,6 +2126,95 @@ code { font-family: var(--mono); font-size: 0.88em; }
   font-style: italic;
   line-height: 1.5;
 }
+.kg-dag-evidence__quote + .kg-dag-evidence__quote {
+  margin-top: 10px;
+}
+.kg-lineage__search {
+  width: 100%;
+  margin-bottom: 12px;
+}
+.kg-dag-item__meta {
+  font-size: 11px;
+  color: #475569;
+}
+.kg-lineage__pager {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  margin-top: 14px;
+  font-size: 11px;
+  color: var(--ink-soft);
+}
+.kg-lineage__layer h4 {
+  margin: 0 0 10px;
+  font-size: 13px;
+  color: var(--ink);
+}
+.kg-lineage__layer h4 span {
+  color: var(--ink-soft);
+  font-weight: 500;
+}
+.kg-lineage__edges {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 10px;
+}
+.kg-lineage__edge {
+  border: 1px solid #cbd5e1;
+  border-left: 3px solid var(--brand);
+  border-radius: 5px;
+  padding: 10px 12px;
+  min-width: 0;
+  background: #f8fafc;
+}
+.kg-lineage__relation {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  align-items: baseline;
+  color: var(--ink-soft);
+  font-size: 11px;
+  margin-bottom: 7px;
+}
+.kg-lineage__source {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  overflow-wrap: anywhere;
+}
+.kg-lineage__source code {
+  color: var(--brand);
+  font-size: 14px;
+  font-weight: 700;
+}
+.kg-lineage__source span {
+  font-size: 12px;
+  color: var(--ink);
+}
+.kg-lineage__edge-meta {
+  margin-top: 8px;
+  color: var(--ink-soft);
+  font-size: 11px;
+}
+.kg-lineage__edge-meta button {
+  display: block;
+  border: 0;
+  padding: 4px 0 0;
+  background: transparent;
+  color: var(--brand);
+  cursor: pointer;
+}
+.kg-lineage__summary {
+  font-size: 12px;
+  margin: 8px 0 0;
+  color: var(--ink);
+}
+@media (max-width: 800px) {
+  .kg-dag-layout { grid-template-columns: 1fr; }
+  .kg-dag-list { max-height: 320px; overflow-y: auto; }
+  .kg-dag-card__header { flex-wrap: wrap; }
+}
 .kg-modules-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));

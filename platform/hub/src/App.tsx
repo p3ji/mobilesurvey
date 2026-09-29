@@ -1096,6 +1096,7 @@ function SearcherView({ onBack }: { onBack: () => void }) {
               <CorpusConcepts source={corpus} />
             ) : (
               <CorpusGraphExplorer
+                source={corpus}
                 onSelectSearch={(q, survey) => {
                   setCorpusQuery(q);
                   setCorpusSurvey(survey ?? 'all');

@@ -119,6 +119,43 @@ function stubFetch(payload: unknown, status = 200) {
 }
 
 describe('SupabaseCorpusSource', () => {
+  it('pages linked targets using the database total and edge count', async () => {
+    const fetchImpl = stubFetch([{
+      record_id: 'target-1', name: 'BMI', label: 'Body mass index',
+      survey_acronym: 'CCHS', cycle: '2019', year: 2019,
+      input_count: 3, total_count: 340, edge_count: 1183,
+    }]);
+    const source = new SupabaseCorpusSource({ url: 'https://p.supabase.co', anonKey: 'a', fetchImpl });
+    expect(await source.lineageTargets(' bmi ', 20, 40)).toEqual({
+      targets: [{ recordId: 'target-1', name: 'BMI', label: 'Body mass index',
+        surveyAcronym: 'CCHS', cycle: '2019', year: 2019, inputCount: 3 }],
+      total: 340,
+      edges: 1183,
+    });
+    const [url, init] = (fetchImpl as unknown as ReturnType<typeof vi.fn>).mock.calls[0] as [string, RequestInit];
+    expect(url).toBe('https://p.supabase.co/rest/v1/rpc/corpus_list_lineage_targets');
+    expect(JSON.parse(init.body as string)).toEqual({ p_query: 'bmi', p_limit: 20, p_offset: 40 });
+  });
+
+  it('maps recursive lineage with depth and source labels', async () => {
+    const fetchImpl = stubFetch([{
+      edge_id: 'edge-1', target_record_id: 'target-1', target_name: 'BMI',
+      source_record_id: 'source-1', source_var_name: 'HEIGHT', source_label: 'Height in metres',
+      data_authority: 'ai_inferred', derivation_type: 'formula',
+      ai_expression_summary: 'BMI = kg / m²', statcan_verbatim_note: 'Based on height and weight.', depth: 2,
+    }]);
+    const source = new SupabaseCorpusSource({ url: 'https://p.supabase.co', anonKey: 'a', fetchImpl });
+    expect(await source.lineageGraph('target-1')).toEqual([{
+      edgeId: 'edge-1', targetRecordId: 'target-1', targetName: 'BMI',
+      sourceRecordId: 'source-1', sourceVarName: 'HEIGHT', sourceLabel: 'Height in metres',
+      dataAuthority: 'ai_inferred', derivationType: 'formula',
+      expressionSummary: 'BMI = kg / m²', statcanNote: 'Based on height and weight.', depth: 2,
+    }]);
+    const [url, init] = (fetchImpl as unknown as ReturnType<typeof vi.fn>).mock.calls[0] as [string, RequestInit];
+    expect(url).toBe('https://p.supabase.co/rest/v1/rpc/corpus_get_lineage_graph');
+    expect(JSON.parse(init.body as string)).toEqual({ p_root_record_id: 'target-1', p_max_depth: 4 });
+  });
+
   it('loads published direct inputs for a results page in one RPC', async () => {
     const fetchImpl = stubFetch([{
       edge_id: 'edge-1', target_record_id: 'target-1', source_record_id: 'source-1',

@@ -168,3 +168,99 @@ $$;
 
 revoke execute on function corpus_get_direct_inputs(uuid[]) from public, authenticated;
 grant execute on function corpus_get_direct_inputs(uuid[]) to anon;
+
+-- Browse the verified graph by derived variable. The count is over targets, not
+-- individual edges, so pagination never splits one variable's input set.
+create or replace function corpus_list_lineage_targets(
+  p_query text default null,
+  p_limit integer default 20,
+  p_offset integer default 0
+)
+returns table (
+  record_id uuid,
+  name text,
+  label text,
+  survey_acronym text,
+  cycle text,
+  year integer,
+  input_count integer,
+  total_count bigint,
+  edge_count bigint
+)
+language sql
+stable
+security invoker
+set search_path = public
+as $$
+  with targets as (
+    select e.target_record_id, count(*)::integer as input_count
+    from corpus_derivation_edge e
+    where e.review_status = 'verified'
+    group by e.target_record_id
+  ), filtered as (
+    select v.record_id, v.name,
+           left(coalesce(nullif(btrim(v.concept), ''),
+                         nullif(btrim(v.question_text), ''),
+                         nullif(btrim(v.collection_name), ''), v.name), 220) as label,
+           v.survey_acronym, v.cycle, v.year, t.input_count
+    from targets t
+    join corpus_variable v on v.record_id = t.target_record_id
+    where nullif(btrim(p_query), '') is null
+       or v.name ilike '%' || btrim(p_query) || '%'
+       or v.concept ilike '%' || btrim(p_query) || '%'
+       or v.question_text ilike '%' || btrim(p_query) || '%'
+       or v.survey_acronym ilike '%' || btrim(p_query) || '%'
+       or v.cycle ilike '%' || btrim(p_query) || '%'
+  )
+  select f.record_id, f.name, f.label, f.survey_acronym, f.cycle, f.year,
+         f.input_count, count(*) over () as total_count,
+         sum(f.input_count) over () as edge_count
+  from filtered f
+  order by f.input_count desc, f.name, f.record_id
+  limit least(greatest(p_limit, 1), 50)
+  offset greatest(p_offset, 0);
+$$;
+
+revoke execute on function corpus_list_lineage_targets(text, integer, integer) from public, authenticated;
+grant execute on function corpus_list_lineage_targets(text, integer, integer) to anon;
+
+-- Enrich the existing bounded recursive traversal with the variable labels used
+-- by the explorer. SECURITY INVOKER preserves the verified-only edge policy.
+create or replace function corpus_get_lineage_graph(
+  p_root_record_id uuid,
+  p_max_depth integer default 4
+)
+returns table (
+  edge_id uuid,
+  target_record_id uuid,
+  target_name text,
+  source_record_id uuid,
+  source_var_name text,
+  source_label text,
+  data_authority text,
+  derivation_type text,
+  ai_expression_summary text,
+  statcan_verbatim_note text,
+  depth integer
+)
+language sql
+stable
+security invoker
+set search_path = public
+as $$
+  select l.edge_id, l.target_record_id, target.name,
+         l.source_record_id, l.source_var_name,
+         left(coalesce(nullif(btrim(source.concept), ''),
+                       nullif(btrim(source.question_text), ''),
+                       nullif(btrim(source.collection_name), ''),
+                       l.source_var_name), 220),
+         l.data_authority, l.derivation_type, l.ai_expression_summary,
+         l.statcan_verbatim_note, l.depth
+  from corpus_get_upstream_lineage(p_root_record_id, least(greatest(p_max_depth, 1), 5)) l
+  join corpus_variable target on target.record_id = l.target_record_id
+  left join corpus_variable source on source.record_id = l.source_record_id
+  order by l.depth, target.name, l.source_var_name;
+$$;
+
+revoke execute on function corpus_get_lineage_graph(uuid, integer) from public, authenticated;
+grant execute on function corpus_get_lineage_graph(uuid, integer) to anon;

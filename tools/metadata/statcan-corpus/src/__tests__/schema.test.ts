@@ -258,4 +258,15 @@ describe('sql/derivation_edges.sql', () => {
     expect(sql).toMatch(/create unique index if not exists idx_derivation_target_source_name_unique/);
     expect(sql).toMatch(/target_record_id, \(upper\(btrim\(source_var_name\)\)\)/);
   });
+
+  it('parses the lineage browsing RPCs and restricts them to verified edges', () => {
+    const sql = readFileSync(path.resolve(path.dirname(SCHEMA_PATH), 'derivation_edges.sql'), 'utf8');
+    const browsingSql = sql.slice(sql.indexOf('-- Browse the verified graph by derived variable.'));
+    const statements = pg.parse(browsingSql);
+    expect(statements.error == null ? undefined : `${statements.error.message} — ${locate(browsingSql, statements.error.cursorpos)}`).toBeUndefined();
+    expect(sql).toMatch(/create or replace function corpus_list_lineage_targets/);
+    expect(sql).toMatch(/create or replace function corpus_get_lineage_graph/);
+    expect(sql).toMatch(/where e.review_status = 'verified'/);
+    expect(sql).toMatch(/security invoker/g);
+  });
 });
