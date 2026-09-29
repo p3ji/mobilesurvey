@@ -230,31 +230,27 @@ function CorpusHit({
 
       <CodeList codes={meta.codes} />
 
-      {(conceptId !== undefined || classification.role === 'derived' || graphTargets.length > 0) && (
-        <div className="cs-hit__connections">
-          {conceptId !== undefined && (
-            <button type="button" className="cs-link" onClick={() => onOpenConcept?.(conceptId)}>
-              View concept over time ↗
-            </button>
-          )}
-          {(classification.role === 'derived' || graphTargets.length > 0) && (
-            <button type="button" className="cs-link" onClick={() => onOpenGraph?.({
-              variable: {
-                recordId: hit.entry.entryId,
-                name: meta.variableName,
-                label,
-                surveyAcronym: meta.surveyAcronym ?? null,
-                cycle: meta.cycle ?? null,
-                year: meta.year ?? null,
-                inputCount: inputs.length,
-              },
-              targets: graphTargets,
-            })}>
-              View derivation graph ↗
-            </button>
-          )}
-        </div>
-      )}
+      <div className="cs-hit__connections">
+        {conceptId !== undefined && (
+          <button type="button" className="cs-link" onClick={() => onOpenConcept?.(conceptId)}>
+            View concept over time ↗
+          </button>
+        )}
+          <button type="button" className="cs-link" onClick={() => onOpenGraph?.({
+            variable: {
+              recordId: hit.entry.entryId,
+              name: meta.variableName,
+              label,
+              surveyAcronym: meta.surveyAcronym ?? null,
+              cycle: meta.cycle ?? null,
+              year: meta.year ?? null,
+              inputCount: inputs.length,
+            },
+            targets: graphTargets,
+          })}>
+          View derivation graph ↗
+        </button>
+      </div>
 
       <p className="cs-hit__cite" title={meta.file}>
         {meta.citation}

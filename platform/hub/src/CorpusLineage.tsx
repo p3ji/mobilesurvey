@@ -21,7 +21,7 @@ interface CorpusLineageProps {
 }
 
 export function CorpusLineage({ source, onSelectSearch, initialFocus }: CorpusLineageProps) {
-  const initialTarget = initialFocus?.targets[0] ?? initialFocus?.variable ?? null;
+  const initialTarget = initialFocus?.targets[0] ?? null;
   const [query, setQuery] = useState('');
   const [search, setSearch] = useState('');
   const [page, setPage] = useState(0);
@@ -45,7 +45,7 @@ export function CorpusLineage({ source, onSelectSearch, initialFocus }: CorpusLi
     source.lineageTargets(search, PAGE_SIZE, page * PAGE_SIZE, controller.signal)
       .then((next) => {
         setResults(next);
-        setSelected((current) => current?.recordId === initialTarget?.recordId
+        setSelected((current) => initialFocus && search === '' && page === 0 && current?.recordId === initialTarget?.recordId
           ? current
           : next.targets[0] ?? null);
         setListLoading(false);
@@ -153,7 +153,7 @@ export function CorpusLineage({ source, onSelectSearch, initialFocus }: CorpusLi
             <div className="kg-dag-card">
               <strong><code>{initialFocus.variable.name}</code></strong>
               {initialFocus.targets.length === 0 ? (
-                <p>No verified derivation links are published for this variable yet. Its derived-variable classification alone does not establish an input relationship.</p>
+                <p>No verified derivation links are published for this record yet. A variable name or documentation note alone does not establish an input relationship.</p>
               ) : (
                 <>
                   <p>
@@ -174,7 +174,7 @@ export function CorpusLineage({ source, onSelectSearch, initialFocus }: CorpusLi
             </div>
           )}
           {selected === null ? (
-            <div className="kg-dag-card">Select a derived variable to inspect its lineage.</div>
+            <div className="kg-dag-card">{initialFocus ? 'No graph is available for this record yet. Select a linked derived variable on the left to explore another graph.' : 'Select a derived variable to inspect its lineage.'}</div>
           ) : (
             <div className="kg-dag-card">
               <div className="kg-dag-card__header">
