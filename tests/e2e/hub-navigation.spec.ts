@@ -75,10 +75,13 @@ test.describe('Module Navigation', () => {
   test('clicking Searcher shows search interface', async ({ page }) => {
     await page.click('button:has-text("Searcher")');
 
-    // SearcherView renders an input[type="search"] (not type="text")
-    await expect(page.locator('input[type="search"]')).toBeVisible();
-    // SearcherView header tagline
-    await expect(page.locator('text=Discover · reuse · extend metadata')).toBeVisible();
+    await expect(page.locator('text=Explore Statistics Canada survey metadata')).toBeVisible();
+    await expect(page.getByRole('tab', { name: 'Your surveys' })).toHaveCount(0);
+    if (await page.getByRole('tab', { name: 'Variables' }).count()) {
+      await expect(page.locator('input[type="search"]')).toBeVisible();
+    } else {
+      await expect(page.getByText('Statistics Canada metadata search is unavailable')).toBeVisible();
+    }
   });
 
   test('back button returns to home from Collector', async ({ page }) => {

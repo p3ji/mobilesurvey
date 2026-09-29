@@ -27,7 +27,48 @@ importers:
         specifier: ^3.2.6
         version: 3.2.6(@types/node@22.20.0)
 
-  apps/api:
+  packages/ddi-xml:
+    dependencies:
+      '@mobilesurvey/instrument-schema':
+        specifier: workspace:*
+        version: link:../instrument-schema
+    devDependencies:
+      typescript:
+        specifier: ^5.6.3
+        version: 5.9.3
+      vitest:
+        specifier: ^3.2.6
+        version: 3.2.6(@types/node@22.20.0)
+      xmllint-wasm:
+        specifier: ^5.2.0
+        version: 5.2.0(@types/node@22.20.0)
+
+  packages/expression-engine:
+    devDependencies:
+      typescript:
+        specifier: ^5.6.3
+        version: 5.9.3
+      vitest:
+        specifier: ^3.2.6
+        version: 3.2.6(@types/node@22.20.0)
+
+  packages/instrument-schema:
+    dependencies:
+      zod:
+        specifier: ^3.24.1
+        version: 3.25.76
+      zod-to-json-schema:
+        specifier: ^3.24.1
+        version: 3.25.2(zod@3.25.76)
+    devDependencies:
+      typescript:
+        specifier: ^5.6.3
+        version: 5.9.3
+      vitest:
+        specifier: ^3.2.6
+        version: 3.2.6(@types/node@22.20.0)
+
+  platform/api:
     dependencies:
       '@hono/node-server':
         specifier: ^1.13.7
@@ -37,7 +78,7 @@ importers:
         version: link:../../packages/instrument-schema
       '@mobilesurvey/runtime-engine':
         specifier: workspace:*
-        version: link:../../packages/runtime-engine
+        version: link:../../tools/collection/runtime-engine
       hono:
         specifier: ^4.6.14
         version: 4.12.27
@@ -55,11 +96,8 @@ importers:
         specifier: ^5.6.3
         version: 5.9.3
 
-  apps/designer:
+  platform/hub:
     dependencies:
-      '@mobilesurvey/ddi-xml':
-        specifier: workspace:*
-        version: link:../../packages/ddi-xml
       '@mobilesurvey/expression-engine':
         specifier: workspace:*
         version: link:../../packages/expression-engine
@@ -68,13 +106,65 @@ importers:
         version: link:../../packages/instrument-schema
       '@mobilesurvey/metadata-registry':
         specifier: workspace:*
-        version: link:../../packages/metadata-registry
+        version: link:../../tools/metadata/metadata-registry
+      '@mobilesurvey/questionnaire-migrator':
+        specifier: workspace:*
+        version: link:../../tools/authoring/questionnaire-migrator
+      '@mobilesurvey/validation-engine':
+        specifier: workspace:*
+        version: link:../../tools/validation/validation-engine
+      '@supabase/supabase-js':
+        specifier: ^2.108.2
+        version: 2.108.2
+      lucide-react:
+        specifier: ^1.21.0
+        version: 1.21.0(react@18.3.1)
+      pdfjs-dist:
+        specifier: ^6.1.200
+        version: 6.1.200
+      react:
+        specifier: ^18.3.1
+        version: 18.3.1
+      react-dom:
+        specifier: ^18.3.1
+        version: 18.3.1(react@18.3.1)
+    devDependencies:
+      '@types/react':
+        specifier: ^18.3.18
+        version: 18.3.31
+      '@types/react-dom':
+        specifier: ^18.3.5
+        version: 18.3.7(@types/react@18.3.31)
+      '@vitejs/plugin-react':
+        specifier: ^4.3.4
+        version: 4.7.0(vite@5.4.21(@types/node@22.20.0))
+      typescript:
+        specifier: ^5.6.3
+        version: 5.9.3
+      vite:
+        specifier: ^5.4.11
+        version: 5.4.21(@types/node@22.20.0)
+
+  tools/authoring/designer:
+    dependencies:
+      '@mobilesurvey/ddi-xml':
+        specifier: workspace:*
+        version: link:../../../packages/ddi-xml
+      '@mobilesurvey/expression-engine':
+        specifier: workspace:*
+        version: link:../../../packages/expression-engine
+      '@mobilesurvey/instrument-schema':
+        specifier: workspace:*
+        version: link:../../../packages/instrument-schema
+      '@mobilesurvey/metadata-registry':
+        specifier: workspace:*
+        version: link:../../metadata/metadata-registry
       '@mobilesurvey/respondent-view':
         specifier: workspace:*
-        version: link:../../packages/respondent-view
+        version: link:../../collection/respondent-view
       '@mobilesurvey/runtime-engine':
         specifier: workspace:*
-        version: link:../../packages/runtime-engine
+        version: link:../../collection/runtime-engine
       '@radix-ui/react-tabs':
         specifier: ^1.1.2
         version: 1.1.15(@types/react-dom@18.3.7(@types/react@18.3.31))(@types/react@18.3.31)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -119,69 +209,36 @@ importers:
         specifier: ^5.4.11
         version: 5.4.21(@types/node@22.20.0)
 
-  apps/hub:
+  tools/authoring/questionnaire-migrator:
     dependencies:
       '@mobilesurvey/expression-engine':
         specifier: workspace:*
-        version: link:../../packages/expression-engine
+        version: link:../../../packages/expression-engine
       '@mobilesurvey/instrument-schema':
         specifier: workspace:*
-        version: link:../../packages/instrument-schema
-      '@mobilesurvey/metadata-registry':
-        specifier: workspace:*
-        version: link:../../packages/metadata-registry
-      '@mobilesurvey/questionnaire-migrator':
-        specifier: workspace:*
-        version: link:../../packages/questionnaire-migrator
-      '@mobilesurvey/validation-engine':
-        specifier: workspace:*
-        version: link:../../packages/validation-engine
-      '@supabase/supabase-js':
-        specifier: ^2.108.2
-        version: 2.108.2
-      lucide-react:
-        specifier: ^1.21.0
-        version: 1.21.0(react@18.3.1)
-      pdfjs-dist:
-        specifier: ^6.1.200
-        version: 6.1.200
-      react:
-        specifier: ^18.3.1
-        version: 18.3.1
-      react-dom:
-        specifier: ^18.3.1
-        version: 18.3.1(react@18.3.1)
+        version: link:../../../packages/instrument-schema
     devDependencies:
-      '@types/react':
-        specifier: ^18.3.18
-        version: 18.3.31
-      '@types/react-dom':
-        specifier: ^18.3.5
-        version: 18.3.7(@types/react@18.3.31)
-      '@vitejs/plugin-react':
-        specifier: ^4.3.4
-        version: 4.7.0(vite@5.4.21(@types/node@22.20.0))
       typescript:
         specifier: ^5.6.3
         version: 5.9.3
-      vite:
-        specifier: ^5.4.11
-        version: 5.4.21(@types/node@22.20.0)
+      vitest:
+        specifier: ^3.2.6
+        version: 3.2.6(@types/node@22.20.0)
 
-  apps/runtime:
+  tools/collection/respondent:
     dependencies:
       '@mobilesurvey/expression-engine':
         specifier: workspace:*
-        version: link:../../packages/expression-engine
+        version: link:../../../packages/expression-engine
       '@mobilesurvey/instrument-schema':
         specifier: workspace:*
-        version: link:../../packages/instrument-schema
+        version: link:../../../packages/instrument-schema
       '@mobilesurvey/respondent-view':
         specifier: workspace:*
-        version: link:../../packages/respondent-view
+        version: link:../respondent-view
       '@mobilesurvey/runtime-engine':
         specifier: workspace:*
-        version: link:../../packages/runtime-engine
+        version: link:../runtime-engine
       '@supabase/supabase-js':
         specifier: ^2.108.2
         version: 2.108.2
@@ -214,106 +271,11 @@ importers:
         specifier: ^5.4.11
         version: 5.4.21(@types/node@22.20.0)
 
-  packages/ddi-xml:
+  tools/collection/respondent-view:
     dependencies:
       '@mobilesurvey/instrument-schema':
         specifier: workspace:*
-        version: link:../instrument-schema
-    devDependencies:
-      typescript:
-        specifier: ^5.6.3
-        version: 5.9.3
-      vitest:
-        specifier: ^3.2.6
-        version: 3.2.6(@types/node@22.20.0)
-      xmllint-wasm:
-        specifier: ^5.2.0
-        version: 5.2.0(@types/node@22.20.0)
-
-  packages/expression-engine:
-    devDependencies:
-      typescript:
-        specifier: ^5.6.3
-        version: 5.9.3
-      vitest:
-        specifier: ^3.2.6
-        version: 3.2.6(@types/node@22.20.0)
-
-  packages/instrument-schema:
-    dependencies:
-      zod:
-        specifier: ^3.24.1
-        version: 3.25.76
-      zod-to-json-schema:
-        specifier: ^3.24.1
-        version: 3.25.2(zod@3.25.76)
-    devDependencies:
-      typescript:
-        specifier: ^5.6.3
-        version: 5.9.3
-      vitest:
-        specifier: ^3.2.6
-        version: 3.2.6(@types/node@22.20.0)
-
-  packages/metadata-registry:
-    dependencies:
-      '@mobilesurvey/instrument-schema':
-        specifier: workspace:*
-        version: link:../instrument-schema
-      '@mobilesurvey/runtime-engine':
-        specifier: workspace:*
-        version: link:../runtime-engine
-    devDependencies:
-      typescript:
-        specifier: ^5.6.3
-        version: 5.9.3
-      vitest:
-        specifier: ^3.2.6
-        version: 3.2.6(@types/node@22.20.0)
-
-  packages/questionnaire-bot:
-    dependencies:
-      '@mobilesurvey/expression-engine':
-        specifier: workspace:*
-        version: link:../expression-engine
-      '@mobilesurvey/instrument-schema':
-        specifier: workspace:*
-        version: link:../instrument-schema
-      '@mobilesurvey/runtime-engine':
-        specifier: workspace:*
-        version: link:../runtime-engine
-      playwright:
-        specifier: ^1.48.0
-        version: 1.61.1
-    devDependencies:
-      typescript:
-        specifier: ^5.6.3
-        version: 5.9.3
-      vitest:
-        specifier: ^3.2.6
-        version: 3.2.6(@types/node@22.20.0)
-
-  packages/questionnaire-migrator:
-    dependencies:
-      '@mobilesurvey/expression-engine':
-        specifier: workspace:*
-        version: link:../expression-engine
-      '@mobilesurvey/instrument-schema':
-        specifier: workspace:*
-        version: link:../instrument-schema
-    devDependencies:
-      typescript:
-        specifier: ^5.6.3
-        version: 5.9.3
-      vitest:
-        specifier: ^3.2.6
-        version: 3.2.6(@types/node@22.20.0)
-
-  packages/respondent-view:
-    dependencies:
-      '@mobilesurvey/instrument-schema':
-        specifier: workspace:*
-        version: link:../instrument-schema
+        version: link:../../../packages/instrument-schema
       '@mobilesurvey/runtime-engine':
         specifier: workspace:*
         version: link:../runtime-engine
@@ -331,14 +293,14 @@ importers:
         specifier: ^3.2.6
         version: 3.2.6(@types/node@22.20.0)
 
-  packages/runtime-engine:
+  tools/collection/runtime-engine:
     dependencies:
       '@mobilesurvey/expression-engine':
         specifier: workspace:*
-        version: link:../expression-engine
+        version: link:../../../packages/expression-engine
       '@mobilesurvey/instrument-schema':
         specifier: workspace:*
-        version: link:../instrument-schema
+        version: link:../../../packages/instrument-schema
       xstate:
         specifier: ^5.19.0
         version: 5.32.2
@@ -350,14 +312,30 @@ importers:
         specifier: ^3.2.6
         version: 3.2.6(@types/node@22.20.0)
 
-  packages/statcan-corpus:
+  tools/metadata/metadata-registry:
+    dependencies:
+      '@mobilesurvey/instrument-schema':
+        specifier: workspace:*
+        version: link:../../../packages/instrument-schema
+      '@mobilesurvey/runtime-engine':
+        specifier: workspace:*
+        version: link:../../collection/runtime-engine
+    devDependencies:
+      typescript:
+        specifier: ^5.6.3
+        version: 5.9.3
+      vitest:
+        specifier: ^3.2.6
+        version: 3.2.6(@types/node@22.20.0)
+
+  tools/metadata/statcan-corpus:
     dependencies:
       '@mobilesurvey/ddi-xml':
         specifier: workspace:*
-        version: link:../ddi-xml
+        version: link:../../../packages/ddi-xml
       '@mobilesurvey/instrument-schema':
         specifier: workspace:*
-        version: link:../instrument-schema
+        version: link:../../../packages/instrument-schema
       pdfjs-dist:
         specifier: ^6.1.200
         version: 6.1.200
@@ -375,17 +353,39 @@ importers:
         specifier: ^3.2.6
         version: 3.2.6(@types/node@22.20.0)
 
-  packages/validation-engine:
+  tools/testing/questionnaire-bot:
     dependencies:
       '@mobilesurvey/expression-engine':
         specifier: workspace:*
-        version: link:../expression-engine
+        version: link:../../../packages/expression-engine
       '@mobilesurvey/instrument-schema':
         specifier: workspace:*
-        version: link:../instrument-schema
+        version: link:../../../packages/instrument-schema
       '@mobilesurvey/runtime-engine':
         specifier: workspace:*
-        version: link:../runtime-engine
+        version: link:../../collection/runtime-engine
+      playwright:
+        specifier: ^1.48.0
+        version: 1.61.1
+    devDependencies:
+      typescript:
+        specifier: ^5.6.3
+        version: 5.9.3
+      vitest:
+        specifier: ^3.2.6
+        version: 3.2.6(@types/node@22.20.0)
+
+  tools/validation/validation-engine:
+    dependencies:
+      '@mobilesurvey/expression-engine':
+        specifier: workspace:*
+        version: link:../../../packages/expression-engine
+      '@mobilesurvey/instrument-schema':
+        specifier: workspace:*
+        version: link:../../../packages/instrument-schema
+      '@mobilesurvey/runtime-engine':
+        specifier: workspace:*
+        version: link:../../collection/runtime-engine
     devDependencies:
       typescript:
         specifier: ^5.6.3

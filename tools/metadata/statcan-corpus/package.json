@@ -1,0 +1,37 @@
+{
+  "name": "@mobilesurvey/statcan-corpus",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Node-only ETL for the Statistics Canada RDC documentation corpus: classify, extract, and normalize survey data dictionaries into searchable metadata records.",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "corpus:inventory": "tsx src/cli.ts inventory",
+    "corpus:extract": "tsx src/cli.ts inventory --extract",
+    "corpus:parse": "tsx src/cli.ts parse",
+    "corpus:load": "tsx src/cli.ts load",
+    "corpus:cluster": "tsx src/cli.ts cluster",
+    "corpus:documents": "tsx src/cli.ts documents",
+    "corpus:lexicon": "tsx src/cli.ts lexicon",
+    "corpus:subjects": "tsx src/cli.ts subjects",
+    "corpus:queue": "tsx src/graph/queue.ts",
+    "corpus:review": "tsx src/graph/reviewer.ts"
+  },
+  "dependencies": {
+    "@mobilesurvey/ddi-xml": "workspace:*",
+    "@mobilesurvey/instrument-schema": "workspace:*",
+    "pdfjs-dist": "^6.1.200"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.2",
+    "pg-query-emscripten": "^5.1.0",
+    "typescript": "^5.6.3",
+    "vitest": "^3.2.6"
+  }
+}

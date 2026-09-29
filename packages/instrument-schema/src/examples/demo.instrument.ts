@@ -15,7 +15,7 @@ const s = (en: string, fr: string): InternationalString => ({ en, fr });
 export const demoInstrument: Instrument = {
   id: 'urn:ddi:mobilesurvey:demo:1.0',
   // Bump on every content change: backend seeding only refreshes the stored demo row when
-  // the bundled version is newer (see apps/hub api.upsertSurvey).
+  // the bundled version is newer (see platform/hub api.upsertSurvey).
   version: '1.3.0',
   ddiProfile: 'ddi-lifecycle-3.3',
   languages: ['en', 'fr'],

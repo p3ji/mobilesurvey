@@ -6,7 +6,7 @@
   "description": "DDI-compliant, mobile-first survey design & electronic-questionnaire authoring tool",
   "scripts": {
     "dev": "pnpm --filter @mobilesurvey/designer dev",
-    "build": "pnpm --filter @mobilesurvey/designer build",
+    "build": "pnpm -r --if-present build",
     "preview": "pnpm --filter @mobilesurvey/designer preview",
     "test": "pnpm -r test",
     "test:e2e": "playwright test",

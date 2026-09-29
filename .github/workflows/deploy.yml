@@ -50,15 +50,15 @@ jobs:
           mkdir -p deploy
           
           # 2. Copy the Hub app into the root of the deploy directory first
-          cp -r apps/hub/dist/* deploy/
+          cp -r platform/hub/dist/* deploy/
           
           # 3. Create subdirectories inside deploy *after* copying hub files
           mkdir -p deploy/designer
           mkdir -p deploy/respondent
 
           # 4. Copy the sub-apps into their respective paths
-          cp -r apps/designer/dist/* deploy/designer/
-          cp -r apps/runtime/dist/* deploy/respondent/
+          cp -r tools/authoring/designer/dist/* deploy/designer/
+          cp -r tools/collection/respondent/dist/* deploy/respondent/
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3

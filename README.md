@@ -12,8 +12,7 @@ can be used on its own or together.
 > questions), a post-collection **Validator**, an automated **questionnaire-testing bot**, and a
 > searchable metadata corpus of ~195,000 real Statistics Canada survey variables. Production
 > persistence is **Supabase**; see [AGENTS.md](AGENTS.md) for the full, actively-maintained phase
-> status and [`docs/architecture.md`](docs/architecture.md) for the original Iteration-1 design
-> (historical — the packages/apps below have grown well past it).
+> status and [ARCHITECTURE.md](ARCHITECTURE.md) for the current module map.
 
 ## Quick start
 
@@ -43,7 +42,7 @@ Other commands:
 ```bash
 pnpm test        # all Vitest suites, every package
 pnpm typecheck   # typecheck every package
-pnpm build       # production build of the designer only (root script's current default)
+pnpm build       # production build of hub, designer, and respondent apps
 
 # The GitHub Pages deploy (.github/workflows/deploy.yml) builds all three apps explicitly:
 pnpm --filter @mobilesurvey/hub build
@@ -57,12 +56,12 @@ pnpm --filter @mobilesurvey/runtime build
 
 - **Collector** — create, publish, and monitor surveys; share respondent links; view a response
   dashboard with a redacted-CSV export (PII variables excluded per the instrument definition).
-- **Searcher** — find and reuse questions, variables, and code lists across every survey in the
-  hub ("Your surveys" scope), *or* search a **Statistics Canada** scope: ~195,000 real variable
+- **Searcher** — search **Statistics Canada** metadata: ~195,000 live English variable
   occurrences extracted from ~580 StatCan RDC documentation dictionaries, with subject facets, a
   typo-tolerant did-you-mean, a concept-clustering "Concepts over time" view that flags where a
   variable's coding changed across survey cycles, and a source-document viewer that opens every
-  record at its cited page.
+  record at its cited page. Repeated variable columns for one question are grouped on each page;
+  reviewed term equivalents (such as AI / artificial intelligence) expand keyword searches.
 - **Migrator** — paste or upload a plain-text/Word/PDF questionnaire (including Statistics Canada
   EQ-dialect exports) and get back a live instrument with inferred response types and routing.
 - **Validator** — post-collection data editing: metadata-derived checks, re-run of collection-time
@@ -110,22 +109,28 @@ feature (see `packages/instrument-schema/src/examples/lfs.instrument.ts`). Try t
 
 ```
 packages/
-  instrument-schema       DDI-aligned types + Zod validation + JSON Schema + examples (LFS, Demo, FSEP)
-  expression-engine       no-eval parser/evaluator shared by routing, visibility, derived, edits
-  runtime-engine          flatten + piping + edit evaluation + XState machine
-  respondent-view         shared question-rendering React components (runtime + designer preview)
-  metadata-registry       TF-IDF indexer + semantic search for question/component reuse
-  ddi-xml                 DDI-Lifecycle 3.3 XML codec (export/import) + JSON-LD serialization
-  validation-engine       post-collection Validator: L1-L4 checks, corrections, selective editing
-  questionnaire-migrator  external questionnaire (incl. StatCan EQ) / PDF → instrument JSON
-  questionnaire-bot       automated survey-path testing: enumeration, Playwright driver, HTML reports
-  statcan-corpus          StatCan RDC documentation corpus: classify/extract/parse/load/search
-apps/
-  hub                     Vite + React survey management console (entry point)
-  designer                Vite + React authoring tool
-  runtime                 respondent-facing EQ app: access codes, resume, paradata, sensor questions
-  api                     Hono + Node.js/SQLite backend — local-dev / air-gapped fallback only
-docs/                     architecture, phase history, plans, and user manuals
+  instrument-schema       shared Instrument contract, Zod validation, examples
+  expression-engine       shared no-eval expression language
+  ddi-xml                 shared DDI-Lifecycle XML and JSON-LD interchange
+tools/
+  authoring/
+    designer              authoring app
+    questionnaire-migrator  external questionnaires → Instrument
+  collection/
+    respondent            respondent app
+    runtime-engine        state, routing, edits, paradata
+    respondent-view       shared respondent controls
+  validation/
+    validation-engine     post-collection checks and scoring
+  metadata/
+    metadata-registry     question reuse and corpus search adapter
+    statcan-corpus        Node-only StatCan ingest, SQL, graph analysis
+  testing/
+    questionnaire-bot     survey path enumeration and browser testing
+platform/
+  hub                     suite entry point and integrated tool screens
+  api                     local SQLite fallback
+docs/                     project notes and manuals
 ```
 
 ## User manuals

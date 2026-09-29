@@ -21,7 +21,7 @@ test-results/
 .claude/settings.local.json
 
 # SQLite data (api)
-apps/api/data/
+platform/api/data/
 *.db
 *.db-shm
 *.db-wal
@@ -37,7 +37,7 @@ ddi-c_*/
 # every bulk artifact derived from them. The ETL code and the fidelity report ARE committed;
 # the payload never is. (*.zip above already covers the source, listed here for intent.)
 docs/metadatarepo/
-packages/statcan-corpus/out/
-packages/statcan-corpus/cache/
-packages/statcan-corpus/*.log
+tools/metadata/statcan-corpus/out/
+tools/metadata/statcan-corpus/cache/
+tools/metadata/statcan-corpus/*.log
 corpus.jsonl

@@ -30,7 +30,7 @@ pnpm --filter @mobilesurvey/api dev
 # Listens on http://localhost:8787
 ```
 
-The API auto-creates a SQLite database at `apps/api/data/survey.db` on first run. It seeds demo access codes (ABC123 / DEF456) and serves all four REST resources: `/surveys`, `/sessions`, `/paradata`, `/responses`.
+The API auto-creates a SQLite database at `platform/api/data/survey.db` on first run. It seeds demo access codes (ABC123 / DEF456) and serves all four REST resources: `/surveys`, `/sessions`, `/paradata`, `/responses`.
 
 **Schema tables created automatically:**
 - `surveys` — instrument JSON + config
@@ -47,14 +47,14 @@ By default each app auto-detects localhost and falls back to the local API when 
 
 For a non-localhost server (e.g. a VM at `192.168.1.100`), create `.env.local` files:
 
-**`apps/hub/.env.local`**
+**`platform/hub/.env.local`**
 ```
 VITE_DESIGNER_URL=http://192.168.1.100:5173
 VITE_RUNTIME_URL=http://192.168.1.100:5174
 # Leave VITE_SUPABASE_URL unset to force the local API
 ```
 
-**`apps/runtime/.env.local`** and **`apps/designer/.env.local`**
+**`tools/collection/respondent/.env.local`** and **`tools/authoring/designer/.env.local`**
 ```
 # No Supabase vars → runtime falls back to http://localhost:8787
 ```
@@ -85,9 +85,9 @@ pnpm build
 ```
 
 Outputs:
-- `apps/hub/dist/` — hub SPA
-- `apps/designer/dist/` — designer SPA
-- `apps/runtime/dist/` — runtime SPA
+- `platform/hub/dist/` — hub SPA
+- `tools/authoring/designer/dist/` — designer SPA
+- `tools/collection/respondent/dist/` — runtime SPA
 
 Serve the three `dist/` directories with any static file server (nginx, Caddy, `serve`). The API must be accessible at the configured URL.
 
@@ -125,7 +125,7 @@ Variables tagged `isPII: true` in the instrument schema are redacted in the **Re
 To permanently strip PII from a SQLite database before sharing:
 
 ```bash
-sqlite3 apps/api/data/survey.db \
+sqlite3 platform/api/data/survey.db \
   "UPDATE responses SET answers_json = json_patch(answers_json, '{}')"
 ```
 
@@ -138,7 +138,7 @@ sqlite3 apps/api/data/survey.db \
 Every hub action (survey create / publish / unpublish / delete, responses export) writes a row to `audit_log`. Query it:
 
 ```bash
-sqlite3 apps/api/data/survey.db \
+sqlite3 platform/api/data/survey.db \
   "SELECT datetime(ts/1000,'unixepoch'), actor, action, entity_id FROM audit_log ORDER BY ts DESC LIMIT 50"
 ```
 
@@ -154,7 +154,7 @@ services:
     working_dir: /app
     volumes:
       - .:/app
-      - survey-data:/app/apps/api/data
+      - survey-data:/app/platform/api/data
     command: sh -c "npm i -g pnpm@9 && pnpm install && pnpm --filter @mobilesurvey/api dev"
     ports:
       - "8787:8787"
@@ -235,7 +235,7 @@ create policy "anon select" on audit_log for select to anon using (true);
 
 ### 9b. Validator tables (required before using the Validator module)
 
-The Validator hub tile (`apps/hub/src/ValidatorView.tsx` / `validatorApi.ts`) persists runs,
+The Validator hub tile (`platform/hub/src/ValidatorView.tsx` / `validatorApi.ts`) persists runs,
 flags, dispositions, corrections, and analyst-authored rules to Supabase. These tables don't
 exist yet in a fresh Supabase project — apply this once (Dashboard → SQL Editor → New query)
 before running validation from the hub, or `executeValidationRun` will fail with a
@@ -433,16 +433,17 @@ Housekeeping notes (accepted for the demo): a retake uploads a new object and le
 superseded one in the bucket; there is no server-side scanning of uploads (flagged in the
 sensor-module plan's non-goals alongside the RLS hardening plan).
 
-### 9e. StatCan metadata corpus (required before using the Searcher's "Statistics Canada" tab)
+### 9e. StatCan metadata corpus (required for Searcher)
 
-The Searcher's second tab queries ~10^5 variable occurrences extracted from the Statistics Canada
-RDC documentation corpus (`docs/metadata-repo-plan.md`). Without these objects the tab renders an
-error naming this section; the "Your surveys" tab is unaffected and keeps working offline.
+Searcher queries ~10^5 variable occurrences extracted from the Statistics Canada RDC
+documentation corpus (`docs/metadata-repo-plan.md`). Without these objects it renders an error
+naming this section.
 
-Three steps: apply the schema, parse the corpus, load the records.
+Apply the schema and subject mapping, then parse and load the records. Apply the search-performance
+SQL after the mapping exists.
 
 **1. Apply the schema** — Dashboard → SQL Editor → New query → paste
-`packages/statcan-corpus/sql/schema.sql` → Run. It is idempotent, so re-running after a change is
+`tools/metadata/statcan-corpus/sql/schema.sql` → Run. It is idempotent, so re-running after a change is
 safe. It creates:
 
 - `corpus_variable` — one row per variable occurrence, with a language-aware generated `tsvector`,
@@ -463,7 +464,7 @@ pnpm --filter @mobilesurvey/statcan-corpus corpus:parse -- --kinds data-dictiona
 
 `--tcodes all` matters: the default `T15` family filter drops every dictionary whose filename
 carries no T-code, which is roughly a third of them. This writes the gitignored
-`packages/statcan-corpus/out/corpus.jsonl` plus the committed
+`tools/metadata/statcan-corpus/out/corpus.jsonl` plus the committed
 `docs/statcan-corpus-parse-report.md`.
 
 **3. Load** — the loader writes, so it needs the **service-role** key, which bypasses RLS. Set it
@@ -490,10 +491,20 @@ searchable projection in Postgres — the split the plan reserves for exactly th
 `corpus:load -- --dedupe` is the cheaper first move: the delivery ships some dictionaries more
 than once, and it keeps one row per distinct fact instead of one per document that repeated it.
 
+**Search aliases and fast facets.** Apply `tools/metadata/statcan-corpus/sql/subjects.sql`
+and load its mapping with `corpus:subjects` if that has not already been done. Then apply
+`tools/metadata/statcan-corpus/sql/search-performance.sql`. It adds a reviewed alias table and a
+small survey-count snapshot; the existing Searcher RPCs then read the snapshot instead of scanning
+all corpus variables for every visitor. The SQL refreshes the snapshot once on installation, and
+`corpus:load` refreshes it after every subsequent import. If records are edited outside the loader,
+run `select corpus_refresh_facets();` with a privileged SQL role. The refresh function is not
+callable by the browser's anon role. Search evaluation and known limits are in
+`docs/search-evaluation.md`.
+
 **Licence.** The data is published under the Statistics Canada Open Licence, which requires
 attribution, forbids implying endorsement, and requires adaptations to be identifiable as such.
 The UI satisfies all three (a notice above the results, a per-record citation on every card), and
-`CORPUS_ATTRIBUTION` in `packages/metadata-registry/src/corpus.ts` is the single string that
+`CORPUS_ATTRIBUTION` in `tools/metadata/metadata-registry/src/corpus.ts` is the single string that
 carries the obligations — do not paraphrase it per surface.
 
 ### 9f. Source documents (optional — powers “Open source” on every corpus record)
@@ -515,7 +526,7 @@ URLs would add a round trip and an expiry for no protection the licence asks for
 `application/json` with a 5 MB file limit so a runaway upload fails loudly rather than filling the
 quota.
 
-**2. Apply the schema** — SQL Editor → paste `packages/statcan-corpus/sql/documents.sql`. It adds
+**2. Apply the schema** — SQL Editor → paste `tools/metadata/statcan-corpus/sql/documents.sql`. It adds
 `corpus_document` (DDI `r:OtherMaterial` + `r:Citation`, flattened) plus `corpus_document_at` and
 `corpus_documents`. Nothing here touches `corpus_variable`: the join is on `(bundle, path)`, which
 every search result already returns.
@@ -538,12 +549,38 @@ a column.
 Chunking bounds a page fetch to ~180 KB no matter the document: the corpus holds a 3,567-page
 dictionary, and opening a citation should not move six megabytes to show one screen.
 
+### 9g. Computational derivation links (optional)
+
+Apply `tools/metadata/statcan-corpus/sql/derivation_edges.sql` after the corpus variables are
+loaded. It creates the lineage table, a unique key on target occurrence and normalized source
+name, read access for verified links, the bounded `corpus_get_upstream_lineage` RPC, and
+`corpus_get_direct_inputs` for one Searcher results page. Searcher renders these database links
+with their AI attribution and source note; it does not present names guessed from prose as links.
+
+With a locally audited `out/derivation_queue.db`, generate the import SQL:
+
+```bash
+pnpm --filter @mobilesurvey/statcan-corpus corpus:review -- export
+```
+
+Run the generated, gitignored `tools/metadata/statcan-corpus/out/verified_edges.sql` with a
+privileged SQL connection. It publishes only direct-input evidence and matches source and target
+to English variables in the **same survey, cycle, and document**. French is deliberately absent
+from the live corpus. Missing English counterparts, ambiguous notes, and cross-document matches
+are withheld. Re-running the export and SQL is safe: the natural-key conflict clause skips links
+already present. Every published link retains `data_authority = 'ai_inferred'` and its evidence;
+stratified human sign-off remains pending.
+
+Live check (2026-09-29): 1,183 verified links are readable, and 5 uncertain school-data links are
+stored as `needs_review` and hidden from public reads. These counts change when the corpus or
+review queue is updated.
+
 ---
 
 ## Security notes
 
 - The public Supabase `anon` key in the bundle is a **publishable key** — it is safe to expose but grants only the permissions defined by Row Level Security (RLS) policies.
-- For air-gapped deployments the local SQLite backend uses no network calls. All data stays on-disk in `apps/api/data/`.
+- For air-gapped deployments the local SQLite backend uses no network calls. All data stays on-disk in `platform/api/data/`.
 - Never set `VITE_SUPABASE_URL` and point it to a `service_role` key.
 - The `audit_log` table records who did what but does not enforce authentication — add network-level access controls (VPN, firewall rules) for sensitive deployments.
-- **`VITE_ANTHROPIC_API_KEY` (Validator LLM assistance, optional — see `apps/hub/src/validatorLlm.ts`)** is *not* a publishable key the way the Supabase key above is. Setting it bundles a real Anthropic secret into the client-side JS; anyone who opens dev tools on the deployed site can extract and use it under your account. Only set this directly for a personal/low-stakes demo where you knowingly accept that risk. For anything else, put a serverless proxy (a Supabase Edge Function or a Cloudflare Worker holding the real key server-side) in front of it instead — not built in this repo. Leaving the var unset disables the feature entirely; nothing else in the Validator depends on it.
+- **`VITE_ANTHROPIC_API_KEY` (Validator LLM assistance, optional — see `platform/hub/src/validatorLlm.ts`)** is *not* a publishable key the way the Supabase key above is. Setting it bundles a real Anthropic secret into the client-side JS; anyone who opens dev tools on the deployed site can extract and use it under your account. Only set this directly for a personal/low-stakes demo where you knowingly accept that risk. For anything else, put a serverless proxy (a Supabase Edge Function or a Cloudflare Worker holding the real key server-side) in front of it instead — not built in this repo. Leaving the var unset disables the feature entirely; nothing else in the Validator depends on it.
