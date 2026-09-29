@@ -9,20 +9,21 @@
  * - Thematic Module Rotation Directory
  */
 import { useMemo, useState } from 'react';
-import type { CorpusLineageTarget, SupabaseCorpusSource } from '@mobilesurvey/metadata-registry';
+import type { SupabaseCorpusSource } from '@mobilesurvey/metadata-registry';
 import { CorpusLineage } from './CorpusLineage.js';
+import type { CorpusGraphFocus } from './CorpusLineage.js';
 import summaryData from './data/knowledgeGraphSummary.json';
 
 interface CorpusGraphExplorerProps {
   source: SupabaseCorpusSource;
   onSelectSearch?: (query: string, survey?: string) => void;
-  initialLineageTarget?: CorpusLineageTarget | null;
+  initialGraphFocus?: CorpusGraphFocus | null;
 }
 
 type ExplorerTab = 'surveys' | 'harmonized' | 'lineage' | 'modules';
 
-export function CorpusGraphExplorer({ source, onSelectSearch, initialLineageTarget }: CorpusGraphExplorerProps) {
-  const [tab, setTab] = useState<ExplorerTab>(initialLineageTarget ? 'lineage' : 'surveys');
+export function CorpusGraphExplorer({ source, onSelectSearch, initialGraphFocus }: CorpusGraphExplorerProps) {
+  const [tab, setTab] = useState<ExplorerTab>(initialGraphFocus ? 'lineage' : 'surveys');
   const [surveyFilter, setSurveyFilter] = useState('');
   const [expandedSurvey, setExpandedSurvey] = useState<string | null>('CIS');
 
@@ -323,7 +324,7 @@ export function CorpusGraphExplorer({ source, onSelectSearch, initialLineageTarg
       )}
 
       {/* Tab 3: Published derivation lineage */}
-      {tab === 'lineage' && <CorpusLineage source={source} onSelectSearch={onSelectSearch} initialTarget={initialLineageTarget} />}
+      {tab === 'lineage' && <CorpusLineage source={source} onSelectSearch={onSelectSearch} initialFocus={initialGraphFocus} />}
 
       {/* Tab 4: Thematic Modules */}
       {tab === 'modules' && (

@@ -9,13 +9,19 @@ import { CorpusLineageDiagram } from './CorpusLineageDiagram.js';
 
 const PAGE_SIZE = 20;
 
+export interface CorpusGraphFocus {
+  variable: CorpusLineageTarget;
+  targets: CorpusLineageTarget[];
+}
+
 interface CorpusLineageProps {
   source: SupabaseCorpusSource;
   onSelectSearch?: (query: string, survey?: string) => void;
-  initialTarget?: CorpusLineageTarget | null;
+  initialFocus?: CorpusGraphFocus | null;
 }
 
-export function CorpusLineage({ source, onSelectSearch, initialTarget }: CorpusLineageProps) {
+export function CorpusLineage({ source, onSelectSearch, initialFocus }: CorpusLineageProps) {
+  const initialTarget = initialFocus?.targets[0] ?? initialFocus?.variable ?? null;
   const [query, setQuery] = useState('');
   const [search, setSearch] = useState('');
   const [page, setPage] = useState(0);
@@ -26,10 +32,6 @@ export function CorpusLineage({ source, onSelectSearch, initialTarget }: CorpusL
   const [graphLoading, setGraphLoading] = useState(false);
   const [listError, setListError] = useState<string | null>(null);
   const [graphError, setGraphError] = useState<string | null>(null);
-
-  useEffect(() => {
-    if (initialTarget) setSelected(initialTarget);
-  }, [initialTarget]);
 
   useEffect(() => {
     const timer = window.setTimeout(() => setSearch(query.trim()), 250);
@@ -51,12 +53,12 @@ export function CorpusLineage({ source, onSelectSearch, initialTarget }: CorpusL
       .catch((error: unknown) => {
         if (controller.signal.aborted) return;
         setResults(null);
-        setSelected(null);
+        setSelected(initialTarget);
         setListError(error instanceof Error ? error.message : 'Could not load lineage targets.');
         setListLoading(false);
       });
     return () => controller.abort();
-  }, [source, search, page, initialTarget]);
+  }, [source, search, page, initialTarget?.recordId]);
 
   useEffect(() => {
     if (selected === null) {
@@ -91,6 +93,8 @@ export function CorpusLineage({ source, onSelectSearch, initialTarget }: CorpusL
   }, [edges]);
   const notes = useMemo(() => Array.from(new Set(edges.map((edge) => edge.statcanNote).filter(Boolean))), [edges]);
   const summaries = useMemo(() => Array.from(new Set(edges.map((edge) => edge.expressionSummary).filter((value): value is string => Boolean(value)))), [edges]);
+  const downstreamTargets = initialFocus?.targets.filter((target) => target.recordId !== initialFocus.variable.recordId) ?? [];
+  const hasOwnInputs = initialFocus?.targets.some((target) => target.recordId === initialFocus.variable.recordId) ?? false;
 
   return (
     <section className="kg-pane kg-lineage">
@@ -145,6 +149,30 @@ export function CorpusLineage({ source, onSelectSearch, initialTarget }: CorpusL
         </aside>
 
         <div className="kg-dag-main">
+          {initialFocus && (
+            <div className="kg-dag-card">
+              <strong><code>{initialFocus.variable.name}</code></strong>
+              {initialFocus.targets.length === 0 ? (
+                <p>No verified derivation links are published for this variable yet. Its derived-variable classification alone does not establish an input relationship.</p>
+              ) : (
+                <>
+                  <p>
+                    {hasOwnInputs && 'This variable has verified upstream inputs. '}
+                    {downstreamTargets.length > 0 && `It is a verified input to ${downstreamTargets.length} derived ${downstreamTargets.length === 1 ? 'variable' : 'variables'}. Select one to inspect the flow:`}
+                  </p>
+                  {downstreamTargets.length > 0 && (
+                    <div className="kg-flow__controls">
+                      {initialFocus.targets.map((target) => (
+                        <button key={target.recordId} type="button" className="kg-btn kg-btn--sm" onClick={() => setSelected(target)}>
+                          {target.name} · {target.cycle ?? target.year ?? 'cycle unknown'}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </>
+              )}
+            </div>
+          )}
           {selected === null ? (
             <div className="kg-dag-card">Select a derived variable to inspect its lineage.</div>
           ) : (
@@ -162,8 +190,8 @@ export function CorpusLineage({ source, onSelectSearch, initialTarget }: CorpusL
               </div>
               {graphLoading && <p role="status">Loading upstream links…</p>}
               {graphError && <p className="cs-error" role="alert">{graphError}</p>}
-              {!graphLoading && !graphError && edges.length === 0 && <p>No verified upstream links are available for this variable.</p>}
-              {!graphLoading && edges.length > 0 && <CorpusLineageDiagram key={selected.recordId} target={selected} edges={edges} />}
+              {!graphLoading && !graphError && edges.length === 0 && <p>No verified upstream links are published for this variable.</p>}
+              {!graphLoading && edges.length > 0 && <CorpusLineageDiagram key={selected.recordId} target={selected} edges={edges} highlightRecordId={initialFocus?.variable.recordId} />}
               {!graphLoading && layers.map(([depth, layer]) => (
                 <div className="kg-lineage__layer" key={depth}>
                   <h4>{depth === 1 ? 'Direct inputs' : `Upstream inputs · step ${depth}`} <span>({layer.length})</span></h4>

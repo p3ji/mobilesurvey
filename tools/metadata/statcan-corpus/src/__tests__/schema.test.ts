@@ -264,6 +264,7 @@ describe('sql/derivation_edges.sql', () => {
     const browsingSql = sql.slice(sql.indexOf('-- Browse the verified graph by derived variable.'));
     const statements = pg.parse(browsingSql);
     expect(statements.error == null ? undefined : `${statements.error.message} — ${locate(browsingSql, statements.error.cursorpos)}`).toBeUndefined();
+    expect(sql).toMatch(/create or replace function corpus_get_variable_graph_targets/);
     expect(sql).toMatch(/create or replace function corpus_list_lineage_targets/);
     expect(sql).toMatch(/create or replace function corpus_get_lineage_graph/);
     expect(sql).toMatch(/where e.review_status = 'verified'/);

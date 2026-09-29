@@ -452,6 +452,36 @@ export class SupabaseCorpusSource {
     }));
   }
 
+  /** Derived variables connected to each visible record, whether it is a target or an input. */
+  async variableGraphTargets(recordIds: string[], signal?: AbortSignal): Promise<Map<string, CorpusLineageTarget[]>> {
+    if (recordIds.length === 0) return new Map();
+    const rows = await this.rpc<Array<{
+      root_record_id: string;
+      record_id: string;
+      name: string;
+      label: string;
+      survey_acronym: string | null;
+      cycle: string | null;
+      year: number | null;
+      input_count: number;
+    }>>('corpus_get_variable_graph_targets', { p_record_ids: recordIds }, signal);
+    const byRecord = new Map<string, CorpusLineageTarget[]>();
+    for (const row of rows) {
+      const targets = byRecord.get(row.root_record_id) ?? [];
+      targets.push({
+        recordId: row.record_id,
+        name: row.name,
+        label: row.label,
+        surveyAcronym: row.survey_acronym,
+        cycle: row.cycle,
+        year: row.year,
+        inputCount: row.input_count,
+      });
+      byRecord.set(row.root_record_id, targets);
+    }
+    return byRecord;
+  }
+
   async lineageTargets(query = '', limit = 20, offset = 0, signal?: AbortSignal): Promise<CorpusLineageTargetsPage> {
     const rows = await this.rpc<Array<{
       record_id: string;

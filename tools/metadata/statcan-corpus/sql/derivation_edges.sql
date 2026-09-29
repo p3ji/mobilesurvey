@@ -169,6 +169,53 @@ $$;
 revoke execute on function corpus_get_direct_inputs(uuid[]) from public, authenticated;
 grant execute on function corpus_get_direct_inputs(uuid[]) to anon;
 
+-- For a visible Searcher page, find every verified derived target connected to each variable.
+-- A variable may be the target itself or an input to several different derived variables.
+create or replace function corpus_get_variable_graph_targets(p_record_ids uuid[])
+returns table (
+  root_record_id uuid,
+  record_id uuid,
+  name text,
+  label text,
+  survey_acronym text,
+  cycle text,
+  year integer,
+  input_count integer
+)
+language sql
+stable
+security invoker
+set search_path = public
+as $$
+  with connected as (
+    select e.target_record_id as root_record_id, e.target_record_id
+      from corpus_derivation_edge e
+     where e.target_record_id = any(p_record_ids) and e.review_status = 'verified'
+    union
+    select e.source_record_id as root_record_id, e.target_record_id
+      from corpus_derivation_edge e
+     where e.source_record_id = any(p_record_ids) and e.review_status = 'verified'
+  ), target_counts as (
+    select e.target_record_id, count(*)::integer as input_count
+      from corpus_derivation_edge e
+     where e.review_status = 'verified'
+       and e.target_record_id in (select c.target_record_id from connected c)
+     group by e.target_record_id
+  )
+  select c.root_record_id, v.record_id, v.name,
+         left(coalesce(nullif(btrim(v.concept), ''),
+                       nullif(btrim(v.question_text), ''),
+                       nullif(btrim(v.collection_name), ''), v.name), 220),
+         v.survey_acronym, v.cycle, v.year, tc.input_count
+    from connected c
+    join corpus_variable v on v.record_id = c.target_record_id
+    join target_counts tc on tc.target_record_id = c.target_record_id
+   order by c.root_record_id, tc.input_count desc, v.name, v.record_id;
+$$;
+
+revoke execute on function corpus_get_variable_graph_targets(uuid[]) from public, authenticated;
+grant execute on function corpus_get_variable_graph_targets(uuid[]) to anon;
+
 -- Browse the verified graph by derived variable. The count is over targets, not
 -- individual edges, so pagination never splits one variable's input set.
 create or replace function corpus_list_lineage_targets(

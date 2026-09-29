@@ -119,6 +119,26 @@ function stubFetch(payload: unknown, status = 200) {
 }
 
 describe('SupabaseCorpusSource', () => {
+  it('maps verified graph targets for both derived variables and their inputs', async () => {
+    const fetchImpl = stubFetch([
+      { root_record_id: 'dv-1', record_id: 'dv-1', name: 'BMI', label: 'Body mass index',
+        survey_acronym: 'CCHS', cycle: '2019', year: 2019, input_count: 2 },
+      { root_record_id: 'height-1', record_id: 'dv-1', name: 'BMI', label: 'Body mass index',
+        survey_acronym: 'CCHS', cycle: '2019', year: 2019, input_count: 2 },
+      { root_record_id: 'height-1', record_id: 'dv-2', name: 'BMR', label: 'Basal metabolic rate',
+        survey_acronym: 'CCHS', cycle: '2019', year: 2019, input_count: 3 },
+    ]);
+    const source = new SupabaseCorpusSource({ url: 'https://p.supabase.co', anonKey: 'a', fetchImpl });
+    const connected = await source.variableGraphTargets(['dv-1', 'height-1']);
+    expect(connected.get('dv-1')?.[0]?.recordId).toBe('dv-1');
+    expect(connected.get('height-1')?.map((target) => target.name)).toEqual(['BMI', 'BMR']);
+    const [url, init] = (fetchImpl as unknown as ReturnType<typeof vi.fn>).mock.calls[0] as [string, RequestInit];
+    expect(url).toBe('https://p.supabase.co/rest/v1/rpc/corpus_get_variable_graph_targets');
+    expect(JSON.parse(init.body as string)).toEqual({ p_record_ids: ['dv-1', 'height-1'] });
+    expect(await source.variableGraphTargets([])).toEqual(new Map());
+    expect(fetchImpl).toHaveBeenCalledTimes(1);
+  });
+
   it('resolves a variable to its exact concept without relying on a text search', async () => {
     const memberships = stubFetch([{ record_id: 'record-1', conceptual_variable_id: 'cv-1' }]);
     const source = new SupabaseCorpusSource({ url: 'https://p.supabase.co', anonKey: 'a', fetchImpl: memberships });

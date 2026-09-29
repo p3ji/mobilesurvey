@@ -554,7 +554,7 @@ dictionary, and opening a citation should not move six megabytes to show one scr
 Apply `tools/metadata/statcan-corpus/sql/derivation_edges.sql` after the corpus variables are
 loaded. It creates the lineage table, a unique key on target occurrence and normalized source
 name, read access for verified links, the bounded `corpus_get_upstream_lineage` RPC, and
-`corpus_get_direct_inputs` for one Searcher results page. Searcher renders these database links
+`corpus_get_direct_inputs` and `corpus_get_variable_graph_targets` for one Searcher results page. Searcher renders these database links
 with their AI attribution and source note; it does not present names guessed from prose as links.
 
 With a locally audited `out/derivation_queue.db`, generate the import SQL:

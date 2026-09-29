@@ -11,6 +11,7 @@ const HEADER_HEIGHT = 46;
 
 interface DiagramNode {
   key: string;
+  recordId: string;
   name: string;
   label: string;
   depth: number;
@@ -42,7 +43,7 @@ function layout(root: CorpusLineageTarget, edges: CorpusLineageEdge[]) {
       if (existing.label === existing.name && label !== name) existing.label = label;
       return existing;
     }
-    const node: DiagramNode = { key, name, label, depth, x: 0, y: 0 };
+    const node: DiagramNode = { key, recordId: id, name, label, depth, x: 0, y: 0 };
     nodes.set(key, node);
     columns[depth]!.push(node);
     return node;
@@ -98,8 +99,12 @@ function shortLabel(label: string, name: string): string {
   return label.length > 31 ? `${label.slice(0, 28)}…` : label;
 }
 
-export function CorpusLineageDiagram({ target, edges }: { target: CorpusLineageTarget; edges: CorpusLineageEdge[] }) {
-  const [page, setPage] = useState(0);
+export function CorpusLineageDiagram({ target, edges, highlightRecordId }: { target: CorpusLineageTarget; edges: CorpusLineageEdge[]; highlightRecordId?: string }) {
+  const [page, setPage] = useState(() => {
+    const directIndex = edges.filter((edge) => edge.depth === 1)
+      .findIndex((edge) => edge.sourceRecordId === highlightRecordId);
+    return directIndex < 0 ? 0 : Math.floor(directIndex / DIRECT_INPUTS_PER_VIEW);
+  });
   const [showAll, setShowAll] = useState(false);
   const viewport = useRef<HTMLDivElement>(null);
   const graph = useMemo(() => visibleGraph(edges, page, showAll), [edges, page, showAll]);
@@ -161,7 +166,7 @@ export function CorpusLineageDiagram({ target, edges }: { target: CorpusLineageT
           {diagram.columns.flat().map((node) => (
             <g key={node.key}>
               <title>{node.name}: {node.label}</title>
-              <rect x={node.x} y={node.y} width={NODE_WIDTH} height={NODE_HEIGHT} rx="5" fill={node.depth === 0 ? '#eff6ff' : '#f8fafc'} stroke={node.depth === 0 ? '#3b82f6' : '#94a3b8'} strokeWidth={node.depth === 0 ? 2 : 1.3} />
+              <rect x={node.x} y={node.y} width={NODE_WIDTH} height={NODE_HEIGHT} rx="5" fill={node.recordId === highlightRecordId && node.depth > 0 ? '#fef3c7' : node.depth === 0 ? '#eff6ff' : '#f8fafc'} stroke={node.recordId === highlightRecordId && node.depth > 0 ? '#d97706' : node.depth === 0 ? '#3b82f6' : '#94a3b8'} strokeWidth={node.depth === 0 || node.recordId === highlightRecordId ? 2 : 1.3} />
               <text x={node.x + 10} y={node.y + 22} fill={node.depth === 0 ? '#1e40af' : '#0f172a'} fontSize="12" fontWeight="700" fontFamily="monospace">{node.name}</text>
               <text x={node.x + 10} y={node.y + 43} fill="#475569" fontSize="9.5">{shortLabel(node.label, node.name)}</text>
             </g>

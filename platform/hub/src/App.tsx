@@ -37,7 +37,7 @@ import { draftRulesFromAnnotation, explainFlag, llmConfigured } from './validato
 import { CorpusSearch } from './CorpusSearch.js';
 import { CorpusConcepts } from './CorpusConcepts.js';
 import { CorpusGraphExplorer } from './CorpusGraphExplorer.js';
-import type { CorpusLineageTarget } from '@mobilesurvey/metadata-registry';
+import type { CorpusGraphFocus } from './CorpusLineage.js';
 import {
   corpusSource,
   createSurvey,
@@ -1042,7 +1042,7 @@ function SearcherView({ onBack }: { onBack: () => void }) {
   const [corpusQuery, setCorpusQuery] = useState('');
   const [corpusSurvey, setCorpusSurvey] = useState('all');
   const [conceptId, setConceptId] = useState<string | null>(null);
-  const [lineageTarget, setLineageTarget] = useState<CorpusLineageTarget | null>(null);
+  const [graphFocus, setGraphFocus] = useState<CorpusGraphFocus | null>(null);
 
   return (
     <div className="hub">
@@ -1087,7 +1087,7 @@ function SearcherView({ onBack }: { onBack: () => void }) {
                 role="tab"
                 aria-selected={scope === 'graph'}
                 className={`sr-scope ${scope === 'graph' ? 'sr-scope--active' : ''}`}
-                onClick={() => { setLineageTarget(null); setScope('graph'); }}
+                onClick={() => { setGraphFocus(null); setScope('graph'); }}
               >
                 Knowledge Graph
               </button>
@@ -1103,14 +1103,14 @@ function SearcherView({ onBack }: { onBack: () => void }) {
                   setCorpusSurvey(survey);
                 }}
                 onOpenConcept={(id) => { setConceptId(id); setScope('concepts'); }}
-                onOpenGraph={(target) => { setLineageTarget(target); setScope('graph'); }}
+                onOpenGraph={(focus) => { setGraphFocus(focus); setScope('graph'); }}
               />
             ) : scope === 'concepts' ? (
               <CorpusConcepts source={corpus} initialConceptId={conceptId} />
             ) : (
               <CorpusGraphExplorer
                 source={corpus}
-                initialLineageTarget={lineageTarget}
+                initialGraphFocus={graphFocus}
                 onSelectSearch={(q, survey) => {
                   setCorpusQuery(q);
                   setCorpusSurvey(survey ?? 'all');

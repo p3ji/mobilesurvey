@@ -35,6 +35,7 @@ import { CorpusDocumentReader } from './CorpusDocument.js';
 import { CorpusSubjects } from './CorpusSubjects.js';
 import { classifyHit } from './graphClassifier.js';
 import { groupCorpusHits } from './groupCorpusHits.js';
+import type { CorpusGraphFocus } from './CorpusLineage.js';
 
 const DEBOUNCE_MS = 250;
 const PAGE_SIZE = 25;
@@ -135,6 +136,7 @@ function Suggestions({
 function CorpusHit({
   hit,
   inputs,
+  graphTargets,
   onOpen,
   onSelectVar,
   conceptId,
@@ -143,11 +145,12 @@ function CorpusHit({
 }: {
   hit: SearchHit;
   inputs: CorpusDirectInput[];
+  graphTargets: CorpusLineageTarget[];
   onOpen: () => void;
   onSelectVar?: (name: string) => void;
   conceptId?: string;
   onOpenConcept?: (id: string) => void;
-  onOpenGraph?: (target: CorpusLineageTarget) => void;
+  onOpenGraph?: (focus: CorpusGraphFocus) => void;
 }) {
   const meta = hit.entry.corpus as CorpusMeta | undefined;
   if (meta === undefined) return null;
@@ -227,22 +230,25 @@ function CorpusHit({
 
       <CodeList codes={meta.codes} />
 
-      {(conceptId !== undefined || inputs.length > 0) && (
+      {(conceptId !== undefined || classification.role === 'derived' || graphTargets.length > 0) && (
         <div className="cs-hit__connections">
           {conceptId !== undefined && (
             <button type="button" className="cs-link" onClick={() => onOpenConcept?.(conceptId)}>
               View concept over time ↗
             </button>
           )}
-          {inputs.length > 0 && (
+          {(classification.role === 'derived' || graphTargets.length > 0) && (
             <button type="button" className="cs-link" onClick={() => onOpenGraph?.({
-              recordId: hit.entry.entryId,
-              name: meta.variableName,
-              label,
-              surveyAcronym: meta.surveyAcronym ?? null,
-              cycle: meta.cycle ?? null,
-              year: meta.year ?? null,
-              inputCount: inputs.length,
+              variable: {
+                recordId: hit.entry.entryId,
+                name: meta.variableName,
+                label,
+                surveyAcronym: meta.surveyAcronym ?? null,
+                cycle: meta.cycle ?? null,
+                year: meta.year ?? null,
+                inputCount: inputs.length,
+              },
+              targets: graphTargets,
             })}>
               View derivation graph ↗
             </button>
@@ -268,7 +274,7 @@ export interface CorpusSearchProps {
   initialSurvey?: string;
   onSearchStateChange?: (query: string, survey: string) => void;
   onOpenConcept?: (id: string) => void;
-  onOpenGraph?: (target: CorpusLineageTarget) => void;
+  onOpenGraph?: (focus: CorpusGraphFocus) => void;
 }
 
 export function CorpusSearch({
@@ -294,6 +300,8 @@ export function CorpusSearch({
 
   const [hits, setHits] = useState<SearchHit[]>([]);
   const [directInputs, setDirectInputs] = useState<CorpusDirectInput[]>([]);
+  const [graphTargets, setGraphTargets] = useState<Map<string, CorpusLineageTarget[]>>(new Map());
+  const [graphError, setGraphError] = useState(false);
   const [clusters, setClusters] = useState<Map<string, string>>(new Map());
   const [lineageError, setLineageError] = useState(false);
   const [total, setTotal] = useState(0);
@@ -477,6 +485,18 @@ export function CorpusSearch({
     source.directInputs(recordIds, controller.signal)
       .then((inputs) => { if (!controller.signal.aborted) setDirectInputs(inputs); })
       .catch(() => { if (!controller.signal.aborted) setLineageError(true); });
+    return () => controller.abort();
+  }, [source, hits]);
+
+  useEffect(() => {
+    const recordIds = hits.map((hit) => hit.entry.entryId);
+    setGraphTargets(new Map());
+    setGraphError(false);
+    if (recordIds.length === 0) return;
+    const controller = new AbortController();
+    source.variableGraphTargets(recordIds, controller.signal)
+      .then((targets) => { if (!controller.signal.aborted) setGraphTargets(targets); })
+      .catch(() => { if (!controller.signal.aborted) setGraphError(true); });
     return () => controller.abort();
   }, [source, hits]);
 
@@ -671,6 +691,10 @@ export function CorpusSearch({
             <p className="cs-suggest">Linked inputs are temporarily unavailable; search results still work.</p>
           )}
 
+          {graphError && hits.length > 0 && (
+            <p className="cs-suggest">Graph connections are temporarily unavailable; derived variables can still open the graph view.</p>
+          )}
+
           <div className="sr-results">
             {groupedHits.map((group) => (
               <div className="cs-result-group" key={group.hits[0]!.entry.entryId}>
@@ -682,6 +706,7 @@ export function CorpusSearch({
                 <CorpusHit
                   hit={group.hits[0]!}
                   inputs={inputsByTarget.get(group.hits[0]!.entry.entryId) ?? []}
+                  graphTargets={graphTargets.get(group.hits[0]!.entry.entryId) ?? []}
                   conceptId={clusters.get(group.hits[0]!.entry.entryId)}
                   onOpenConcept={onOpenConcept}
                   onOpenGraph={onOpenGraph}
@@ -699,6 +724,7 @@ export function CorpusSearch({
                         key={hit.entry.entryId}
                         hit={hit}
                         inputs={inputsByTarget.get(hit.entry.entryId) ?? []}
+                        graphTargets={graphTargets.get(hit.entry.entryId) ?? []}
                         conceptId={clusters.get(hit.entry.entryId)}
                         onOpenConcept={onOpenConcept}
                         onOpenGraph={onOpenGraph}
