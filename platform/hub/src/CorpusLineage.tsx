@@ -5,6 +5,7 @@ import type {
   CorpusLineageTargetsPage,
   SupabaseCorpusSource,
 } from '@mobilesurvey/metadata-registry';
+import { CorpusLineageDiagram } from './CorpusLineageDiagram.js';
 
 const PAGE_SIZE = 20;
 
@@ -155,6 +156,7 @@ export function CorpusLineage({ source, onSelectSearch }: CorpusLineageProps) {
               {graphLoading && <p role="status">Loading upstream links…</p>}
               {graphError && <p className="cs-error" role="alert">{graphError}</p>}
               {!graphLoading && !graphError && edges.length === 0 && <p>No verified upstream links are available for this variable.</p>}
+              {!graphLoading && edges.length > 0 && <CorpusLineageDiagram key={selected.recordId} target={selected} edges={edges} />}
               {!graphLoading && layers.map(([depth, layer]) => (
                 <div className="kg-lineage__layer" key={depth}>
                   <h4>{depth === 1 ? 'Direct inputs' : `Upstream inputs · step ${depth}`} <span>({layer.length})</span></h4>

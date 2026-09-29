@@ -2005,9 +2005,10 @@ code { font-family: var(--mono); font-size: 0.88em; }
 }
 .kg-dag-layout {
   display: grid;
-  grid-template-columns: 280px 1fr;
+  grid-template-columns: 280px minmax(0, 1fr);
   gap: 20px;
 }
+.kg-dag-main { min-width: 0; }
 .kg-dag-sidebar {
   border: 1px solid var(--line);
   border-radius: 6px;
@@ -2078,6 +2079,7 @@ code { font-family: var(--mono); font-size: 0.88em; }
   display: flex;
   flex-direction: column;
   gap: 16px;
+  min-width: 0;
 }
 .kg-dag-card__header {
   display: flex;
@@ -2100,10 +2102,44 @@ code { font-family: var(--mono); font-size: 0.88em; }
   background: #ffffff;
   padding: 14px;
 }
-.kg-dag-svg {
-  width: 100%;
-  height: auto;
-  max-height: 260px;
+.kg-flow {
+  padding: 0;
+  min-width: 0;
+}
+.kg-flow__toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding: 11px 14px;
+}
+.kg-flow__toolbar > div:first-child {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.kg-flow__toolbar strong {
+  font-size: 13px;
+  color: var(--ink);
+}
+.kg-flow__toolbar span {
+  font-size: 11px;
+  color: var(--ink-soft);
+}
+.kg-flow__controls {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 7px;
+}
+.kg-flow__viewport {
+  max-height: 640px;
+  overflow: auto;
+  border-top: 1px solid #e2e8f0;
+}
+.kg-flow__viewport svg {
+  display: block;
 }
 .kg-dag-evidence {
   background: #f8fafc;
