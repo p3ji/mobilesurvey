@@ -19,7 +19,7 @@
 import { readFileSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { beforeAll, describe, expect, it } from 'vitest';
+import { beforeAll, beforeEach, describe, expect, it } from 'vitest';
 import PgQueryModule from 'pg-query-emscripten';
 
 const SCHEMA_PATH = path.resolve(
@@ -51,8 +51,11 @@ function statementKinds(result: ParseResult): Record<string, number> {
   return counts;
 }
 
-beforeAll(async () => {
+beforeEach(async () => {
   pg = await PgQueryModule();
+});
+
+beforeAll(() => {
   schema = readFileSync(SCHEMA_PATH, 'utf8');
 });
 

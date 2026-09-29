@@ -11,9 +11,14 @@ each result page without changing paging or citations.
 | `AI` | 158 | 221 | 63 |
 | `artificial intelligence` | 142 | 149 | 7 |
 | `remote work` | 2 | 69 | 67 |
+| `crypto` | 2 | 7 | 5 |
+| `cryptocurrency` | 5 | 7 | 2 |
+| `crypto payment` | 2 | 4 | 2 |
+| `cryptocurrency payment` | 2 | 4 | 2 |
+| `bitcoin` | 1 | 6 | 5 |
 
 `AI` is expanded to `artificial intelligence`; the reverse alias is also present. `remote work`
-expands to `telework`. Exact-term matches keep full rank; alias matches get one quarter of the
+expands to `telework`. `crypto` and `cryptocurrency` are cross-aliased alongside hyphenated and payment variants (`bitcoin` also expands to `cryptocurrency`). Exact-term matches keep full rank; alias matches get one quarter of the
 rank. Search still uses the existing GIN full-text index. The first 15 newly found `AI` records
 were inspected and included CIUS artificial-intelligence application columns and SAT/SDTIU
 technology variables. The first telework records included location and use questions. This is a

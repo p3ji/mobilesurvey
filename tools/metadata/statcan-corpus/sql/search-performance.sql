@@ -13,7 +13,19 @@ grant select, insert, update, delete on corpus_search_alias to service_role;
 insert into corpus_search_alias (query, expansion) values
   ('ai', 'artificial intelligence'),
   ('artificial intelligence', 'AI'),
-  ('remote work', 'telework')
+  ('remote work', 'telework'),
+  ('crypto', 'cryptocurrency'),
+  ('cryptocurrency', 'crypto'),
+  ('cryptocurrencies', 'crypto'),
+  ('crypto currency', 'cryptocurrency'),
+  ('crypto-currency', 'cryptocurrency'),
+  ('crypto payment', 'cryptocurrency payment'),
+  ('cryptocurrency payment', 'crypto payment'),
+  ('crypto payments', 'cryptocurrency payments'),
+  ('cryptocurrency payments', 'crypto payments'),
+  ('crypto ransom', 'cryptocurrency ransom'),
+  ('cryptocurrency ransom', 'crypto ransom'),
+  ('bitcoin', 'cryptocurrency')
 on conflict (query) do update set expansion = excluded.expansion;
 
 -- The original 9-argument RPC remains the client contract. Exact wording keeps full rank;
