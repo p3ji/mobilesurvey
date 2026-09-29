@@ -1,7 +1,11 @@
-# StatCan survey → subject mapping. EDIT THE `subjects` COLUMN (the last one).
+# StatCan survey → subject mapping. EDIT THE `subjects` COLUMN (6th field).
 #
-# The taxonomy is Statistics Canada’s, captured from their subject facet. The assignment is
-# ours and is not published anywhere fetchable, so this file is the source of truth for it.
+# The taxonomy is Statistics Canada’s, captured from their subject facet. Where a program appears
+# in the data portal's Subject facet, its tags are StatCan's own: crawled 2026-09-29 from
+# www150.statcan.gc.ca/n1/en/type/data?subject_levels=N (exact program-name match). The remaining
+# ~58 groups (RDC/admin-data files the portal does not list as data programs — LSIC, APS, LISA,
+# CAF*, SGVP, vital-statistics databases…) are hand-assigned from each file's own data-dictionary
+# title and how StatCan tags sibling programs. This file is the source of truth for all of it.
 #
 # Format: pipe-separate multiple subjects, e.g.  Health|Children and youth
 #         leave blank to leave a survey unclassified (shown as unclassified, not guessed).
