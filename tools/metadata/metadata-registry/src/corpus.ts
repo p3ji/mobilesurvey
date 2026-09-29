@@ -201,6 +201,7 @@ export interface CorpusFilters {
 export interface CorpusSearchOptions extends CorpusFilters {
   limit?: number;
   offset?: number;
+  sort?: 'relevance' | 'recent';
   signal?: AbortSignal;
 }
 
@@ -220,6 +221,8 @@ export interface CorpusDirectInput {
   derivationType: string;
   expressionSummary: string | null;
   statcanNote: string;
+  reviewStatus?: 'verified' | 'needs_review';
+  confidence?: number;
 }
 
 /** One derived variable with published, verified input links. */
@@ -400,7 +403,7 @@ export class SupabaseCorpusSource {
     if (trimmed === '') return { hits: [], total: 0 };
 
     const rows = await this.rpc<CorpusSearchRow[]>(
-      'corpus_search',
+      options.sort === 'recent' ? 'corpus_search_sorted' : 'corpus_search',
       {
         q: trimmed,
         lang_filter: options.lang ?? null,
@@ -409,6 +412,7 @@ export class SupabaseCorpusSource {
         year_max: options.yearMax ?? null,
         require_codes: options.hasCodes ?? null,
         subject_filter: options.subject ?? null,
+        ...(options.sort === 'recent' ? { sort_mode: 'recent' } : {}),
         max_rows: options.limit ?? 50,
         row_offset: options.offset ?? 0,
       },
@@ -439,6 +443,8 @@ export class SupabaseCorpusSource {
       derivation_type: string;
       ai_expression_summary: string | null;
       statcan_verbatim_note: string;
+      review_status?: CorpusDirectInput['reviewStatus'];
+      confidence?: number;
     }>>('corpus_get_direct_inputs', { p_target_record_ids: targetRecordIds }, signal);
     return rows.map((row) => ({
       edgeId: row.edge_id,
@@ -449,6 +455,8 @@ export class SupabaseCorpusSource {
       derivationType: row.derivation_type,
       expressionSummary: row.ai_expression_summary,
       statcanNote: row.statcan_verbatim_note,
+      ...(row.review_status === undefined ? {} : { reviewStatus: row.review_status }),
+      ...(row.confidence === undefined ? {} : { confidence: row.confidence }),
     }));
   }
 
@@ -525,6 +533,8 @@ export class SupabaseCorpusSource {
       derivation_type: string;
       ai_expression_summary: string | null;
       statcan_verbatim_note: string;
+      review_status?: CorpusLineageEdge['reviewStatus'];
+      confidence?: number;
       depth: number;
     }>>('corpus_get_lineage_graph', {
       p_root_record_id: rootRecordId,
@@ -541,6 +551,8 @@ export class SupabaseCorpusSource {
       derivationType: row.derivation_type,
       expressionSummary: row.ai_expression_summary,
       statcanNote: row.statcan_verbatim_note,
+      ...(row.review_status === undefined ? {} : { reviewStatus: row.review_status }),
+      ...(row.confidence === undefined ? {} : { confidence: row.confidence }),
       depth: row.depth,
     }));
   }

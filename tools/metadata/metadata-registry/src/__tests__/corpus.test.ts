@@ -255,6 +255,15 @@ describe('SupabaseCorpusSource', () => {
     expect(fetchImpl).not.toHaveBeenCalled();
   });
 
+  it('requests database-wide newest-first ordering before pagination', async () => {
+    const fetchImpl = stubFetch([]);
+    const source = new SupabaseCorpusSource({ url: 'https://p.supabase.co', anonKey: 'a', fetchImpl });
+    await source.search('education', { sort: 'recent', limit: 25, offset: 25 });
+    const [url, init] = (fetchImpl as unknown as ReturnType<typeof vi.fn>).mock.calls[0] as [string, RequestInit];
+    expect(url).toBe('https://p.supabase.co/rest/v1/rpc/corpus_search_sorted');
+    expect(JSON.parse(init.body as string)).toMatchObject({ q: 'education', sort_mode: 'recent', max_rows: 25, row_offset: 25 });
+  });
+
   it('reads the total from the window function, not from the page length', async () => {
     // The page holds 1 row; there are 137 matches. Reporting `hits.length` would tell the user
     // their search found one result.

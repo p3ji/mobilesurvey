@@ -21,7 +21,8 @@
     "corpus:lexicon": "tsx src/cli.ts lexicon",
     "corpus:subjects": "tsx src/cli.ts subjects",
     "corpus:queue": "tsx src/graph/queue.ts",
-    "corpus:review": "tsx src/graph/reviewer.ts"
+    "corpus:review": "tsx src/graph/reviewer.ts",
+    "corpus:grouped": "tsx src/graph/grouped.ts"
   },
   "dependencies": {
     "@mobilesurvey/ddi-xml": "workspace:*",

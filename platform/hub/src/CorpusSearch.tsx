@@ -33,8 +33,9 @@ import {
 } from '@mobilesurvey/metadata-registry';
 import { CorpusDocumentReader } from './CorpusDocument.js';
 import { CorpusSubjects } from './CorpusSubjects.js';
+import { expandCorpusQuery } from './corpusAiSearch.js';
 import { classifyHit } from './graphClassifier.js';
-import { groupCorpusHits } from './groupCorpusHits.js';
+import { groupCorpusHits, type CorpusHitGroup } from './groupCorpusHits.js';
 import type { CorpusGraphFocus } from './CorpusLineage.js';
 
 const DEBOUNCE_MS = 250;
@@ -196,7 +197,7 @@ function CorpusHit({
 
       {inputs.length > 0 && (
         <div className="cs-hit__lineage">
-          <span className="cs-hit__lineage-label">Linked inputs · AI inferred:</span>
+          <span className="cs-hit__lineage-label">Inputs linked from source notes:</span>
           {inputs.map((input) => (
             <button
               key={input.edgeId}
@@ -230,13 +231,13 @@ function CorpusHit({
 
       <CodeList codes={meta.codes} />
 
-      <div className="cs-hit__connections">
+      {(conceptId !== undefined || graphTargets.length > 0) && <div className="cs-hit__connections">
         {conceptId !== undefined && (
           <button type="button" className="cs-link" onClick={() => onOpenConcept?.(conceptId)}>
             View concept over time ↗
           </button>
         )}
-          <button type="button" className="cs-link" onClick={() => onOpenGraph?.({
+        {graphTargets.length > 0 && <button type="button" className="cs-link" onClick={() => onOpenGraph?.({
             variable: {
               recordId: hit.entry.entryId,
               name: meta.variableName,
@@ -249,8 +250,8 @@ function CorpusHit({
             targets: graphTargets,
           })}>
           View derivation graph ↗
-        </button>
-      </div>
+        </button>}
+      </div>}
 
       <p className="cs-hit__cite" title={meta.file}>
         {meta.citation}
@@ -285,6 +286,7 @@ export function CorpusSearch({
   const [debounced, setDebounced] = useState(initialQuery);
   const [lang, setLang] = useState<LangFilter>('all');
   const [survey, setSurvey] = useState<string>(initialSurvey);
+  const [sortBy, setSortBy] = useState<'relevance' | 'recent'>('relevance');
   const [roleFilter, setRoleFilter] = useState<'all' | 'collected' | 'derived' | 'administrative'>('all');
   const [hideProcess, setHideProcess] = useState(true);
   const [codesOnly, setCodesOnly] = useState(false);
@@ -295,6 +297,13 @@ export function CorpusSearch({
   );
 
   const [hits, setHits] = useState<SearchHit[]>([]);
+  const [aiEnabled, setAiEnabled] = useState(false);
+  const [aiHits, setAiHits] = useState<SearchHit[]>([]);
+  const [aiTerms, setAiTerms] = useState<string[]>([]);
+  const [aiQuery, setAiQuery] = useState<string | null>(null);
+  const [aiBusy, setAiBusy] = useState(false);
+  const [aiError, setAiError] = useState<string | null>(null);
+  const aiController = useRef<AbortController | null>(null);
   const [directInputs, setDirectInputs] = useState<CorpusDirectInput[]>([]);
   const [graphTargets, setGraphTargets] = useState<Map<string, CorpusLineageTarget[]>>(new Map());
   const [graphError, setGraphError] = useState(false);
@@ -366,19 +375,40 @@ export function CorpusSearch({
     }
   }, [initialSurvey]);
 
-  useEffect(() => setPage(0), [lang, survey, codesOnly, subject, roleFilter, hideProcess]);
+  useEffect(() => setPage(0), [lang, survey, codesOnly, subject, roleFilter, hideProcess, sortBy]);
+
+  useEffect(() => {
+    aiController.current?.abort();
+    setAiHits([]);
+    setAiTerms([]);
+    setAiQuery(null);
+    setAiBusy(false);
+    setAiError(null);
+  }, [query, lang, survey, codesOnly, subject, sortBy]);
+
+  const showHit = (hit: SearchHit) => {
+    const meta = hit.entry.corpus as CorpusMeta | undefined;
+    if (!meta) return true;
+    const classification = classifyHit(meta);
+    return !(hideProcess && classification.role === 'process') &&
+      (roleFilter === 'all' || classification.role === roleFilter);
+  };
 
   const displayedHits = useMemo(() => {
-    return hits.filter((h) => {
-      const m = h.entry.corpus as CorpusMeta | undefined;
-      if (!m) return true;
-      const c = classifyHit(m);
-      if (hideProcess && c.role === 'process') return false;
-      if (roleFilter !== 'all' && c.role !== roleFilter) return false;
-      return true;
-    });
+    return hits.filter(showHit);
   }, [hits, hideProcess, roleFilter]);
   const groupedHits = useMemo(() => groupCorpusHits(displayedHits), [displayedHits]);
+  const aiDisplayedHits = useMemo(() => {
+    const keywordIds = new Set(hits.map((hit) => hit.entry.entryId));
+    return aiHits.filter((hit) => !keywordIds.has(hit.entry.entryId) && showHit(hit));
+  }, [aiHits, hits, hideProcess, roleFilter]);
+  const aiGroupedHits = useMemo(() => groupCorpusHits(aiDisplayedHits), [aiDisplayedHits]);
+  const sortedSurveys = useMemo(() => [...surveys].sort((a, b) => {
+    const nameA = a.surveyAcronym ?? a.surveyGroup;
+    const nameB = b.surveyAcronym ?? b.surveyGroup;
+    return nameA.localeCompare(nameB, 'en-CA', { numeric: true }) ||
+      a.surveyGroup.localeCompare(b.surveyGroup, 'en-CA', { numeric: true });
+  }), [surveys]);
   const inputsByTarget = useMemo(() => {
     const byTarget = new Map<string, CorpusDirectInput[]>();
     for (const input of directInputs) {
@@ -421,6 +451,7 @@ export function CorpusSearch({
     (async () => {
       try {
         const result = await source.search(debounced, {
+          sort: sortBy,
           ...(lang === 'all' ? {} : { lang }),
           ...(survey === 'all' ? {} : { survey }),
           ...(codesOnly ? { hasCodes: true } : {}),
@@ -436,6 +467,7 @@ export function CorpusSearch({
           const [best] = await source.suggest(debounced, { limit: 1, signal: controller.signal });
           if (best !== undefined) {
             const retry = await source.search(best.term, {
+              sort: sortBy,
               ...(lang === 'all' ? {} : { lang }),
               ...(survey === 'all' ? {} : { survey }),
               ...(codesOnly ? { hasCodes: true } : {}),
@@ -470,10 +502,10 @@ export function CorpusSearch({
       }
     })();
     return () => controller.abort();
-  }, [source, debounced, lang, survey, codesOnly, subject, page, literal]);
+  }, [source, debounced, lang, survey, codesOnly, subject, page, literal, sortBy]);
 
   useEffect(() => {
-    const recordIds = hits.map((hit) => hit.entry.entryId);
+    const recordIds = [...hits, ...aiHits].map((hit) => hit.entry.entryId);
     setDirectInputs([]);
     setLineageError(false);
     if (recordIds.length === 0) return;
@@ -482,10 +514,10 @@ export function CorpusSearch({
       .then((inputs) => { if (!controller.signal.aborted) setDirectInputs(inputs); })
       .catch(() => { if (!controller.signal.aborted) setLineageError(true); });
     return () => controller.abort();
-  }, [source, hits]);
+  }, [source, hits, aiHits]);
 
   useEffect(() => {
-    const recordIds = hits.map((hit) => hit.entry.entryId);
+    const recordIds = [...hits, ...aiHits].map((hit) => hit.entry.entryId);
     setGraphTargets(new Map());
     setGraphError(false);
     if (recordIds.length === 0) return;
@@ -494,10 +526,10 @@ export function CorpusSearch({
       .then((targets) => { if (!controller.signal.aborted) setGraphTargets(targets); })
       .catch(() => { if (!controller.signal.aborted) setGraphError(true); });
     return () => controller.abort();
-  }, [source, hits]);
+  }, [source, hits, aiHits]);
 
   useEffect(() => {
-    const recordIds = hits.map((hit) => hit.entry.entryId);
+    const recordIds = [...hits, ...aiHits].map((hit) => hit.entry.entryId);
     setClusters(new Map());
     if (recordIds.length === 0) return;
     const controller = new AbortController();
@@ -505,7 +537,7 @@ export function CorpusSearch({
       .then((memberships) => { if (!controller.signal.aborted) setClusters(memberships); })
       .catch(() => { /* Search remains usable if concept metadata is unavailable. */ });
     return () => controller.abort();
-  }, [source, hits]);
+  }, [source, hits, aiHits]);
 
   const pages = Math.ceil(total / PAGE_SIZE);
   const summary = useMemo(() => {
@@ -519,6 +551,103 @@ export function CorpusSearch({
     setQuery(term);
     inputRef.current?.focus();
   }, []);
+
+  const runAiSearch = async () => {
+    const phrase = query.replace(/\s+/g, ' ').trim();
+    if (phrase.length < 3) {
+      setAiError('Enter at least three characters before enhancing the search.');
+      return;
+    }
+    aiController.current?.abort();
+    const controller = new AbortController();
+    aiController.current = controller;
+    setAiBusy(true);
+    setAiError(null);
+    setAiHits([]);
+    setAiTerms([]);
+    setAiQuery(null);
+    try {
+      const terms = await expandCorpusQuery(phrase, controller.signal);
+      const searches = await Promise.all(terms.map((term) => source.search(term, {
+        sort: sortBy,
+        ...(lang === 'all' ? {} : { lang }),
+        ...(survey === 'all' ? {} : { survey }),
+        ...(codesOnly ? { hasCodes: true } : {}),
+        ...(subject === null ? {} : { subject }),
+        limit: 12,
+        signal: controller.signal,
+      })));
+      if (controller.signal.aborted) return;
+      const seen = new Set<string>();
+      const related = searches.flatMap((result) => result.hits).filter((hit) => {
+        if (seen.has(hit.entry.entryId)) return false;
+        seen.add(hit.entry.entryId);
+        return true;
+      }).sort((a, b) => sortBy === 'recent'
+        ? ((b.entry.corpus?.year ?? -Infinity) - (a.entry.corpus?.year ?? -Infinity)) || b.score - a.score
+        : 0).slice(0, PAGE_SIZE);
+      setAiTerms(terms);
+      setAiHits(related);
+      setAiQuery(phrase);
+    } catch (error) {
+      if (!controller.signal.aborted) {
+        setAiError(error instanceof Error ? error.message : 'AI search is temporarily unavailable.');
+      }
+    } finally {
+      if (!controller.signal.aborted) setAiBusy(false);
+    }
+  };
+
+  const renderGroup = (group: CorpusHitGroup) => (
+    <div className="cs-result-group" key={group.hits[0]!.entry.entryId}>
+      {group.hits.length > 1 && (
+        <p className="cs-result-group__label">
+          Same question · {group.hits.length} variable columns on this page
+        </p>
+      )}
+      {group.hits.map((hit, index) => {
+        const card = (
+          <CorpusHit
+            key={hit.entry.entryId}
+            hit={hit}
+            inputs={inputsByTarget.get(hit.entry.entryId) ?? []}
+            graphTargets={graphTargets.get(hit.entry.entryId) ?? []}
+            conceptId={clusters.get(hit.entry.entryId)}
+            onOpenConcept={onOpenConcept}
+            onOpenGraph={onOpenGraph}
+            onOpen={() => {
+              const meta = hit.entry.corpus;
+              if (meta !== undefined) setReading({ bundle: meta.bundle, path: meta.file, page: meta.page });
+            }}
+            onSelectVar={(name) => { setQuery(name); setDebounced(name); inputRef.current?.focus(); }}
+          />
+        );
+        if (index === 0) return card;
+        if (index === 1) return (
+          <details className="cs-result-group__more" key={`more-${group.hits[0]!.entry.entryId}`}>
+            <summary>Show {group.hits.length - 1} related variable{group.hits.length === 2 ? '' : 's'}</summary>
+            {group.hits.slice(1).map((relatedHit) => (
+              <CorpusHit
+                key={relatedHit.entry.entryId}
+                hit={relatedHit}
+                inputs={inputsByTarget.get(relatedHit.entry.entryId) ?? []}
+                graphTargets={graphTargets.get(relatedHit.entry.entryId) ?? []}
+                conceptId={clusters.get(relatedHit.entry.entryId)}
+                onOpenConcept={onOpenConcept}
+                onOpenGraph={onOpenGraph}
+                onOpen={() => {
+                  const meta = relatedHit.entry.corpus;
+                  if (meta !== undefined) setReading({ bundle: meta.bundle, path: meta.file, page: meta.page });
+                }}
+                onSelectVar={(name) => { setQuery(name); setDebounced(name); inputRef.current?.focus(); }}
+              />
+            ))}
+          </details>
+        );
+        return null;
+      })}
+    </div>
+  );
 
   if (reading !== null) {
     return (
@@ -554,6 +683,31 @@ export function CorpusSearch({
         />
       </div>
       <p className="cs-search-help">Search includes reviewed equivalents such as “AI” and “artificial intelligence”.</p>
+      <div className="cs-ai-control">
+        <label className="cs-filter cs-filter--check">
+          <input type="checkbox" checked={aiEnabled} onChange={(event) => {
+            setAiEnabled(event.target.checked);
+            if (!event.target.checked) {
+              aiController.current?.abort();
+              setAiHits([]);
+              setAiTerms([]);
+              setAiQuery(null);
+              setAiBusy(false);
+              setAiError(null);
+            }
+          }} />
+          <span>Enhance search with AI</span>
+        </label>
+        {aiEnabled && (
+          <>
+            <button type="button" className="btn btn--sm" disabled={aiBusy || query.trim().length < 3} onClick={() => void runAiSearch()}>
+              {aiBusy ? 'Finding related terms…' : 'Find related results'}
+            </button>
+            <span className="cs-search-help">Runs only when you press the button.</span>
+          </>
+        )}
+      </div>
+      {aiError && <p className="cs-error" role="alert">{aiError} Standard search still works.</p>}
 
       <div className="cs-filters">
         <label className="cs-filter">
@@ -569,7 +723,7 @@ export function CorpusSearch({
           <span className="cs-filter__label">Survey</span>
           <select value={survey} onChange={(e) => setSurvey(e.target.value)}>
             <option value="all">All surveys</option>
-            {surveys.map((s) => (
+            {sortedSurveys.map((s) => (
               <option key={s.surveyGroup} value={s.surveyGroup}>
                 {s.surveyAcronym ?? s.surveyGroup} ({formatInt(s.variables)})
               </option>
@@ -584,6 +738,14 @@ export function CorpusSearch({
             <option value="collected">Questions Only</option>
             <option value="derived">Derived (DV) Only</option>
             <option value="administrative">Administrative Links</option>
+          </select>
+          </label>
+
+        <label className="cs-filter">
+          <span className="cs-filter__label">Sort results</span>
+          <select value={sortBy} onChange={(e) => setSortBy(e.target.value as 'relevance' | 'recent')}>
+            <option value="relevance">Most relevant</option>
+            <option value="recent">Most recent survey first</option>
           </select>
         </label>
 
@@ -674,7 +836,7 @@ export function CorpusSearch({
               <button type="button" className="cs-link" onClick={clearFilters}>Clear filters</button>
             </p>
           )}
-          {!busy && total === 0 && <Suggestions source={source} query={debounced} onPick={onExample} />}
+          {!busy && total === 0 && aiDisplayedHits.length === 0 && <Suggestions source={source} query={debounced} onPick={onExample} />}
 
           {displayedHits.length === 0 && hits.length > 0 && (
             <p className="cs-suggest">
@@ -688,53 +850,28 @@ export function CorpusSearch({
           )}
 
           {graphError && hits.length > 0 && (
-            <p className="cs-suggest">Graph connections are temporarily unavailable; derived variables can still open the graph view.</p>
+            <p className="cs-suggest">Graph connections are temporarily unavailable; variable records can still open the graph view.</p>
+          )}
+
+          {aiEnabled && aiQuery === debounced.trim() && (
+            <section className="cs-ai-results" aria-label="AI expanded search results">
+              <h3>Related results from AI search</h3>
+              <p>Terms searched: {aiTerms.length === 0 ? 'No useful alternatives found.' : aiTerms.map((term, index) => (
+                <span key={term}>
+                  {index > 0 ? ', ' : ''}
+                  <button type="button" className="cs-link" onClick={() => onExample(term)}>{term}</button>
+                </span>
+              ))}</p>
+              {aiGroupedHits.length === 0 ? (
+                <p>No additional variable records matched these terms.</p>
+              ) : (
+                <div className="sr-results">{aiGroupedHits.map(renderGroup)}</div>
+              )}
+            </section>
           )}
 
           <div className="sr-results">
-            {groupedHits.map((group) => (
-              <div className="cs-result-group" key={group.hits[0]!.entry.entryId}>
-                {group.hits.length > 1 && (
-                  <p className="cs-result-group__label">
-                    Same question · {group.hits.length} variable columns on this page
-                  </p>
-                )}
-                <CorpusHit
-                  hit={group.hits[0]!}
-                  inputs={inputsByTarget.get(group.hits[0]!.entry.entryId) ?? []}
-                  graphTargets={graphTargets.get(group.hits[0]!.entry.entryId) ?? []}
-                  conceptId={clusters.get(group.hits[0]!.entry.entryId)}
-                  onOpenConcept={onOpenConcept}
-                  onOpenGraph={onOpenGraph}
-                  onOpen={() => {
-                    const m = group.hits[0]!.entry.corpus;
-                    if (m !== undefined) setReading({ bundle: m.bundle, path: m.file, page: m.page });
-                  }}
-                  onSelectVar={(name) => { setQuery(name); setDebounced(name); inputRef.current?.focus(); }}
-                />
-                {group.hits.length > 1 && (
-                  <details className="cs-result-group__more">
-                    <summary>Show {group.hits.length - 1} related variable{group.hits.length === 2 ? '' : 's'}</summary>
-                    {group.hits.slice(1).map((hit) => (
-                      <CorpusHit
-                        key={hit.entry.entryId}
-                        hit={hit}
-                        inputs={inputsByTarget.get(hit.entry.entryId) ?? []}
-                        graphTargets={graphTargets.get(hit.entry.entryId) ?? []}
-                        conceptId={clusters.get(hit.entry.entryId)}
-                        onOpenConcept={onOpenConcept}
-                        onOpenGraph={onOpenGraph}
-                        onOpen={() => {
-                          const m = hit.entry.corpus;
-                          if (m !== undefined) setReading({ bundle: m.bundle, path: m.file, page: m.page });
-                        }}
-                        onSelectVar={(name) => { setQuery(name); setDebounced(name); inputRef.current?.focus(); }}
-                      />
-                    ))}
-                  </details>
-                )}
-              </div>
-            ))}
+            {groupedHits.map(renderGroup)}
           </div>
 
           {pages > 1 && (

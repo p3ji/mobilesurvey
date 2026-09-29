@@ -18,7 +18,11 @@ const PARADATA_NAME_REGEX = /^(ADM_|SAM_|INT_|COL_|MET_|SURV)/i;
 const FLAG_CONCEPT_REGEX = /(\s*-\s*\(F\)$|\(F\)$|\binclusion flag\b|\bindicateur\b)/i;
 const CCHS_INCLUSION_FLAG_REGEX = /^DO[A-Z]{3}$/i; // e.g. DOHWT, DOCAC, DODHH
 const DERIVED_CONCEPT_REGEX = /(\s*-\s*\(D\)$|\(D\)$|\s*-\s*D$|\(derived\)$|\bderived variable\b|\bvariable d[eé]riv[eé]e\b)/i;
-const GROUPED_CONCEPT_REGEX = /(\s*-\s*\(G\)$|\(G\)$|\s*-\s*G$|\bgrouped\b|\bgroup[eé]e?s?\b)/i;
+/**
+ * Concept-text marker for PUMF grouped/collapsed recodes ("… - Grouped", "(G)", "groupée").
+ * Exported so the deterministic G-suffix extractor (grouped.ts) shares this exact rule.
+ */
+export const GROUPED_CONCEPT_REGEX = /(\s*-\s*\(G\)$|\(G\)$|\s*-\s*G$|\bgrouped\b|\bgroup[eé]e?s?\b)/i;
 const ADMIN_LINKAGE_REGEX = /\b(T1FF|CRA|IMDB|vital statistics|health administrative|hospital discharge|tax data|administrative file|donn[eé]es fiscales|registre)\b/i;
 
 export function classifyVariableRole(v: CorpusVariable): RoleEvidence {

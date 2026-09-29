@@ -6,6 +6,7 @@ import type {
   SupabaseCorpusSource,
 } from '@mobilesurvey/metadata-registry';
 import { CorpusLineageDiagram } from './CorpusLineageDiagram.js';
+import { lineageEvidence } from './lineageEvidence.js';
 
 const PAGE_SIZE = 20;
 
@@ -99,14 +100,17 @@ export function CorpusLineage({ source, onSelectSearch, initialFocus }: CorpusLi
   return (
     <section className="kg-pane kg-lineage">
       <p className="kg-pane__desc">
-        Browse published, verified links between derived variables and their inputs. Links marked AI inferred
-        were extracted from Statistics Canada notes and checked before publication; the notes remain visible below.
+        Browse published links between derived variables and their inputs. An automated reviewer checked each
+        link against a Statistics Canada note and the available dictionary columns; this does not establish the
+        full calculation rule. Solid lines name the source in the note. Dotted light-grey lines show a
+        high-confidence provisional mapping or a note reference mapped to a
+        published source column. The note for each link appears below.
       </p>
       <div className="kg-dag-layout">
         <aside className="kg-dag-sidebar">
           <h3 className="kg-dag-sidebar__title">Linked derived variables</h3>
           <p className="kg-dag-sidebar__desc">
-            {results === null ? 'Loading graph…' : `${results.total.toLocaleString()} ${results.total === 1 ? 'variable' : 'variables'} · ${results.edges.toLocaleString()} verified ${results.edges === 1 ? 'link' : 'links'}`}
+            {results === null ? 'Loading graph…' : `${results.total.toLocaleString()} ${results.total === 1 ? 'variable' : 'variables'} · ${results.edges.toLocaleString()} published ${results.edges === 1 ? 'link' : 'links'}`}
           </p>
           <input
             type="search"
@@ -119,7 +123,7 @@ export function CorpusLineage({ source, onSelectSearch, initialFocus }: CorpusLi
           {listLoading && <p className="kg-dag-sidebar__desc" role="status">Loading variables…</p>}
           {listError && <p className="cs-error" role="alert">{listError}</p>}
           {!listLoading && !listError && results?.targets.length === 0 && (
-            <p className="kg-dag-sidebar__desc">No verified lineage matches this search.</p>
+            <p className="kg-dag-sidebar__desc">No published lineage matches this search.</p>
           )}
           <div className="kg-dag-list">
             {results?.targets.map((target) => (
@@ -153,12 +157,12 @@ export function CorpusLineage({ source, onSelectSearch, initialFocus }: CorpusLi
             <div className="kg-dag-card">
               <strong><code>{initialFocus.variable.name}</code></strong>
               {initialFocus.targets.length === 0 ? (
-                <p>No verified derivation links are published for this record yet. A variable name or documentation note alone does not establish an input relationship.</p>
+                <p>No derivation links are published for this record yet. A variable name or documentation note alone does not establish an input relationship.</p>
               ) : (
                 <>
                   <p>
-                    {hasOwnInputs && 'This variable has verified upstream inputs. '}
-                    {downstreamTargets.length > 0 && `It is a verified input to ${downstreamTargets.length} derived ${downstreamTargets.length === 1 ? 'variable' : 'variables'}. Select one to inspect the flow:`}
+                    {hasOwnInputs && 'This variable has published upstream inputs. '}
+                    {downstreamTargets.length > 0 && `It is a published input to ${downstreamTargets.length} derived ${downstreamTargets.length === 1 ? 'variable' : 'variables'}. Select one to inspect the flow:`}
                   </p>
                   {downstreamTargets.length > 0 && (
                     <div className="kg-flow__controls">
@@ -190,7 +194,7 @@ export function CorpusLineage({ source, onSelectSearch, initialFocus }: CorpusLi
               </div>
               {graphLoading && <p role="status">Loading upstream links…</p>}
               {graphError && <p className="cs-error" role="alert">{graphError}</p>}
-              {!graphLoading && !graphError && edges.length === 0 && <p>No verified upstream links are published for this variable.</p>}
+              {!graphLoading && !graphError && edges.length === 0 && <p>No upstream links are published for this variable.</p>}
               {!graphLoading && edges.length > 0 && <CorpusLineageDiagram key={selected.recordId} target={selected} edges={edges} highlightRecordId={initialFocus?.variable.recordId} />}
               {!graphLoading && layers.map(([depth, layer]) => (
                 <div className="kg-lineage__layer" key={depth}>
@@ -204,7 +208,8 @@ export function CorpusLineage({ source, onSelectSearch, initialFocus }: CorpusLi
                           <span>{edge.sourceLabel}</span>
                         </div>
                         <div className="kg-lineage__edge-meta">
-                          {edge.dataAuthority === 'ai_inferred' ? 'AI inferred · verified' : edge.dataAuthority === 'official_statcan' ? 'StatCan documented' : 'Human verified'}
+                          {lineageEvidence(edge) === 'named' ? 'Source named in note' : lineageEvidence(edge) === 'provisional' ? 'Low-certainty provisional mapping' : 'Source column mapped from note'}
+                          {' · '}{edge.dataAuthority === 'human_verified' ? 'human reviewed' : edge.reviewStatus === 'needs_review' ? 'needs review' : 'machine checked'}
                           {onSelectSearch && <button type="button" onClick={() => onSelectSearch(edge.sourceVarName, selected.surveyAcronym ?? undefined)}>Find source ↗</button>}
                         </div>
                       </div>

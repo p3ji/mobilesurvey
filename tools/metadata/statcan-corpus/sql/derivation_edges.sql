@@ -12,6 +12,15 @@
 --   (e.g., Height, Weight), supporting bounded recursive lineage traversal with cycle detection.
 -- =============================================================================================
 
+-- Return signatures gained review_status/confidence in the provisional-link release. PostgreSQL
+-- cannot replace a function when its RETURNS TABLE shape changes, so remove these five routines
+-- before recreating them below. They are read-only APIs and are recreated in this same script.
+drop function if exists corpus_get_lineage_graph(uuid, integer);
+drop function if exists corpus_get_upstream_lineage(uuid, integer);
+drop function if exists corpus_get_direct_inputs(uuid[]);
+drop function if exists corpus_get_variable_graph_targets(uuid[]);
+drop function if exists corpus_list_lineage_targets(text, integer, integer);
+
 create table if not exists corpus_derivation_edge (
   edge_id            uuid primary key default gen_random_uuid(),
   target_record_id   uuid not null references corpus_variable(record_id) on delete cascade,
@@ -64,7 +73,11 @@ create unique index if not exists idx_derivation_target_source_name_unique
 alter table corpus_derivation_edge enable row level security;
 
 drop policy if exists "anon select" on corpus_derivation_edge;
-create policy "anon select" on corpus_derivation_edge for select to anon using (review_status = 'verified');
+-- Publish clean links plus high-confidence unresolved mappings as provisional evidence.
+-- Lower-confidence candidates remain private until reviewed.
+create policy "anon select" on corpus_derivation_edge for select to anon using (
+  review_status = 'verified' or (review_status = 'needs_review' and confidence >= 0.70)
+);
 
 grant select on corpus_derivation_edge to anon;
 grant select, insert, update, delete on corpus_derivation_edge to service_role;
@@ -85,6 +98,8 @@ returns table (
   derivation_type text,
   ai_expression_summary text,
   statcan_verbatim_note text,
+  review_status text,
+  confidence real,
   logic_ast jsonb,
   depth integer,
   path uuid[]
@@ -105,12 +120,14 @@ as $$
       e.derivation_type,
       e.ai_expression_summary,
       e.statcan_verbatim_note,
+      e.review_status,
+      e.confidence,
       e.ai_logic_ast,
       1 as depth,
       array[e.target_record_id] as path
     from corpus_derivation_edge e
     where e.target_record_id = p_root_record_id
-      and e.review_status = 'verified'
+      and (e.review_status = 'verified' or (e.review_status = 'needs_review' and e.confidence >= 0.70))
 
     union all
 
@@ -124,6 +141,8 @@ as $$
       e.derivation_type,
       e.ai_expression_summary,
       e.statcan_verbatim_note,
+      e.review_status,
+      e.confidence,
       e.ai_logic_ast,
       l.depth + 1,
       l.path || e.target_record_id
@@ -131,7 +150,7 @@ as $$
     join lineage l on e.target_record_id = l.source_record_id
     where l.depth < p_max_depth
       and not (e.target_record_id = any(l.path)) -- Cycle prevention
-      and e.review_status = 'verified'
+      and (e.review_status = 'verified' or (e.review_status = 'needs_review' and e.confidence >= 0.70))
   )
   select * from lineage;
 $$;
@@ -150,7 +169,9 @@ returns table (
   data_authority text,
   derivation_type text,
   ai_expression_summary text,
-  statcan_verbatim_note text
+  statcan_verbatim_note text,
+  review_status text,
+  confidence real
 )
 language sql
 stable
@@ -159,10 +180,10 @@ set search_path = public
 as $$
   select e.edge_id, e.target_record_id, e.source_record_id, e.source_var_name,
          e.data_authority, e.derivation_type, e.ai_expression_summary,
-         e.statcan_verbatim_note
+         e.statcan_verbatim_note, e.review_status, e.confidence
     from corpus_derivation_edge e
    where e.target_record_id = any(p_target_record_ids)
-     and e.review_status = 'verified'
+     and (e.review_status = 'verified' or (e.review_status = 'needs_review' and e.confidence >= 0.70))
    order by e.target_record_id, e.source_var_name;
 $$;
 
@@ -190,15 +211,17 @@ as $$
   with connected as (
     select e.target_record_id as root_record_id, e.target_record_id
       from corpus_derivation_edge e
-     where e.target_record_id = any(p_record_ids) and e.review_status = 'verified'
+     where e.target_record_id = any(p_record_ids)
+       and (e.review_status = 'verified' or (e.review_status = 'needs_review' and e.confidence >= 0.70))
     union
     select e.source_record_id as root_record_id, e.target_record_id
       from corpus_derivation_edge e
-     where e.source_record_id = any(p_record_ids) and e.review_status = 'verified'
+     where e.source_record_id = any(p_record_ids)
+       and (e.review_status = 'verified' or (e.review_status = 'needs_review' and e.confidence >= 0.70))
   ), target_counts as (
     select e.target_record_id, count(*)::integer as input_count
       from corpus_derivation_edge e
-     where e.review_status = 'verified'
+     where (e.review_status = 'verified' or (e.review_status = 'needs_review' and e.confidence >= 0.70))
        and e.target_record_id in (select c.target_record_id from connected c)
      group by e.target_record_id
   )
@@ -242,7 +265,7 @@ as $$
   with targets as (
     select e.target_record_id, count(*)::integer as input_count
     from corpus_derivation_edge e
-    where e.review_status = 'verified'
+    where (e.review_status = 'verified' or (e.review_status = 'needs_review' and e.confidence >= 0.70))
     group by e.target_record_id
   ), filtered as (
     select v.record_id, v.name,
@@ -288,6 +311,8 @@ returns table (
   derivation_type text,
   ai_expression_summary text,
   statcan_verbatim_note text,
+  review_status text,
+  confidence real,
   depth integer
 )
 language sql
@@ -302,7 +327,7 @@ as $$
                        nullif(btrim(source.collection_name), ''),
                        l.source_var_name), 220),
          l.data_authority, l.derivation_type, l.ai_expression_summary,
-         l.statcan_verbatim_note, l.depth
+         l.statcan_verbatim_note, l.review_status, l.confidence, l.depth
   from corpus_get_upstream_lineage(p_root_record_id, least(greatest(p_max_depth, 1), 5)) l
   join corpus_variable target on target.record_id = l.target_record_id
   left join corpus_variable source on source.record_id = l.source_record_id

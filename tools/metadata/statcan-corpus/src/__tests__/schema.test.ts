@@ -267,7 +267,7 @@ describe('sql/derivation_edges.sql', () => {
     expect(sql).toMatch(/create or replace function corpus_get_variable_graph_targets/);
     expect(sql).toMatch(/create or replace function corpus_list_lineage_targets/);
     expect(sql).toMatch(/create or replace function corpus_get_lineage_graph/);
-    expect(sql).toMatch(/where e.review_status = 'verified'/);
+    expect(sql).toMatch(/e\.review_status = 'verified'/);
     expect(sql).toMatch(/security invoker/g);
   });
 });

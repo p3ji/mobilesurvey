@@ -467,6 +467,11 @@ code { font-family: var(--mono); font-size: 0.88em; }
 .cs-result-group__more summary { cursor: pointer; color: var(--brand); font-size: 13px; padding: 6px 0; }
 .cs-result-group__more .cs-hit { margin-top: 7px; }
 .cs-search-help { margin: -5px 0 12px; color: var(--ink-soft); font-size: 12px; }
+.cs-ai-control { display: flex; align-items: center; flex-wrap: wrap; gap: 8px 14px; margin: 4px 0 14px; }
+.cs-ai-control .cs-search-help { margin: 0; }
+.cs-ai-results { margin: 20px 0 26px; padding: 18px; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); }
+.cs-ai-results h3 { margin: 0 0 6px; font-size: 16px; }
+.cs-ai-results > p { margin: 0 0 12px; color: var(--ink-soft); font-size: 13px; }
 
 .sr-empty { color: var(--ink-soft); line-height: 1.6; }
 .sr-empty a { color: var(--brand); }
