@@ -38,6 +38,8 @@ ddi-c_*/
 # the payload never is. (*.zip above already covers the source, listed here for intent.)
 docs/metadatarepo/
 tools/metadata/statcan-corpus/out/
+supabase/.temp/
+.temp/
 tools/metadata/statcan-corpus/cache/
 tools/metadata/statcan-corpus/*.log
 corpus.jsonl

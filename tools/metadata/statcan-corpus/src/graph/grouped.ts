@@ -27,6 +27,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import type { CorpusVariable } from '../types.js';
 import { credentialsFromEnv, envWithFile } from '../load.js';
+import { MOBILESURVEY_UUID_NAMESPACE, uuidV5 } from '@mobilesurvey/ddi-xml';
 import { GROUPED_CONCEPT_REGEX } from './classifier.js';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
@@ -343,6 +344,112 @@ export function renderGroupedCollapseSql(edges: readonly ResolvedGroupedEdge[]):
 }
 
 // ---------------------------------------------------------------------------------------------
+// Live import (service-role REST) — same pattern as load.ts's upsertBatch, but keyed on a
+// DETERMINISTIC edge id so re-runs are no-ops without touching the unique index.
+// ---------------------------------------------------------------------------------------------
+
+/**
+ * Deterministic edge identity: UUIDv5 of the logical pair under the suite namespace.
+ * The random `gen_random_uuid()` default cannot make repeated imports idempotent (see the
+ * comment on idx_derivation_target_source_name_unique), so we mint our own stable id from the
+ * facts that define the edge — target/source record ids plus the base name.
+ */
+export function groupedEdgeId(e: ResolvedGroupedEdge): string {
+  return uuidV5(`grouped-collapse|${e.targetRecordId}|${e.sourceRecordId}|${e.baseName}`, MOBILESURVEY_UUID_NAMESPACE);
+}
+
+/** One REST row for corpus_derivation_edge, mirroring the SQL export column-for-column. */
+export function edgeToRow(e: ResolvedGroupedEdge): Record<string, unknown> {
+  return {
+    edge_id: groupedEdgeId(e),
+    target_record_id: e.targetRecordId,
+    source_record_id: e.sourceRecordId,
+    source_var_name: e.baseName,
+    survey_group: e.surveyGroup,
+    cycle: e.cycle,
+    data_authority: 'ai_inferred', // the pairing is inferred from StatCan's own convention
+    ai_model: 'none (deterministic rule)',
+    ai_auditor: 'grouped_recode_extractor_v1',
+    derivation_type: 'collapse',
+    confidence: e.confidence,
+    review_status: 'verified',
+    ai_expression_summary: `PUMF grouped/collapsed recode of ${e.baseName} (tier ${e.tier})`,
+    statcan_verbatim_note: e.evidence,
+    extraction_method: 'deterministic_g_suffix_rule',
+    statcan_citation: { doc: e.docPath, page: e.page, licence: 'Statistics Canada Open Licence' },
+  };
+}
+
+/**
+ * Fetch the logical identities already present in live for the given target record IDs:
+ * `${targetRecordId}|${upper(btrim(source_var_name))}` — exactly the unique-index key. An earlier
+ * run (reviewer/queue) may have published a pair under a RANDOM edge_id, which `on_conflict=edge_id`
+ * cannot dedupe; prefiltering on this identity keeps the import safe against BOTH unique indexes.
+ */
+export async function existingLogicalPairs(
+  targetRecordIds: readonly string[],
+  creds: { url: string; serviceRoleKey: string },
+  fetchImpl: typeof fetch = fetch,
+): Promise<Set<string>> {
+  const out = new Set<string>();
+  for (let i = 0; i < targetRecordIds.length; i += 500) {
+    // unquoted UUIDs: PostgREST casts them to uuid inside in.(...)
+    const chunk = targetRecordIds.slice(i, i + 500).join(',');
+    const q = `${creds.url}/rest/v1/corpus_derivation_edge?select=target_record_id,source_var_name&target_record_id=in.(${chunk})`;
+    const res = await fetchImpl(q, {
+      headers: { apikey: creds.serviceRoleKey, Authorization: `Bearer ${creds.serviceRoleKey}` },
+    });
+    if (!res.ok) throw new Error(`Existing-edge prefilter failed: HTTP ${res.status} ${(await res.text()).slice(0, 200)}`);
+    const rows = (await res.json()) as Array<{ target_record_id: string; source_var_name: string }>;
+    for (const r of rows) out.add(`${r.target_record_id}|${r.source_var_name.toUpperCase().trim()}`);
+  }
+  return out;
+}
+
+/**
+ * Upsert resolved edges into live Supabase via service-role PostgREST.
+ * `on_conflict=edge_id` + deterministic ids ⇒ re-running is a no-op (merge-duplicates keeps the
+ * row identical). Batches of 250 keep request bodies small; returns rows actually written.
+ */
+export async function importGroupedEdges(
+  edges: readonly ResolvedGroupedEdge[],
+  creds: { url: string; serviceRoleKey: string },
+  fetchImpl: typeof fetch = fetch,
+  /** Logical identities already live (from existingLogicalPairs); those rows are skipped. */
+  skipExisting?: ReadonlySet<string>,
+): Promise<{ written: number; skippedExisting: number }> {
+  let written = 0;
+  let skippedExisting = 0;
+  for (let i = 0; i < edges.length; i += 250) {
+    const rows = edges
+      .slice(i, i + 250)
+      .filter((e) => !skipExisting?.has(`${e.targetRecordId}|${e.baseName.toUpperCase().trim()}`))
+      .map(edgeToRow);
+    if (rows.length === 0) {
+      skippedExisting += edges.slice(i, i + 250).length;
+      continue;
+    }
+    const res = await fetchImpl(`${creds.url}/rest/v1/corpus_derivation_edge?on_conflict=edge_id`, {
+      method: 'POST',
+      headers: {
+        apikey: creds.serviceRoleKey,
+        Authorization: `Bearer ${creds.serviceRoleKey}`,
+        'Content-Type': 'application/json',
+        Prefer: 'resolution=merge-duplicates,return=minimal',
+      },
+      body: JSON.stringify(rows),
+    });
+    if (!res.ok) {
+      const detail = await res.text().catch(() => '');
+      throw new Error(`Edge import failed at row ${i}: HTTP ${res.status} — ${detail.slice(0, 400)}`);
+    }
+    written += rows.length;
+    skippedExisting += edges.slice(i, i + 250).length - rows.length;
+  }
+  return { written, skippedExisting };
+}
+
+// ---------------------------------------------------------------------------------------------
 // CLI
 // ---------------------------------------------------------------------------------------------
 if (process.argv[1] && process.argv[1].endsWith('grouped.ts')) {
@@ -369,5 +476,19 @@ if (process.argv[1] && process.argv[1].endsWith('grouped.ts')) {
   console.log('Top surveys:');
   for (const [s, n] of [...surveys.entries()].sort((a, b) => b[1] - a[1]).slice(0, 12)) {
     console.log(`  ${s.padEnd(34)} ${n}`);
+  }
+
+  // `--import` pushes the resolved edges to live Supabase (service-role REST). Idempotent:
+  // deterministic edge_id + on_conflict=edge_id, plus a prefilter for pairs an earlier run already
+  // published under a random edge_id (the other unique index would otherwise reject them).
+  if (process.argv.includes('--import')) {
+    const existing = await existingLogicalPairs([...new Set(edges.map((e) => e.targetRecordId))], creds);
+    const { written, skippedExisting } = await importGroupedEdges(edges, creds, fetch, existing);
+    console.log(
+      `\nImported ${written} edges to live Supabase corpus_derivation_edge (verified/collapse)` +
+        `${skippedExisting > 0 ? `; skipped ${skippedExisting} already-live logical pair(s)` : ''}.`,
+    );
+  } else {
+    console.log('\n(export only — re-run with --import to push the resolved edges to live Supabase)');
   }
 }

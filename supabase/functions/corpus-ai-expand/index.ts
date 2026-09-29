@@ -1,5 +1,5 @@
 /** Public Searcher query expansion. The Groq key stays in Supabase Edge Function secrets. */
-const MODEL = 'openai/gpt-oss-20b';
+const MODEL = Deno.env.get('GROQ_MODEL') ?? 'llama-3.3-70b-versatile';
 const DAILY_LIMIT = 200;
 
 function allowedOrigin(origin: string | null): boolean {
@@ -105,22 +105,12 @@ Deno.serve(async (request: Request) => {
         temperature: 0,
         max_completion_tokens: 200,
         response_format: {
-          type: 'json_schema',
-          json_schema: {
-            name: 'survey_search_expansion',
-            strict: true,
-            schema: {
-              type: 'object',
-              properties: { queries: { type: 'array', items: { type: 'string' } } },
-              required: ['queries'],
-              additionalProperties: false,
-            },
-          },
+          type: 'json_object',
         },
         messages: [
           {
             role: 'system',
-            content: 'Expand a search of Statistics Canada survey variable names, labels, question wording, and response categories. Return JSON with 1–3 short alternative search phrases likely to occur in documentation. Preserve the user intent and specificity. Include synonyms or a common technical term when useful. Do not invent survey names, variable names, facts, or citations. Do not add broad categories. If no useful alternative exists, return an empty queries array.',
+            content: 'Expand a search of Statistics Canada survey variable names, labels, question wording, and response categories. Return a JSON object with a "queries" array containing 1–3 short alternative search phrases likely to occur in documentation (e.g. {"queries": ["alternative1", "alternative2"]}). Preserve the user intent and specificity. Include synonyms or a common technical term when useful. Do not invent survey names, variable names, facts, or citations. Do not add broad categories. If no useful alternative exists, return {"queries": []}.',
           },
           { role: 'user', content: query },
         ],
@@ -128,12 +118,15 @@ Deno.serve(async (request: Request) => {
       signal: AbortSignal.timeout(10000),
     });
     if (!groq.ok) {
+      const errText = await groq.text().catch(() => '');
+      console.error('Groq API error:', groq.status, errText);
       return json({ error: groq.status === 429 ? 'AI search is busy. Try again later.' : 'AI expansion is temporarily unavailable.' }, groq.status === 429 ? 429 : 502, origin);
     }
     const result = await groq.json() as { choices?: Array<{ message?: { content?: string } }> };
     const parsed = JSON.parse(result.choices?.[0]?.message?.content ?? '{}') as { queries?: unknown };
     return json({ queries: cleanQueries(parsed.queries, query) }, 200, origin);
-  } catch {
+  } catch (err) {
+    console.error('AI expand error:', err);
     return json({ error: 'AI expansion is temporarily unavailable.' }, 502, origin);
   }
 });
