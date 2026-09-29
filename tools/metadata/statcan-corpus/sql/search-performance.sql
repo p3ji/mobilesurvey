@@ -25,7 +25,20 @@ insert into corpus_search_alias (query, expansion) values
   ('cryptocurrency payments', 'crypto payments'),
   ('crypto ransom', 'cryptocurrency ransom'),
   ('cryptocurrency ransom', 'crypto ransom'),
-  ('bitcoin', 'cryptocurrency')
+  ('bitcoin', 'cryptocurrency'),
+  ('indigenous', 'aboriginal'),
+  ('aboriginal', 'indigenous'),
+  ('coronavirus', 'covid'),
+  ('cannabis', 'marijuana'),
+  ('marijuana', 'cannabis'),
+  ('elderly', 'senior'),
+  ('salary', 'wages'),
+  ('wages', 'salary'),
+  ('wfh', 'telework'),
+  ('work from home', 'telework'),
+  ('vaping', 'e-cigarette'),
+  ('e-cigarette', 'vaping'),
+  ('e-cigarettes', 'vaping')
 on conflict (query) do update set expansion = excluded.expansion;
 
 -- The original 9-argument RPC remains the client contract. Exact wording keeps full rank;

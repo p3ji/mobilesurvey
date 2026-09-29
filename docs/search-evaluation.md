@@ -16,9 +16,17 @@ each result page without changing paging or citations.
 | `crypto payment` | 2 | 4 | 2 |
 | `cryptocurrency payment` | 2 | 4 | 2 |
 | `bitcoin` | 1 | 6 | 5 |
+| `indigenous` | 886 | 3,617 | 2,731 |
+| `aboriginal` | 2,754 | 3,617 | 863 |
+| `coronavirus` | 0 | 1,758 | 1,758 |
+| `marijuana` | 182 | 1,363 | 1,181 |
+| `cannabis` | 1,262 | 1,363 | 101 |
+| `elderly` | 219 | 919 | 700 |
+| `wfh` | 0 | 81 | 81 |
+| `vaping` | 338 | 359 | 21 |
 
 `AI` is expanded to `artificial intelligence`; the reverse alias is also present. `remote work`
-expands to `telework`. `crypto` and `cryptocurrency` are cross-aliased alongside hyphenated and payment variants (`bitcoin` also expands to `cryptocurrency`). Exact-term matches keep full rank; alias matches get one quarter of the
+expands to `telework`. `crypto` and `cryptocurrency` are cross-aliased alongside hyphenated and payment variants (`bitcoin` also expands to `cryptocurrency`). High-impact historical and terminological shifts are bridged: `indigenous` $\leftrightarrow$ `aboriginal` (StatCan historical terminology shift), `coronavirus` $\rightarrow$ `covid`, `cannabis` $\leftrightarrow$ `marijuana` (pre- vs post-2018 legalization wording), `elderly` $\rightarrow$ `senior`, `wfh` $\rightarrow$ `telework`, and `vaping` $\leftrightarrow$ `e-cigarette`. Exact-term matches keep full rank; alias matches get one quarter of the
 rank. Search still uses the existing GIN full-text index. The first 15 newly found `AI` records
 were inspected and included CIUS artificial-intelligence application columns and SAT/SDTIU
 technology variables. The first telework records included location and use questions. This is a
