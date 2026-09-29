@@ -5,6 +5,10 @@ import {
   classifyGroupedEvidence,
   renderGroupedCollapseSql,
   resolveAgainstSupabase,
+  groupedEdgeId,
+  edgeToRow,
+  existingLogicalPairs,
+  importGroupedEdges,
   TIER_CONFIDENCE,
   type ResolvedGroupedEdge,
 } from '../grouped.js';
@@ -193,5 +197,140 @@ describe('renderGroupedCollapseSql', () => {
     const many = Array.from({ length: 1200 }, (_, i) => ({ ...edge, targetName: `V${i}G`, baseName: `V${i}` }));
     const sql = renderGroupedCollapseSql(many);
     expect(sql.match(/insert into corpus_derivation_edge/g)?.length).toBe(3);
+  });
+});
+
+describe('groupedEdgeId / edgeToRow', () => {
+  const edge: ResolvedGroupedEdge = {
+    surveyGroup: 'CIS_ECR_2022',
+    cycle: '2022',
+    docPath: 'cis_2022_T15_2_f1_v2.pdf',
+    targetName: 'AGEG',
+    baseName: 'AGE',
+    tier: 'C',
+    confidence: TIER_CONFIDENCE.C,
+    evidence: "Target concept: Person's age group as of December 31; base concept: Age as of December 31",
+    targetRecordId: '11111111-2222-4333-8444-555555555555',
+    sourceRecordId: 'aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeeeeeee',
+    page: 7,
+  };
+
+  it('is deterministic and a valid v5 UUID', () => {
+    const id = groupedEdgeId(edge);
+    expect(id).toBe(groupedEdgeId({ ...edge })); // same facts -> same id (idempotent re-import)
+    expect(id).toMatch(/^[0-9a-f]{8}-[0-9a-f]{4}-5[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/);
+  });
+
+  it('differs when any defining fact changes', () => {
+    const base = groupedEdgeId(edge);
+    expect(groupedEdgeId({ ...edge, sourceRecordId: 'ffffffff-ffff-4fff-8fff-ffffffffffff' })).not.toBe(base);
+    expect(groupedEdgeId({ ...edge, baseName: 'AGE2' })).not.toBe(base);
+  });
+
+  it('maps every SQL column to a REST row', () => {
+    const row = edgeToRow(edge) as Record<string, unknown>;
+    expect(row.edge_id).toBe(groupedEdgeId(edge));
+    expect(row.target_record_id).toBe(edge.targetRecordId);
+    expect(row.source_record_id).toBe(edge.sourceRecordId);
+    expect(row.source_var_name).toBe('AGE');
+    expect(row.derivation_type).toBe('collapse');
+    expect(row.review_status).toBe('verified');
+    expect(row.confidence).toBe(0.9);
+    expect(row.extraction_method).toBe('deterministic_g_suffix_rule');
+    expect((row.statcan_citation as Record<string, unknown>).doc).toBe(edge.docPath);
+  });
+});
+
+describe('existingLogicalPairs', () => {
+  it('chunks target ids by 500 and normalizes source names to the unique-index key', async () => {
+    const calls: string[] = [];
+    const fetchImpl = (async (url: string) => {
+      calls.push(String(url));
+      return new Response(
+        JSON.stringify([
+          { target_record_id: 't-1', source_var_name: ' age ' }, // lowercase + padded -> AGE
+          { target_record_id: 't-2', source_var_name: 'DAGEYRS' },
+        ]),
+        { status: 200 },
+      );
+    }) as typeof fetch;
+
+    const ids = Array.from({ length: 601 }, (_, i) => `t-${i}`);
+    const set = await existingLogicalPairs(ids, { url: 'https://x.supabase.co', serviceRoleKey: 'k' }, fetchImpl);
+
+    expect(calls.length).toBe(2); // 500 + 101
+    expect(set.has('t-1|AGE')).toBe(true);
+    expect(set.has('t-2|DAGEYRS')).toBe(true);
+    expect(set.size).toBe(2);
+  });
+
+  it('fails loudly on HTTP errors', async () => {
+    const fetchImpl = (async () => new Response('nope', { status: 500 })) as typeof fetch;
+    await expect(existingLogicalPairs(['t-1'], { url: 'https://x.supabase.co', serviceRoleKey: 'k' }, fetchImpl)).rejects.toThrow(
+      /prefilter failed/i,
+    );
+  });
+});
+
+describe('importGroupedEdges', () => {
+  const edge: ResolvedGroupedEdge = {
+    surveyGroup: 'CIS_ECR_2022',
+    cycle: '2022',
+    docPath: 'cis_2022_T15_2_f1_v2.pdf',
+    targetName: 'AGEG',
+    baseName: 'AGE',
+    tier: 'C',
+    confidence: 0.9,
+    evidence: 'e',
+    targetRecordId: '11111111-2222-4333-8444-555555555555',
+    sourceRecordId: 'aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeeeeeee',
+    page: 7,
+  };
+
+  it('upserts in batches of 250 with on_conflict=edge_id and merge-duplicates', async () => {
+    const calls: Array<{ url: string; body: unknown[] }> = [];
+    const fetchImpl = (async (url: string, init?: RequestInit) => {
+      calls.push({ url: String(url), body: JSON.parse(String(init?.body)) });
+      return new Response(null, { status: 201 });
+    }) as typeof fetch;
+
+    const many = Array.from({ length: 600 }, (_, i) => ({ ...edge, targetName: `V${i}G`, baseName: `V${i}` }));
+    const { written } = await importGroupedEdges(many, { url: 'https://x.supabase.co', serviceRoleKey: 'k' }, fetchImpl);
+
+    expect(written).toBe(600);
+    expect(calls.length).toBe(3); // 250 + 250 + 100
+    for (const c of calls) {
+      expect(c.url).toContain('/rest/v1/corpus_derivation_edge?on_conflict=edge_id');
+    }
+    expect((calls[0]?.body[0] as Record<string, unknown>).edge_id).toBe(groupedEdgeId(many[0]!));
+  });
+
+  it('skips logical pairs already live (other unique index) and reports them', async () => {
+    const calls: string[] = [];
+    const fetchImpl = (async (url: string) => {
+      calls.push(String(url));
+      return new Response(null, { status: 201 });
+    }) as typeof fetch;
+
+    // AGE edge is already live under a random id -> must be filtered out before the POST.
+    const skipExisting = new Set([`${edge.targetRecordId}|AGE`]);
+    const other = { ...edge, targetName: 'SEGG', baseName: 'SEG' };
+    const { written, skippedExisting } = await importGroupedEdges(
+      [edge, other],
+      { url: 'https://x.supabase.co', serviceRoleKey: 'k' },
+      fetchImpl,
+      skipExisting,
+    );
+
+    expect(written).toBe(1);
+    expect(skippedExisting).toBe(1);
+    expect(calls.length).toBe(1); // one batch, only the non-colliding row
+  });
+
+  it('fails loudly on HTTP errors', async () => {
+    const fetchImpl = (async () => new Response('nope', { status: 403 })) as typeof fetch;
+    await expect(
+      importGroupedEdges([edge], { url: 'https://x.supabase.co', serviceRoleKey: 'k' }, fetchImpl),
+    ).rejects.toThrow(/Edge import failed/);
   });
 });

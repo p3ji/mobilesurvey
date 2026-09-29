@@ -1,5 +1,5 @@
 /** Public Searcher query expansion. The Groq key stays in Supabase Edge Function secrets. */
-const MODEL = Deno.env.get('GROQ_MODEL') ?? 'llama-3.3-70b-versatile';
+const MODEL = Deno.env.get('GROQ_MODEL') ?? 'qwen/qwen3.8-27b';
 const DAILY_LIMIT = 200;
 
 function allowedOrigin(origin: string | null): boolean {
@@ -103,7 +103,7 @@ Deno.serve(async (request: Request) => {
       body: JSON.stringify({
         model: MODEL,
         temperature: 0,
-        max_completion_tokens: 200,
+        max_tokens: 500,
         response_format: {
           type: 'json_object',
         },
