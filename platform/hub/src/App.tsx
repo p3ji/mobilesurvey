@@ -1079,7 +1079,7 @@ function parseSearcherParams(): {
   query: string;
   survey: string;
   conceptId?: string | null;
-  initialGraphTab?: 'surveys' | 'concepts' | 'lineage' | 'modules' | null;
+  initialGraphTab?: 'surveys' | 'concepts' | 'lineage' | null;
 } {
   if (typeof window === 'undefined') return { scope: 'search', query: '', survey: 'all' };
 
@@ -1100,7 +1100,7 @@ function parseSearcherParams(): {
   const conceptId = hashParams.get('concept') ?? searchParams.get('concept') ?? null;
   const initialGraphTab = rawScope === 'concepts'
     ? 'concepts'
-    : ((hashParams.get('tab') ?? searchParams.get('tab')) as 'surveys' | 'concepts' | 'lineage' | 'modules' | null);
+    : ((hashParams.get('tab') ?? searchParams.get('tab')) as 'surveys' | 'concepts' | 'lineage' | null);
 
   return { scope, query, survey, conceptId, initialGraphTab };
 }
@@ -1113,7 +1113,7 @@ function SearcherView({ onBack }: { onBack: () => void }) {
   const [corpusSurvey, setCorpusSurvey] = useState(initialParams.survey);
   const [conceptId, setConceptId] = useState<string | null>(initialParams.conceptId ?? null);
   const [graphFocus, setGraphFocus] = useState<CorpusGraphFocus | null>(null);
-  const [graphTab, setGraphTab] = useState<'surveys' | 'concepts' | 'lineage' | 'modules' | null>(
+  const [graphTab, setGraphTab] = useState<'surveys' | 'concepts' | 'lineage' | null>(
     initialParams.initialGraphTab ?? null
   );
 

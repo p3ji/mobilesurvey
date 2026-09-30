@@ -23,7 +23,7 @@ interface CorpusGraphExplorerProps {
   initialTab?: ExplorerTab;
 }
 
-export type ExplorerTab = 'surveys' | 'concepts' | 'lineage' | 'modules';
+export type ExplorerTab = 'surveys' | 'concepts' | 'lineage';
 
 export function CorpusGraphExplorer({
   source,
@@ -58,27 +58,6 @@ export function CorpusGraphExplorer({
         s.topModules.some((m) => m.code.toLowerCase().includes(q))
     );
   }, [surveyFilter]);
-
-  // Aggregate modules repository-wide
-  const allModules = useMemo(() => {
-    const modMap = new Map<string, { count: number; surveys: Set<string> }>();
-    for (const s of summaryData.surveys) {
-      for (const m of s.topModules) {
-        if (m.code === 'NONE' || m.code === 'GENERAL') continue;
-        const entry = modMap.get(m.code) ?? { count: 0, surveys: new Set<string>() };
-        entry.count += m.count;
-        entry.surveys.add(s.acronym);
-        modMap.set(m.code, entry);
-      }
-    }
-    return Array.from(modMap.entries())
-      .map(([code, data]) => ({
-        code,
-        count: data.count,
-        surveys: Array.from(data.surveys),
-      }))
-      .sort((a, b) => b.count - a.count);
-  }, []);
 
   return (
     <div className="kg-explorer">
@@ -157,15 +136,6 @@ export function CorpusGraphExplorer({
           onClick={() => setTab('lineage')}
         >
           Derivation Lineage DAG (PROV-O)
-        </button>
-        <button
-          type="button"
-          role="tab"
-          aria-selected={tab === 'modules'}
-          className={`kg-tab ${tab === 'modules' ? 'kg-tab--active' : ''}`}
-          onClick={() => setTab('modules')}
-        >
-          Thematic Modules ({allModules.length})
         </button>
       </nav>
 
@@ -364,38 +334,6 @@ export function CorpusGraphExplorer({
 
       {/* Tab 3: Published derivation lineage */}
       {tab === 'lineage' && <CorpusLineage source={source} onSelectSearch={onSelectSearch} initialFocus={initialGraphFocus} />}
-
-      {/* Tab 4: Thematic Modules */}
-      {tab === 'modules' && (
-        <section className="kg-pane">
-          <p className="kg-pane__desc">
-            Statistics Canada microdata dictionaries use 2–4 character prefix codes representing substantive thematic modules.
-          </p>
-
-          <div className="kg-modules-grid">
-            {allModules.slice(0, 32).map((m) => (
-              <div key={m.code} className="kg-module-card">
-                <div className="kg-module-card__head">
-                  <code className="kg-module-card__code">{m.code}</code>
-                  <span className="kg-module-card__count">{m.count.toLocaleString()} variables</span>
-                </div>
-                <div className="kg-module-card__surveys">
-                  Used in: {m.surveys.slice(0, 5).join(', ')}{m.surveys.length > 5 ? ` +${m.surveys.length - 5} more` : ''}
-                </div>
-                {onSelectSearch && (
-                  <button
-                    type="button"
-                    className="kg-link kg-module-card__search"
-                    onClick={() => onSelectSearch(m.code)}
-                  >
-                    Search module {m.code} ↗
-                  </button>
-                )}
-              </div>
-            ))}
-          </div>
-        </section>
-      )}
     </div>
   );
 }
