@@ -1,27 +1,5 @@
 [
   {
-    "recordId": "b23cae39-1488-5fcb-98eb-3adf22c78cf9",
-    "name": "DAGEYRSG",
-    "label": "Age of child as of October 31, 2006, in two-year intervals - Grouped",
-    "surveyAcronym": "ACS",
-    "cycle": "2006",
-    "year": 2006,
-    "inputCount": 1,
-    "stages": 2,
-    "isPumf": true
-  },
-  {
-    "recordId": "a6810f28-3d42-5da6-98ce-6590926ae5ad",
-    "name": "MHWDWHOY",
-    "label": "BMI ages 5 to 17 years (measured) - WHO - (D)",
-    "surveyAcronym": "CCHS",
-    "cycle": "2015_NU",
-    "year": 2015,
-    "inputCount": 5,
-    "stages": 3,
-    "isPumf": false
-  },
-  {
     "recordId": "7cee79b2-c663-59ef-a28c-457cabc57517",
     "name": "LRDGCH12",
     "label": "Exceeded low-risk drinking guideline- chronic eff- current drnkers -7d",
@@ -29,18 +7,7 @@
     "cycle": "2019",
     "year": 2019,
     "inputCount": 2,
-    "stages": 4,
-    "isPumf": false
-  },
-  {
-    "recordId": "def93cf7-d0ac-5821-bb87-75c7e208e45b",
-    "name": "GEODPSZ",
-    "label": "Population size group - (D)",
-    "surveyAcronym": "CCHS",
-    "cycle": "2015_NU",
-    "year": 2015,
-    "inputCount": 3,
-    "stages": 2,
+    "stages": 5,
     "isPumf": true
   },
   {
@@ -51,6 +18,17 @@
     "cycle": "2019",
     "year": 2019,
     "inputCount": 2,
+    "stages": 5,
+    "isPumf": true
+  },
+  {
+    "recordId": "a6810f28-3d42-5da6-98ce-6590926ae5ad",
+    "name": "MHWDWHOY",
+    "label": "BMI ages 5 to 17 years (measured) - WHO - (D)",
+    "surveyAcronym": "CCHS",
+    "cycle": "2015_NU",
+    "year": 2015,
+    "inputCount": 5,
     "stages": 4,
     "isPumf": false
   },
@@ -62,19 +40,8 @@
     "cycle": "2015_NU",
     "year": 2015,
     "inputCount": 5,
-    "stages": 3,
+    "stages": 4,
     "isPumf": false
-  },
-  {
-    "recordId": "9a1aa2ae-b472-512c-be1d-91619531b989",
-    "name": "DHLOSGP",
-    "label": "Highest level of schooling attained - Grouped",
-    "surveyAcronym": "APS",
-    "cycle": "2006",
-    "year": 2006,
-    "inputCount": 1,
-    "stages": 2,
-    "isPumf": true
   },
   {
     "recordId": "720a43cb-4362-5426-9d62-04d64b1cbb5a",
@@ -84,51 +51,7 @@
     "cycle": "2019",
     "year": 2019,
     "inputCount": 3,
-    "stages": 3,
-    "isPumf": false
-  },
-  {
-    "recordId": "07d106bf-4711-585a-878c-be71e82fa20e",
-    "name": "GEODUR2",
-    "label": "Population Centre-Rural Classification - Grouped - (D)",
-    "surveyAcronym": "CCHS",
-    "cycle": "2015_NU",
-    "year": 2015,
-    "inputCount": 1,
-    "stages": 2,
-    "isPumf": true
-  },
-  {
-    "recordId": "785cc795-ac84-5ae7-aeef-fe1e10aef4c0",
-    "name": "MHWDBMI",
-    "label": "Body Mass Index (BMI) - measure - (D)",
-    "surveyAcronym": "CCHS",
-    "cycle": "2015_NU",
-    "year": 2015,
-    "inputCount": 5,
-    "stages": 2,
-    "isPumf": false
-  },
-  {
-    "recordId": "b5fc33ad-0717-5237-a7ee-f11effb35101",
-    "name": "DCCARTMG",
-    "label": "Total hours per week child spends in child care arrangement - Grouped",
-    "surveyAcronym": "ACS",
-    "cycle": "2006",
-    "year": 2006,
-    "inputCount": 1,
-    "stages": 2,
-    "isPumf": true
-  },
-  {
-    "recordId": "564d072c-a73a-5361-95a2-87b4442c7086",
-    "name": "LRDGCHRC",
-    "label": "Exceeded low-risk drinking guideline - chronic effects- tot. pop.-7d",
-    "surveyAcronym": "CADS",
-    "cycle": "2019",
-    "year": 2019,
-    "inputCount": 2,
-    "stages": 3,
+    "stages": 4,
     "isPumf": false
   },
   {
@@ -139,8 +62,8 @@
     "cycle": "2019",
     "year": 2019,
     "inputCount": 3,
-    "stages": 3,
-    "isPumf": false
+    "stages": 4,
+    "isPumf": true
   },
   {
     "recordId": "58f560a8-fbf0-56be-b87c-ac0cc022893f",
@@ -150,63 +73,8 @@
     "cycle": "2015_NU",
     "year": 2015,
     "inputCount": 3,
-    "stages": 3,
+    "stages": 4,
     "isPumf": false
-  },
-  {
-    "recordId": "f848c70f-5ebd-5ed6-b7fd-81c68d750888",
-    "name": "DMOBSCOR",
-    "label": "Mean number of moves per year of age (mobility score)",
-    "surveyAcronym": "ACS",
-    "cycle": "2006",
-    "year": 2006,
-    "inputCount": 2,
-    "stages": 2,
-    "isPumf": false
-  },
-  {
-    "recordId": "381a3493-7e25-5033-8d9f-54e3bf64ef2c",
-    "name": "SEDND",
-    "label": "Used sedatives not as directed - 12 months",
-    "surveyAcronym": "CADS",
-    "cycle": "2019",
-    "year": 2019,
-    "inputCount": 4,
-    "stages": 2,
-    "isPumf": false
-  },
-  {
-    "recordId": "1fba9445-5a5d-557c-88aa-0615f8938eb5",
-    "name": "DHAR12",
-    "label": "One or more types of harms due to drug use - 12 mo.",
-    "surveyAcronym": "CADS",
-    "cycle": "2019",
-    "year": 2019,
-    "inputCount": 3,
-    "stages": 2,
-    "isPumf": false
-  },
-  {
-    "recordId": "dec3072e-dceb-5c4a-b3c7-117e0da7a625",
-    "name": "DNEDUCFL",
-    "label": "DV - Education -Highest level -High School/Post-second. education flag",
-    "surveyAcronym": "APS",
-    "cycle": "2017_NIS_SIN",
-    "year": 2017,
-    "inputCount": 1,
-    "stages": 2,
-    "isPumf": false
-  },
-  {
-    "recordId": "d59f6414-9fb7-5185-b4c1-7de94bb8ce59",
-    "name": "DAGEINGY",
-    "label": "Age group of the child at the time of the interview in two-year intervals - Grouped",
-    "surveyAcronym": "ACS",
-    "cycle": "2006",
-    "year": 2006,
-    "inputCount": 1,
-    "stages": 2,
-    "isPumf": true
   },
   {
     "recordId": "5c1007f3-f170-518a-904b-484bdbdec554",
@@ -216,7 +84,7 @@
     "cycle": "2019",
     "year": 2019,
     "inputCount": 3,
-    "stages": 3,
+    "stages": 4,
     "isPumf": false
   },
   {
@@ -227,8 +95,19 @@
     "cycle": "2015_NU",
     "year": 2015,
     "inputCount": 3,
-    "stages": 3,
+    "stages": 4,
     "isPumf": false
+  },
+  {
+    "recordId": "564d072c-a73a-5361-95a2-87b4442c7086",
+    "name": "LRDGCHRC",
+    "label": "Exceeded low-risk drinking guideline - chronic effects- tot. pop.-7d",
+    "surveyAcronym": "CADS",
+    "cycle": "2019",
+    "year": 2019,
+    "inputCount": 2,
+    "stages": 4,
+    "isPumf": true
   },
   {
     "recordId": "0e42cc62-7570-5fa8-b8b5-97fcb6205561",
@@ -238,6 +117,28 @@
     "cycle": "2015_NU",
     "year": 2015,
     "inputCount": 1,
+    "stages": 4,
+    "isPumf": false
+  },
+  {
+    "recordId": "785cc795-ac84-5ae7-aeef-fe1e10aef4c0",
+    "name": "MHWDBMI",
+    "label": "Body Mass Index (BMI) - measure - (D)",
+    "surveyAcronym": "CCHS",
+    "cycle": "2015_NU",
+    "year": 2015,
+    "inputCount": 5,
+    "stages": 3,
+    "isPumf": false
+  },
+  {
+    "recordId": "381a3493-7e25-5033-8d9f-54e3bf64ef2c",
+    "name": "SEDND",
+    "label": "Used sedatives not as directed - 12 months",
+    "surveyAcronym": "CADS",
+    "cycle": "2019",
+    "year": 2019,
+    "inputCount": 4,
     "stages": 3,
     "isPumf": false
   },
@@ -249,19 +150,41 @@
     "cycle": "2006",
     "year": 2006,
     "inputCount": 4,
-    "stages": 2,
+    "stages": 3,
+    "isPumf": true
+  },
+  {
+    "recordId": "def93cf7-d0ac-5821-bb87-75c7e208e45b",
+    "name": "GEODPSZ",
+    "label": "Population size group - (D)",
+    "surveyAcronym": "CCHS",
+    "cycle": "2015_NU",
+    "year": 2015,
+    "inputCount": 3,
+    "stages": 3,
+    "isPumf": false
+  },
+  {
+    "recordId": "1fba9445-5a5d-557c-88aa-0615f8938eb5",
+    "name": "DHAR12",
+    "label": "One or more types of harms due to drug use - 12 mo.",
+    "surveyAcronym": "CADS",
+    "cycle": "2019",
+    "year": 2019,
+    "inputCount": 3,
+    "stages": 3,
     "isPumf": false
   },
   {
     "recordId": "8a8331b8-5cb6-585d-bc77-f5faedc818d7",
     "name": "DDIAGAST",
-    "label": "Asthma/chronic bronchitis has been diagnosed by health professional",
+    "label": "DDIAGAST",
     "surveyAcronym": "ACS",
     "cycle": "2006",
     "year": 2006,
     "inputCount": 3,
-    "stages": 2,
-    "isPumf": false
+    "stages": 3,
+    "isPumf": true
   },
   {
     "recordId": "06684730-314c-5e23-b5cc-acb72dd9598e",
@@ -271,7 +194,7 @@
     "cycle": "2019",
     "year": 2019,
     "inputCount": 3,
-    "stages": 2,
+    "stages": 3,
     "isPumf": false
   },
   {
@@ -282,7 +205,7 @@
     "cycle": "2019",
     "year": 2019,
     "inputCount": 3,
-    "stages": 2,
+    "stages": 3,
     "isPumf": false
   },
   {
@@ -293,8 +216,8 @@
     "cycle": "2019",
     "year": 2019,
     "inputCount": 3,
-    "stages": 2,
-    "isPumf": false
+    "stages": 3,
+    "isPumf": true
   },
   {
     "recordId": "a3ca2024-01cd-5db7-8ae7-bbffc6ad14e6",
@@ -304,7 +227,18 @@
     "cycle": "2019",
     "year": 2019,
     "inputCount": 3,
-    "stages": 2,
+    "stages": 3,
+    "isPumf": true
+  },
+  {
+    "recordId": "f848c70f-5ebd-5ed6-b7fd-81c68d750888",
+    "name": "DMOBSCOR",
+    "label": "DMOBSCOR",
+    "surveyAcronym": "ACS",
+    "cycle": "2006",
+    "year": 2006,
+    "inputCount": 2,
+    "stages": 3,
     "isPumf": false
   },
   {
@@ -315,30 +249,96 @@
     "cycle": "2019",
     "year": 2019,
     "inputCount": 2,
-    "stages": 2,
+    "stages": 3,
     "isPumf": false
   },
   {
-    "recordId": "0b5249b3-d831-5e80-8bd6-9b357fdb6d2a",
-    "name": "DLNGFAMU",
-    "label": "Language family of primary Aboriginal language understood",
-    "surveyAcronym": "APS",
-    "cycle": "2006",
-    "year": 2006,
-    "inputCount": 1,
-    "stages": 2,
-    "isPumf": false
-  },
-  {
-    "recordId": "35a6b5b5-2c3b-53e7-9b0e-a859b0a24291",
-    "name": "DAGEINTY",
-    "label": "Age of child at time of interview, in years",
+    "recordId": "b23cae39-1488-5fcb-98eb-3adf22c78cf9",
+    "name": "DAGEYRSG",
+    "label": "DAGEYRSG",
     "surveyAcronym": "ACS",
     "cycle": "2006",
     "year": 2006,
     "inputCount": 1,
-    "stages": 2,
+    "stages": 3,
+    "isPumf": true
+  },
+  {
+    "recordId": "9a1aa2ae-b472-512c-be1d-91619531b989",
+    "name": "DHLOSGP",
+    "label": "DHLOSGP",
+    "surveyAcronym": "APS",
+    "cycle": "2006",
+    "year": 2006,
+    "inputCount": 1,
+    "stages": 3,
     "isPumf": false
+  },
+  {
+    "recordId": "07d106bf-4711-585a-878c-be71e82fa20e",
+    "name": "GEODUR2",
+    "label": "Population Centre-Rural Classification - Grouped - (D)",
+    "surveyAcronym": "CCHS",
+    "cycle": "2015_NU",
+    "year": 2015,
+    "inputCount": 1,
+    "stages": 3,
+    "isPumf": true
+  },
+  {
+    "recordId": "b5fc33ad-0717-5237-a7ee-f11effb35101",
+    "name": "DCCARTMG",
+    "label": "DCCARTMG",
+    "surveyAcronym": "ACS",
+    "cycle": "2006",
+    "year": 2006,
+    "inputCount": 1,
+    "stages": 3,
+    "isPumf": true
+  },
+  {
+    "recordId": "dec3072e-dceb-5c4a-b3c7-117e0da7a625",
+    "name": "DNEDUCFL",
+    "label": "DV - Education -Highest level -High School/Post-second. education flag",
+    "surveyAcronym": "APS",
+    "cycle": "2017_NIS_SIN",
+    "year": 2017,
+    "inputCount": 1,
+    "stages": 3,
+    "isPumf": true
+  },
+  {
+    "recordId": "d59f6414-9fb7-5185-b4c1-7de94bb8ce59",
+    "name": "DAGEINGY",
+    "label": "DAGEINGY",
+    "surveyAcronym": "ACS",
+    "cycle": "2006",
+    "year": 2006,
+    "inputCount": 1,
+    "stages": 3,
+    "isPumf": true
+  },
+  {
+    "recordId": "0b5249b3-d831-5e80-8bd6-9b357fdb6d2a",
+    "name": "DLNGFAMU",
+    "label": "DLNGFAMU",
+    "surveyAcronym": "APS",
+    "cycle": "2006",
+    "year": 2006,
+    "inputCount": 1,
+    "stages": 3,
+    "isPumf": true
+  },
+  {
+    "recordId": "35a6b5b5-2c3b-53e7-9b0e-a859b0a24291",
+    "name": "DAGEINTY",
+    "label": "DAGEINTY",
+    "surveyAcronym": "ACS",
+    "cycle": "2006",
+    "year": 2006,
+    "inputCount": 1,
+    "stages": 3,
+    "isPumf": true
   },
   {
     "recordId": "63141e6c-188b-5138-8b16-515628852c7c",
@@ -348,7 +348,7 @@
     "cycle": "2015_NU",
     "year": 2015,
     "inputCount": 1,
-    "stages": 2,
+    "stages": 3,
     "isPumf": false
   },
   {
@@ -359,7 +359,7 @@
     "cycle": "2015_NU",
     "year": 2015,
     "inputCount": 1,
-    "stages": 2,
+    "stages": 3,
     "isPumf": false
   },
   {
@@ -370,7 +370,348 @@
     "cycle": "2015_NU",
     "year": 2015,
     "inputCount": 1,
+    "stages": 3,
+    "isPumf": false
+  },
+  {
+    "recordId": "0f94cf3b-839d-5296-81a9-7771c0525002",
+    "name": "DCARELAN",
+    "label": "Languages used in main type of child care (grouped) multiple Aboriginal languages, without any multiple Aboriginal languages, plus",
+    "surveyAcronym": "ACS",
+    "cycle": "2006",
+    "year": 2006,
+    "inputCount": 38,
+    "stages": 2,
+    "isPumf": true
+  },
+  {
+    "recordId": "b70f926e-d548-5b12-ade9-7c36ed96bd5b",
+    "name": "DNOHEALR",
+    "label": "Reason(s) why health care or medication was not received within the last 12 months medication and could not get it reason.",
+    "surveyAcronym": "ACS",
+    "cycle": "2006",
+    "year": 2006,
+    "inputCount": 24,
     "stages": 2,
     "isPumf": false
+  },
+  {
+    "recordId": "3a29a412-30a6-5321-ba8c-070872afda77",
+    "name": "DHLOSP",
+    "label": "Highest level of schooling attained",
+    "surveyAcronym": "APS",
+    "cycle": "2006",
+    "year": 2006,
+    "inputCount": 20,
+    "stages": 2,
+    "isPumf": false
+  },
+  {
+    "recordId": "b628eb9e-5ca4-5350-8429-b3b581d63ad4",
+    "name": "DLANGEXP",
+    "label": "Language(s) in which child can express his/her needs (grouped) multiple Aboriginal languages, without any multiple Aboriginal languages, plus Aboriginal Children's Survey 2006 ACS Analytical File",
+    "surveyAcronym": "ACS",
+    "cycle": "2006",
+    "year": 2006,
+    "inputCount": 19,
+    "stages": 2,
+    "isPumf": true
+  },
+  {
+    "recordId": "8a9a20d4-046f-57b9-a7ff-22f017fa1d39",
+    "name": "DLANGSPU",
+    "label": "Language(s) child speaks or understands (even if only a few words) (grouped) multiple Aboriginal languages, without any multiple Aboriginal languages, plus Aboriginal Children's Survey 2006 ACS Analytical File",
+    "surveyAcronym": "ACS",
+    "cycle": "2006",
+    "year": 2006,
+    "inputCount": 19,
+    "stages": 2,
+    "isPumf": true
+  },
+  {
+    "recordId": "410b6710-d289-5a9c-97b0-d18410399fac",
+    "name": "DLANHOMC",
+    "label": "Language(s) spoken to child most often at home (grouped) multiple Aboriginal languages, without any multiple Aboriginal languages, plus Aboriginal Children's Survey 2006 ACS Analytical File",
+    "surveyAcronym": "ACS",
+    "cycle": "2006",
+    "year": 2006,
+    "inputCount": 19,
+    "stages": 2,
+    "isPumf": true
+  },
+  {
+    "recordId": "cf37c92f-a3be-523a-89da-822ce0c88775",
+    "name": "DLANSPOC",
+    "label": "Language(s) child understands when spoken to (grouped) multiple Aboriginal languages, without any multiple Aboriginal languages, plus Aboriginal Children's Survey 2006 ACS Analytical File",
+    "surveyAcronym": "ACS",
+    "cycle": "2006",
+    "year": 2006,
+    "inputCount": 19,
+    "stages": 2,
+    "isPumf": true
+  },
+  {
+    "recordId": "fa85312f-91e0-5ea2-b6b6-12756f9fd9bd",
+    "name": "DMTHRTON",
+    "label": "Mother tongue learned and still able to understand of parent (grouped) multiple Aboriginal languages, without any multiple Aboriginal languages, plus",
+    "surveyAcronym": "ACS",
+    "cycle": "2006",
+    "year": 2006,
+    "inputCount": 19,
+    "stages": 2,
+    "isPumf": true
+  },
+  {
+    "recordId": "f074d326-bfc6-5b65-b50d-517037eba602",
+    "name": "DHLTHCON",
+    "label": "Indicator showing presence of one or more chronic conditions Aboriginal People's Survey 2006 Adult Core Analytical File No Frequencies",
+    "surveyAcronym": "APS",
+    "cycle": "2006",
+    "year": 2006,
+    "inputCount": 16,
+    "stages": 2,
+    "isPumf": false
+  },
+  {
+    "recordId": "9ddc8006-c6bc-5021-a8e1-d9d26a0b46a4",
+    "name": "DNUMC1",
+    "label": "Total number of chronic health condition(s)",
+    "surveyAcronym": "APS",
+    "cycle": "2006",
+    "year": 2006,
+    "inputCount": 16,
+    "stages": 2,
+    "isPumf": false
+  },
+  {
+    "recordId": "9d125153-ba5b-52b9-bc7b-8289deea1dca",
+    "name": "DACTRESG",
+    "label": "What does the parent do on a full-time basis (grouped)?",
+    "surveyAcronym": "ACS",
+    "cycle": "2006",
+    "year": 2006,
+    "inputCount": 13,
+    "stages": 2,
+    "isPumf": true
+  },
+  {
+    "recordId": "41996bcd-fc97-5faa-820b-bdbcf8fa5503",
+    "name": "DACTSPOG",
+    "label": "What does spouse of the parent do on a full-time basis (grouped)?",
+    "surveyAcronym": "ACS",
+    "cycle": "2006",
+    "year": 2006,
+    "inputCount": 13,
+    "stages": 2,
+    "isPumf": true
+  },
+  {
+    "recordId": "aa629ecc-e4fe-5465-a9bd-01c513f8f74d",
+    "name": "DDIAGC1",
+    "label": "Child has long-term health condition diagnosed by health professional C28B, C29B, C30B, C31B, C32B, C33B, C34B, C35B, C36B, C37B, C38B, C39B, and C40B.",
+    "surveyAcronym": "ACS",
+    "cycle": "2006",
+    "year": 2006,
+    "inputCount": 13,
+    "stages": 2,
+    "isPumf": true
+  },
+  {
+    "recordId": "e356ca14-f0d0-5ef3-9c9c-b93a8faf75e7",
+    "name": "DDIAGC2",
+    "label": "Child has long-term health condition (other than allergies or lactose intolerance) diagnosed by health professional C32B, C33B, C34B, C35B, C36B, C37B, C38B, C39B, and C40B. Aboriginal Children's Survey 2006 ACS Analytic",
+    "surveyAcronym": "ACS",
+    "cycle": "2006",
+    "year": 2006,
+    "inputCount": 13,
+    "stages": 2,
+    "isPumf": true
+  },
+  {
+    "recordId": "bdd4c80c-f2c7-554c-a544-82fe0eae9a62",
+    "name": "DHLTHC1",
+    "label": "Child has long-term health condition lasting 6 months or more C28A, C29A, C30A, C31A, C32A, C33A, C34A, C35A, C36A, C37A, C38A, C39A, and C40A. Aboriginal Children's Survey 2006 ACS Analytical File",
+    "surveyAcronym": "ACS",
+    "cycle": "2006",
+    "year": 2006,
+    "inputCount": 13,
+    "stages": 2,
+    "isPumf": false
+  },
+  {
+    "recordId": "167c9479-955a-50b2-af71-2b4a4d6d986e",
+    "name": "DHEALOTH",
+    "label": "DHEALOTH",
+    "surveyAcronym": "ACS",
+    "cycle": "2006",
+    "year": 2006,
+    "inputCount": 3,
+    "stages": 2,
+    "isPumf": true
+  },
+  {
+    "recordId": "5bbf29f1-f38c-5b60-8dd7-4f183bb6735e",
+    "name": "ALIMO",
+    "label": "Support payments received",
+    "surveyAcronym": "CIS",
+    "cycle": "2022",
+    "year": 2022,
+    "inputCount": 1,
+    "stages": 2,
+    "isPumf": true
+  },
+  {
+    "recordId": "b7880362-64d3-5d7a-8895-7ade267afc55",
+    "name": "ATINC",
+    "label": "After-tax income",
+    "surveyAcronym": "CIS",
+    "cycle": "2022",
+    "year": 2022,
+    "inputCount": 1,
+    "stages": 2,
+    "isPumf": true
+  },
+  {
+    "recordId": "db992cbf-6fac-5982-9cd7-c01274899ddf",
+    "name": "CIS_WGT",
+    "label": "Final weight - CIS sample",
+    "surveyAcronym": "CIS",
+    "cycle": "2022",
+    "year": 2022,
+    "inputCount": 1,
+    "stages": 2,
+    "isPumf": true
+  },
+  {
+    "recordId": "2e921118-4339-510c-8456-2a58af81711d",
+    "name": "GTR",
+    "label": "Government transfers, federal and provincial/territorial",
+    "surveyAcronym": "CIS",
+    "cycle": "2022",
+    "year": 2022,
+    "inputCount": 1,
+    "stages": 2,
+    "isPumf": true
+  },
+  {
+    "recordId": "f61992f8-cd50-5342-8473-9301d8a77314",
+    "name": "INCTX",
+    "label": "Income tax, federal plus provincial/territorial",
+    "surveyAcronym": "CIS",
+    "cycle": "2022",
+    "year": 2022,
+    "inputCount": 1,
+    "stages": 2,
+    "isPumf": true
+  },
+  {
+    "recordId": "d5d8d166-85f7-561d-8380-33a3f8d6bf83",
+    "name": "MTINC",
+    "label": "Market income",
+    "surveyAcronym": "CIS",
+    "cycle": "2022",
+    "year": 2022,
+    "inputCount": 1,
+    "stages": 2,
+    "isPumf": true
+  },
+  {
+    "recordId": "37cdc685-e5ee-5438-b14b-63ef15664419",
+    "name": "OAS",
+    "label": "Old Age Security pension",
+    "surveyAcronym": "CIS",
+    "cycle": "2022",
+    "year": 2022,
+    "inputCount": 1,
+    "stages": 2,
+    "isPumf": true
+  },
+  {
+    "recordId": "71e20a91-4737-578a-bc11-bf8b04ab3c1b",
+    "name": "PROV",
+    "label": "Province or territory",
+    "surveyAcronym": "CIS",
+    "cycle": "2022",
+    "year": 2022,
+    "inputCount": 1,
+    "stages": 2,
+    "isPumf": true
+  },
+  {
+    "recordId": "d60cfb68-c3c5-57e4-a73c-070b1b201e51",
+    "name": "DURBRUR",
+    "label": "DURBRUR",
+    "surveyAcronym": "ACS",
+    "cycle": "2006",
+    "year": 2006,
+    "inputCount": 1,
+    "stages": 2,
+    "isPumf": true
+  },
+  {
+    "recordId": "8741b3d7-9c56-5b73-a99a-4593ee46fa56",
+    "name": "COMPLETION_RATE_MODEL_DESC",
+    "label": "A slightly more detailed description of the COMPLETION_RATE_MODEL code.",
+    "surveyAcronym": "BC",
+    "cycle": "K-12_AllYears",
+    "year": 2021,
+    "inputCount": 1,
+    "stages": 2,
+    "isPumf": true
+  },
+  {
+    "recordId": "160b05ac-6197-5528-87ab-f5844af0317b",
+    "name": "ABOR_EVER_NOT_BACKDTD_DESC",
+    "label": "A full text description for the ABOR_EVER_NOT_BACKDTD_FLAG.",
+    "surveyAcronym": "BC",
+    "cycle": "K-12_AllYears",
+    "year": 2021,
+    "inputCount": 1,
+    "stages": 2,
+    "isPumf": true
+  },
+  {
+    "recordId": "7ad346ce-6322-5b5d-ab2b-f3b8c2bbbdeb",
+    "name": "FI_EVER_DESC",
+    "label": "A full text description of the FI_EVER_FLAG.",
+    "surveyAcronym": "BC",
+    "cycle": "K-12_AllYears",
+    "year": 2021,
+    "inputCount": 1,
+    "stages": 2,
+    "isPumf": true
+  },
+  {
+    "recordId": "04310efa-b521-50d1-aae2-e8c7d39db023",
+    "name": "BEHAV_DIS_EVER_DESC",
+    "label": "A full text description of the BEHAV_DIS_EVER_FLAG.",
+    "surveyAcronym": "BC",
+    "cycle": "K-12_AllYears",
+    "year": 2021,
+    "inputCount": 1,
+    "stages": 2,
+    "isPumf": true
+  },
+  {
+    "recordId": "df3e3031-e6d0-5ab3-88cc-6d1de0ae87d7",
+    "name": "GIFTED_EVER_DESC",
+    "label": "A full text description of the GIFTED_EVER_FLAG.",
+    "surveyAcronym": "BC",
+    "cycle": "K-12_AllYears",
+    "year": 2021,
+    "inputCount": 1,
+    "stages": 2,
+    "isPumf": true
+  },
+  {
+    "recordId": "936bdd80-4cc2-5349-83a1-2d9dcd2eff44",
+    "name": "NON_RES_LST_KNWN_COLL_DESC",
+    "label": "A full text description of the NON_RES_LST_KNWN_COLL_FLAG.",
+    "surveyAcronym": "BC",
+    "cycle": "K-12_AllYears",
+    "year": 2021,
+    "inputCount": 1,
+    "stages": 2,
+    "isPumf": true
   }
 ]

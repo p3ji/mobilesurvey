@@ -24,7 +24,8 @@ interface DiagramEdge {
   key: string;
   sourceKey: string;
   targetKey: string;
-  evidence: 'named' | 'mapped' | 'provisional';
+  evidence: 'named' | 'mapped' | 'provisional' | 'deterministic';
+  derivationType: string;
 }
 
 function nodeKey(depth: number, recordId: string): string {
@@ -62,7 +63,13 @@ function layout(root: CorpusLineageTarget, edges: CorpusLineageEdge[]) {
     for (const edge of layer) {
       const target = addNode(depth - 1, edge.targetRecordId, edge.targetName, edge.targetName);
       const source = addNode(depth, edge.sourceRecordId ?? edge.edgeId, edge.sourceVarName, edge.sourceLabel);
-      connections.push({ key: `${edge.edgeId}:${depth}`, sourceKey: source.key, targetKey: target.key, evidence: lineageEvidence(edge) });
+      connections.push({
+        key: `${edge.edgeId}:${depth}`,
+        sourceKey: source.key,
+        targetKey: target.key,
+        evidence: lineageEvidence(edge),
+        derivationType: edge.derivationType,
+      });
     }
   }
 
@@ -128,7 +135,9 @@ export function CorpusLineageDiagram({ target, edges, highlightRecordId }: { tar
       <div className="kg-flow__toolbar">
         <div>
           <strong>Variable flow</strong>
-          <span>Arrows point toward the derived variable. Solid: source named in the note. Dotted light grey: high-confidence provisional mapping.</span>
+          <span>
+            Arrows point toward the derived variable. Teal: master-file counterpart. Indigo: G-suffix collapse. Grey: note-derived.
+          </span>
         </div>
         {graph.directCount > DIRECT_INPUTS_PER_VIEW && (
           <div className="kg-flow__controls">
@@ -144,10 +153,16 @@ export function CorpusLineageDiagram({ target, edges, highlightRecordId }: { tar
       <div className="kg-flow__viewport" ref={viewport}>
         <svg width={diagram.width} height={diagram.height} viewBox={`0 0 ${diagram.width} ${diagram.height}`} role="img" aria-label={`Variable flow for ${target.name}: ${graph.edges.length} published links shown`}>
           <title>Variable flow for {target.name}</title>
-          <desc>Inputs on the left flow to {target.name} on the right. Solid lines are published links; dotted light-grey lines are high-confidence provisional mappings. The evidence for every link appears below.</desc>
+          <desc>Inputs on the left flow to {target.name} on the right. Teal lines are master-file counterparts; indigo lines are G-suffix collapses; grey lines are note-derived links.</desc>
           <defs>
             <marker id="kg-flow-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
               <path d="M 0 1 L 9 5 L 0 9 z" fill="#64748b" />
+            </marker>
+            <marker id="kg-flow-arrow-counterpart" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+              <path d="M 0 1 L 9 5 L 0 9 z" fill="#0d9488" />
+            </marker>
+            <marker id="kg-flow-arrow-collapse" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+              <path d="M 0 1 L 9 5 L 0 9 z" fill="#6366f1" />
             </marker>
           </defs>
           {diagram.columns.map((column, depth) => (
@@ -163,7 +178,36 @@ export function CorpusLineageDiagram({ target, edges, highlightRecordId }: { tar
             const x2 = destination.x - 8;
             const y2 = destination.y + NODE_HEIGHT / 2;
             const bend = (x1 + x2) / 2;
-            return <path key={edge.key} d={`M ${x1} ${y1} C ${bend} ${y1}, ${bend} ${y2}, ${x2} ${y2}`} fill="none" stroke={edge.evidence === 'provisional' ? '#cbd5e1' : '#94a3b8'} strokeWidth="1.6" strokeDasharray={edge.evidence === 'provisional' || edge.evidence === 'mapped' ? '4 4' : undefined} markerEnd="url(#kg-flow-arrow)"><title>{edge.evidence === 'named' ? 'Source named in note' : edge.evidence === 'provisional' ? 'High-confidence provisional mapping; needs review' : 'Source column mapped from note wording'}</title></path>;
+
+            const isCounterpart = edge.derivationType === 'counterpart';
+            const isCollapse = edge.derivationType === 'collapse';
+            const strokeColor = isCounterpart ? '#0d9488' : isCollapse ? '#6366f1' : edge.evidence === 'provisional' ? '#cbd5e1' : '#94a3b8';
+            const markerId = isCounterpart ? 'url(#kg-flow-arrow-counterpart)' : isCollapse ? 'url(#kg-flow-arrow-collapse)' : 'url(#kg-flow-arrow)';
+            const dashArray = isCounterpart || isCollapse ? undefined : (edge.evidence === 'provisional' || edge.evidence === 'mapped' ? '4 4' : undefined);
+
+            const title = isCounterpart
+              ? 'Master-file counterpart; deterministic rule'
+              : isCollapse
+                ? 'G-suffix collapse; deterministic rule'
+                : edge.evidence === 'named'
+                  ? 'Source named in note'
+                  : edge.evidence === 'provisional'
+                    ? 'High-confidence provisional mapping; needs review'
+                    : 'Source column mapped from note wording';
+
+            return (
+              <path
+                key={edge.key}
+                d={`M ${x1} ${y1} C ${bend} ${y1}, ${bend} ${y2}, ${x2} ${y2}`}
+                fill="none"
+                stroke={strokeColor}
+                strokeWidth={isCounterpart || isCollapse ? '1.8' : '1.6'}
+                strokeDasharray={dashArray}
+                markerEnd={markerId}
+              >
+                <title>{title}</title>
+              </path>
+            );
           })}
           {diagram.columns.flat().map((node) => (
             <g key={node.key}>

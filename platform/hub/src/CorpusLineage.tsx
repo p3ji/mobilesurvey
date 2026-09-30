@@ -245,14 +245,38 @@ export function CorpusLineage({ source, onSelectSearch, initialFocus }: CorpusLi
                   <div className="kg-lineage__edges">
                     {layer.map((edge) => (
                       <div className="kg-lineage__edge" key={edge.edgeId}>
-                        <div className="kg-lineage__relation"><code>{edge.targetName}</code> <span>was derived from</span></div>
+                        <div className="kg-lineage__relation">
+                          <code>{edge.targetName}</code>{' '}
+                          <span>
+                            {edge.derivationType === 'counterpart'
+                              ? 'published in (master file)'
+                              : edge.derivationType === 'collapse'
+                                ? 'collapsed from'
+                                : 'was derived from'}
+                          </span>
+                        </div>
                         <div className="kg-lineage__source">
                           <code>{edge.sourceVarName}</code>
                           <span>{edge.sourceLabel}</span>
                         </div>
                         <div className="kg-lineage__edge-meta">
-                          {lineageEvidence(edge) === 'named' ? 'Source named in note' : lineageEvidence(edge) === 'provisional' ? 'Low-certainty provisional mapping' : 'Source column mapped from note'}
-                          {' · '}{edge.dataAuthority === 'human_verified' ? 'human reviewed' : edge.reviewStatus === 'needs_review' ? 'needs review' : 'machine checked'}
+                          {lineageEvidence(edge) === 'deterministic'
+                            ? 'deterministic rule · verified'
+                            : lineageEvidence(edge) === 'named'
+                              ? 'Source named in note'
+                              : lineageEvidence(edge) === 'provisional'
+                                ? 'Low-certainty provisional mapping'
+                                : 'Source column mapped from note'}
+                          {lineageEvidence(edge) !== 'deterministic' && (
+                            <>
+                              {' · '}
+                              {edge.dataAuthority === 'human_verified'
+                                ? 'human reviewed'
+                                : edge.reviewStatus === 'needs_review'
+                                  ? 'needs review'
+                                  : 'machine checked'}
+                            </>
+                          )}
                           {onSelectSearch && <button type="button" onClick={() => onSelectSearch(edge.sourceVarName, selected.surveyAcronym ?? undefined)}>Find source ↗</button>}
                         </div>
                       </div>
