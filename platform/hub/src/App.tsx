@@ -1124,6 +1124,15 @@ function SearcherView({ onBack }: { onBack: () => void }) {
     initialParams.initialGraphTab ?? null
   );
 
+  useEffect(() => {
+    const openLegacyAboutLink = () => {
+      const hashView = window.location.hash.replace(/^#[/]?/, '').split('?')[0]?.toLowerCase();
+      if (hashView === 'about') setScope('about');
+    };
+    window.addEventListener('hashchange', openLegacyAboutLink);
+    return () => window.removeEventListener('hashchange', openLegacyAboutLink);
+  }, []);
+
   // Sync state changes back to the URL hash so searches can be copied, bookmarked, and shared
   useEffect(() => {
     const params = new URLSearchParams();
