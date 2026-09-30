@@ -2430,16 +2430,8 @@ code { font-family: var(--mono); font-size: 0.88em; }
 }
 
 /* About: a short public account of the metadata work. */
-.about-page { background: #f7f9fc; color: #1b2733; }
-.about-page__header { background: #fff; }
-.about-page__header-link {
-  margin-left: auto; border: 1px solid #cbd8e8; border-radius: 999px;
-  background: #fff; color: #164185; cursor: pointer; font: inherit;
-  font-size: 13px; font-weight: 700; padding: 9px 15px;
-  display: inline-flex; align-items: center; gap: 7px; white-space: nowrap;
-}
-.about-page__header-link:hover, .about-page__header-link:focus-visible { border-color: #1d4ed8; background: #eff6ff; }
-.about-page__main { max-width: 1180px; padding: 34px 28px 60px; }
+.about-page { background: #f7f9fc; color: #1b2733; border-radius: 18px; }
+.about-page__main { padding: 24px 24px 50px; }
 .about-hero {
   display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(250px, .7fr);
   align-items: center; gap: 30px; min-height: 330px; padding: 42px 50px;
@@ -2507,9 +2499,7 @@ code { font-family: var(--mono); font-size: 0.88em; }
   .about-progress__body { align-items: flex-start; }
 }
 @media (max-width: 560px) {
-  .about-page__header { padding: 10px 15px; }
-  .about-page__header .hub__brand strong { font-size: 14px; }
-  .about-page__header-link { padding: 8px 11px; font-size: 12px; }
+  .about-page__main { padding: 12px 0 32px; background: transparent; }
   .about-hero h1 { font-size: 2rem; }
   .about-hero__lede { font-size: 14px; }
   .about-facts { grid-template-columns: 1fr; }

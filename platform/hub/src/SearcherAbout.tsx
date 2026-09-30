@@ -1,4 +1,4 @@
-/** A short public story of the corpus project, built on the existing React Chrono timeline. */
+/** A short public story of the corpus project within Searcher's tabs. */
 import { useEffect, useMemo, useState } from 'react';
 import { ArrowRight, BookOpen, Check, Link2, Search, Sparkles } from 'lucide-react';
 import { Chrono, type TimelineItem } from 'react-chrono';
@@ -9,7 +9,6 @@ import {
   type SupabaseCorpusSource,
 } from '@mobilesurvey/metadata-registry';
 import summary from './data/knowledgeGraphSummary.json';
-import logo from './assets/logo.png';
 
 const REFRESH_MS = 120_000;
 
@@ -17,13 +16,11 @@ function number(value: number): string {
   return value.toLocaleString('en-CA');
 }
 
-export function AboutPage({
+export function SearcherAbout({
   source,
-  onBack,
   onExplore,
 }: {
   source: SupabaseCorpusSource | null;
-  onBack: () => void;
   onExplore: () => void;
 }) {
   const [progress, setProgress] = useState<CorpusAboutProgress | null>(null);
@@ -92,20 +89,7 @@ export function AboutPage({
   ], [linkedPrograms, progress, searchStats]);
 
   return (
-    <div className="hub about-page">
-      <header className="hub__header about-page__header">
-        <div className="hub__brand">
-          <button type="button" className="hub__back" onClick={onBack} aria-label="Back to home">
-            <img src={logo} alt="" className="hub__back-logo" />
-          </button>
-          <strong>About the project</strong>
-        </div>
-        <button type="button" className="about-page__header-link" onClick={onExplore}>
-          Explore Searcher <ArrowRight size={16} aria-hidden="true" />
-        </button>
-      </header>
-
-      <main className="hub__main about-page__main">
+    <div className="about-page about-page__main">
         <section className="about-hero" aria-labelledby="about-title">
           <div className="about-hero__copy">
             <p className="about-eyebrow">The story so far</p>
@@ -198,7 +182,6 @@ export function AboutPage({
           </div>
         </section>
         <p className="about-attribution">{CORPUS_ATTRIBUTION}</p>
-      </main>
     </div>
   );
 }

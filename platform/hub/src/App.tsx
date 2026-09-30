@@ -36,7 +36,7 @@ import type {
 import { draftRulesFromAnnotation, explainFlag, llmConfigured } from './validatorLlm.js';
 import { CorpusSearch } from './CorpusSearch.js';
 import { CorpusGraphExplorer } from './CorpusGraphExplorer.js';
-import { AboutPage } from './AboutPage.js';
+import { SearcherAbout } from './SearcherAbout.js';
 import type { CorpusGraphFocus } from './CorpusLineage.js';
 import {
   corpusSource,
@@ -139,11 +139,10 @@ const DEMO_SURVEYS: SurveySummary[] = [
 
 // ── Module definitions ────────────────────────────────────────────────────────
 
-type HubView = 'home' | 'about' | 'collector' | 'searcher' | 'trainer' | 'migrator' | 'analyzer' | 'interviewer' | 'supervisor' | 'validator';
+type HubView = 'home' | 'collector' | 'searcher' | 'trainer' | 'migrator' | 'analyzer' | 'interviewer' | 'supervisor' | 'validator';
 
 const VALID_HUB_VIEWS = new Set<HubView>([
   'home',
-  'about',
   'collector',
   'searcher',
   'trainer',
@@ -165,11 +164,13 @@ function getViewFromUrl(): HubView {
   const rawHash = window.location.hash.replace(/^#[/]?/, '');
   const hashPart = rawHash.split('?')[0] ?? '';
   const viewFromHash = (hashPart.split('&')[0] ?? '').trim().toLowerCase();
+  if (viewFromHash === 'about') return 'searcher'; // Preserve links to the former standalone page.
   if (isValidHubView(viewFromHash)) return viewFromHash;
 
   // 2. Check window.location.search: ?view=searcher
   const searchParams = new URLSearchParams(window.location.search);
   const viewParam = searchParams.get('view')?.toLowerCase();
+  if (viewParam === 'about') return 'searcher';
   if (viewParam && isValidHubView(viewParam)) return viewParam;
 
   // 3. If there is a direct search query (?q=...) or searcher hash, default to searcher
@@ -1074,7 +1075,7 @@ function CollectorView({ onBack }: { onBack: () => void }) {
 
 // ── Searcher view ─────────────────────────────────────────────────────────────
 
-type SearchScope = 'search' | 'graph';
+type SearchScope = 'search' | 'graph' | 'about';
 
 function parseSearcherParams(): {
   scope: SearchScope;
@@ -1089,6 +1090,7 @@ function parseSearcherParams(): {
   let hashQuery = '';
   const hash = window.location.hash.replace(/^#[/]?/, '');
   const qIndex = hash.indexOf('?');
+  const hashView = (qIndex === -1 ? hash : hash.slice(0, qIndex)).toLowerCase();
   if (qIndex !== -1) {
     hashQuery = hash.slice(qIndex + 1);
   }
@@ -1097,7 +1099,10 @@ function parseSearcherParams(): {
   const query = hashParams.get('q') ?? searchParams.get('q') ?? '';
   const survey = hashParams.get('survey') ?? searchParams.get('survey') ?? 'all';
   const rawScope = hashParams.get('scope') ?? searchParams.get('scope');
-  const scope: SearchScope = rawScope === 'graph' || rawScope === 'concepts' ? 'graph' : 'search';
+  const legacyAboutView = searchParams.get('view') === 'about' && hashView !== 'searcher';
+  const scope: SearchScope = hashView === 'about' || legacyAboutView || rawScope === 'about'
+    ? 'about'
+    : rawScope === 'graph' || rawScope === 'concepts' ? 'graph' : 'search';
 
   const conceptId = hashParams.get('concept') ?? searchParams.get('concept') ?? null;
   const initialGraphTab = rawScope === 'concepts'
@@ -1107,7 +1112,7 @@ function parseSearcherParams(): {
   return { scope, query, survey, conceptId, initialGraphTab };
 }
 
-function SearcherView({ onBack, onAbout }: { onBack: () => void; onAbout: () => void }) {
+function SearcherView({ onBack }: { onBack: () => void }) {
   const corpus = useMemo(() => corpusSource(), []);
   const initialParams = useMemo(() => parseSearcherParams(), []);
   const [scope, setScope] = useState<SearchScope>(initialParams.scope);
@@ -1142,77 +1147,91 @@ function SearcherView({ onBack, onAbout }: { onBack: () => void; onAbout: () => 
           <strong>Searcher</strong>
           <span className="hub__sub">Explore Statistics Canada survey metadata</span>
         </div>
-        <button type="button" className="about-page__header-link" onClick={onAbout}>About the project</button>
       </header>
 
       <main className="hub__main sr-main">
-        {corpus === null ? (
-          <div className="cs-error">
-            <strong>Statistics Canada metadata search is unavailable in this deployment.</strong>
-          </div>
-        ) : (
-          <>
-            <div className="sr-scopes" role="tablist" aria-label="Statistics Canada metadata views">
-              <button
-                type="button"
-                role="tab"
-                aria-selected={scope === 'search'}
-                className={`sr-scope ${scope === 'search' ? 'sr-scope--active' : ''}`}
-                onClick={() => setScope('search')}
-              >
-                Search
-              </button>
-              <button
-                type="button"
-                role="tab"
-                aria-selected={scope === 'graph'}
-                className={`sr-scope ${scope === 'graph' ? 'sr-scope--active' : ''}`}
-                onClick={() => {
-                  setGraphFocus(null);
-                  setConceptId(null);
-                  setGraphTab(null);
-                  setScope('graph');
-                }}
-              >
-                Knowledge Graph
-              </button>
-            </div>
+        <div className="sr-scopes" role="tablist" aria-label="Statistics Canada metadata views">
+          <button
+            type="button"
+            role="tab"
+            id="searcher-search-tab"
+            aria-controls="searcher-panel"
+            aria-selected={scope === 'search'}
+            className={`sr-scope ${scope === 'search' ? 'sr-scope--active' : ''}`}
+            onClick={() => setScope('search')}
+          >
+            Search
+          </button>
+          <button
+            type="button"
+            role="tab"
+            id="searcher-graph-tab"
+            aria-controls="searcher-panel"
+            aria-selected={scope === 'graph'}
+            className={`sr-scope ${scope === 'graph' ? 'sr-scope--active' : ''}`}
+            onClick={() => {
+              setGraphFocus(null);
+              setConceptId(null);
+              setGraphTab(null);
+              setScope('graph');
+            }}
+          >
+            Knowledge Graph
+          </button>
+          <button
+            type="button"
+            role="tab"
+            id="searcher-about-tab"
+            aria-controls="searcher-panel"
+            aria-selected={scope === 'about'}
+            className={`sr-scope ${scope === 'about' ? 'sr-scope--active' : ''}`}
+            onClick={() => setScope('about')}
+          >
+            About
+          </button>
+        </div>
 
-            {scope === 'search' ? (
-              <CorpusSearch
-                source={corpus}
-                initialQuery={corpusQuery}
-                initialSurvey={corpusSurvey}
-                onSearchStateChange={(query, survey) => {
-                  setCorpusQuery(query);
-                  setCorpusSurvey(survey);
-                }}
-                onOpenConcept={(id) => {
-                  setConceptId(id);
-                  setGraphTab('concepts');
-                  setScope('graph');
-                }}
-                onOpenGraph={(focus) => {
-                  setGraphFocus(focus);
-                  setGraphTab('lineage');
-                  setScope('graph');
-                }}
-              />
-            ) : (
-              <CorpusGraphExplorer
-                source={corpus}
-                initialGraphFocus={graphFocus}
-                initialConceptId={conceptId}
-                initialTab={graphTab ?? undefined}
-                onSelectSearch={(q, survey) => {
-                  setCorpusQuery(q);
-                  setCorpusSurvey(survey ?? 'all');
-                  setScope('search');
-                }}
-              />
-            )}
-          </>
-        )}
+        <div id="searcher-panel" role="tabpanel" aria-labelledby={`searcher-${scope}-tab`}>
+          {scope === 'about' ? (
+            <SearcherAbout source={corpus} onExplore={() => setScope('search')} />
+          ) : corpus === null ? (
+            <div className="cs-error">
+              <strong>Statistics Canada metadata search is unavailable in this deployment.</strong>
+            </div>
+          ) : scope === 'search' ? (
+            <CorpusSearch
+              source={corpus}
+              initialQuery={corpusQuery}
+              initialSurvey={corpusSurvey}
+              onSearchStateChange={(query, survey) => {
+                setCorpusQuery(query);
+                setCorpusSurvey(survey);
+              }}
+              onOpenConcept={(id) => {
+                setConceptId(id);
+                setGraphTab('concepts');
+                setScope('graph');
+              }}
+              onOpenGraph={(focus) => {
+                setGraphFocus(focus);
+                setGraphTab('lineage');
+                setScope('graph');
+              }}
+            />
+          ) : (
+            <CorpusGraphExplorer
+              source={corpus}
+              initialGraphFocus={graphFocus}
+              initialConceptId={conceptId}
+              initialTab={graphTab ?? undefined}
+              onSelectSearch={(q, survey) => {
+                setCorpusQuery(q);
+                setCorpusSurvey(survey ?? 'all');
+                setScope('search');
+              }}
+            />
+          )}
+        </div>
       </main>
     </div>
   );
@@ -3133,7 +3152,6 @@ function HomePage({ onNavigate }: { onNavigate: (v: HubView) => void }) {
           <img src={logo} alt="Modular Survey Tools" className="hub__logo" />
           <span className="hub__sub">Open-source survey platform</span>
         </div>
-        <button type="button" className="about-page__header-link" onClick={() => onNavigate('about')}>About the project</button>
       </header>
 
       <main className="hub__main hub__main--home">
@@ -3540,8 +3558,7 @@ export function App() {
   }, []);
 
   if (view === 'collector') return <CollectorView onBack={() => setView('home')} />;
-  if (view === 'searcher') return <SearcherView onBack={() => setView('home')} onAbout={() => setView('about')} />;
-  if (view === 'about') return <AboutPage source={corpusSource()} onBack={() => setView('home')} onExplore={() => setView('searcher')} />;
+  if (view === 'searcher') return <SearcherView onBack={() => setView('home')} />;
   if (view === 'trainer') return <TrainingView onBack={() => setView('home')} />;
   if (view === 'migrator') return <MigratorView onBack={() => setView('home')} />;
   if (view === 'analyzer') return <AnalyzerView onBack={() => setView('home')} />;
