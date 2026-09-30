@@ -174,6 +174,16 @@ describe('sql/search-performance.sql', () => {
   });
 });
 
+describe('sql/search-sort.sql', () => {
+  it('parses the recent-sort RPC and its SQL body', () => {
+    const sql = readFileSync(path.resolve(path.dirname(SCHEMA_PATH), 'search-sort.sql'), 'utf8');
+    expect(pg.parse(sql).error).toBeNull();
+    const body = sql.match(/as \$\$([\s\S]*?)\$\$;/)?.[1];
+    expect(body).toBeDefined();
+    expect(pg.parse(body!).error).toBeNull();
+  });
+});
+
 describe('sql/clusters.sql', () => {
   let clusters: string;
 

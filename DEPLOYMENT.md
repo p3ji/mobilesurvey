@@ -501,6 +501,11 @@ run `select corpus_refresh_facets();` with a privileged SQL role. The refresh fu
 callable by the browser's anon role. Search evaluation and known limits are in
 `docs/search-evaluation.md`.
 
+For the field-aware ranking update, reapply `search-performance.sql` and then
+`tools/metadata/statcan-corpus/sql/search-sort.sql`. The ranked and recent RPCs use the same
+score: a match in the name, concept, or question outranks a match found only in a long code list.
+The existing GIN index still supplies candidates; no corpus table or index rebuild is required.
+
 **AI-related results.** Apply `tools/metadata/statcan-corpus/sql/ai-search-results.sql`
 after `search-performance.sql` and `subjects.sql`. The optional Searcher AI control uses this
 RPC to deduplicate LLM-suggested phrase matches, count them across all subjects, and page them.

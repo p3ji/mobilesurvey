@@ -879,7 +879,7 @@ export function CorpusSearch({
                 ? `No results for "${debounced}".`
                 : `${formatInt(total)} variable record${total === 1 ? '' : 's'} for "${
                     corrected?.to ?? debounced
-                  }"` + (pages > 1 ? ` · page ${page + 1} of ${formatInt(pages)}` : '')}
+                  }"` + (hideProcess || roleFilter !== 'all' ? ' before GSIM Role / Paradata filtering' : '') + (pages > 1 ? ` · page ${page + 1} of ${formatInt(pages)}` : '')}
             {/* A correction the reader can neither see nor refuse is how this pattern goes wrong,
                 so it says what it did and offers the original back. */}
             {!busy && corrected !== null && (
@@ -926,7 +926,7 @@ export function CorpusSearch({
           {aiEnabled && aiQuery === debounced.replace(/\s+/g, ' ').trim() && (
             <section className="cs-ai-results" aria-label="AI expanded search results">
               <h3>Related results from AI search</h3>
-              <p>{formatInt(aiTotal)} distinct variable record{aiTotal === 1 ? '' : 's'} match the suggested terms{subject === null ? ' across all subjects' : ` in ${subject}`}.
+              <p>{formatInt(aiTotal)} distinct variable record{aiTotal === 1 ? '' : 's'} match the suggested terms{subject === null ? ' across all subjects' : ` in ${subject}`}{hideProcess || roleFilter !== 'all' ? ', before GSIM Role / Paradata filtering' : ''}.
                 {aiTotal > PAGE_SIZE ? ` Showing page ${aiPage + 1} of ${formatInt(Math.ceil(aiTotal / PAGE_SIZE))}.` : ''}
                 {' '}Subjects are tagged at the survey level and can overlap; counts across subjects should not be added together.</p>
               <p>Terms searched: {aiTerms.length === 0 ? 'No useful alternatives found.' : aiTerms.map((term, index) => (

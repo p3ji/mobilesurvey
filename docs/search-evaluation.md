@@ -58,3 +58,15 @@ variables, and surveys can have more than one subject. Subject counts therefore 
 
 Grouping is deliberately page-local. A question spread across two 25-record pages can still
 appear once on each page; results and total counts remain auditable variable occurrences.
+
+## Field-aware ranking check (2026-09-30)
+
+The vector capacity audit in `docs/searcher-vector-audit.md` found that long code lists could
+dominate ordinary search as well. The ranked and recent RPCs now cap the whole-record FTS score
+and boost matches in the variable name, concept, or question. Code-list-only matches remain in
+the candidate set. On the live English corpus, `income` still has 16,441 occurrence matches, but
+its first ten ranked results are income variables; `VERDATE` and `REGISTID` no longer take top
+slots. `AI` and `remote work` retain their prior totals of 221 and 69. A broad `income` query
+took 2.95 seconds in PostgreSQL after the change. That latency, role/paradata filtering after
+pagination, and page-local question grouping still need a judged-query evaluation before any
+larger ranking or vector rollout.

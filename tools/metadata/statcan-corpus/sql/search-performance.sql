@@ -41,8 +41,9 @@ insert into corpus_search_alias (query, expansion) values
   ('e-cigarettes', 'vaping')
 on conflict (query) do update set expansion = excluded.expansion;
 
--- The original 9-argument RPC remains the client contract. Exact wording keeps full rank;
--- a synonym contributes at one quarter weight. All match predicates use the existing GIN index.
+-- The original 9-argument RPC remains the client contract. Exact wording outranks a synonym.
+-- Cap whole-record FTS rank so long code lists cannot dominate. A name, concept, or question
+-- match gets a field bonus; category-only matches remain findable via the existing GIN index.
 create or replace function corpus_search(
   q               text,
   lang_filter     text    default null,
@@ -88,14 +89,24 @@ as $$
        ),
        matched as (
          select v.*,
-                greatest(
+                least(0.5, greatest(
                   ts_rank_cd(v.fts, websearch_to_tsquery('english', coalesce(q, ''))),
                   ts_rank_cd(v.fts, websearch_to_tsquery('french',  coalesce(q, '')))
-                )
-                + 0.25 * greatest(
+                ))
+                + case when corpus_tsv(v.lang, concat_ws(' ', v.name, v.concept, v.question_text))
+                     @@ case when v.lang = 'fr'
+                          then websearch_to_tsquery('french', coalesce(q, ''))
+                          else websearch_to_tsquery('english', coalesce(q, '')) end
+                    then 3 else 0 end
+                + 0.25 * least(0.5, greatest(
                   ts_rank_cd(v.fts, websearch_to_tsquery('english', coalesce((select expansion from alias), ''))),
                   ts_rank_cd(v.fts, websearch_to_tsquery('french', coalesce((select expansion from alias), '')))
-                )
+                ))
+                + case when corpus_tsv(v.lang, concat_ws(' ', v.name, v.concept, v.question_text))
+                     @@ case when v.lang = 'fr'
+                          then websearch_to_tsquery('french', coalesce((select expansion from alias), ''))
+                          else websearch_to_tsquery('english', coalesce((select expansion from alias), '')) end
+                    then 0.75 else 0 end
                 + case
                     when corpus_mnemonic(q) is null then 0
                     when upper(v.name) = corpus_mnemonic(q) then 10
