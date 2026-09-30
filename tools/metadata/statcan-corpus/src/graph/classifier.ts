@@ -11,8 +11,18 @@
 import type { CorpusVariable } from '../types.js';
 import type { DerivationStatus, RoleEvidence, VariableOrigin, VariableRole } from './types.js';
 
-const WEIGHT_NAME_REGEX = /^(WTS?_|WTM_|WT_|WGHT|BOOT|BSW|FWT|REPWT|FWEIGHT|HWEIGHT|WT[0-9]+)/i;
-const WEIGHT_CONCEPT_REGEX = /\b(sampling weight|sample weight|bootstrap|poids [eé]chantillon|share weight|master weight|survey weight|final weight|replicate weight)\b/i;
+const WEIGHT_NAME_REGEX = /^(WTS?_|WTM_|WT_|WGHT|BOOT|BSW|FWT|REPWT|FWEIGHT|HWEIGHT|WT[0-9]+|WTBS|WTPS|WVCBS|SPFWT|BWT)/i;
+const WEIGHT_CONCEPT_REGEX = /\b(sampling weight|sample weight|bootstrap|poids [eé]chantillon|share weight|master weight|survey weight|final weight|replicate weights?|poids r[eé]plique)\b/i;
+
+export const BOOTSTRAP_WEIGHT_REGEX = /^(WTPS_?[0-9]+|WTBS_?[0-9]+|BSW_?[0-9]+|WVCBS_?[0-9]+|REPWT_?[0-9]+|SPFWT[0-9]+|BWT_?[0-9]+)$/i;
+export const BOOTSTRAP_CONCEPT_REGEX = /\b(bootstrap|pond[eé]ration bootstrap|poids bootstrap|replicate weights?|poids r[eé]plique)\b/i;
+
+/** Returns true if a variable is a replicate bootstrap weight (e.g. WTPS_0001, WTBS_001, BSW_001). */
+export function isBootstrapWeight(name: string, concept?: string): boolean {
+  if (BOOTSTRAP_WEIGHT_REGEX.test(name.trim())) return true;
+  if (concept && BOOTSTRAP_CONCEPT_REGEX.test(concept)) return true;
+  return false;
+}
 const SYSTEM_ID_REGEX = /^(SAMPLEID|PERSONID|MASTERID|HHID|RECID|VERDATE|REFPER|RECORDID|CASEID|USERID|FORMID|PUMFID|BATCHID|STRAT|FRAME|SEQNUM|IDENT)/i;
 const PARADATA_NAME_REGEX = /^(ADM_|SAM_|INT_|COL_|MET_|SURV)/i;
 const FLAG_CONCEPT_REGEX = /(\s*-\s*\(F\)$|\(F\)$|\binclusion flag\b|\bindicateur\b)/i;

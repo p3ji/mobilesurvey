@@ -191,8 +191,8 @@ export function CorpusGraphExplorer({
                   <th>Survey Program / Collection Title</th>
                   <th style={{ textAlign: 'right' }}>Variables</th>
                   <th style={{ textAlign: 'center' }}>Cycles</th>
+                  <th style={{ textAlign: 'right' }} title="Average substantive variables per cycle (excludes replicate bootstrap weights)">Avg Var / Cycle</th>
                   <th>GSIM Composition (Collected / Derived / Admin / Process)</th>
-                  <th>Top Modules</th>
                   <th style={{ textAlign: 'center' }}>Actions</th>
                 </tr>
               </thead>
@@ -200,6 +200,10 @@ export function CorpusGraphExplorer({
                 {filteredSurveys.map((s) => {
                   const isExpanded = expandedSurvey === s.acronym;
                   const total = s.total;
+                  const numCycles = Math.max(1, s.cycles.length);
+                  const bootstrapCount = (s as { bootstrapCount?: number }).bootstrapCount ?? 0;
+                  const substantiveTotal = (s as { substantiveTotal?: number }).substantiveTotal ?? (total - bootstrapCount);
+                  const avgVarsPerCycle = Math.round(substantiveTotal / numCycles);
                   const pCol = ((s.roles.collected / total) * 100).toFixed(0);
                   const pDer = ((s.roles.derived / total) * 100).toFixed(0);
                   const pAdm = ((s.roles.administrative / total) * 100).toFixed(0);
@@ -226,12 +230,26 @@ export function CorpusGraphExplorer({
                               <span>PUMF Grouped Recodes: <strong>{s.pumfGroupedCount}</strong></span>
                               <span>Primary Identifiers: <strong>{s.identifierCount}</strong></span>
                               <span>Derivation Links: <strong>{s.derivationsExtracted}</strong></span>
+                              {bootstrapCount > 0 && (
+                                <span>Replicate Bootstrap Weights: <strong>{bootstrapCount.toLocaleString()}</strong></span>
+                              )}
                             </div>
                           </div>
                         )}
                       </td>
                       <td style={{ textAlign: 'right', fontWeight: 600 }}>{s.total.toLocaleString()}</td>
                       <td style={{ textAlign: 'center' }}>{s.cycles.length}</td>
+                      <td style={{ textAlign: 'right', fontWeight: 600 }}>
+                        <span
+                          title={
+                            bootstrapCount > 0
+                              ? `${substantiveTotal.toLocaleString()} substantive variables across ${numCycles} cycle${numCycles === 1 ? '' : 's'} (excludes ${bootstrapCount.toLocaleString()} replicate bootstrap weights)`
+                              : `${substantiveTotal.toLocaleString()} variables across ${numCycles} cycle${numCycles === 1 ? '' : 's'}`
+                          }
+                        >
+                          {avgVarsPerCycle.toLocaleString()}
+                        </span>
+                      </td>
                       <td>
                         <div className="kg-bar-stack" title={`Collected: ${pCol}%, Derived: ${pDer}%, Admin: ${pAdm}%, Process: ${pPrc}%`}>
                           <div className="kg-bar kg-bar--col" style={{ width: `${pCol}%` }} />
@@ -244,15 +262,6 @@ export function CorpusGraphExplorer({
                           <span>{pDer}% DV</span>
                           {Number(pAdm) > 0 && <span>{pAdm}% Adm</span>}
                           {Number(pPrc) > 0 && <span>{pPrc}% Wts</span>}
-                        </div>
-                      </td>
-                      <td>
-                        <div className="kg-mod-pills">
-                          {s.topModules.slice(0, 4).map((m) => (
-                            <span key={m.code} className="kg-mod-pill" title={`${m.count} vars in module ${m.code}`}>
-                              {m.code}
-                            </span>
-                          ))}
                         </div>
                       </td>
                       <td style={{ textAlign: 'center' }}>

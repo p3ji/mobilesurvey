@@ -115,15 +115,31 @@ describe('scanCounterpartPairs', () => {
     expect(byName.get('X3')?.confidence).toBe(COUNTERPART_CONFIDENCE.fallback);
   });
 
-  it('withholds names present in more than one master doc', async () => {
+  it('withholds names present in two candidate masters of the SAME subpopulation signature', async () => {
     const p = writeCorpus([
       rec('AGE', 'TEST_SURVEY/test_T15_2_v1.pdf', '2020'),
+      // Two BASE codebooks both carry AGE -> ambiguous for the base PUMF doc.
       rec('AGE', 'TEST_SURVEY/master A no freqs_E.pdf', '2020'),
-      rec('AGE', 'TEST_SURVEY/plus master no freqs_E.pdf', '2020'),
+      rec('AGE', 'TEST_SURVEY/master B no freqs_E.pdf', '2020'),
     ]);
     const { pairs, withheldAmbiguousNames } = await scanCounterpartPairs(p);
     expect(pairs).toHaveLength(0);
     expect(withheldAmbiguousNames).toBeGreaterThan(0);
+  });
+
+  it('does NOT withhold a name spread across DIFFERENT signatures (each PUMF doc links its own master)', async () => {
+    const p = writeCorpus([
+      rec('AGE', 'TEST_SURVEY/base_T15_2_v1.pdf', '2020'),
+      rec('AGE', 'TEST_SURVEY/plus_T15_2_v1.pdf', '2020'),
+      // AGE in both the base and the plus master: different signatures, so no ambiguity.
+      rec('AGE', 'TEST_SURVEY/base master no freqs_E.pdf', '2020'),
+      rec('AGE', 'TEST_SURVEY/plus master no freqs_E.pdf', '2020'),
+    ]);
+    const { pairs } = await scanCounterpartPairs(p);
+    expect(pairs).toHaveLength(2);
+    const byTarget = new Map(pairs.map((x) => [x.targetDocPath, x]));
+    expect(byTarget.get('TEST_SURVEY/base_T15_2_v1.pdf')?.sourceDocPath).toBe('TEST_SURVEY/base master no freqs_E.pdf');
+    expect(byTarget.get('TEST_SURVEY/plus_T15_2_v1.pdf')?.sourceDocPath).toBe('TEST_SURVEY/plus master no freqs_E.pdf');
   });
 
   it('emits one edge per PUMF document sharing the name (distinct targets)', async () => {
@@ -178,9 +194,9 @@ describe('resolveCounterpartPairs', () => {
     const fetchImpl = (async (url: string) => {
       const u = String(url);
       if (u.includes(encodeURIComponent('test_T15_2_v1.pdf'))) {
-        return new Response(JSON.stringify([{ record_id: 't-1', cycle: null }, { record_id: 't-2', cycle: '2020' }]), { status: 200 });
+        return new Response(JSON.stringify([{ record_id: 't-1', cycle: null, name: 'age' }, { record_id: 't-2', cycle: '2020', name: 'AGE' }]), { status: 200 });
       }
-      return new Response(JSON.stringify([{ record_id: 's-1', cycle: '2020' }]), { status: 200 });
+      return new Response(JSON.stringify([{ record_id: 's-1', cycle: '2020', name: 'AGE' }]), { status: 200 });
     }) as typeof fetch;
 
     const { edges, unresolved } = await resolveCounterpartPairs([pair], { url: 'https://x.supabase.co', serviceRoleKey: 'k' }, fetchImpl);
@@ -192,7 +208,7 @@ describe('resolveCounterpartPairs', () => {
     const fetchImpl = (async (url: string) => {
       const u = String(url);
       if (u.includes(encodeURIComponent('test_T15_2_v1.pdf'))) return new Response(JSON.stringify([]), { status: 200 });
-      return new Response(JSON.stringify([{ record_id: 's-1', cycle: '2020' }]), { status: 200 });
+      return new Response(JSON.stringify([{ record_id: 's-1', cycle: '2020', name: 'AGE' }]), { status: 200 });
     }) as typeof fetch;
 
     const { edges, unresolved } = await resolveCounterpartPairs([pair], { url: 'https://x.supabase.co', serviceRoleKey: 'k' }, fetchImpl);

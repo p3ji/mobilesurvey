@@ -3,18 +3,20 @@ import { createInterface } from 'node:readline';
 import { resolve } from 'node:path';
 import type { CorpusVariable } from '../types.js';
 import type { DerivationLineage, RoleEvidence } from './types.js';
-import { classifyVariableRole } from './classifier.js';
+import { classifyVariableRole, isBootstrapWeight } from './classifier.js';
 import { extractModuleCode } from './modules.js';
 import { extractDerivationLineage } from './derivation.js';
 
 const CORPUS_JSONL = resolve(import.meta.dirname, '../../out/corpus.jsonl');
 const REPORT_MD = resolve(import.meta.dirname, '../../../../../docs/batch4-full-corpus-knowledge-graph.md');
 const SUMMARY_JSON = resolve(import.meta.dirname, '../../out/knowledge-graph-summary.json');
+const HUB_SUMMARY_JSON = resolve(import.meta.dirname, '../../../../../platform/hub/src/data/knowledgeGraphSummary.json');
 
 interface SurveySummary {
   acronym: string;
   title: string;
   total: number;
+  bootstrapCount: number;
   roles: { collected: number; derived: number; process: number; administrative: number };
   origins: { collected: number; administrative: number; process: number };
   derivations: { base: number; derived: number };
@@ -30,6 +32,7 @@ function emptySurveySummary(acronym: string, title: string): SurveySummary {
     acronym,
     title,
     total: 0,
+    bootstrapCount: 0,
     roles: { collected: 0, derived: 0, process: 0, administrative: 0 },
     origins: { collected: 0, administrative: 0, process: 0 },
     derivations: { base: 0, derived: 0 },
@@ -118,6 +121,7 @@ async function run() {
     summary.derivations[role.derivation] = (summary.derivations[role.derivation] ?? 0) + 1;
     summary.cycles[cycle] = (summary.cycles[cycle] ?? 0) + 1;
     summary.modules[moduleCode] = (summary.modules[moduleCode] ?? 0) + 1;
+    if (isBootstrapWeight(v.name, v.concept)) summary.bootstrapCount++;
     if (role.isGrouped) summary.pumfGroupedCount++;
     if (role.isIdentifier) summary.identifierCount++;
 
@@ -307,6 +311,8 @@ ${topDerivations.slice(0, 20).map((d) => `| **\`${d.targetVarName}\`** | ${d.cyc
       acronym: s.acronym,
       title: s.title,
       total: s.total,
+      bootstrapCount: s.bootstrapCount,
+      substantiveTotal: s.total - s.bootstrapCount,
       cycles: Object.keys(s.cycles).sort(),
       roles: s.roles,
       origins: s.origins,
@@ -331,7 +337,8 @@ ${topDerivations.slice(0, 20).map((d) => `| **\`${d.targetVarName}\`** | ${d.cyc
   };
 
   writeFileSync(SUMMARY_JSON, JSON.stringify(summaryManifest, null, 2), 'utf8');
-  console.log(`JSON Manifest written to: ${SUMMARY_JSON}`);
+  writeFileSync(HUB_SUMMARY_JSON, JSON.stringify(summaryManifest, null, 2), 'utf8');
+  console.log(`JSON Manifest written to: ${SUMMARY_JSON} and ${HUB_SUMMARY_JSON}`);
 }
 
 run().catch((err) => {

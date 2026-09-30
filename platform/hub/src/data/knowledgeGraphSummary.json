@@ -1,20 +1,20 @@
 {
-  "generatedAt": "2026-09-04T01:04:41.961Z",
+  "generatedAt": "2026-09-30T01:05:12.809Z",
   "totalVariables": 438931,
   "totalSurveys": 113,
   "totalCycles": 260,
   "globalStats": {
     "total": 438931,
     "roles": {
-      "collected": 354683,
+      "collected": 353594,
       "derived": 47127,
-      "process": 25554,
+      "process": 26643,
       "administrative": 11567
     },
     "origins": {
-      "collected": 396465,
+      "collected": 395376,
       "administrative": 16912,
-      "process": 25554
+      "process": 26643
     },
     "derivations": {
       "base": 390423,
@@ -29,6 +29,8 @@
       "acronym": "CIS",
       "title": "CIS_ECR_2012-2019_rebased",
       "total": 73887,
+      "bootstrapCount": 0,
+      "substantiveTotal": 73887,
       "cycles": [
         "2012",
         "2013",
@@ -101,6 +103,8 @@
       "acronym": "GSS",
       "title": "GSS_ESG_12-32",
       "total": 55544,
+      "bootstrapCount": 3057,
+      "substantiveTotal": 52487,
       "cycles": [
         "33",
         "34",
@@ -109,15 +113,15 @@
         "unknown"
       ],
       "roles": {
-        "collected": 49552,
+        "collected": 49544,
         "derived": 1815,
-        "process": 3927,
+        "process": 3935,
         "administrative": 250
       },
       "origins": {
-        "collected": 51365,
+        "collected": 51357,
         "administrative": 252,
-        "process": 3927
+        "process": 3935
       },
       "derivations": {
         "base": 53680,
@@ -165,6 +169,8 @@
       "acronym": "CCHS",
       "title": "CCHS_ESCC",
       "total": 25906,
+      "bootstrapCount": 0,
+      "substantiveTotal": 25906,
       "cycles": [
         "2015",
         "2015_NU",
@@ -240,6 +246,8 @@
       "acronym": "CSD",
       "title": "CSD_ECI_2012",
       "total": 23768,
+      "bootstrapCount": 0,
+      "substantiveTotal": 23768,
       "cycles": [
         "2012",
         "2017",
@@ -303,6 +311,8 @@
       "acronym": "APS",
       "title": "APS_EAPA_2006",
       "total": 17044,
+      "bootstrapCount": 0,
+      "substantiveTotal": 17044,
       "cycles": [
         "2006",
         "2012",
@@ -366,6 +376,8 @@
       "acronym": "SFGSME",
       "title": "SFGSME_EFCPME",
       "total": 16370,
+      "bootstrapCount": 0,
+      "substantiveTotal": 16370,
       "cycles": [
         "2020"
       ],
@@ -426,6 +438,8 @@
       "acronym": "LSIC",
       "title": "LSIC_ELIC",
       "total": 13992,
+      "bootstrapCount": 0,
+      "substantiveTotal": 13992,
       "cycles": [
         "1",
         "2",
@@ -488,6 +502,8 @@
       "acronym": "CHMS",
       "title": "CHMS Biobank",
       "total": 13560,
+      "bootstrapCount": 0,
+      "substantiveTotal": 13560,
       "cycles": [
         "2019",
         "Biobank",
@@ -558,6 +574,8 @@
       "acronym": "LISA",
       "title": "LISA_ELIA_2012",
       "total": 13035,
+      "bootstrapCount": 0,
+      "substantiveTotal": 13035,
       "cycles": [
         "2012",
         "2016",
@@ -623,6 +641,8 @@
       "acronym": "SHS",
       "title": "SHS_EDM",
       "total": 12124,
+      "bootstrapCount": 0,
+      "substantiveTotal": 12124,
       "cycles": [
         "2021",
         "2023"
@@ -684,6 +704,8 @@
       "acronym": "CHSCY",
       "title": "CHSCY_ECSEJ_2019",
       "total": 11086,
+      "bootstrapCount": 0,
+      "substantiveTotal": 11086,
       "cycles": [
         "2019",
         "2023",
@@ -746,6 +768,8 @@
       "acronym": "SFS",
       "title": "SFS_ESF_2012",
       "total": 11046,
+      "bootstrapCount": 0,
+      "substantiveTotal": 11046,
       "cycles": [
         "2012",
         "2016",
@@ -809,6 +833,8 @@
       "acronym": "CAFVMHS",
       "title": "CAFVMHS_ESSMFACM_2018",
       "total": 7330,
+      "bootstrapCount": 0,
+      "substantiveTotal": 7330,
       "cycles": [
         "2018"
       ],
@@ -869,6 +895,8 @@
       "acronym": "SOLMP",
       "title": "SOLMP-EPLOSM",
       "total": 6682,
+      "bootstrapCount": 0,
+      "substantiveTotal": 6682,
       "cycles": [
         "2022"
       ],
@@ -929,6 +957,8 @@
       "acronym": "CSCSC",
       "title": "CSCSC_ECCC_2019_v1",
       "total": 6570,
+      "bootstrapCount": 0,
+      "substantiveTotal": 6570,
       "cycles": [
         "2019_v1",
         "2021",
@@ -991,6 +1021,8 @@
       "acronym": "SDTIU",
       "title": "SDTIU_ETNUI_2019",
       "total": 5404,
+      "bootstrapCount": 0,
+      "substantiveTotal": 5404,
       "cycles": [
         "2019",
         "2021",
@@ -1053,6 +1085,8 @@
       "acronym": "EICS",
       "title": "EICS_ECAE_2013",
       "total": 5238,
+      "bootstrapCount": 0,
+      "substantiveTotal": 5238,
       "cycles": [
         "2013",
         "2014",
@@ -1120,6 +1154,8 @@
       "acronym": "CHS",
       "title": "CHS_ECL_2008_2017_T1FF_T4",
       "total": 5030,
+      "bootstrapCount": 0,
+      "substantiveTotal": 5030,
       "cycles": [
         "2008_2017_T1FF_T4",
         "2018",
@@ -1186,6 +1222,8 @@
       "acronym": "HES",
       "title": "HES_ALL_2006",
       "total": 4758,
+      "bootstrapCount": 0,
+      "substantiveTotal": 4758,
       "cycles": [
         "2006",
         "2013",
@@ -1249,6 +1287,8 @@
       "acronym": "CSIT",
       "title": "CSIT_ECCI",
       "total": 4592,
+      "bootstrapCount": 0,
+      "substantiveTotal": 4592,
       "cycles": [
         "2023"
       ],
@@ -1309,6 +1349,8 @@
       "acronym": "CNICS",
       "title": "CNICS_ECVNE_2011",
       "total": 4382,
+      "bootstrapCount": 0,
+      "substantiveTotal": 4382,
       "cycles": [
         "2011",
         "2013",
@@ -1376,19 +1418,21 @@
       "acronym": "SGVP",
       "title": "SGVP_EDBP_2023",
       "total": 3982,
+      "bootstrapCount": 1002,
+      "substantiveTotal": 2980,
       "cycles": [
         "2023"
       ],
       "roles": {
-        "collected": 3664,
+        "collected": 2666,
         "derived": 110,
-        "process": 200,
+        "process": 1198,
         "administrative": 8
       },
       "origins": {
-        "collected": 3774,
+        "collected": 2776,
         "administrative": 8,
-        "process": 200
+        "process": 1198
       },
       "derivations": {
         "base": 3858,
@@ -1436,6 +1480,8 @@
       "acronym": "SISPSP",
       "title": "SISPSP_ESIPEP_2019",
       "total": 3982,
+      "bootstrapCount": 0,
+      "substantiveTotal": 3982,
       "cycles": [
         "2019"
       ],
@@ -1496,6 +1542,8 @@
       "acronym": "PSES",
       "title": "PSES_SAFF_2014",
       "total": 3884,
+      "bootstrapCount": 0,
+      "substantiveTotal": 3884,
       "cycles": [
         "2014",
         "2017",
@@ -1559,6 +1607,8 @@
       "acronym": "OCHS",
       "title": "OCHS_ESJO_2014",
       "total": 3714,
+      "bootstrapCount": 0,
+      "substantiveTotal": 3714,
       "cycles": [
         "2014"
       ],
@@ -1619,6 +1669,8 @@
       "acronym": "SLCDC",
       "title": "SLCDC_EPMCC_2014",
       "total": 3712,
+      "bootstrapCount": 0,
+      "substantiveTotal": 3712,
       "cycles": [
         "2014"
       ],
@@ -1679,6 +1731,8 @@
       "acronym": "IPS",
       "title": "IPS_EAPA",
       "total": 3474,
+      "bootstrapCount": 0,
+      "substantiveTotal": 3474,
       "cycles": [
         "2022"
       ],
@@ -1739,6 +1793,8 @@
       "acronym": "SIBS",
       "title": "SIBS_EISE_allyears",
       "total": 3312,
+      "bootstrapCount": 0,
+      "substantiveTotal": 3312,
       "cycles": [
         "allyears"
       ],
@@ -1799,6 +1855,8 @@
       "acronym": "SAT",
       "title": "SAT_ETP_AllYears",
       "total": 3228,
+      "bootstrapCount": 0,
+      "substantiveTotal": 3228,
       "cycles": [
         "AllYears"
       ],
@@ -1859,6 +1917,8 @@
       "acronym": "NGES",
       "title": "NGES_EFGN",
       "total": 3202,
+      "bootstrapCount": 0,
+      "substantiveTotal": 3202,
       "cycles": [
         "2021"
       ],
@@ -1919,6 +1979,8 @@
       "acronym": "LASS",
       "title": "LASS_EVAS_2013",
       "total": 2834,
+      "bootstrapCount": 0,
+      "substantiveTotal": 2834,
       "cycles": [
         "2013",
         "2016",
@@ -1981,6 +2043,8 @@
       "acronym": "CIUS",
       "title": "CIUS_ECUI_2018",
       "total": 2688,
+      "bootstrapCount": 0,
+      "substantiveTotal": 2688,
       "cycles": [
         "2018",
         "2020",
@@ -2043,6 +2107,8 @@
       "acronym": "MHACS",
       "title": "MHACS_ESMAS_2022",
       "total": 2592,
+      "bootstrapCount": 0,
+      "substantiveTotal": 2592,
       "cycles": [
         "2022"
       ],
@@ -2103,6 +2169,8 @@
       "acronym": "CTADS",
       "title": "CTADS_ECTAD_2013",
       "total": 2294,
+      "bootstrapCount": 0,
+      "substantiveTotal": 2294,
       "cycles": [
         "2013",
         "2015",
@@ -2165,6 +2233,8 @@
       "acronym": "SELCCA",
       "title": "SELCCA_CLDC_2023",
       "total": 2082,
+      "bootstrapCount": 0,
+      "substantiveTotal": 2082,
       "cycles": [
         "2019",
         "2020",
@@ -2229,6 +2299,8 @@
       "acronym": "SSMW",
       "title": "SSMW_EIST_2020",
       "total": 2032,
+      "bootstrapCount": 0,
+      "substantiveTotal": 2032,
       "cycles": [
         "2020"
       ],
@@ -2289,6 +2361,8 @@
       "acronym": "SYC",
       "title": "SYC_EJC_2010",
       "total": 2024,
+      "bootstrapCount": 0,
+      "substantiveTotal": 2024,
       "cycles": [
         "2010"
       ],
@@ -2349,6 +2423,8 @@
       "acronym": "PES",
       "title": "PES_EEP_2024",
       "total": 1956,
+      "bootstrapCount": 0,
+      "substantiveTotal": 1956,
       "cycles": [
         "2024"
       ],
@@ -2409,6 +2485,8 @@
       "acronym": "NGS",
       "title": "NGS_END_2018",
       "total": 1934,
+      "bootstrapCount": 0,
+      "substantiveTotal": 1934,
       "cycles": [
         "2018",
         "2023"
@@ -2470,6 +2548,8 @@
       "acronym": "LLLI",
       "title": "LLLI_ACRE_VMLEV_ASEC",
       "total": 1808,
+      "bootstrapCount": 0,
+      "substantiveTotal": 1808,
       "cycles": [
         "VMLEV_ASEC"
       ],
@@ -2530,6 +2610,8 @@
       "acronym": "NCS",
       "title": "NCS_ENC_2018",
       "total": 1784,
+      "bootstrapCount": 0,
+      "substantiveTotal": 1784,
       "cycles": [
         "2018",
         "2019",
@@ -2584,19 +2666,21 @@
       "acronym": "PIAAC",
       "title": "PIAAC_PEICA",
       "total": 1764,
+      "bootstrapCount": 164,
+      "substantiveTotal": 1600,
       "cycles": [
         "2022"
       ],
       "roles": {
-        "collected": 1531,
+        "collected": 1448,
         "derived": 151,
-        "process": 82,
+        "process": 165,
         "administrative": 0
       },
       "origins": {
-        "collected": 1682,
+        "collected": 1599,
         "administrative": 0,
-        "process": 82
+        "process": 165
       },
       "derivations": {
         "base": 1613,
@@ -2644,6 +2728,8 @@
       "acronym": "SSPPS",
       "title": "SSPPS_ESEPP_2018",
       "total": 1746,
+      "bootstrapCount": 2,
+      "substantiveTotal": 1744,
       "cycles": [
         "2018"
       ],
@@ -2704,6 +2790,8 @@
       "acronym": "ACS",
       "title": "ACS_EEA_2006",
       "total": 1712,
+      "bootstrapCount": 0,
+      "substantiveTotal": 1712,
       "cycles": [
         "2006"
       ],
@@ -2764,6 +2852,8 @@
       "acronym": "BC",
       "title": "BC_CB_K12",
       "total": 1685,
+      "bootstrapCount": 0,
+      "substantiveTotal": 1685,
       "cycles": [
         "K-12_AllYears",
         "K12",
@@ -2826,6 +2916,8 @@
       "acronym": "CPSS",
       "title": "CPSS_SEPC_2020_S6",
       "total": 1596,
+      "bootstrapCount": 0,
+      "substantiveTotal": 1596,
       "cycles": [
         "2020",
         "2020_S6",
@@ -2888,6 +2980,8 @@
       "acronym": "CCAHS",
       "title": "CCAHS_ECSAC_2021",
       "total": 1570,
+      "bootstrapCount": 0,
+      "substantiveTotal": 1570,
       "cycles": [
         "2021",
         "2023"
@@ -2949,6 +3043,8 @@
       "acronym": "ICC",
       "title": "ICC_RCC_Covid19",
       "total": 1446,
+      "bootstrapCount": 0,
+      "substantiveTotal": 1446,
       "cycles": [
         "2020",
         "RCC_CEA",
@@ -3016,6 +3112,8 @@
       "acronym": "CSSW2",
       "title": "CSSW2_ESCV2_2022",
       "total": 1218,
+      "bootstrapCount": 0,
+      "substantiveTotal": 1218,
       "cycles": [
         "2022",
         "2023",
@@ -3078,6 +3176,8 @@
       "acronym": "CSSW1",
       "title": "CSSW1_ESCV1_2022",
       "total": 1178,
+      "bootstrapCount": 0,
+      "substantiveTotal": 1178,
       "cycles": [
         "2022",
         "2023",
@@ -3141,6 +3241,8 @@
       "acronym": "CSSW4",
       "title": "CSSW4_ESCV4_2021",
       "total": 1162,
+      "bootstrapCount": 0,
+      "substantiveTotal": 1162,
       "cycles": [
         "2021",
         "2023",
@@ -3203,6 +3305,8 @@
       "acronym": "CAFHS",
       "title": "CAFHS_ESFAC_2019",
       "total": 1124,
+      "bootstrapCount": 0,
+      "substantiveTotal": 1124,
       "cycles": [
         "2019"
       ],
@@ -3263,6 +3367,8 @@
       "acronym": "SSMCAF",
       "title": "SSMCAF_SISFAC_2022",
       "total": 1114,
+      "bootstrapCount": 0,
+      "substantiveTotal": 1114,
       "cycles": [
         "2022"
       ],
@@ -3323,6 +3429,8 @@
       "acronym": "CSSW3",
       "title": "CSSW3_ESCV3_2021",
       "total": 1112,
+      "bootstrapCount": 0,
+      "substantiveTotal": 1112,
       "cycles": [
         "2021",
         "2022",
@@ -3386,6 +3494,8 @@
       "acronym": "SEPR",
       "title": "SEPR_EPUR_2014",
       "total": 1080,
+      "bootstrapCount": 0,
+      "substantiveTotal": 1080,
       "cycles": [
         "2014"
       ],
@@ -3446,6 +3556,8 @@
       "acronym": "CLPS",
       "title": "CLPS_ECPJ_2021",
       "total": 1068,
+      "bootstrapCount": 0,
+      "substantiveTotal": 1068,
       "cycles": [
         "2021"
       ],
@@ -3506,6 +3618,8 @@
       "acronym": "IFPI",
       "title": "IFPI_IITA",
       "total": 1040,
+      "bootstrapCount": 0,
+      "substantiveTotal": 1040,
       "cycles": [
         "2023"
       ],
@@ -3566,6 +3680,8 @@
       "acronym": "SFT",
       "title": "SFT_ETF_2024",
       "total": 1010,
+      "bootstrapCount": 2,
+      "substantiveTotal": 1008,
       "cycles": [
         "2024"
       ],
@@ -3626,6 +3742,8 @@
       "acronym": "SEFJ",
       "title": "SEFJ_EECF",
       "total": 984,
+      "bootstrapCount": 0,
+      "substantiveTotal": 984,
       "cycles": [
         "2022"
       ],
@@ -3686,6 +3804,8 @@
       "acronym": "CAFTWS",
       "title": "CAFTWS_ETBFAC_2017",
       "total": 952,
+      "bootstrapCount": 0,
+      "substantiveTotal": 952,
       "cycles": [
         "2017"
       ],
@@ -3746,6 +3866,8 @@
       "acronym": "SMHSE",
       "title": "SMHSE_ESMES",
       "total": 920,
+      "bootstrapCount": 0,
+      "substantiveTotal": 920,
       "cycles": [
         "2021",
         "2023"
@@ -3807,6 +3929,8 @@
       "acronym": "SNPS",
       "title": "SNPS_SDIP_2018",
       "total": 890,
+      "bootstrapCount": 0,
+      "substantiveTotal": 890,
       "cycles": [
         "2018",
         "2021"
@@ -3868,6 +3992,8 @@
       "acronym": "SHCAE",
       "title": "SHCAE_PSC_EASSES_SPS",
       "total": 886,
+      "bootstrapCount": 0,
+      "substantiveTotal": 886,
       "cycles": [
         "EASSES_SPS"
       ],
@@ -3928,6 +4054,8 @@
       "acronym": "PSSCSC",
       "title": "PSSCSC_ESPCC_2022",
       "total": 844,
+      "bootstrapCount": 0,
+      "substantiveTotal": 844,
       "cycles": [
         "2022"
       ],
@@ -3988,6 +4116,8 @@
       "acronym": "CADS",
       "title": "CADS_ECAD_2019",
       "total": 842,
+      "bootstrapCount": 0,
+      "substantiveTotal": 842,
       "cycles": [
         "2019"
       ],
@@ -4048,6 +4178,8 @@
       "acronym": "SCMH",
       "title": "SCMH_ECSM_2020",
       "total": 838,
+      "bootstrapCount": 0,
+      "substantiveTotal": 838,
       "cycles": [
         "2020"
       ],
@@ -4108,6 +4240,8 @@
       "acronym": "CVCS",
       "title": "CVCS_ECVC_2021",
       "total": 818,
+      "bootstrapCount": 0,
+      "substantiveTotal": 818,
       "cycles": [
         "2021"
       ],
@@ -4168,6 +4302,8 @@
       "acronym": "RAIS",
       "title": "RAIS_SIAI_08_16",
       "total": 792,
+      "bootstrapCount": 0,
+      "substantiveTotal": 792,
       "cycles": [
         "08_16"
       ],
@@ -4228,6 +4364,8 @@
       "acronym": "SBASCC",
       "title": "SBASCC_EMGAAEC",
       "total": 752,
+      "bootstrapCount": 0,
+      "substantiveTotal": 752,
       "cycles": [
         "2022"
       ],
@@ -4288,6 +4426,8 @@
       "acronym": "CTNS",
       "title": "CTNS_ECTN_2020",
       "total": 748,
+      "bootstrapCount": 0,
+      "substantiveTotal": 748,
       "cycles": [
         "2020",
         "2021",
@@ -4350,6 +4490,8 @@
       "acronym": "CSELCC",
       "title": "CSELCC_ECAGJE_2023",
       "total": 738,
+      "bootstrapCount": 0,
+      "substantiveTotal": 738,
       "cycles": [
         "2023"
       ],
@@ -4410,6 +4552,8 @@
       "acronym": "EWHS",
       "title": "EWHS_STSCS_2021",
       "total": 696,
+      "bootstrapCount": 0,
+      "substantiveTotal": 696,
       "cycles": [
         "2021"
       ],
@@ -4470,6 +4614,8 @@
       "acronym": "CNHS",
       "title": "CNHS_EBAS_2013",
       "total": 684,
+      "bootstrapCount": 0,
+      "substantiveTotal": 684,
       "cycles": [
         "2013"
       ],
@@ -4530,6 +4676,8 @@
       "acronym": "SIMT",
       "title": "SIMT_ETFI_2018",
       "total": 666,
+      "bootstrapCount": 0,
+      "substantiveTotal": 666,
       "cycles": [
         "2018"
       ],
@@ -4590,6 +4738,8 @@
       "acronym": "SAHCPDP",
       "title": "SAHCPDP_EASSPPP_2021",
       "total": 580,
+      "bootstrapCount": 0,
+      "substantiveTotal": 580,
       "cycles": [
         "2021"
       ],
@@ -4650,6 +4800,8 @@
       "acronym": "NTS",
       "title": "NTS_ENV_AllYears",
       "total": 548,
+      "bootstrapCount": 0,
+      "substantiveTotal": 548,
       "cycles": [
         "AllYears"
       ],
@@ -4710,6 +4862,8 @@
       "acronym": "SSFNPMI",
       "title": "SSFNPMI_SEPNMI",
       "total": 544,
+      "bootstrapCount": 0,
+      "substantiveTotal": 544,
       "cycles": [
         "2024"
       ],
@@ -4770,6 +4924,8 @@
       "acronym": "SSPCW2",
       "title": "SSPCW2_SEGCV2_2023",
       "total": 536,
+      "bootstrapCount": 0,
+      "substantiveTotal": 536,
       "cycles": [
         "2023"
       ],
@@ -4830,6 +4986,8 @@
       "acronym": "CSSCW",
       "title": "CSSCW_ESCCB_2021",
       "total": 470,
+      "bootstrapCount": 0,
+      "substantiveTotal": 470,
       "cycles": [
         "2021"
       ],
@@ -4890,6 +5048,8 @@
       "acronym": "PSIS",
       "title": "PSIS_SIEP",
       "total": 452,
+      "bootstrapCount": 0,
+      "substantiveTotal": 452,
       "cycles": [
         "2019",
         "2020",
@@ -4954,6 +5114,8 @@
       "acronym": "ESDC",
       "title": "ESDC_EWS_SMP_EDSC_2022",
       "total": 442,
+      "bootstrapCount": 0,
+      "substantiveTotal": 442,
       "cycles": [
         "SMP_EDSC_2022"
       ],
@@ -5014,6 +5176,8 @@
       "acronym": "SSC",
       "title": "SSC_WC_ELS_BC",
       "total": 432,
+      "bootstrapCount": 0,
+      "substantiveTotal": 432,
       "cycles": [
         "ELS_BC"
       ],
@@ -5074,6 +5238,8 @@
       "acronym": "SSPCW4",
       "title": "SSPCW4_SEGCV4_2023",
       "total": 386,
+      "bootstrapCount": 0,
+      "substantiveTotal": 386,
       "cycles": [
         "2023"
       ],
@@ -5134,6 +5300,8 @@
       "acronym": "SAPM",
       "title": "SAPM_ETIA_2023",
       "total": 370,
+      "bootstrapCount": 0,
+      "substantiveTotal": 370,
       "cycles": [
         "2023"
       ],
@@ -5194,6 +5362,8 @@
       "acronym": "COHS",
       "title": "COHS_ECSB_C1",
       "total": 322,
+      "bootstrapCount": 0,
+      "substantiveTotal": 322,
       "cycles": [
         "C1"
       ],
@@ -5254,6 +5424,8 @@
       "acronym": "CSSWAPT",
       "title": "CSSWAPT_ESCBEAPT_2021",
       "total": 308,
+      "bootstrapCount": 0,
+      "substantiveTotal": 308,
       "cycles": [
         "2021"
       ],
@@ -5314,6 +5486,8 @@
       "acronym": "SSPCW5",
       "title": "SSPCW5_SEGCV5_2024",
       "total": 290,
+      "bootstrapCount": 0,
+      "substantiveTotal": 290,
       "cycles": [
         "2024"
       ],
@@ -5374,6 +5548,8 @@
       "acronym": "SSPCW1",
       "title": "SSPCW1_SEGCV1_2023",
       "total": 274,
+      "bootstrapCount": 0,
+      "substantiveTotal": 274,
       "cycles": [
         "2023"
       ],
@@ -5434,6 +5610,8 @@
       "acronym": "CSEW",
       "title": "CSEW_ECBE_2013",
       "total": 262,
+      "bootstrapCount": 0,
+      "substantiveTotal": 262,
       "cycles": [
         "2013"
       ],
@@ -5494,6 +5672,8 @@
       "acronym": "SEWS",
       "title": "SEWS_EECP",
       "total": 258,
+      "bootstrapCount": 0,
+      "substantiveTotal": 258,
       "cycles": [
         "2021"
       ],
@@ -5554,6 +5734,8 @@
       "acronym": "SSPCW3",
       "title": "SSPCW3_SEGCV3_2023",
       "total": 242,
+      "bootstrapCount": 0,
+      "substantiveTotal": 242,
       "cycles": [
         "2023"
       ],
@@ -5614,6 +5796,8 @@
       "acronym": "PCS",
       "title": "PCS_PSC_2021",
       "total": 232,
+      "bootstrapCount": 0,
+      "substantiveTotal": 232,
       "cycles": [
         "2021",
         "IRP_HRP_2021"
@@ -5675,6 +5859,8 @@
       "acronym": "SSPC",
       "title": "SSPC_SEGC_2022",
       "total": 214,
+      "bootstrapCount": 0,
+      "substantiveTotal": 214,
       "cycles": [
         "2022"
       ],
@@ -5735,6 +5921,8 @@
       "acronym": "PSEW",
       "title": "PSEW_EPBQ_2021",
       "total": 212,
+      "bootstrapCount": 0,
+      "substantiveTotal": 212,
       "cycles": [
         "2021"
       ],
@@ -5795,6 +5983,8 @@
       "acronym": "SSPD",
       "title": "SSPD_EEPH_2020",
       "total": 188,
+      "bootstrapCount": 0,
+      "substantiveTotal": 188,
       "cycles": [
         "2020"
       ],
@@ -5855,6 +6045,8 @@
       "acronym": "DES",
       "title": "DES_EEN_2018",
       "total": 186,
+      "bootstrapCount": 0,
+      "substantiveTotal": 186,
       "cycles": [
         "2018"
       ],
@@ -5907,6 +6099,8 @@
       "acronym": "CEEDD",
       "title": "CEEDD_BDCDEE",
       "total": 184,
+      "bootstrapCount": 0,
+      "substantiveTotal": 184,
       "cycles": [
         "unknown"
       ],
@@ -5967,6 +6161,8 @@
       "acronym": "DCNPB",
       "title": "DCNPB_DCOBS_2020_v1",
       "total": 176,
+      "bootstrapCount": 0,
+      "substantiveTotal": 176,
       "cycles": [
         "2020_v1"
       ],
@@ -6027,6 +6223,8 @@
       "acronym": "VITAL_DEATH",
       "title": "Vital Statistics Death Database",
       "total": 149,
+      "bootstrapCount": 0,
+      "substantiveTotal": 149,
       "cycles": [
         "2014",
         "2017",
@@ -6091,6 +6289,8 @@
       "acronym": "SOA",
       "title": "SOA_ESO_2017",
       "total": 142,
+      "bootstrapCount": 0,
+      "substantiveTotal": 142,
       "cycles": [
         "2017"
       ],
@@ -6151,6 +6351,8 @@
       "acronym": "VSSBD",
       "title": "VSSBD_SECM",
       "total": 132,
+      "bootstrapCount": 0,
+      "substantiveTotal": 132,
       "cycles": [
         "2023",
         "unknown"
@@ -6212,6 +6414,8 @@
       "acronym": "MC",
       "title": "MC_CM_AllYears",
       "total": 109,
+      "bootstrapCount": 0,
+      "substantiveTotal": 109,
       "cycles": [
         "AllYears"
       ],
@@ -6272,6 +6476,8 @@
       "acronym": "MOTHER_CENTRIC",
       "title": "Mother Centric",
       "total": 109,
+      "bootstrapCount": 0,
+      "substantiveTotal": 109,
       "cycles": [
         "1993"
       ],
@@ -6332,6 +6538,8 @@
       "acronym": "SAFSO",
       "title": "SAFSO_EAOSP",
       "total": 102,
+      "bootstrapCount": 0,
+      "substantiveTotal": 102,
       "cycles": [
         "2021"
       ],
@@ -6392,6 +6600,8 @@
       "acronym": "LISE",
       "title": "LISE_ESLI",
       "total": 86,
+      "bootstrapCount": 0,
+      "substantiveTotal": 86,
       "cycles": [
         "unknown"
       ],
@@ -6452,6 +6662,8 @@
       "acronym": "SHRP",
       "title": "SHRP_EPRS",
       "total": 84,
+      "bootstrapCount": 0,
+      "substantiveTotal": 84,
       "cycles": [
         "2019"
       ],
@@ -6512,6 +6724,8 @@
       "acronym": "VSBD",
       "title": "VSBD_SECN_2023",
       "total": 72,
+      "bootstrapCount": 0,
+      "substantiveTotal": 72,
       "cycles": [
         "2023",
         "2024"
@@ -6573,6 +6787,8 @@
       "acronym": "CHIRP",
       "title": "CHIRP_ENPIR_AllYears",
       "total": 66,
+      "bootstrapCount": 0,
+      "substantiveTotal": 66,
       "cycles": [
         "AllYears"
       ],
@@ -6633,6 +6849,8 @@
       "acronym": "IMDB",
       "title": "IMDB_BDIM",
       "total": 63,
+      "bootstrapCount": 0,
+      "substantiveTotal": 63,
       "cycles": [
         "2016",
         "2018",
@@ -6695,6 +6913,8 @@
       "acronym": "VITAL_BIRTH",
       "title": "Vital Statistics Birth Database",
       "total": 58,
+      "bootstrapCount": 0,
+      "substantiveTotal": 58,
       "cycles": [
         "2014",
         "2017"
@@ -6756,6 +6976,8 @@
       "acronym": "NHS",
       "title": "NHS_SNL_Linkage_AllYears",
       "total": 44,
+      "bootstrapCount": 0,
+      "substantiveTotal": 44,
       "cycles": [
         "Linkage_AllYears"
       ],
@@ -6800,6 +7022,8 @@
       "acronym": "FTD",
       "title": "FTD_UAD_0405",
       "total": 37,
+      "bootstrapCount": 0,
+      "substantiveTotal": 37,
       "cycles": [
         "0405"
       ],
@@ -6860,6 +7084,8 @@
       "acronym": "CPAC",
       "title": "CPAC_AllYears",
       "total": 29,
+      "bootstrapCount": 0,
+      "substantiveTotal": 29,
       "cycles": [
         "AllYears"
       ],

@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import type { CorpusVariable } from '../../types.js';
-import { classifyVariableRole } from '../classifier.js';
+import { classifyVariableRole, isBootstrapWeight } from '../classifier.js';
 import { extractModuleCode, resolveModule } from '../modules.js';
 import { extractDerivationLineage } from '../derivation.js';
 
@@ -88,13 +88,27 @@ describe('Variable Role Classifier (2D GSIM)', () => {
   });
 
   it('classifies sampling weights across standard and longitudinal patterns', () => {
-    for (const name of ['WTS_M', 'WT01', 'FWEIGHT', 'HWEIGHT', 'BOOTWT']) {
+    for (const name of ['WTS_M', 'WT01', 'FWEIGHT', 'HWEIGHT', 'BOOTWT', 'WTBS_001', 'WTPS_0001', 'WVCBS001', 'SPFWT1']) {
       const v = mockVar({ name, concept: 'Survey weight' });
       const result = classifyVariableRole(v);
       expect(result.role).toBe('process');
       expect(result.origin).toBe('process');
       expect(result.rule).toBe('sampling_weight');
     }
+  });
+
+  it('detects replicate bootstrap weights via isBootstrapWeight', () => {
+    expect(isBootstrapWeight('WTPS_0001')).toBe(true);
+    expect(isBootstrapWeight('WTBS_001')).toBe(true);
+    expect(isBootstrapWeight('BSW_001')).toBe(true);
+    expect(isBootstrapWeight('WVCBS001')).toBe(true);
+    expect(isBootstrapWeight('REPWT001')).toBe(true);
+    expect(isBootstrapWeight('SPFWT1', 'Final replicate weight (1)')).toBe(true);
+    expect(isBootstrapWeight('VAR1', 'Pondération bootstrap no 1')).toBe(true);
+    // Non-bootstrap variables
+    expect(isBootstrapWeight('DHH_SEX', 'Sex')).toBe(false);
+    expect(isBootstrapWeight('WHYABSNT', 'Reason for absence')).toBe(false);
+    expect(isBootstrapWeight('WTS_M', 'Master weight')).toBe(false);
   });
 
   it('classifies system identifiers as process with isIdentifier: true', () => {

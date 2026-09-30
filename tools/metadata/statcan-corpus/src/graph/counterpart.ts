@@ -21,7 +21,10 @@
  *     pair becomes an edge — each PUMF document has its own target record, so linking all of a
  *     cycle's PUMF docs to their master codebook is not redundant (the unique index keys on the
  *     target record, and distinct documents have distinct records).
- *   - Names present in two or more master docs are ambiguous and withheld.
+ *   - Names present in two or more candidate masters of the SAME subpopulation signature are
+ *     ambiguous and withheld (e.g. a name in both base codebooks). A name spread across
+ *     DIFFERENT signatures is not ambiguous — each PUMF doc matches exactly one master by
+ *     signature, so it links to that one.
  */
 
 import { createReadStream } from 'node:fs';
@@ -149,29 +152,28 @@ export async function scanCounterpartPairs(corpusPath: string = CORPUS_JSONL): P
     }
     if (!masterDocs.length || !pumfDocs.length) continue;
 
-    // Names present in >1 master doc are ambiguous for this cycle.
-    const nameMasterCount = new Map<string, number>();
-    for (const md of masterDocs) {
-      for (const nm of byDoc.get(md)?.namesInOrder.keys() ?? []) {
-        nameMasterCount.set(nm, (nameMasterCount.get(nm) ?? 0) + 1);
-      }
-    }
+    // A name is ambiguous ONLY when two or more candidate masters of the SAME subpopulation
+    // signature both carry it (e.g. two base codebooks). Names spread across DIFFERENT
+    // signatures are fine: each PUMF doc matches exactly one master by signature.
 
     for (const pd of pumfDocs) {
       const psig = subpopulationSignature(pd);
-      let md = masterDocs.find((m) => {
+      let candidates = masterDocs.filter((m) => {
         const ms = subpopulationSignature(m);
         return ms.plus === psig.plus && ms.dis === psig.dis;
       });
-      const exact = !!md;
-      if (!md) md = masterDocs.find((m) => !subpopulationSignature(m).plus && !subpopulationSignature(m).dis);
-      if (!md) continue;
+      let kind: 'exact' | 'fallback' = 'exact';
+      if (!candidates.length) {
+        candidates = masterDocs.filter((m) => !subpopulationSignature(m).plus && !subpopulationSignature(m).dis);
+        kind = 'fallback';
+      }
+      if (!candidates.length) continue;
 
       const targetNames = byDoc.get(pd)?.namesInOrder ?? new Map<string, number>();
-      const sourceNames = byDoc.get(md)?.namesInOrder ?? new Map<string, number>();
       for (const [nm] of [...targetNames.entries()].sort((a, b) => a[1] - b[1])) {
-        if (!sourceNames.has(nm)) continue;
-        if ((nameMasterCount.get(nm) ?? 0) > 1) {
+        const holders = candidates.filter((m) => (byDoc.get(m)?.namesInOrder.has(nm) ?? false));
+        if (!holders.length) continue;
+        if (holders.length > 1) {
           withheldAmbiguousNames++;
           continue;
         }
@@ -179,11 +181,11 @@ export async function scanCounterpartPairs(corpusPath: string = CORPUS_JSONL): P
           surveyGroup,
           cycle,
           targetDocPath: pd,
-          sourceDocPath: md,
+          sourceDocPath: holders[0]!,
           name: nm,
-          matchKind: exact ? 'exact' : 'fallback',
-          confidence: COUNTERPART_CONFIDENCE[exact ? 'exact' : 'fallback'],
-          evidence: exact
+          matchKind: kind,
+          confidence: COUNTERPART_CONFIDENCE[kind],
+          evidence: kind === 'exact'
             ? `Same variable name in PUMF dictionary and matched master codebook (subpopulation signature ${psig.plus || psig.dis ? 'matched' : 'base'})`
             : `Same variable name in PUMF dictionary; no subpopulation-matched master, linked to base master codebook`,
         });
@@ -210,37 +212,51 @@ export async function resolveCounterpartPairs(
   creds: { url: string; serviceRoleKey: string },
   fetchImpl: typeof fetch = fetch,
 ): Promise<{ edges: ResolvedCounterpartEdge[]; unresolved: number }> {
-  const liveCache = new Map<string, Array<{ record_id: string; cycle: string | null }>>();
+  // One request per (survey_group, doc) — the whole document's rows — then a local name map.
+  // Per-name queries would mean thousands of sequential round-trips for ~5k pairs.
+  const liveCache = new Map<string, Map<string, Array<{ record_id: string; cycle: string | null }>>>();
 
-  async function liveRows(surveyGroup: string, docPath: string, name: string) {
-    const key = `${surveyGroup}|${docPath}|${name}`;
-    let rows = liveCache.get(key);
-    if (!rows) {
+  async function docNameMap(surveyGroup: string, docPath: string) {
+    const key = `${surveyGroup}|${docPath}`;
+    let byName = liveCache.get(key);
+    if (!byName) {
       const q =
-        `${creds.url}/rest/v1/corpus_variable?select=record_id,cycle` +
+        `${creds.url}/rest/v1/corpus_variable?select=record_id,cycle,name` +
         `&survey_group=eq.${encodeURIComponent(surveyGroup)}` +
         `&path=eq.${encodeURIComponent(docPath)}` +
-        `&name=ilike.${encodeURIComponent(name)}&lang=eq.en` +
+        `&lang=eq.en` +
         `&order=record_id.asc`; // stable tie-break: PostgREST does not guarantee row order
       const res = await fetchImpl(q, {
         headers: { apikey: creds.serviceRoleKey, Authorization: `Bearer ${creds.serviceRoleKey}` },
       });
-      if (!res.ok) throw new Error(`Live lookup failed for ${name}: HTTP ${res.status} ${(await res.text()).slice(0, 200)}`);
-      rows = (await res.json()) as Array<{ record_id: string; cycle: string | null }>;
-      liveCache.set(key, rows);
+      if (!res.ok) throw new Error(`Live lookup failed for ${docPath}: HTTP ${res.status} ${(await res.text()).slice(0, 200)}`);
+      const rows = (await res.json()) as Array<{ record_id: string; cycle: string | null; name: string }>;
+      byName = new Map<string, Array<{ record_id: string; cycle: string | null }>>();
+      for (const r of rows) {
+        const nm = (r.name ?? '').toUpperCase().trim(); // match the scan's normalized names
+        let list = byName.get(nm);
+        if (!list) {
+          list = [];
+          byName.set(nm, list);
+        }
+        list.push({ record_id: r.record_id, cycle: r.cycle });
+      }
+      liveCache.set(key, byName);
     }
-    return rows;
+    return byName;
   }
 
   const edges: ResolvedCounterpartEdge[] = [];
   let unresolved = 0;
 
   for (const p of pairs) {
-    const [targetRows, sourceRows] = await Promise.all([
-      liveRows(p.surveyGroup, p.targetDocPath, p.name),
-      liveRows(p.surveyGroup, p.sourceDocPath, p.name),
+    const [targetMap, sourceMap] = await Promise.all([
+      docNameMap(p.surveyGroup, p.targetDocPath),
+      docNameMap(p.surveyGroup, p.sourceDocPath),
     ]);
-    if (targetRows.length === 0 || sourceRows.length === 0) {
+    const targetRows = targetMap.get(p.name);
+    const sourceRows = sourceMap.get(p.name);
+    if (!targetRows?.length || !sourceRows?.length) {
       unresolved++;
       continue;
     }
