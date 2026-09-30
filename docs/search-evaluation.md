@@ -41,5 +41,20 @@ After moving them to the 186-row `corpus_survey_counts` snapshot, `EXPLAIN ANALY
 survey groups. The snapshot refreshes after `corpus:load`; direct SQL edits require a manual
 `select corpus_refresh_facets();`.
 
+## AI-suggested phrase retrieval (2026-09-30)
+
+For `online harms`, the AI suggested `cyberbullying`, `online harassment`, and `digital safety`.
+The old flow ran three separate top-12 searches and combined only those pages. The long CIP field
+of study lists matched `digital safety` because `digital` and `safety` occurred in different
+categories (277–350 categories per record). The new `corpus_search_ai` RPC requires the phrase's
+terms to match the variable metadata or **one** category label, and counts distinct record IDs
+before paging. Against the live English corpus and those same three phrases, it returns three
+online-harassment variables; the five field-of-study false matches disappear. The Crime and
+justice filter returns those same three records, so its count does not exceed the all-subject
+count. The UI reuses the same AI phrases when filters change instead of calling the LLM again.
+
+This is a targeted retrieval fix. Subject labels are assigned to surveys, not individual
+variables, and surveys can have more than one subject. Subject counts therefore overlap.
+
 Grouping is deliberately page-local. A question spread across two 25-record pages can still
 appear once on each page; results and total counts remain auditable variable occurrences.

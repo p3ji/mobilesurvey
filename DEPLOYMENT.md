@@ -501,6 +501,13 @@ run `select corpus_refresh_facets();` with a privileged SQL role. The refresh fu
 callable by the browser's anon role. Search evaluation and known limits are in
 `docs/search-evaluation.md`.
 
+**AI-related results.** Apply `tools/metadata/statcan-corpus/sql/ai-search-results.sql`
+after `search-performance.sql` and `subjects.sql`. The optional Searcher AI control uses this
+RPC to deduplicate LLM-suggested phrase matches, count them across all subjects, and page them.
+It requires a phrase to match the variable's metadata or one complete response-category label;
+words scattered across a long classification list do not count as one match. Subject labels are
+assigned to surveys and may overlap, so their separate counts do not sum to the all-subject total.
+
 **Licence.** The data is published under the Statistics Canada Open Licence, which requires
 attribution, forbids implying endorsement, and requires adaptations to be identifiable as such.
 The UI satisfies all three (a notice above the results, a per-record citation on every card), and

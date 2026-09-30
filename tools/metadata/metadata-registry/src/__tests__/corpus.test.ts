@@ -119,6 +119,25 @@ function stubFetch(payload: unknown, status = 200) {
 }
 
 describe('SupabaseCorpusSource', () => {
+  it('keeps AI phrase results in one deduplicated, pageable subject-aware search', async () => {
+    const fetchImpl = stubFetch([row({ total_count: 3, name: 'DSH_10F', concept: 'Harassment - Online' })]);
+    const source = new SupabaseCorpusSource({ url: 'https://p.supabase.co', anonKey: 'a', fetchImpl });
+    const result = await source.searchAi(['online harassment', 'digital safety'], {
+      subject: 'Crime and justice', limit: 25, offset: 25,
+    });
+    expect(result.total).toBe(3);
+    expect(result.hits.map((hit) => hit.entry.corpus?.variableName)).toEqual(['DSH_10F']);
+    const [url, init] = (fetchImpl as unknown as ReturnType<typeof vi.fn>).mock.calls[0] as [string, RequestInit];
+    expect(url).toBe('https://p.supabase.co/rest/v1/rpc/corpus_search_ai');
+    expect(JSON.parse(init.body as string)).toMatchObject({
+      search_terms: ['online harassment', 'digital safety'],
+      subject_filter: 'Crime and justice',
+      max_rows: 25,
+      row_offset: 25,
+    });
+    expect(fetchImpl).toHaveBeenCalledTimes(1);
+  });
+
   it('maps verified graph targets for both derived variables and their inputs', async () => {
     const fetchImpl = stubFetch([
       { root_record_id: 'dv-1', record_id: 'dv-1', name: 'BMI', label: 'Body mass index',

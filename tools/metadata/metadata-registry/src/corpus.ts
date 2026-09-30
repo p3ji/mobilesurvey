@@ -431,6 +431,31 @@ export class SupabaseCorpusSource {
     };
   }
 
+  /** Deduplicated, field-aware results for LLM-suggested phrases. */
+  async searchAi(terms: string[], options: CorpusSearchOptions = {}): Promise<CorpusSearchResult> {
+    if (terms.length === 0) return { hits: [], total: 0 };
+    const rows = await this.rpc<CorpusSearchRow[]>('corpus_search_ai', {
+      search_terms: terms.slice(0, 3),
+      lang_filter: options.lang ?? null,
+      survey_filter: options.survey ?? null,
+      year_min: options.yearMin ?? null,
+      year_max: options.yearMax ?? null,
+      require_codes: options.hasCodes ?? null,
+      subject_filter: options.subject ?? null,
+      sort_mode: options.sort ?? 'relevance',
+      max_rows: options.limit ?? 25,
+      row_offset: options.offset ?? 0,
+    }, options.signal);
+    return {
+      hits: rows.map((row) => ({
+        entry: toRegistryEntry(row),
+        score: row.rank,
+        matched: [],
+      })),
+      total: rows[0]?.total_count ?? 0,
+    };
+  }
+
   /** Immediate verified inputs for the visible results page; empty pages make no request. */
   async directInputs(targetRecordIds: string[], signal?: AbortSignal): Promise<CorpusDirectInput[]> {
     if (targetRecordIds.length === 0) return [];

@@ -299,6 +299,8 @@ export function CorpusSearch({
   const [hits, setHits] = useState<SearchHit[]>([]);
   const [aiEnabled, setAiEnabled] = useState(false);
   const [aiHits, setAiHits] = useState<SearchHit[]>([]);
+  const [aiTotal, setAiTotal] = useState(0);
+  const [aiPage, setAiPage] = useState(0);
   const [aiTerms, setAiTerms] = useState<string[]>([]);
   const [aiQuery, setAiQuery] = useState<string | null>(null);
   const [aiBusy, setAiBusy] = useState(false);
@@ -407,11 +409,46 @@ export function CorpusSearch({
   useEffect(() => {
     aiController.current?.abort();
     setAiHits([]);
+    setAiTotal(0);
+    setAiPage(0);
     setAiTerms([]);
     setAiQuery(null);
     setAiBusy(false);
     setAiError(null);
-  }, [query, lang, survey, codesOnly, subject, sortBy]);
+  }, [query]);
+
+  // Keep the same LLM phrases while filters change. Only the corpus retrieval is repeated,
+  // so "All subjects" and one subject are slices of the same candidate set.
+  useEffect(() => setAiPage(0), [lang, survey, codesOnly, subject, sortBy]);
+
+  useEffect(() => {
+    if (!aiEnabled || aiQuery !== debounced.replace(/\s+/g, ' ').trim() || aiTerms.length === 0) return;
+    const controller = new AbortController();
+    setAiBusy(true);
+    setAiError(null);
+    source.searchAi(aiTerms, {
+      sort: sortBy,
+      ...(lang === 'all' ? {} : { lang }),
+      ...(survey === 'all' ? {} : { survey }),
+      ...(codesOnly ? { hasCodes: true } : {}),
+      ...(subject === null ? {} : { subject }),
+      limit: PAGE_SIZE,
+      offset: aiPage * PAGE_SIZE,
+      signal: controller.signal,
+    }).then((result) => {
+      if (controller.signal.aborted) return;
+      setAiHits(result.hits);
+      setAiTotal(result.total);
+    }).catch((error) => {
+      if (controller.signal.aborted) return;
+      setAiHits([]);
+      setAiTotal(0);
+      setAiError(error instanceof Error ? error.message : 'AI search is temporarily unavailable.');
+    }).finally(() => {
+      if (!controller.signal.aborted) setAiBusy(false);
+    });
+    return () => controller.abort();
+  }, [source, aiEnabled, aiQuery, aiTerms, debounced, lang, survey, codesOnly, subject, sortBy, aiPage]);
 
   const showHit = (hit: SearchHit) => {
     const meta = hit.entry.corpus as CorpusMeta | undefined;
@@ -591,37 +628,21 @@ export function CorpusSearch({
     setAiBusy(true);
     setAiError(null);
     setAiHits([]);
+    setAiTotal(0);
+    setAiPage(0);
     setAiTerms([]);
     setAiQuery(null);
     try {
       const terms = await expandCorpusQuery(phrase, controller.signal);
-      const searches = await Promise.all(terms.map((term) => source.search(term, {
-        sort: sortBy,
-        ...(lang === 'all' ? {} : { lang }),
-        ...(survey === 'all' ? {} : { survey }),
-        ...(codesOnly ? { hasCodes: true } : {}),
-        ...(subject === null ? {} : { subject }),
-        limit: 12,
-        signal: controller.signal,
-      })));
       if (controller.signal.aborted) return;
-      const seen = new Set<string>();
-      const related = searches.flatMap((result) => result.hits).filter((hit) => {
-        if (seen.has(hit.entry.entryId)) return false;
-        seen.add(hit.entry.entryId);
-        return true;
-      }).sort((a, b) => sortBy === 'recent'
-        ? ((b.entry.corpus?.year ?? -Infinity) - (a.entry.corpus?.year ?? -Infinity)) || b.score - a.score
-        : 0).slice(0, PAGE_SIZE);
       setAiTerms(terms);
-      setAiHits(related);
       setAiQuery(phrase);
+      if (terms.length === 0) setAiBusy(false);
     } catch (error) {
       if (!controller.signal.aborted) {
         setAiError(error instanceof Error ? error.message : 'AI search is temporarily unavailable.');
+        setAiBusy(false);
       }
-    } finally {
-      if (!controller.signal.aborted) setAiBusy(false);
     }
   };
 
@@ -717,6 +738,8 @@ export function CorpusSearch({
             if (!event.target.checked) {
               aiController.current?.abort();
               setAiHits([]);
+              setAiTotal(0);
+              setAiPage(0);
               setAiTerms([]);
               setAiQuery(null);
               setAiBusy(false);
@@ -900,9 +923,12 @@ export function CorpusSearch({
             <p className="cs-suggest">Graph connections are temporarily unavailable; variable records can still open the graph view.</p>
           )}
 
-          {aiEnabled && aiQuery === debounced.trim() && (
+          {aiEnabled && aiQuery === debounced.replace(/\s+/g, ' ').trim() && (
             <section className="cs-ai-results" aria-label="AI expanded search results">
               <h3>Related results from AI search</h3>
+              <p>{formatInt(aiTotal)} distinct variable record{aiTotal === 1 ? '' : 's'} match the suggested terms{subject === null ? ' across all subjects' : ` in ${subject}`}.
+                {aiTotal > PAGE_SIZE ? ` Showing page ${aiPage + 1} of ${formatInt(Math.ceil(aiTotal / PAGE_SIZE))}.` : ''}
+                {' '}Subjects are tagged at the survey level and can overlap; counts across subjects should not be added together.</p>
               <p>Terms searched: {aiTerms.length === 0 ? 'No useful alternatives found.' : aiTerms.map((term, index) => (
                 <span key={term}>
                   {index > 0 ? ', ' : ''}
@@ -910,9 +936,16 @@ export function CorpusSearch({
                 </span>
               ))}</p>
               {aiGroupedHits.length === 0 ? (
-                <p>No additional variable records matched these terms.</p>
+                <p>{aiBusy ? 'Searching suggested terms…' : 'No additional variable records matched these terms on this page.'}</p>
               ) : (
                 <div className="sr-results">{aiGroupedHits.map(renderGroup)}</div>
+              )}
+              {aiTotal > PAGE_SIZE && (
+                <div className="cs-pager">
+                  <button type="button" className="btn btn--sm" disabled={aiPage === 0 || aiBusy} onClick={() => setAiPage((n) => n - 1)}>← Previous AI results</button>
+                  <span className="cs-pager__at">{aiPage + 1} / {formatInt(Math.ceil(aiTotal / PAGE_SIZE))}</span>
+                  <button type="button" className="btn btn--sm" disabled={(aiPage + 1) * PAGE_SIZE >= aiTotal || aiBusy} onClick={() => setAiPage((n) => n + 1)}>Next AI results →</button>
+                </div>
               )}
             </section>
           )}
