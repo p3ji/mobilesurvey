@@ -583,7 +583,7 @@ if (process.argv[1] && process.argv[1].endsWith('queue.ts')) {
                 derivation_type: extracted.derivation_type,
                 expression_summary: extracted.expression_summary,
                 raw_evidence: job.raw_note,
-                extraction_method: 'llm_qwen3.8',
+                extraction_method: `llm_${process.env.LOCAL_LLM_MODEL || 'qwen3.8-27b'}`,
                 confidence: resolvedRecordId ? 0.95 : 0.6,
                 review_status: 'candidate',
                 created_at: Date.now(),
