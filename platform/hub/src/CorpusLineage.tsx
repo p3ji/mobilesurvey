@@ -8,7 +8,6 @@ import type {
 import { CorpusLineageDiagram } from './CorpusLineageDiagram.js';
 import { lineageEvidence } from './lineageEvidence.js';
 
-const PAGE_SIZE = 20;
 
 export interface CorpusGraphFocus {
   variable: CorpusLineageTarget;
@@ -23,9 +22,6 @@ interface CorpusLineageProps {
 
 export function CorpusLineage({ source, onSelectSearch, initialFocus }: CorpusLineageProps) {
   const initialTarget = initialFocus?.targets[0] ?? null;
-  const [query, setQuery] = useState('');
-  const [search, setSearch] = useState('');
-  const [page, setPage] = useState(0);
   const [results, setResults] = useState<CorpusLineageTargetsPage | null>(null);
   const [selected, setSelected] = useState<CorpusLineageTarget | null>(initialTarget ?? null);
   const [edges, setEdges] = useState<CorpusLineageEdge[]>([]);
@@ -35,20 +31,13 @@ export function CorpusLineage({ source, onSelectSearch, initialFocus }: CorpusLi
   const [graphError, setGraphError] = useState<string | null>(null);
 
   useEffect(() => {
-    const timer = window.setTimeout(() => setSearch(query.trim()), 250);
-    return () => window.clearTimeout(timer);
-  }, [query]);
-
-  useEffect(() => {
     const controller = new AbortController();
     setListLoading(true);
     setListError(null);
-    source.lineageTargets(search, PAGE_SIZE, page * PAGE_SIZE, controller.signal)
+    source.lineageTargets('', 15, 0, controller.signal)
       .then((next) => {
         setResults(next);
-        setSelected((current) => initialFocus && search === '' && page === 0 && current?.recordId === initialTarget?.recordId
-          ? current
-          : next.targets[0] ?? null);
+        setSelected((current) => current ?? initialTarget ?? next.targets[0] ?? null);
         setListLoading(false);
       })
       .catch((error: unknown) => {
@@ -59,7 +48,7 @@ export function CorpusLineage({ source, onSelectSearch, initialFocus }: CorpusLi
         setListLoading(false);
       });
     return () => controller.abort();
-  }, [source, search, page, initialTarget?.recordId]);
+  }, [source, initialTarget]);
 
   useEffect(() => {
     if (selected === null) {
@@ -82,6 +71,15 @@ export function CorpusLineage({ source, onSelectSearch, initialFocus }: CorpusLi
       });
     return () => controller.abort();
   }, [source, selected]);
+
+  const featuredTargets = useMemo(() => {
+    if (!results) return [];
+    const base = results.targets;
+    if (!initialFocus) return base;
+    const initialTargets = initialFocus.targets;
+    const missing = initialTargets.filter((t) => !base.some((b) => b.recordId === t.recordId));
+    return [...missing, ...base];
+  }, [results, initialFocus]);
 
   const layers = useMemo(() => {
     const byDepth = new Map<number, CorpusLineageEdge[]>();
@@ -108,25 +106,36 @@ export function CorpusLineage({ source, onSelectSearch, initialFocus }: CorpusLi
       </p>
       <div className="kg-dag-layout">
         <aside className="kg-dag-sidebar">
-          <h3 className="kg-dag-sidebar__title">Linked derived variables</h3>
+          <h3 className="kg-dag-sidebar__title">Featured Derivations</h3>
           <p className="kg-dag-sidebar__desc">
-            {results === null ? 'Loading graph…' : `${results.total.toLocaleString()} ${results.total === 1 ? 'variable' : 'variables'} · ${results.edges.toLocaleString()} published ${results.edges === 1 ? 'link' : 'links'}`}
+            Complex multi-input and multi-step derivations from Statistics Canada surveys.
           </p>
-          <input
-            type="search"
-            className="kg-search-input kg-lineage__search"
-            aria-label="Search linked derived variables"
-            placeholder="Variable, topic, survey, cycle…"
-            value={query}
-            onChange={(event) => { setQuery(event.target.value); setPage(0); }}
-          />
-          {listLoading && <p className="kg-dag-sidebar__desc" role="status">Loading variables…</p>}
+
+          <div className="kg-dag-searcher-callout">
+            <div className="kg-dag-searcher-callout__body">
+              <strong>Looking for another variable?</strong>
+              <p>
+                Search any collected question or derived indicator in <strong>Variables</strong> to inspect its upstream inputs or downstream uses.
+              </p>
+            </div>
+            {onSelectSearch && (
+              <button
+                type="button"
+                className="kg-btn kg-btn--sm kg-btn--primary kg-dag-searcher-callout__btn"
+                onClick={() => onSelectSearch('')}
+              >
+                Go to Variables ↗
+              </button>
+            )}
+          </div>
+
+          {listLoading && <p className="kg-dag-sidebar__desc" role="status">Loading featured derivations…</p>}
           {listError && <p className="cs-error" role="alert">{listError}</p>}
-          {!listLoading && !listError && results?.targets.length === 0 && (
-            <p className="kg-dag-sidebar__desc">No published lineage matches this search.</p>
+          {!listLoading && !listError && featuredTargets.length === 0 && (
+            <p className="kg-dag-sidebar__desc">No derivation graphs currently published.</p>
           )}
           <div className="kg-dag-list">
-            {results?.targets.map((target) => (
+            {featuredTargets.map((target) => (
               <button
                 key={target.recordId}
                 type="button"
@@ -143,13 +152,6 @@ export function CorpusLineage({ source, onSelectSearch, initialFocus }: CorpusLi
               </button>
             ))}
           </div>
-          {results && results.total > PAGE_SIZE && (
-            <div className="kg-lineage__pager">
-              <button type="button" className="kg-btn kg-btn--sm" disabled={page === 0} onClick={() => setPage(page - 1)}>Previous</button>
-              <span>{page * PAGE_SIZE + 1}–{Math.min((page + 1) * PAGE_SIZE, results.total)} of {results.total}</span>
-              <button type="button" className="kg-btn kg-btn--sm" disabled={(page + 1) * PAGE_SIZE >= results.total} onClick={() => setPage(page + 1)}>Next</button>
-            </div>
-          )}
         </aside>
 
         <div className="kg-dag-main">
