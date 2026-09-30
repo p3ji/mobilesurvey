@@ -710,6 +710,67 @@ export class SupabaseCorpusSource {
     }));
   }
 
+  /** Explicit cross-cycle suggestions, kept separate from exact concept membership. */
+  async conceptContinuity(
+    conceptualVariableId: string,
+    signal?: AbortSignal,
+  ): Promise<CorpusConceptContinuity[]> {
+    const rows = await this.rpc<Array<{
+      earlier_record_id: string;
+      later_record_id: string;
+      earlier_conceptual_variable_id: string;
+      later_conceptual_variable_id: string;
+      earlier_name: string;
+      later_name: string;
+      earlier_concept: string | null;
+      later_concept: string | null;
+      earlier_question_text: string | null;
+      later_question_text: string | null;
+      earlier_universe: string | null;
+      later_universe: string | null;
+      earlier_year: number | null;
+      later_year: number | null;
+      earlier_survey_acronym: string | null;
+      later_survey_acronym: string | null;
+      earlier_path: string;
+      later_path: string;
+      earlier_page: number;
+      later_page: number;
+      review_status: 'ai_suggested' | 'human_reviewed';
+      suggested_by: string;
+      reviewed_by: string | null;
+      rationale: string;
+      evidence: string;
+    }>>('corpus_concept_continuity_for', { cv_id: conceptualVariableId }, signal);
+    return rows.map((row) => ({
+      earlierRecordId: row.earlier_record_id,
+      laterRecordId: row.later_record_id,
+      earlierConceptualVariableId: row.earlier_conceptual_variable_id,
+      laterConceptualVariableId: row.later_conceptual_variable_id,
+      earlierName: row.earlier_name,
+      laterName: row.later_name,
+      earlierConcept: row.earlier_concept,
+      laterConcept: row.later_concept,
+      earlierQuestionText: row.earlier_question_text,
+      laterQuestionText: row.later_question_text,
+      earlierUniverse: row.earlier_universe,
+      laterUniverse: row.later_universe,
+      earlierYear: row.earlier_year,
+      laterYear: row.later_year,
+      earlierSurveyAcronym: row.earlier_survey_acronym,
+      laterSurveyAcronym: row.later_survey_acronym,
+      earlierPath: row.earlier_path,
+      laterPath: row.later_path,
+      earlierPage: row.earlier_page,
+      laterPage: row.later_page,
+      reviewStatus: row.review_status,
+      suggestedBy: row.suggested_by,
+      reviewedBy: row.reviewed_by,
+      rationale: row.rationale,
+      evidence: row.evidence,
+    }));
+  }
+
   /**
    * The document a record came from, looked up by the path the record already carries.
    *
@@ -963,6 +1024,35 @@ export interface CorpusTimelineEntry {
   lang: string;
   /** Ready-to-render citation, assembled the same way as a search hit's. */
   citation: string;
+}
+
+/** A suggested relationship between two distinct conceptual-variable timelines. */
+export interface CorpusConceptContinuity {
+  earlierRecordId: string;
+  laterRecordId: string;
+  earlierConceptualVariableId: string;
+  laterConceptualVariableId: string;
+  earlierName: string;
+  laterName: string;
+  earlierConcept: string | null;
+  laterConcept: string | null;
+  earlierQuestionText: string | null;
+  laterQuestionText: string | null;
+  earlierUniverse: string | null;
+  laterUniverse: string | null;
+  earlierYear: number | null;
+  laterYear: number | null;
+  earlierSurveyAcronym: string | null;
+  laterSurveyAcronym: string | null;
+  earlierPath: string;
+  laterPath: string;
+  earlierPage: number;
+  laterPage: number;
+  reviewStatus: 'ai_suggested' | 'human_reviewed';
+  suggestedBy: string;
+  reviewedBy: string | null;
+  rationale: string;
+  evidence: string;
 }
 
 export interface CorpusConceptQuery {

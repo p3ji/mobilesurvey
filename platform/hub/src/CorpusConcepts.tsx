@@ -20,11 +20,13 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import {
   type CorpusCode,
+  type CorpusConceptContinuity,
   type CorpusConceptualVariable,
   type CorpusTimelineEntry,
   type SupabaseCorpusSource,
 } from '@mobilesurvey/metadata-registry';
 import { CorpusDocumentReader } from './CorpusDocument.js';
+import './concept-continuity.css';
 
 const DEBOUNCE_MS = 250;
 const PAGE_SIZE = 25;
@@ -68,14 +70,18 @@ function Timeline({
   cv,
   onClose,
   onRead,
+  onOpenRelated,
 }: {
   source: SupabaseCorpusSource;
   cv: CorpusConceptualVariable;
   onClose: () => void;
   onRead: (path: string, page: number) => void;
+  onOpenRelated: (conceptualVariableId: string) => void;
 }) {
   const [entries, setEntries] = useState<CorpusTimelineEntry[] | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [continuity, setContinuity] = useState<CorpusConceptContinuity[]>([]);
+  const [continuityError, setContinuityError] = useState<string | null>(null);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -86,6 +92,13 @@ function Timeline({
       .then(setEntries)
       .catch((err) => {
         if (!controller.signal.aborted) setError(describe(err));
+      });
+    setContinuity([]);
+    setContinuityError(null);
+    source.conceptContinuity(cv.conceptualVariableId, controller.signal)
+      .then(setContinuity)
+      .catch((err) => {
+        if (!controller.signal.aborted) setContinuityError(describe(err));
       });
     return () => controller.abort();
   }, [source, cv.conceptualVariableId]);
@@ -160,6 +173,50 @@ function Timeline({
             </li>
           ))}
         </ol>
+      )}
+
+      {continuityError !== null && (
+        <p className="cc-continuity__error">Related concept suggestions could not load: {continuityError}</p>
+      )}
+      {continuity.length > 0 && (
+        <section className="cc-continuity" aria-label="Suggested concept connections">
+          <h3>Related concepts across cycles</h3>
+          <p>These connections are suggestions. A changed universe or coding may affect comparability.</p>
+          {continuity.map((link) => {
+            const otherId = link.earlierConceptualVariableId === cv.conceptualVariableId
+              ? link.laterConceptualVariableId
+              : link.earlierConceptualVariableId;
+            return (
+              <div className="cc-continuity__link" key={`${link.earlierRecordId}:${link.laterRecordId}`}>
+                <div className="cc-continuity__flow">
+                  <span>{link.earlierSurveyAcronym ?? 'Survey'} {link.earlierYear ?? '—'} · <code>{link.earlierName}</code></span>
+                  <span className="cc-continuity__arrow" aria-label="AI suggested connection">⇢</span>
+                  <span>{link.laterSurveyAcronym ?? 'Survey'} {link.laterYear ?? '—'} · <code>{link.laterName}</code></span>
+                </div>
+                <span className="cc-continuity__badge">
+                  {link.reviewStatus === 'human_reviewed' ? 'Human reviewed AI suggestion' : 'AI suggested · needs review'}
+                </span>
+                <p>{link.rationale}</p>
+                <details>
+                  <summary>Why are these connected?</summary>
+                  <div className="cc-continuity__details">
+                    <div><strong>Earlier record</strong><br />Concept: {link.earlierConcept ?? '—'}<br />Question: {link.earlierQuestionText ?? '—'}<br />Universe: {link.earlierUniverse ?? '—'}</div>
+                    <div><strong>Later record</strong><br />Concept: {link.laterConcept ?? '—'}<br />Question: {link.laterQuestionText ?? '—'}<br />Universe: {link.laterUniverse ?? '—'}</div>
+                    <p><strong>Evidence:</strong> {link.evidence}</p>
+                    <p><strong>Suggested by:</strong> {link.suggestedBy}.{link.reviewedBy !== null ? ` Reviewed by ${link.reviewedBy}.` : ''} This connection does not establish statistical comparability.</p>
+                    <div className="cc-continuity__sources">
+                      <button type="button" className="cs-link" onClick={() => onRead(link.earlierPath, link.earlierPage)}>Open earlier source ↗</button>
+                      <button type="button" className="cs-link" onClick={() => onRead(link.laterPath, link.laterPage)}>Open later source ↗</button>
+                    </div>
+                  </div>
+                </details>
+                <button type="button" className="cs-link" onClick={() => onOpenRelated(otherId)}>
+                  View connected timeline ↗
+                </button>
+              </div>
+            );
+          })}
+        </section>
       )}
     </div>
   );
@@ -263,6 +320,11 @@ export function CorpusConcepts({ source, initialConceptId }: { source: SupabaseC
         cv={open}
         onClose={() => setOpen(null)}
         onRead={(path, page) => setReading({ path, page })}
+        onOpenRelated={(id) => {
+          source.conceptualVariable(id).then((concept) => {
+            if (concept !== null) setOpen(concept);
+          }).catch((err) => setError(describe(err)));
+        }}
       />
     );
   }

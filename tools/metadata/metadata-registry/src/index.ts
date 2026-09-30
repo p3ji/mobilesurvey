@@ -27,6 +27,7 @@ export {
   type CorpusFilters,
   type CorpusConceptualVariable,
   type CorpusTimelineEntry,
+  type CorpusConceptContinuity,
   type CorpusConceptQuery,
   type CorpusConceptResult,
   type CorpusSuggestion,

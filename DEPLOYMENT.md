@@ -575,6 +575,22 @@ Live check (2026-09-29): 1,183 verified links are readable, and 5 uncertain scho
 stored as `needs_review` and hidden from public reads. These counts change when the corpus or
 review queue is updated.
 
+### 9h. Cross-cycle concept continuity suggestions
+
+Apply `tools/metadata/statcan-corpus/sql/concept_continuity.sql` after `clusters.sql`. It creates
+a separate, read-only-to-anon relationship between two corpus variable occurrences and the
+`corpus_concept_continuity_for` RPC. It seeds one AI-suggested `ONL_SHOP` connection from CIUS
+2020 to 2022. Both years stay in their original DDI concept/universe groups; the relation only
+adds a visible bridge between their timelines. The 2018 occurrence shares the 2020 group and
+therefore sees the same bridge.
+
+Each additional connection must retain its source record IDs, an explicit `suggested_by` value,
+the supporting source-field evidence, a rationale, and `review_status`. Use `ai_suggested` until
+a person assesses the evidence; `human_reviewed` requires `reviewed_by` and `reviewed_at`
+without erasing the AI origin. `rejected` rows are not shown publicly. A connection is not a finding that question
+wording, population, coding, or estimates are statistically comparable. A corpus reload may
+rebuild cluster memberships, but it must preserve the occurrence IDs used by these links.
+
 ---
 
 ## Security notes
