@@ -109,22 +109,21 @@ export function CorpusLineage({ source, onSelectSearch, initialFocus }: CorpusLi
   return (
     <section className="kg-pane kg-lineage">
       <p className="kg-pane__desc">
-        Browse published links between derived variables and their inputs. An automated reviewer checked each
-        link against a Statistics Canada note and the available dictionary columns; this does not establish the
-        full calculation rule. Solid lines name the source in the note. Dotted light-grey lines show a
-        high-confidence provisional mapping or a note reference mapped to a
-        published source column. The note for each link appears below.
+        Examples showcasing published links between derived variables and their inputs. Teal arrows mark
+        master-file counterparts; indigo arrows mark PUMF grouped-recode collapses; grey arrows
+        are note-derived (solid if the source name appears verbatim in the note, dashed otherwise).
+        To trace lineage for any specific variable, search for it in the <strong>Search</strong> tab.
       </p>
       <div className="kg-dag-layout">
         <aside className="kg-dag-sidebar">
-          <h3 className="kg-dag-sidebar__title">Featured Derivations</h3>
+          <h3 className="kg-dag-sidebar__title">Example Derivations</h3>
           <p className="kg-dag-sidebar__desc">
-            Multi-stage indicator pipelines and PUMF grouped recodes from Statistics Canada surveys.
+            Sample multi-stage pipelines and PUMF recodes demonstrating derivation lineage. Use <strong>Search</strong> to find and inspect any variable in the corpus.
           </p>
 
           <div className="kg-dag-searcher-callout">
             <div className="kg-dag-searcher-callout__body">
-              <strong>Looking for another variable?</strong>
+              <strong>Looking for a specific variable?</strong>
               <p>
                 Search any collected question or derived indicator in <strong>Search</strong> to inspect its upstream inputs or downstream uses.
               </p>

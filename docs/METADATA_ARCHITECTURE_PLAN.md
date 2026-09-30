@@ -5,6 +5,8 @@
 **Status**: Consensus Architecture Plan (Reviewed & Aligned with Codex Second Opinion)  
 **Domain**: Official Statistics Metadata (Statistics Canada / GSIM / DDI-Lifecycle 3.3 / DDI-CDI / W3C PROV-O)
 
+**2026-09-30 capacity update:** The `halfvec(1024)` design below remains a retrieval experiment, not a deployment decision. Live storage and relevance findings in [Searcher vector audit](searcher-vector-audit.md) recommend lexical fixes first and a separate, rebuildable vector index if a judged pilot warrants it.
+
 ---
 
 ## 1. Executive Summary & Consensus Architecture

@@ -2309,11 +2309,14 @@ code { font-family: var(--mono); font-size: 0.88em; }
   border-top: 2px solid #94a3b8;
   vertical-align: middle;
 }
+.kg-flow__legend-line--teal {
+  border-color: #0d9488;
+}
+.kg-flow__legend-line--indigo {
+  border-color: #6366f1;
+}
 .kg-flow__legend-line--dashed {
   border-top-style: dashed;
-}
-.kg-flow__legend-line--light {
-  border-color: #cbd5e1;
 }
 .kg-dag-evidence {
   background: #f8fafc;
@@ -2425,7 +2428,8 @@ code { font-family: var(--mono); font-size: 0.88em; }
   .kg-dag-list { max-height: 320px; overflow-y: auto; }
   .kg-dag-card__header { flex-wrap: wrap; }
 }
-+/* About: a short public account of the metadata work. */
+
+/* About: a short public account of the metadata work. */
 .about-page { background: #f7f9fc; color: #1b2733; }
 .about-page__header { background: #fff; }
 .about-page__header-link {

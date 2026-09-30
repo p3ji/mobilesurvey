@@ -332,9 +332,9 @@ export function CorpusConcepts({ source, initialConceptId }: { source: SupabaseC
   return (
     <div className="cc">
       <p className="cc-intro">
-        One measure, traced across every cycle that asked it. Grouping follows DDI’s variable
-        cascade, so a concept measured on a different population stays a different entry, and the
-        number of <em>codings</em> tells you where a series is not comparable.
+        Example measures traced across cycles to illustrate concept continuity and coding changes over time.
+        Grouping follows DDI’s variable cascade, so a concept measured on a different population stays a distinct entry, and the
+        number of <em>codings</em> indicates where a series is not directly comparable.
       </p>
 
       <div className="sr-search">

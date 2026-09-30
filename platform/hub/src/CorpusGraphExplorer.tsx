@@ -287,8 +287,26 @@ export function CorpusGraphExplorer({
       {tab === 'concepts' && (
         <section className="kg-pane">
           <p className="kg-pane__desc">
-            Track how Statistics Canada measures concepts across decades — question wording changes, category additions, and series breaks.
+            Examples showcasing how Statistics Canada measures subject-matter concepts across cycles and decades — question wording changes, category additions, and series breaks. To explore a specific topic or question, search directly in the <strong>Search</strong> tab.
           </p>
+
+          <div className="kg-dag-searcher-callout" style={{ maxWidth: 680, marginBottom: 16 }}>
+            <div className="kg-dag-searcher-callout__body">
+              <strong>Looking for a specific concept or topic?</strong>
+              <p>
+                Browse the examples below to see longitudinal concept continuity, or search any keyword in <strong>Search</strong> to jump directly to matching variables and their timelines.
+              </p>
+            </div>
+            {onSelectSearch && (
+              <button
+                type="button"
+                className="kg-btn kg-btn--sm kg-btn--primary kg-dag-searcher-callout__btn"
+                onClick={() => onSelectSearch('')}
+              >
+                Go to Search ↗
+              </button>
+            )}
+          </div>
 
           <details className="kg-harmonized-accordion">
             <summary className="kg-harmonized-summary">

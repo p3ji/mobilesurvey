@@ -135,9 +135,7 @@ export function CorpusLineageDiagram({ target, edges, highlightRecordId }: { tar
       <div className="kg-flow__toolbar">
         <div>
           <strong>Variable flow</strong>
-          <span>
-            Arrows point toward the derived variable. Teal: master-file counterpart. Indigo: G-suffix collapse. Grey: note-derived.
-          </span>
+          <span>Arrows point toward the derived variable.</span>
         </div>
         {graph.directCount > DIRECT_INPUTS_PER_VIEW && (
           <div className="kg-flow__controls">
@@ -153,7 +151,7 @@ export function CorpusLineageDiagram({ target, edges, highlightRecordId }: { tar
       <div className="kg-flow__viewport" ref={viewport}>
         <svg width={diagram.width} height={diagram.height} viewBox={`0 0 ${diagram.width} ${diagram.height}`} role="img" aria-label={`Variable flow for ${target.name}: ${graph.edges.length} published links shown`}>
           <title>Variable flow for {target.name}</title>
-          <desc>Inputs on the left flow to {target.name} on the right. Teal lines are master-file counterparts; indigo lines are G-suffix collapses; grey lines are note-derived links.</desc>
+          <desc>Inputs on the left flow to {target.name} on the right. Teal lines: master-file counterparts. Indigo lines: G-suffix collapses. Grey lines: note-derived (solid if named, dashed if inferred).</desc>
           <defs>
             <marker id="kg-flow-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
               <path d="M 0 1 L 9 5 L 0 9 z" fill="#64748b" />
@@ -218,6 +216,12 @@ export function CorpusLineageDiagram({ target, edges, highlightRecordId }: { tar
             </g>
           ))}
         </svg>
+      </div>
+      <div className="kg-flow__legend">
+        <span className="kg-flow__legend-item"><span className="kg-flow__legend-line kg-flow__legend-line--teal" /> Counterpart</span>
+        <span className="kg-flow__legend-item"><span className="kg-flow__legend-line kg-flow__legend-line--indigo" /> G-collapse</span>
+        <span className="kg-flow__legend-item"><span className="kg-flow__legend-line" /> Note-derived</span>
+        <span className="kg-flow__legend-item"><span className="kg-flow__legend-line kg-flow__legend-line--dashed" /> Inferred</span>
       </div>
     </div>
   );
