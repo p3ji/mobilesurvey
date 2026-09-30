@@ -569,6 +569,12 @@ name, read access for verified links, the bounded `corpus_get_upstream_lineage` 
 `corpus_get_direct_inputs` and `corpus_get_variable_graph_targets` for one Searcher results page. Searcher renders these database links
 with their AI attribution and source note; it does not present names guessed from prose as links.
 
+The Hub About page's live progress readout is backed by the small read-only
+`tools/metadata/statcan-corpus/sql/about-progress.sql` function. Apply it after
+`derivation_edges.sql`; it counts verified links and distinct survey programs without adding any
+stored data. Older Hub builds can temporarily fall back to paged reads of the verified edge table,
+so applying this function is safe to do independently of a frontend deployment.
+
 With a locally audited `out/derivation_queue.db`, generate the import SQL:
 
 ```bash

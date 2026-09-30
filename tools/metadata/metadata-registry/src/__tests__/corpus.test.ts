@@ -347,6 +347,32 @@ describe('SupabaseCorpusSource', () => {
     ]);
   });
 
+  it('maps the published-link progress RPC for the About page', async () => {
+    const fetchImpl = stubFetch([{ verified_links: 6080, linked_programs: 21 }]);
+    const source = new SupabaseCorpusSource({ url: 'https://p.supabase.co', anonKey: 'a', fetchImpl });
+    expect(await source.aboutProgress()).toEqual({ verifiedLinks: 6080, linkedPrograms: 21 });
+    const [url, init] = (fetchImpl as unknown as ReturnType<typeof vi.fn>).mock.calls[0] as [string, RequestInit];
+    expect(url).toBe('https://p.supabase.co/rest/v1/rpc/corpus_about_progress');
+    expect(JSON.parse(init.body as string)).toEqual({});
+  });
+
+  it('falls back to the readable edge table while the progress RPC is absent', async () => {
+    const fetchImpl = vi.fn(async (input: RequestInfo | URL) => {
+      const url = String(input);
+      if (url.includes('/rpc/')) return new Response('missing', { status: 404 });
+      return new Response(JSON.stringify([
+        { survey_group: 'CCHS_ESCC_2019' },
+        { survey_group: 'CIUS_2022' },
+      ]), {
+        status: 200,
+        headers: { 'Content-Type': 'application/json', 'Content-Range': '0-1/2' },
+      });
+    }) as unknown as typeof fetch;
+    const source = new SupabaseCorpusSource({ url: 'https://p.supabase.co', anonKey: 'a', fetchImpl });
+    expect(await source.aboutProgress()).toEqual({ verifiedLinks: 2, linkedPrograms: 2 });
+    expect(fetchImpl).toHaveBeenCalledTimes(2);
+  });
+
   it('survives an empty stats result rather than throwing on an unloaded corpus', async () => {
     const source = new SupabaseCorpusSource({
       url: 'https://p.supabase.co',

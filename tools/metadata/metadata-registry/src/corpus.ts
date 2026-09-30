@@ -93,6 +93,12 @@ export interface CorpusMeta {
   citation: string;
 }
 
+/** Published lineage progress. A program counts once when it has a verified link. */
+export interface CorpusAboutProgress {
+  verifiedLinks: number;
+  linkedPrograms: number;
+}
+
 /**
  * Human-readable citation for one occurrence.
  *
@@ -603,6 +609,63 @@ export class SupabaseCorpusSource {
       withCodes: row?.with_codes ?? 0,
       withQuestion: row?.with_question ?? 0,
     };
+  }
+
+  async aboutProgress(signal?: AbortSignal): Promise<CorpusAboutProgress> {
+    try {
+      const [row] = await this.rpc<Array<{ verified_links: number; linked_programs: number }>>(
+        'corpus_about_progress', {}, signal,
+      );
+      return {
+        verifiedLinks: row?.verified_links ?? 0,
+        linkedPrograms: row?.linked_programs ?? 0,
+      };
+    } catch (error) {
+      // Keep the public About page useful while an older deployment is waiting for the small
+      // progress RPC to be applied. The table is already readable to anon and the fallback is
+      // paged, so it does not depend on the REST API's 1,000-row cap.
+      if (signal?.aborted) throw error;
+      return this.aboutProgressFromEdges(signal);
+    }
+  }
+
+  private async aboutProgressFromEdges(signal?: AbortSignal): Promise<CorpusAboutProgress> {
+    const pageSize = 1000;
+    const programs = new Set<string>();
+    let offset = 0;
+    let total: number | null = null;
+    let verifiedLinks = 0;
+
+    while (total === null || offset < total) {
+      const response = await this.fetchImpl(
+        `${this.url}/rest/v1/corpus_derivation_edge?select=survey_group&review_status=eq.verified&order=edge_id.asc&limit=${pageSize}&offset=${offset}`,
+        {
+          headers: {
+            apikey: this.anonKey,
+            Authorization: `Bearer ${this.anonKey}`,
+            Prefer: 'count=exact',
+          },
+          ...(signal === undefined ? {} : { signal }),
+        },
+      );
+      if (!response.ok) {
+        const detail = await response.text().catch(() => '');
+        throw new Error(`corpus_derivation_edge progress failed: ${response.status}` +
+          `${detail === '' ? '' : ` — ${detail.slice(0, 300)}`}`);
+      }
+      const rows = await response.json() as Array<{ survey_group?: string | null }>;
+      verifiedLinks += rows.length;
+      for (const row of rows) {
+        const group = row.survey_group?.trim();
+        if (group) programs.add(group.split('_', 1)[0]!);
+      }
+      const contentRange = response.headers.get('content-range');
+      const parsedTotal = contentRange?.match(/\/(\d+)$/)?.[1];
+      if (parsedTotal !== undefined) total = Number(parsedTotal);
+      if (rows.length < pageSize || rows.length === 0) break;
+      offset += pageSize;
+    }
+    return { verifiedLinks: total ?? verifiedLinks, linkedPrograms: programs.size };
   }
 
   /**

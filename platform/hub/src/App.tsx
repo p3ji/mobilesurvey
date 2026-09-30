@@ -36,6 +36,7 @@ import type {
 import { draftRulesFromAnnotation, explainFlag, llmConfigured } from './validatorLlm.js';
 import { CorpusSearch } from './CorpusSearch.js';
 import { CorpusGraphExplorer } from './CorpusGraphExplorer.js';
+import { AboutPage } from './AboutPage.js';
 import type { CorpusGraphFocus } from './CorpusLineage.js';
 import {
   corpusSource,
@@ -138,10 +139,11 @@ const DEMO_SURVEYS: SurveySummary[] = [
 
 // ── Module definitions ────────────────────────────────────────────────────────
 
-type HubView = 'home' | 'collector' | 'searcher' | 'trainer' | 'migrator' | 'analyzer' | 'interviewer' | 'supervisor' | 'validator';
+type HubView = 'home' | 'about' | 'collector' | 'searcher' | 'trainer' | 'migrator' | 'analyzer' | 'interviewer' | 'supervisor' | 'validator';
 
 const VALID_HUB_VIEWS = new Set<HubView>([
   'home',
+  'about',
   'collector',
   'searcher',
   'trainer',
@@ -1105,7 +1107,7 @@ function parseSearcherParams(): {
   return { scope, query, survey, conceptId, initialGraphTab };
 }
 
-function SearcherView({ onBack }: { onBack: () => void }) {
+function SearcherView({ onBack, onAbout }: { onBack: () => void; onAbout: () => void }) {
   const corpus = useMemo(() => corpusSource(), []);
   const initialParams = useMemo(() => parseSearcherParams(), []);
   const [scope, setScope] = useState<SearchScope>(initialParams.scope);
@@ -1140,6 +1142,7 @@ function SearcherView({ onBack }: { onBack: () => void }) {
           <strong>Searcher</strong>
           <span className="hub__sub">Explore Statistics Canada survey metadata</span>
         </div>
+        <button type="button" className="about-page__header-link" onClick={onAbout}>About the project</button>
       </header>
 
       <main className="hub__main sr-main">
@@ -3130,6 +3133,7 @@ function HomePage({ onNavigate }: { onNavigate: (v: HubView) => void }) {
           <img src={logo} alt="Modular Survey Tools" className="hub__logo" />
           <span className="hub__sub">Open-source survey platform</span>
         </div>
+        <button type="button" className="about-page__header-link" onClick={() => onNavigate('about')}>About the project</button>
       </header>
 
       <main className="hub__main hub__main--home">
@@ -3536,7 +3540,8 @@ export function App() {
   }, []);
 
   if (view === 'collector') return <CollectorView onBack={() => setView('home')} />;
-  if (view === 'searcher') return <SearcherView onBack={() => setView('home')} />;
+  if (view === 'searcher') return <SearcherView onBack={() => setView('home')} onAbout={() => setView('about')} />;
+  if (view === 'about') return <AboutPage source={corpusSource()} onBack={() => setView('home')} onExplore={() => setView('searcher')} />;
   if (view === 'trainer') return <TrainingView onBack={() => setView('home')} />;
   if (view === 'migrator') return <MigratorView onBack={() => setView('home')} />;
   if (view === 'analyzer') return <AnalyzerView onBack={() => setView('home')} />;

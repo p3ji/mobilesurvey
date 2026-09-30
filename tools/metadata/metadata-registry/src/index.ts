@@ -13,6 +13,7 @@ export {
   CORPUS_LICENSE,
   CORPUS_ATTRIBUTION,
   type CorpusMeta,
+  type CorpusAboutProgress,
   type CorpusCode,
   type CorpusSearchRow,
   type CorpusSearchOptions,
