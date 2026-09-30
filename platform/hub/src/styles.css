@@ -2080,6 +2080,7 @@ code { font-family: var(--mono); font-size: 0.88em; }
   align-self: flex-start;
   font-size: 11px;
   padding: 4px 8px;
+}
 .kg-dag-filter-bar {
   display: flex;
   gap: 4px;
@@ -2279,6 +2280,33 @@ code { font-family: var(--mono); font-size: 0.88em; }
 }
 .kg-flow__viewport svg {
   display: block;
+}
+.kg-flow__legend {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+  padding: 7px 14px;
+  border-top: 1px solid #e2e8f0;
+  font-size: 11px;
+  color: #475569;
+}
+.kg-flow__legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+.kg-flow__legend-line {
+  display: inline-block;
+  width: 22px;
+  height: 0;
+  border-top: 2px solid #94a3b8;
+  vertical-align: middle;
+}
+.kg-flow__legend-line--dashed {
+  border-top-style: dashed;
+}
+.kg-flow__legend-line--light {
+  border-color: #cbd5e1;
 }
 .kg-dag-evidence {
   background: #f8fafc;
