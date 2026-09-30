@@ -597,6 +597,8 @@ export function renderVerifiedSql(verified: readonly CandidateEdgeRow[]): string
     ai_expression_summary: edge.expression_summary,
     statcan_verbatim_note: edge.raw_evidence,
     extraction_method: edge.extraction_method,
+    // Provenance: keep the actual model that minted each edge (extraction_method is 'llm_<model>').
+    ai_model: edge.extraction_method.replace(/^llm_/, '') || 'qwen3.8-27b',
     confidence: edge.confidence,
   }));
   const literal = JSON.stringify(payload).replace(/'/g, "''");
@@ -609,7 +611,7 @@ with incoming as materialized (
   select * from jsonb_to_recordset('${literal}'::jsonb) as i (
     target_var_name text, source_var_name text, survey_group text, cycle text,
     derivation_type text, ai_expression_summary text, statcan_verbatim_note text,
-    extraction_method text, confidence real
+    extraction_method text, ai_model text, confidence real
   )
 ), english as materialized (
   select v.record_id, v.survey_group, v.cycle, v.path, upper(btrim(v.name)) as name_key
@@ -627,7 +629,7 @@ insert into corpus_derivation_edge (
   ai_expression_summary, statcan_verbatim_note, extraction_method, confidence, review_status
 )
 select target.record_id, source.record_id, i.source_var_name, i.survey_group, i.cycle,
-       'ai_inferred', 'qwen3.8-27b', 'reviewer_agent_v1', i.derivation_type,
+       'ai_inferred', i.ai_model, 'reviewer_agent_v1', i.derivation_type,
        i.ai_expression_summary, i.statcan_verbatim_note, i.extraction_method,
        i.confidence, 'verified'
   from incoming i
