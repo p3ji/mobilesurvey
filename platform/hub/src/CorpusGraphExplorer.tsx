@@ -14,6 +14,10 @@ import { CorpusLineage } from './CorpusLineage.js';
 import type { CorpusGraphFocus } from './CorpusLineage.js';
 import { CorpusConcepts } from './CorpusConcepts.js';
 import summaryData from './data/knowledgeGraphSummary.json';
+import imdbLinks from './data/surveyImdbLinks.json';
+
+/** Acronym → Statistics Canada IMDB (Surveys and statistical programs) record page. */
+const IMDB_BY_ACRONYM: Record<string, { sdds: string; url: string }> = imdbLinks;
 
 interface CorpusGraphExplorerProps {
   source: SupabaseCorpusSource;
@@ -182,7 +186,22 @@ export function CorpusGraphExplorer({
                   return (
                     <tr key={s.acronym} className={isExpanded ? 'kg-tr--expanded' : ''}>
                       <td>
-                        <strong className="kg-acronym">{s.acronym}</strong>
+                        {(() => {
+                          const imdb = IMDB_BY_ACRONYM[s.acronym];
+                          return imdb ? (
+                            <a
+                              className="kg-acronym kg-acronym--imdb"
+                              href={imdb.url}
+                              target="_blank"
+                              rel="noreferrer noopener"
+                              title={`Open the Statistics Canada IMDB record for ${s.acronym} (record ${imdb.sdds})`}
+                            >
+                              {s.acronym}&nbsp;↗
+                            </a>
+                          ) : (
+                            <strong className="kg-acronym">{s.acronym}</strong>
+                          );
+                        })()}
                       </td>
                       <td>
                         <div className="kg-survey-title">{s.title}</div>

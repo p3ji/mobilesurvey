@@ -1,0 +1,431 @@
+{
+  "CIS": {
+    "sdds": "5200",
+    "url": "https://www23.statcan.gc.ca/imdb/p2SV.pl?Function=getSurvey&SDDS=5200"
+  },
+  "GSS": {
+    "sdds": "4502",
+    "url": "https://www23.statcan.gc.ca/imdb/p2SV.pl?Function=getSurvey&SDDS=4502"
+  },
+  "CCHS": {
+    "sdds": "3226",
+    "url": "https://www23.statcan.gc.ca/imdb/p2SV.pl?Function=getSurvey&SDDS=3226"
+  },
+  "CSD": {
+    "sdds": "3251",
+    "url": "https://www23.statcan.gc.ca/imdb/p2SV.pl?Function=getSurvey&SDDS=3251"
+  },
+  "APS": {
+    "sdds": "3250",
+    "url": "https://www23.statcan.gc.ca/imdb/p2SV.pl?Function=getSurvey&SDDS=3250"
+  },
+  "SFGSME": {
+    "sdds": "2941",
+    "url": "https://www23.statcan.gc.ca/imdb/p2SV.pl?Function=getSurvey&SDDS=2941"
+  },
+  "LSIC": {
+    "sdds": "4422",
+    "url": "https://www23.statcan.gc.ca/imdb/p2SV.pl?Function=getSurvey&SDDS=4422"
+  },
+  "CHMS": {
+    "sdds": "5071",
+    "url": "https://www23.statcan.gc.ca/imdb/p2SV.pl?Function=getSurvey&SDDS=5071"
+  },
+  "LISA": {
+    "sdds": "5144",
+    "url": "https://www23.statcan.gc.ca/imdb/p2SV.pl?Function=getSurvey&SDDS=5144"
+  },
+  "SHS": {
+    "sdds": "3508",
+    "url": "https://www23.statcan.gc.ca/imdb/p2SV.pl?Function=getSurvey&SDDS=3508"
+  },
+  "CHSCY": {
+    "sdds": "5233",
+    "url": "https://www23.statcan.gc.ca/imdb/p2SV.pl?Function=getSurvey&SDDS=5233"
+  },
+  "SFS": {
+    "sdds": "2620",
+    "url": "https://www23.statcan.gc.ca/imdb/p2SV.pl?Function=getSurvey&SDDS=2620"
+  },
+  "CAFVMHS": {
+    "sdds": "5084",
+    "url": "https://www23.statcan.gc.ca/imdb/p2SV.pl?Function=getSurvey&SDDS=5084"
+  },
+  "SOLMP": {
+    "sdds": "5355",
+    "url": "https://www23.statcan.gc.ca/imdb/p2SV.pl?Function=getSurvey&SDDS=5355"
+  },
+  "CSCSC": {
+    "sdds": "5244",
+    "url": "https://www23.statcan.gc.ca/imdb/p2SV.pl?Function=getSurvey&SDDS=5244"
+  },
+  "SDTIU": {
+    "sdds": "4225",
+    "url": "https://www23.statcan.gc.ca/imdb/p2SV.pl?Function=getSurvey&SDDS=4225"
+  },
+  "EICS": {
+    "sdds": "4428",
+    "url": "https://www23.statcan.gc.ca/imdb/p2SV.pl?Function=getSurvey&SDDS=4428"
+  },
+  "CHS": {
+    "sdds": "5269",
+    "url": "https://www23.statcan.gc.ca/imdb/p2SV.pl?Function=getSurvey&SDDS=5269"
+  },
+  "HES": {
+    "sdds": "3881",
+    "url": "https://www23.statcan.gc.ca/imdb/p2SV.pl?Function=getSurvey&SDDS=3881"
+  },
+  "CSIT": {
+    "sdds": "5407",
+    "url": "https://www23.statcan.gc.ca/imdb/p2SV.pl?Function=getSurvey&SDDS=5407"
+  },
+  "CNICS": {
+    "sdds": "5185",
+    "url": "https://www23.statcan.gc.ca/imdb/p2SV.pl?Function=getSurvey&SDDS=5185"
+  },
+  "SGVP": {
+    "sdds": "4430",
+    "url": "https://www23.statcan.gc.ca/imdb/p2SV.pl?Function=getSurvey&SDDS=4430"
+  },
+  "SISPSP": {
+    "sdds": "5279",
+    "url": "https://www23.statcan.gc.ca/imdb/p2SV.pl?Function=getSurvey&SDDS=5279"
+  },
+  "PSES": {
+    "sdds": "4438",
+    "url": "https://www23.statcan.gc.ca/imdb/p2SV.pl?Function=getSurvey&SDDS=4438"
+  },
+  "OCHS": {
+    "sdds": "3824",
+    "url": "https://www23.statcan.gc.ca/imdb/p2SV.pl?Function=getSurvey&SDDS=3824"
+  },
+  "SLCDC": {
+    "sdds": "5160",
+    "url": "https://www23.statcan.gc.ca/imdb/p2SV.pl?Function=getSurvey&SDDS=5160"
+  },
+  "IPS": {
+    "sdds": "3250",
+    "url": "https://www23.statcan.gc.ca/imdb/p2SV.pl?Function=getSurvey&SDDS=3250"
+  },
+  "SIBS": {
+    "sdds": "5171",
+    "url": "https://www23.statcan.gc.ca/imdb/p2SV.pl?Function=getSurvey&SDDS=5171"
+  },
+  "SAT": {
+    "sdds": "4223",
+    "url": "https://www23.statcan.gc.ca/imdb/p2SV.pl?Function=getSurvey&SDDS=4223"
+  },
+  "NGES": {
+    "sdds": "5226",
+    "url": "https://www23.statcan.gc.ca/imdb/p2SV.pl?Function=getSurvey&SDDS=5226"
+  },
+  "LASS": {
+    "sdds": "5172",
+    "url": "https://www23.statcan.gc.ca/imdb/p2SV.pl?Function=getSurvey&SDDS=5172"
+  },
+  "CIUS": {
+    "sdds": "4432",
+    "url": "https://www23.statcan.gc.ca/imdb/p2SV.pl?Function=getSurvey&SDDS=4432"
+  },
+  "MHACS": {
+    "sdds": "5015",
+    "url": "https://www23.statcan.gc.ca/imdb/p2SV.pl?Function=getSurvey&SDDS=5015"
+  },
+  "CTADS": {
+    "sdds": "4440",
+    "url": "https://www23.statcan.gc.ca/imdb/p2SV.pl?Function=getSurvey&SDDS=4440"
+  },
+  "SELCCA": {
+    "sdds": "5287",
+    "url": "https://www23.statcan.gc.ca/imdb/p2SV.pl?Function=getSurvey&SDDS=5287"
+  },
+  "SSMW": {
+    "sdds": "5290",
+    "url": "https://www23.statcan.gc.ca/imdb/p2SV.pl?Function=getSurvey&SDDS=5290"
+  },
+  "SYC": {
+    "sdds": "5179",
+    "url": "https://www23.statcan.gc.ca/imdb/p2SV.pl?Function=getSurvey&SDDS=5179"
+  },
+  "PES": {
+    "sdds": "5406",
+    "url": "https://www23.statcan.gc.ca/imdb/p2SV.pl?Function=getSurvey&SDDS=5406"
+  },
+  "NGS": {
+    "sdds": "5012",
+    "url": "https://www23.statcan.gc.ca/imdb/p2SV.pl?Function=getSurvey&SDDS=5012"
+  },
+  "LLLI": {
+    "sdds": "5416",
+    "url": "https://www23.statcan.gc.ca/imdb/p2SV.pl?Function=getSurvey&SDDS=5416"
+  },
+  "NCS": {
+    "sdds": "5262",
+    "url": "https://www23.statcan.gc.ca/imdb/p2SV.pl?Function=getSurvey&SDDS=5262"
+  },
+  "PIAAC": {
+    "sdds": "4406",
+    "url": "https://www23.statcan.gc.ca/imdb/p2SV.pl?Function=getSurvey&SDDS=4406"
+  },
+  "SSPPS": {
+    "sdds": "5256",
+    "url": "https://www23.statcan.gc.ca/imdb/p2SV.pl?Function=getSurvey&SDDS=5256"
+  },
+  "ACS": {
+    "sdds": "3306",
+    "url": "https://www23.statcan.gc.ca/imdb/p2SV.pl?Function=getSurvey&SDDS=3306"
+  },
+  "CPSS": {
+    "sdds": "5311",
+    "url": "https://www23.statcan.gc.ca/imdb/p2SV.pl?Function=getSurvey&SDDS=5311"
+  },
+  "CCAHS": {
+    "sdds": "5339",
+    "url": "https://www23.statcan.gc.ca/imdb/p2SV.pl?Function=getSurvey&SDDS=5339"
+  },
+  "ICC": {
+    "sdds": "5323",
+    "url": "https://www23.statcan.gc.ca/imdb/p2SV.pl?Function=getSurvey&SDDS=5323"
+  },
+  "CSSW2": {
+    "sdds": "5354",
+    "url": "https://www23.statcan.gc.ca/imdb/p2SV.pl?Function=getSurvey&SDDS=5354"
+  },
+  "CSSW1": {
+    "sdds": "5354",
+    "url": "https://www23.statcan.gc.ca/imdb/p2SV.pl?Function=getSurvey&SDDS=5354"
+  },
+  "CSSW4": {
+    "sdds": "5354",
+    "url": "https://www23.statcan.gc.ca/imdb/p2SV.pl?Function=getSurvey&SDDS=5354"
+  },
+  "CAFHS": {
+    "sdds": "5259",
+    "url": "https://www23.statcan.gc.ca/imdb/p2SV.pl?Function=getSurvey&SDDS=5259"
+  },
+  "SSMCAF": {
+    "sdds": "5235",
+    "url": "https://www23.statcan.gc.ca/imdb/p2SV.pl?Function=getSurvey&SDDS=5235"
+  },
+  "CSSW3": {
+    "sdds": "5354",
+    "url": "https://www23.statcan.gc.ca/imdb/p2SV.pl?Function=getSurvey&SDDS=5354"
+  },
+  "SEPR": {
+    "sdds": "5208",
+    "url": "https://www23.statcan.gc.ca/imdb/p2SV.pl?Function=getSurvey&SDDS=5208"
+  },
+  "CLPS": {
+    "sdds": "5337",
+    "url": "https://www23.statcan.gc.ca/imdb/p2SV.pl?Function=getSurvey&SDDS=5337"
+  },
+  "IFPI": {
+    "sdds": "5072",
+    "url": "https://www23.statcan.gc.ca/imdb/p2SV.pl?Function=getSurvey&SDDS=5072"
+  },
+  "SFT": {
+    "sdds": "4501",
+    "url": "https://www23.statcan.gc.ca/imdb/p2SV.pl?Function=getSurvey&SDDS=4501"
+  },
+  "SEFJ": {
+    "sdds": "5312",
+    "url": "https://www23.statcan.gc.ca/imdb/p2SV.pl?Function=getSurvey&SDDS=5312"
+  },
+  "CAFTWS": {
+    "sdds": "5242",
+    "url": "https://www23.statcan.gc.ca/imdb/p2SV.pl?Function=getSurvey&SDDS=5242"
+  },
+  "SMHSE": {
+    "sdds": "5341",
+    "url": "https://www23.statcan.gc.ca/imdb/p2SV.pl?Function=getSurvey&SDDS=5341"
+  },
+  "SNPS": {
+    "sdds": "5147",
+    "url": "https://www23.statcan.gc.ca/imdb/p2SV.pl?Function=getSurvey&SDDS=5147"
+  },
+  "SHCAE": {
+    "sdds": "5391",
+    "url": "https://www23.statcan.gc.ca/imdb/p2SV.pl?Function=getSurvey&SDDS=5391"
+  },
+  "CADS": {
+    "sdds": "5289",
+    "url": "https://www23.statcan.gc.ca/imdb/p2SV.pl?Function=getSurvey&SDDS=5289"
+  },
+  "SCMH": {
+    "sdds": "5330",
+    "url": "https://www23.statcan.gc.ca/imdb/p2SV.pl?Function=getSurvey&SDDS=5330"
+  },
+  "CVCS": {
+    "sdds": "5347",
+    "url": "https://www23.statcan.gc.ca/imdb/p2SV.pl?Function=getSurvey&SDDS=5347"
+  },
+  "RAIS": {
+    "sdds": "3154",
+    "url": "https://www23.statcan.gc.ca/imdb/p2SV.pl?Function=getSurvey&SDDS=3154"
+  },
+  "SBASCC": {
+    "sdds": "5343",
+    "url": "https://www23.statcan.gc.ca/imdb/p2SV.pl?Function=getSurvey&SDDS=5343"
+  },
+  "CTNS": {
+    "sdds": "5305",
+    "url": "https://www23.statcan.gc.ca/imdb/p2SV.pl?Function=getSurvey&SDDS=5305"
+  },
+  "CSELCC": {
+    "sdds": "5371",
+    "url": "https://www23.statcan.gc.ca/imdb/p2SV.pl?Function=getSurvey&SDDS=5371"
+  },
+  "EWHS": {
+    "sdds": "5350",
+    "url": "https://www23.statcan.gc.ca/imdb/p2SV.pl?Function=getSurvey&SDDS=5350"
+  },
+  "CNHS": {
+    "sdds": "5201",
+    "url": "https://www23.statcan.gc.ca/imdb/p2SV.pl?Function=getSurvey&SDDS=5201"
+  },
+  "SIMT": {
+    "sdds": "5258",
+    "url": "https://www23.statcan.gc.ca/imdb/p2SV.pl?Function=getSurvey&SDDS=5258"
+  },
+  "SAHCPDP": {
+    "sdds": "5346",
+    "url": "https://www23.statcan.gc.ca/imdb/p2SV.pl?Function=getSurvey&SDDS=5346"
+  },
+  "NTS": {
+    "sdds": "5232",
+    "url": "https://www23.statcan.gc.ca/imdb/p2SV.pl?Function=getSurvey&SDDS=5232"
+  },
+  "SSFNPMI": {
+    "sdds": "5410",
+    "url": "https://www23.statcan.gc.ca/imdb/p2SV.pl?Function=getSurvey&SDDS=5410"
+  },
+  "SSPCW2": {
+    "sdds": "5378",
+    "url": "https://www23.statcan.gc.ca/imdb/p2SV.pl?Function=getSurvey&SDDS=5378"
+  },
+  "CSSCW": {
+    "sdds": "5354",
+    "url": "https://www23.statcan.gc.ca/imdb/p2SV.pl?Function=getSurvey&SDDS=5354"
+  },
+  "PSIS": {
+    "sdds": "5017",
+    "url": "https://www23.statcan.gc.ca/imdb/p2SV.pl?Function=getSurvey&SDDS=5017"
+  },
+  "ESDC": {
+    "sdds": "5379",
+    "url": "https://www23.statcan.gc.ca/imdb/p2SV.pl?Function=getSurvey&SDDS=5379"
+  },
+  "SSC": {
+    "sdds": "5418",
+    "url": "https://www23.statcan.gc.ca/imdb/p2SV.pl?Function=getSurvey&SDDS=5418"
+  },
+  "SSPCW4": {
+    "sdds": "5378",
+    "url": "https://www23.statcan.gc.ca/imdb/p2SV.pl?Function=getSurvey&SDDS=5378"
+  },
+  "SAPM": {
+    "sdds": "5387",
+    "url": "https://www23.statcan.gc.ca/imdb/p2SV.pl?Function=getSurvey&SDDS=5387"
+  },
+  "COHS": {
+    "sdds": "5399",
+    "url": "https://www23.statcan.gc.ca/imdb/p2SV.pl?Function=getSurvey&SDDS=5399"
+  },
+  "CSSWAPT": {
+    "sdds": "5354",
+    "url": "https://www23.statcan.gc.ca/imdb/p2SV.pl?Function=getSurvey&SDDS=5354"
+  },
+  "SSPCW5": {
+    "sdds": "5378",
+    "url": "https://www23.statcan.gc.ca/imdb/p2SV.pl?Function=getSurvey&SDDS=5378"
+  },
+  "SSPCW1": {
+    "sdds": "5378",
+    "url": "https://www23.statcan.gc.ca/imdb/p2SV.pl?Function=getSurvey&SDDS=5378"
+  },
+  "CSEW": {
+    "sdds": "5206",
+    "url": "https://www23.statcan.gc.ca/imdb/p2SV.pl?Function=getSurvey&SDDS=5206"
+  },
+  "SEWS": {
+    "sdds": "5317",
+    "url": "https://www23.statcan.gc.ca/imdb/p2SV.pl?Function=getSurvey&SDDS=5317"
+  },
+  "SSPCW3": {
+    "sdds": "5378",
+    "url": "https://www23.statcan.gc.ca/imdb/p2SV.pl?Function=getSurvey&SDDS=5378"
+  },
+  "PCS": {
+    "sdds": "5352",
+    "url": "https://www23.statcan.gc.ca/imdb/p2SV.pl?Function=getSurvey&SDDS=5352"
+  },
+  "SSPC": {
+    "sdds": "5378",
+    "url": "https://www23.statcan.gc.ca/imdb/p2SV.pl?Function=getSurvey&SDDS=5378"
+  },
+  "PSEW": {
+    "sdds": "5333",
+    "url": "https://www23.statcan.gc.ca/imdb/p2SV.pl?Function=getSurvey&SDDS=5333"
+  },
+  "SSPD": {
+    "sdds": "5315",
+    "url": "https://www23.statcan.gc.ca/imdb/p2SV.pl?Function=getSurvey&SDDS=5315"
+  },
+  "DES": {
+    "sdds": "5265",
+    "url": "https://www23.statcan.gc.ca/imdb/p2SV.pl?Function=getSurvey&SDDS=5265"
+  },
+  "CEEDD": {
+    "sdds": "5228",
+    "url": "https://www23.statcan.gc.ca/imdb/p2SV.pl?Function=getSurvey&SDDS=5228"
+  },
+  "DCNPB": {
+    "sdds": "5344",
+    "url": "https://www23.statcan.gc.ca/imdb/p2SV.pl?Function=getSurvey&SDDS=5344"
+  },
+  "VITAL_DEATH": {
+    "sdds": "3233",
+    "url": "https://www23.statcan.gc.ca/imdb/p2SV.pl?Function=getSurvey&SDDS=3233"
+  },
+  "SOA": {
+    "sdds": "5253",
+    "url": "https://www23.statcan.gc.ca/imdb/p2SV.pl?Function=getSurvey&SDDS=5253"
+  },
+  "VSSBD": {
+    "sdds": "3234",
+    "url": "https://www23.statcan.gc.ca/imdb/p2SV.pl?Function=getSurvey&SDDS=3234"
+  },
+  "SAFSO": {
+    "sdds": "5345",
+    "url": "https://www23.statcan.gc.ca/imdb/p2SV.pl?Function=getSurvey&SDDS=5345"
+  },
+  "LISE": {
+    "sdds": "5057",
+    "url": "https://www23.statcan.gc.ca/imdb/p2SV.pl?Function=getSurvey&SDDS=5057"
+  },
+  "SHRP": {
+    "sdds": "5296",
+    "url": "https://www23.statcan.gc.ca/imdb/p2SV.pl?Function=getSurvey&SDDS=5296"
+  },
+  "VSBD": {
+    "sdds": "3231",
+    "url": "https://www23.statcan.gc.ca/imdb/p2SV.pl?Function=getSurvey&SDDS=3231"
+  },
+  "IMDB": {
+    "sdds": "5057",
+    "url": "https://www23.statcan.gc.ca/imdb/p2SV.pl?Function=getSurvey&SDDS=5057"
+  },
+  "VITAL_BIRTH": {
+    "sdds": "3231",
+    "url": "https://www23.statcan.gc.ca/imdb/p2SV.pl?Function=getSurvey&SDDS=3231"
+  },
+  "NHS": {
+    "sdds": "5178",
+    "url": "https://www23.statcan.gc.ca/imdb/p2SV.pl?Function=getSurvey&SDDS=5178"
+  },
+  "FTD": {
+    "sdds": "5066",
+    "url": "https://www23.statcan.gc.ca/imdb/p2SV.pl?Function=getSurvey&SDDS=5066"
+  }
+}
+

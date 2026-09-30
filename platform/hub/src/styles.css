@@ -1890,6 +1890,13 @@ code { font-family: var(--mono); font-size: 0.88em; }
   font-size: 14px;
   font-family: var(--mono);
 }
+.kg-acronym--imdb {
+  text-decoration: none;
+  border-bottom: 1px dotted currentColor;
+}
+.kg-acronym--imdb:hover {
+  text-decoration: underline;
+}
 .kg-survey-title {
   font-weight: 500;
   color: var(--ink);
