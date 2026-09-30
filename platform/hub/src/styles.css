@@ -2011,6 +2011,24 @@ code { font-family: var(--mono); font-size: 0.88em; }
   border-color: var(--brand);
   color: var(--brand);
 }
+.kg-harmonized-accordion {
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: var(--surface, #ffffff);
+  padding: 12px 16px;
+  margin-bottom: 16px;
+}
+.kg-harmonized-summary {
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  user-select: none;
+}
+.kg-harmonized-sub {
+  font-size: 12px;
+  color: var(--ink-soft);
+}
 .kg-dag-layout {
   display: grid;
   grid-template-columns: 280px minmax(0, 1fr);

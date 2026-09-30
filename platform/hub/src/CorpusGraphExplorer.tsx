@@ -8,22 +8,43 @@
  * - Interactive Derivation Lineage DAG (W3C PROV-O)
  * - Thematic Module Rotation Directory
  */
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import type { SupabaseCorpusSource } from '@mobilesurvey/metadata-registry';
 import { CorpusLineage } from './CorpusLineage.js';
 import type { CorpusGraphFocus } from './CorpusLineage.js';
+import { CorpusConcepts } from './CorpusConcepts.js';
 import summaryData from './data/knowledgeGraphSummary.json';
 
 interface CorpusGraphExplorerProps {
   source: SupabaseCorpusSource;
   onSelectSearch?: (query: string, survey?: string) => void;
   initialGraphFocus?: CorpusGraphFocus | null;
+  initialConceptId?: string | null;
+  initialTab?: ExplorerTab;
 }
 
-type ExplorerTab = 'surveys' | 'harmonized' | 'lineage' | 'modules';
+export type ExplorerTab = 'surveys' | 'concepts' | 'lineage' | 'modules';
 
-export function CorpusGraphExplorer({ source, onSelectSearch, initialGraphFocus }: CorpusGraphExplorerProps) {
-  const [tab, setTab] = useState<ExplorerTab>(initialGraphFocus ? 'lineage' : 'surveys');
+export function CorpusGraphExplorer({
+  source,
+  onSelectSearch,
+  initialGraphFocus,
+  initialConceptId,
+  initialTab,
+}: CorpusGraphExplorerProps) {
+  const [tab, setTab] = useState<ExplorerTab>(
+    initialTab ?? (initialGraphFocus ? 'lineage' : initialConceptId ? 'concepts' : 'surveys')
+  );
+
+  useEffect(() => {
+    if (initialTab) {
+      setTab(initialTab);
+    } else if (initialGraphFocus) {
+      setTab('lineage');
+    } else if (initialConceptId) {
+      setTab('concepts');
+    }
+  }, [initialTab, initialGraphFocus, initialConceptId]);
   const [surveyFilter, setSurveyFilter] = useState('');
   const [expandedSurvey, setExpandedSurvey] = useState<string | null>('CIS');
 
@@ -122,11 +143,11 @@ export function CorpusGraphExplorer({ source, onSelectSearch, initialGraphFocus 
         <button
           type="button"
           role="tab"
-          aria-selected={tab === 'harmonized'}
-          className={`kg-tab ${tab === 'harmonized' ? 'kg-tab--active' : ''}`}
-          onClick={() => setTab('harmonized')}
+          aria-selected={tab === 'concepts'}
+          className={`kg-tab ${tab === 'concepts' ? 'kg-tab--active' : ''}`}
+          onClick={() => setTab('concepts')}
         >
-          Harmonized Concept Mesh ({summaryData.harmonizedConcepts.length})
+          Concepts Over Time
         </button>
         <button
           type="button"
@@ -264,61 +285,70 @@ export function CorpusGraphExplorer({ source, onSelectSearch, initialGraphFocus 
         </section>
       )}
 
-      {/* Tab 2: Harmonized Concept Mesh */}
-      {tab === 'harmonized' && (
+      {/* Tab 2: Concepts Over Time */}
+      {tab === 'concepts' && (
         <section className="kg-pane">
           <p className="kg-pane__desc">
-            Statistics Canada standardizes core concepts across household, health, and social surveys.
-            Click any cell below to search for that concept within that survey program.
+            Track how Statistics Canada measures concepts across decades — question wording changes, category additions, and series breaks.
           </p>
 
-          <div className="kg-table-wrap">
-            <table className="kg-table kg-table--matrix">
-              <thead>
-                <tr>
-                  <th>Harmonized Concept Domain</th>
-                  <th style={{ textAlign: 'right' }}>Total Variables</th>
-                  <th>Top Survey Programs & Variable Counts</th>
-                  <th style={{ textAlign: 'center' }}>Action</th>
-                </tr>
-              </thead>
-              <tbody>
-                {summaryData.harmonizedConcepts.map((item) => (
-                  <tr key={item.key}>
-                    <td>
-                      <strong className="kg-concept-title">{item.label}</strong>
-                    </td>
-                    <td style={{ textAlign: 'right', fontWeight: 600 }}>{item.totalMatches.toLocaleString()}</td>
-                    <td>
-                      <div className="kg-survey-pills">
-                        {item.topSurveys.map((ts) => (
-                          <button
-                            key={ts.survey}
-                            type="button"
-                            className="kg-survey-cell-btn"
-                            onClick={() => onSelectSearch?.(item.label.split(' ')[0]!, ts.survey)}
-                            title={`Search ${item.label} in ${ts.survey} (${ts.count} matches)`}
-                          >
-                            <strong>{ts.survey}</strong>: {ts.count.toLocaleString()}
-                          </button>
-                        ))}
-                      </div>
-                    </td>
-                    <td style={{ textAlign: 'center' }}>
-                      {onSelectSearch && (
-                        <button
-                          type="button"
-                          className="kg-btn kg-btn--sm kg-btn--primary"
-                          onClick={() => onSelectSearch(item.label.split(' ')[0]!)}
-                        >
-                          Search All ↗
-                        </button>
-                      )}
-                    </td>
+          <details className="kg-harmonized-accordion">
+            <summary className="kg-harmonized-summary">
+              <strong>Harmonized Sociodemographic Domains (10 Core Dimensions)</strong>
+              <span className="kg-harmonized-sub">Standardized concept clusters across household, health, and social surveys — click to expand</span>
+            </summary>
+            <div className="kg-table-wrap" style={{ marginTop: 12 }}>
+              <table className="kg-table kg-table--matrix">
+                <thead>
+                  <tr>
+                    <th>Harmonized Concept Domain</th>
+                    <th style={{ textAlign: 'right' }}>Total Variables</th>
+                    <th>Top Survey Programs & Variable Counts</th>
+                    <th style={{ textAlign: 'center' }}>Action</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {summaryData.harmonizedConcepts.map((item) => (
+                    <tr key={item.key}>
+                      <td>
+                        <strong className="kg-concept-title">{item.label}</strong>
+                      </td>
+                      <td style={{ textAlign: 'right', fontWeight: 600 }}>{item.totalMatches.toLocaleString()}</td>
+                      <td>
+                        <div className="kg-survey-pills">
+                          {item.topSurveys.map((ts) => (
+                            <button
+                              key={ts.survey}
+                              type="button"
+                              className="kg-survey-cell-btn"
+                              onClick={() => onSelectSearch?.(item.label.split(' ')[0]!, ts.survey)}
+                              title={`Search ${item.label} in ${ts.survey} (${ts.count} matches)`}
+                            >
+                              <strong>{ts.survey}</strong>: {ts.count.toLocaleString()}
+                            </button>
+                          ))}
+                        </div>
+                      </td>
+                      <td style={{ textAlign: 'center' }}>
+                        {onSelectSearch && (
+                          <button
+                            type="button"
+                            className="kg-btn kg-btn--sm kg-btn--primary"
+                            onClick={() => onSelectSearch(item.label.split(' ')[0]!)}
+                          >
+                            Search in Search ↗
+                          </button>
+                        )}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </details>
+
+          <div style={{ marginTop: 14 }}>
+            <CorpusConcepts source={source} initialConceptId={initialConceptId ?? null} />
           </div>
         </section>
       )}

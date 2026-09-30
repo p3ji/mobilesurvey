@@ -35,7 +35,6 @@ import type {
 } from '@mobilesurvey/validation-engine';
 import { draftRulesFromAnnotation, explainFlag, llmConfigured } from './validatorLlm.js';
 import { CorpusSearch } from './CorpusSearch.js';
-import { CorpusConcepts } from './CorpusConcepts.js';
 import { CorpusGraphExplorer } from './CorpusGraphExplorer.js';
 import type { CorpusGraphFocus } from './CorpusLineage.js';
 import {
@@ -1073,10 +1072,16 @@ function CollectorView({ onBack }: { onBack: () => void }) {
 
 // ── Searcher view ─────────────────────────────────────────────────────────────
 
-type SearchScope = 'variables' | 'concepts' | 'graph';
+type SearchScope = 'search' | 'graph';
 
-function parseSearcherParams(): { scope: SearchScope; query: string; survey: string } {
-  if (typeof window === 'undefined') return { scope: 'variables', query: '', survey: 'all' };
+function parseSearcherParams(): {
+  scope: SearchScope;
+  query: string;
+  survey: string;
+  conceptId?: string | null;
+  initialGraphTab?: 'surveys' | 'concepts' | 'lineage' | 'modules' | null;
+} {
+  if (typeof window === 'undefined') return { scope: 'search', query: '', survey: 'all' };
 
   const searchParams = new URLSearchParams(window.location.search);
   let hashQuery = '';
@@ -1090,9 +1095,14 @@ function parseSearcherParams(): { scope: SearchScope; query: string; survey: str
   const query = hashParams.get('q') ?? searchParams.get('q') ?? '';
   const survey = hashParams.get('survey') ?? searchParams.get('survey') ?? 'all';
   const rawScope = hashParams.get('scope') ?? searchParams.get('scope');
-  const scope: SearchScope = rawScope === 'concepts' || rawScope === 'graph' ? rawScope : 'variables';
+  const scope: SearchScope = rawScope === 'graph' || rawScope === 'concepts' ? 'graph' : 'search';
 
-  return { scope, query, survey };
+  const conceptId = hashParams.get('concept') ?? searchParams.get('concept') ?? null;
+  const initialGraphTab = rawScope === 'concepts'
+    ? 'concepts'
+    : ((hashParams.get('tab') ?? searchParams.get('tab')) as 'surveys' | 'concepts' | 'lineage' | 'modules' | null);
+
+  return { scope, query, survey, conceptId, initialGraphTab };
 }
 
 function SearcherView({ onBack }: { onBack: () => void }) {
@@ -1101,15 +1111,18 @@ function SearcherView({ onBack }: { onBack: () => void }) {
   const [scope, setScope] = useState<SearchScope>(initialParams.scope);
   const [corpusQuery, setCorpusQuery] = useState(initialParams.query);
   const [corpusSurvey, setCorpusSurvey] = useState(initialParams.survey);
-  const [conceptId, setConceptId] = useState<string | null>(null);
+  const [conceptId, setConceptId] = useState<string | null>(initialParams.conceptId ?? null);
   const [graphFocus, setGraphFocus] = useState<CorpusGraphFocus | null>(null);
+  const [graphTab, setGraphTab] = useState<'surveys' | 'concepts' | 'lineage' | 'modules' | null>(
+    initialParams.initialGraphTab ?? null
+  );
 
   // Sync state changes back to the URL hash so searches can be copied, bookmarked, and shared
   useEffect(() => {
     const params = new URLSearchParams();
     if (corpusQuery) params.set('q', corpusQuery);
     if (corpusSurvey && corpusSurvey !== 'all') params.set('survey', corpusSurvey);
-    if (scope !== 'variables') params.set('scope', scope);
+    if (scope !== 'search') params.set('scope', scope);
     const qs = params.toString();
     const newHash = qs ? `#searcher?${qs}` : '#searcher';
     if (window.location.hash !== newHash) {
@@ -1140,33 +1153,29 @@ function SearcherView({ onBack }: { onBack: () => void }) {
               <button
                 type="button"
                 role="tab"
-                aria-selected={scope === 'variables'}
-                className={`sr-scope ${scope === 'variables' ? 'sr-scope--active' : ''}`}
-                onClick={() => setScope('variables')}
+                aria-selected={scope === 'search'}
+                className={`sr-scope ${scope === 'search' ? 'sr-scope--active' : ''}`}
+                onClick={() => setScope('search')}
               >
-                Variables
-              </button>
-              <button
-                type="button"
-                role="tab"
-                aria-selected={scope === 'concepts'}
-                className={`sr-scope ${scope === 'concepts' ? 'sr-scope--active' : ''}`}
-                onClick={() => { setConceptId(null); setScope('concepts'); }}
-              >
-                Concepts over time
+                Search
               </button>
               <button
                 type="button"
                 role="tab"
                 aria-selected={scope === 'graph'}
                 className={`sr-scope ${scope === 'graph' ? 'sr-scope--active' : ''}`}
-                onClick={() => { setGraphFocus(null); setScope('graph'); }}
+                onClick={() => {
+                  setGraphFocus(null);
+                  setConceptId(null);
+                  setGraphTab(null);
+                  setScope('graph');
+                }}
               >
                 Knowledge Graph
               </button>
             </div>
 
-            {scope === 'variables' ? (
+            {scope === 'search' ? (
               <CorpusSearch
                 source={corpus}
                 initialQuery={corpusQuery}
@@ -1175,19 +1184,27 @@ function SearcherView({ onBack }: { onBack: () => void }) {
                   setCorpusQuery(query);
                   setCorpusSurvey(survey);
                 }}
-                onOpenConcept={(id) => { setConceptId(id); setScope('concepts'); }}
-                onOpenGraph={(focus) => { setGraphFocus(focus); setScope('graph'); }}
+                onOpenConcept={(id) => {
+                  setConceptId(id);
+                  setGraphTab('concepts');
+                  setScope('graph');
+                }}
+                onOpenGraph={(focus) => {
+                  setGraphFocus(focus);
+                  setGraphTab('lineage');
+                  setScope('graph');
+                }}
               />
-            ) : scope === 'concepts' ? (
-              <CorpusConcepts source={corpus} initialConceptId={conceptId} />
             ) : (
               <CorpusGraphExplorer
                 source={corpus}
                 initialGraphFocus={graphFocus}
+                initialConceptId={conceptId}
+                initialTab={graphTab ?? undefined}
                 onSelectSearch={(q, survey) => {
                   setCorpusQuery(q);
                   setCorpusSurvey(survey ?? 'all');
-                  setScope('variables');
+                  setScope('search');
                 }}
               />
             )}
