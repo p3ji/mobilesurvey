@@ -865,6 +865,60 @@ export class SupabaseCorpusSource {
       yearMax: row.year_max,
     }));
   }
+
+  /**
+   * The most recent variables for a given subject.
+   * Finds the surveys assigned to this subject with the latest year_max,
+   * then fetches the top variables from those cycles.
+   */
+  async recentBySubject(subject: string, limit = 5, signal?: AbortSignal): Promise<SearchHit[]> {
+    if (!subject) return [];
+    try {
+      const subUrl = `${this.url}/rest/v1/corpus_survey_subject?subject=eq.${encodeURIComponent(subject)}&select=survey_group`;
+      const subRes = await this.fetchImpl(subUrl, {
+        headers: { apikey: this.anonKey, Authorization: `Bearer ${this.anonKey}` },
+        ...(signal ? { signal } : {}),
+      });
+      if (!subRes.ok) return [];
+      const subRows = (await subRes.json()) as Array<{ survey_group: string }>;
+      const groups = subRows.map((r) => r.survey_group);
+      if (groups.length === 0) return [];
+
+      const countsUrl = `${this.url}/rest/v1/corpus_survey_counts?survey_group=in.(${groups.join(',')})&order=year_max.desc.nullslast&limit=8`;
+      const countsRes = await this.fetchImpl(countsUrl, {
+        headers: { apikey: this.anonKey, Authorization: `Bearer ${this.anonKey}` },
+        ...(signal ? { signal } : {}),
+      });
+      if (!countsRes.ok) return [];
+      const counts = (await countsRes.json()) as Array<{ survey_group: string; year_max: number | null }>;
+      if (counts.length === 0) return [];
+
+      const topGroups = counts.map((c) => c.survey_group).slice(0, 4);
+
+      const varsUrl = `${this.url}/rest/v1/corpus_variable?survey_group=in.(${topGroups.join(',')})&order=year.desc.nullslast,position.asc&limit=${limit * 5}`;
+      const varsRes = await this.fetchImpl(varsUrl, {
+        headers: { apikey: this.anonKey, Authorization: `Bearer ${this.anonKey}` },
+        ...(signal ? { signal } : {}),
+      });
+      if (!varsRes.ok) return [];
+      const vars = (await varsRes.json()) as CorpusSearchRow[];
+
+      const filtered = vars.filter((v) => {
+        const nm = v.name.toUpperCase();
+        if (nm.endsWith('ID') || nm === 'VERDATE' || nm === 'PUMFID' || nm === 'SEQID' || nm === 'RECID') return false;
+        if (v.tcode === 'T15.2' && !v.concept && !v.question_text) return false;
+        return true;
+      }).slice(0, limit);
+
+      return filtered.map((row) => ({
+        entry: toRegistryEntry(row),
+        score: 1.0,
+        matched: [],
+      }));
+    } catch {
+      return [];
+    }
+  }
 }
 
 /* -------------------------------------------------------------------------------------------- *

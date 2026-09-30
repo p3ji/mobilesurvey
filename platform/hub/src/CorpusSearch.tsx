@@ -336,6 +336,33 @@ export function CorpusSearch({
   const [literal, setLiteral] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
+  const [recentSubjectHits, setRecentSubjectHits] = useState<SearchHit[]>([]);
+  const [recentSubjectLoading, setRecentSubjectLoading] = useState(false);
+
+  useEffect(() => {
+    if (subject === null) {
+      setRecentSubjectHits([]);
+      setRecentSubjectLoading(false);
+      return;
+    }
+    const controller = new AbortController();
+    setRecentSubjectLoading(true);
+    source.recentBySubject(subject, 5, controller.signal)
+      .then((res) => {
+        setRecentSubjectHits(res);
+        setRecentSubjectLoading(false);
+      })
+      .catch(() => {
+        if (!controller.signal.aborted) {
+          setRecentSubjectHits([]);
+          setRecentSubjectLoading(false);
+        }
+      });
+    return () => controller.abort();
+  }, [source, subject]);
+
+  const recentSubjectGroups = useMemo(() => groupCorpusHits(recentSubjectHits), [recentSubjectHits]);
+
   useEffect(() => {
     onSearchStateChange?.(query, survey);
   }, [query, survey, onSearchStateChange]);
@@ -505,7 +532,7 @@ export function CorpusSearch({
   }, [source, debounced, lang, survey, codesOnly, subject, page, literal, sortBy]);
 
   useEffect(() => {
-    const recordIds = [...hits, ...aiHits].map((hit) => hit.entry.entryId);
+    const recordIds = [...hits, ...aiHits, ...recentSubjectHits].map((hit) => hit.entry.entryId);
     setDirectInputs([]);
     setLineageError(false);
     if (recordIds.length === 0) return;
@@ -514,10 +541,10 @@ export function CorpusSearch({
       .then((inputs) => { if (!controller.signal.aborted) setDirectInputs(inputs); })
       .catch(() => { if (!controller.signal.aborted) setLineageError(true); });
     return () => controller.abort();
-  }, [source, hits, aiHits]);
+  }, [source, hits, aiHits, recentSubjectHits]);
 
   useEffect(() => {
-    const recordIds = [...hits, ...aiHits].map((hit) => hit.entry.entryId);
+    const recordIds = [...hits, ...aiHits, ...recentSubjectHits].map((hit) => hit.entry.entryId);
     setGraphTargets(new Map());
     setGraphError(false);
     if (recordIds.length === 0) return;
@@ -526,10 +553,10 @@ export function CorpusSearch({
       .then((targets) => { if (!controller.signal.aborted) setGraphTargets(targets); })
       .catch(() => { if (!controller.signal.aborted) setGraphError(true); });
     return () => controller.abort();
-  }, [source, hits, aiHits]);
+  }, [source, hits, aiHits, recentSubjectHits]);
 
   useEffect(() => {
-    const recordIds = [...hits, ...aiHits].map((hit) => hit.entry.entryId);
+    const recordIds = [...hits, ...aiHits, ...recentSubjectHits].map((hit) => hit.entry.entryId);
     setClusters(new Map());
     if (recordIds.length === 0) return;
     const controller = new AbortController();
@@ -537,7 +564,7 @@ export function CorpusSearch({
       .then((memberships) => { if (!controller.signal.aborted) setClusters(memberships); })
       .catch(() => { /* Search remains usable if concept metadata is unavailable. */ });
     return () => controller.abort();
-  }, [source, hits, aiHits]);
+  }, [source, hits, aiHits, recentSubjectHits]);
 
   const pages = Math.ceil(total / PAGE_SIZE);
   const summary = useMemo(() => {
@@ -778,7 +805,27 @@ export function CorpusSearch({
         </div>
       )}
 
-      {debounced.trim() === '' && error === null && (
+      {debounced.trim() === '' && error === null && subject !== null && (
+        <div className="cs-subject-preview">
+          <div className="cs-subject-preview__header">
+            <h3>Recent variables in {subject}</h3>
+            <p>5 most recent records in this category from published Statistics Canada survey cycles.</p>
+          </div>
+          {recentSubjectLoading && (
+            <p className="cs-suggest" role="status">Loading recent variables in {subject}…</p>
+          )}
+          {!recentSubjectLoading && recentSubjectHits.length > 0 && (
+            <div className="sr-results">
+              {recentSubjectGroups.map(renderGroup)}
+            </div>
+          )}
+          {!recentSubjectLoading && recentSubjectHits.length === 0 && (
+            <p className="cs-suggest">No recent records found for this category.</p>
+          )}
+        </div>
+      )}
+
+      {debounced.trim() === '' && error === null && subject === null && (
         <div className="cs-intro">
           <p>
             Search across Statistics Canada data dictionaries — the variables, question wording,
@@ -896,6 +943,15 @@ export function CorpusSearch({
                 Next →
               </button>
             </div>
+          )}
+
+          {subject !== null && recentSubjectHits.length > 0 && (
+            <details className="cs-subject-recent-details">
+              <summary>5 most recent variables in {subject}</summary>
+              <div className="sr-results" style={{ marginTop: 12 }}>
+                {recentSubjectGroups.map(renderGroup)}
+              </div>
+            </details>
           )}
         </>
       )}

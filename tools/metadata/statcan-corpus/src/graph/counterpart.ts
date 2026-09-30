@@ -254,6 +254,28 @@ export async function resolveCounterpartPairs(
 
 const sqlEscape = (s: string) => s.replace(/'/g, "''");
 
+/**
+ * Deduplicate resolved edges on the live table's unique-index key
+ * `(target_record_id, upper(btrim(source_var_name)))`. The scan emits one pair per PUMF document,
+ * but the LIVE table is deduped at load time (`factKey` excludes the file path): two PUMF docs
+ * carrying identical facts for a name collapse to ONE live row, so their pairs resolve to the same
+ * target record and would collide inside one batch. Keep the first pair per key (document order).
+ */
+export function dedupeResolvedCounterpartEdges(edges: readonly ResolvedCounterpartEdge[]): {
+  edges: ResolvedCounterpartEdge[];
+  collapsedDuplicates: number;
+} {
+  const seen = new Set<string>();
+  const out: ResolvedCounterpartEdge[] = [];
+  for (const e of edges) {
+    const key = `${e.targetRecordId}|${e.name.toUpperCase().trim()}`;
+    if (seen.has(key)) continue;
+    seen.add(key);
+    out.push(e);
+  }
+  return { edges: out, collapsedDuplicates: edges.length - out.length };
+}
+
 /** Render resolved counterpart edges as an idempotent Supabase migration. */
 export function renderCounterpartSql(edges: readonly ResolvedCounterpartEdge[]): string {
   const rows = edges.map((e) => [
@@ -410,7 +432,10 @@ if (process.argv[1] && process.argv[1].endsWith('counterpart.ts')) {
   // Resolve logical pairs to LIVE record IDs — the live table is deduped at load time, so local
   // UUIDs can be absent even when their fact is present under another row.
   const creds = credentialsFromEnv(envWithFile(path.join(PACKAGE_DIR, '.env.local')));
-  const { edges, unresolved } = await resolveCounterpartPairs(pairs, creds);
+  const { edges: resolvedEdges, unresolved } = await resolveCounterpartPairs(pairs, creds);
+  // Live dedupe (factKey) can collapse two PUMF docs' identical facts into one row — drop the
+  // resulting duplicate unique-index keys before export/import.
+  const { edges, collapsedDuplicates } = dedupeResolvedCounterpartEdges(resolvedEdges);
 
   writeFileSync(SQL_EXPORT_PATH, renderCounterpartSql(edges), 'utf8');
 
@@ -418,7 +443,9 @@ if (process.argv[1] && process.argv[1].endsWith('counterpart.ts')) {
   console.log(`  EN records scanned:   ${scannedEnRecords}`);
   console.log(`  Pairs found:          ${pairs.length}  (exact=${byKind.exact}, fallback=${byKind.fallback})`);
   console.log(`  Withheld (ambiguous): ${withheldAmbiguousNames}`);
-  console.log(`  Resolved to live IDs: ${edges.length}  (unresolved on Supabase: ${unresolved})`);
+  console.log(
+    `  Resolved to live IDs: ${edges.length}  (unresolved on Supabase: ${unresolved}; collapsed duplicates: ${collapsedDuplicates})`,
+  );
   console.log(`  SQL written to:       ${SQL_EXPORT_PATH}`);
 
   const surveys = new Map<string, number>();

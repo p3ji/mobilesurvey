@@ -22,7 +22,8 @@
     "corpus:subjects": "tsx src/cli.ts subjects",
     "corpus:queue": "tsx src/graph/queue.ts",
     "corpus:review": "tsx src/graph/reviewer.ts",
-    "corpus:grouped": "tsx src/graph/grouped.ts"
+    "corpus:grouped": "tsx src/graph/grouped.ts",
+    "corpus:counterpart": "tsx src/graph/counterpart.ts"
   },
   "dependencies": {
     "@mobilesurvey/ddi-xml": "workspace:*",

@@ -1,9 +1,13 @@
 import { describe, it, expect } from 'vitest';
+import fs from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
 import {
   classifyDocType,
   subpopulationSignature,
   scanCounterpartPairs,
   resolveCounterpartPairs,
+  dedupeResolvedCounterpartEdges,
   renderCounterpartSql,
   counterpartEdgeId,
   counterpartEdgeToRow,
@@ -58,12 +62,6 @@ describe('subpopulationSignature', () => {
 
 describe('scanCounterpartPairs', () => {
   const writeCorpus = (lines: string[]) => {
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
-    const fs = require('node:fs');
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
-    const os = require('node:os');
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
-    const path = require('node:path');
     const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'counterpart-test-'));
     const p = path.join(tmpDir, `counterpart_${Math.random().toString(36).slice(2)}.jsonl`);
     fs.writeFileSync(p, lines.join('\n') + '\n');
@@ -207,6 +205,38 @@ describe('resolveCounterpartPairs', () => {
     await expect(resolveCounterpartPairs([pair], { url: 'https://x.supabase.co', serviceRoleKey: 'k' }, fetchImpl)).rejects.toThrow(
       /live lookup failed/i,
     );
+  });
+});
+
+describe('dedupeResolvedCounterpartEdges', () => {
+  const base = (name: string, targetRecordId: string): ResolvedCounterpartEdge => ({
+    surveyGroup: 'TEST_SURVEY',
+    cycle: '2020',
+    targetDocPath: 'TEST_SURVEY/doc_T15_2_v1.pdf',
+    sourceDocPath: 'TEST_SURVEY/master no freqs_E.pdf',
+    name,
+    matchKind: 'exact',
+    confidence: 0.95,
+    evidence: 'e',
+    targetRecordId,
+    sourceRecordId: '22222222-2222-4222-8222-222222222222',
+  });
+
+  it('collapses pairs that resolve to the same unique-index key (live factKey dedupe)', () => {
+    const { edges, collapsedDuplicates } = dedupeResolvedCounterpartEdges([
+      base('AGE', 't-1'), // from PUMF doc A
+      base('age ', 't-1'), // identical live row reached via PUMF doc B (name case/padding normalized)
+      base('SEG', 't-1'), // different name -> kept
+      base('AGE', 't-2'), // different target record -> kept
+    ]);
+    expect(collapsedDuplicates).toBe(1);
+    expect(edges.map((e) => `${e.targetRecordId}|${e.name}`)).toEqual(['t-1|AGE', 't-1|SEG', 't-2|AGE']);
+  });
+
+  it('keeps all edges when keys are distinct', () => {
+    const { edges, collapsedDuplicates } = dedupeResolvedCounterpartEdges([base('A', 't-1'), base('B', 't-2')]);
+    expect(collapsedDuplicates).toBe(0);
+    expect(edges).toHaveLength(2);
   });
 });
 
