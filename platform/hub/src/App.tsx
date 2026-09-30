@@ -141,6 +141,44 @@ const DEMO_SURVEYS: SurveySummary[] = [
 
 type HubView = 'home' | 'collector' | 'searcher' | 'trainer' | 'migrator' | 'analyzer' | 'interviewer' | 'supervisor' | 'validator';
 
+const VALID_HUB_VIEWS = new Set<HubView>([
+  'home',
+  'collector',
+  'searcher',
+  'trainer',
+  'migrator',
+  'analyzer',
+  'interviewer',
+  'supervisor',
+  'validator',
+]);
+
+function isValidHubView(val: string): val is HubView {
+  return VALID_HUB_VIEWS.has(val as HubView);
+}
+
+function getViewFromUrl(): HubView {
+  if (typeof window === 'undefined') return 'home';
+
+  // 1. Check window.location.hash: #searcher, #/searcher, #searcher?q=..., #collector
+  const rawHash = window.location.hash.replace(/^#[/]?/, '');
+  const hashPart = rawHash.split('?')[0] ?? '';
+  const viewFromHash = (hashPart.split('&')[0] ?? '').trim().toLowerCase();
+  if (isValidHubView(viewFromHash)) return viewFromHash;
+
+  // 2. Check window.location.search: ?view=searcher
+  const searchParams = new URLSearchParams(window.location.search);
+  const viewParam = searchParams.get('view')?.toLowerCase();
+  if (viewParam && isValidHubView(viewParam)) return viewParam;
+
+  // 3. If there is a direct search query (?q=...) or searcher hash, default to searcher
+  if (searchParams.has('q') || (rawHash.startsWith('searcher') && rawHash.includes('?'))) {
+    return 'searcher';
+  }
+
+  return 'home';
+}
+
 interface ModuleDef {
   id: string;
   icon: ReactNode;
@@ -149,6 +187,7 @@ interface ModuleDef {
   description: string;
   status: 'live' | 'coming-soon';
   tag?: string;
+  href?: string;
   action?: () => void;
 }
 
@@ -1036,13 +1075,47 @@ function CollectorView({ onBack }: { onBack: () => void }) {
 
 type SearchScope = 'variables' | 'concepts' | 'graph';
 
+function parseSearcherParams(): { scope: SearchScope; query: string; survey: string } {
+  if (typeof window === 'undefined') return { scope: 'variables', query: '', survey: 'all' };
+
+  const searchParams = new URLSearchParams(window.location.search);
+  let hashQuery = '';
+  const hash = window.location.hash.replace(/^#[/]?/, '');
+  const qIndex = hash.indexOf('?');
+  if (qIndex !== -1) {
+    hashQuery = hash.slice(qIndex + 1);
+  }
+  const hashParams = new URLSearchParams(hashQuery);
+
+  const query = hashParams.get('q') ?? searchParams.get('q') ?? '';
+  const survey = hashParams.get('survey') ?? searchParams.get('survey') ?? 'all';
+  const rawScope = hashParams.get('scope') ?? searchParams.get('scope');
+  const scope: SearchScope = rawScope === 'concepts' || rawScope === 'graph' ? rawScope : 'variables';
+
+  return { scope, query, survey };
+}
+
 function SearcherView({ onBack }: { onBack: () => void }) {
   const corpus = useMemo(() => corpusSource(), []);
-  const [scope, setScope] = useState<SearchScope>('variables');
-  const [corpusQuery, setCorpusQuery] = useState('');
-  const [corpusSurvey, setCorpusSurvey] = useState('all');
+  const initialParams = useMemo(() => parseSearcherParams(), []);
+  const [scope, setScope] = useState<SearchScope>(initialParams.scope);
+  const [corpusQuery, setCorpusQuery] = useState(initialParams.query);
+  const [corpusSurvey, setCorpusSurvey] = useState(initialParams.survey);
   const [conceptId, setConceptId] = useState<string | null>(null);
   const [graphFocus, setGraphFocus] = useState<CorpusGraphFocus | null>(null);
+
+  // Sync state changes back to the URL hash so searches can be copied, bookmarked, and shared
+  useEffect(() => {
+    const params = new URLSearchParams();
+    if (corpusQuery) params.set('q', corpusQuery);
+    if (corpusSurvey && corpusSurvey !== 'all') params.set('survey', corpusSurvey);
+    if (scope !== 'variables') params.set('scope', scope);
+    const qs = params.toString();
+    const newHash = qs ? `#searcher?${qs}` : '#searcher';
+    if (window.location.hash !== newHash) {
+      window.history.replaceState(null, '', newHash);
+    }
+  }, [corpusQuery, corpusSurvey, scope]);
 
   return (
     <div className="hub">
@@ -1186,13 +1259,28 @@ function DemoSurveyPicker() {
 // ── Module tile ───────────────────────────────────────────────────────────────
 
 function ModuleTile({ mod }: { mod: ModuleDef }) {
-  return (
-    <button
-      type="button"
-      className={`module-tile ${mod.status === 'coming-soon' ? 'module-tile--soon' : ''}`}
-      onClick={mod.status === 'live' ? mod.action : undefined}
-      disabled={mod.status === 'coming-soon'}
-    >
+  if (mod.status === 'coming-soon') {
+    return (
+      <button
+        type="button"
+        className="module-tile module-tile--soon"
+        disabled
+      >
+        <span className="module-tile__icon" aria-hidden="true">{mod.icon}</span>
+        <div className="module-tile__body">
+          <div className="module-tile__head">
+            <span className="module-tile__name">{mod.name}</span>
+            <span className="module-tile__badge">Coming soon</span>
+          </div>
+          <p className="module-tile__tagline">{mod.tagline}</p>
+          <p className="module-tile__desc">{mod.description}</p>
+        </div>
+      </button>
+    );
+  }
+
+  const tileBody = (
+    <>
       <span className="module-tile__icon" aria-hidden="true">{mod.icon}</span>
       <div className="module-tile__body">
         <div className="module-tile__head">
@@ -1200,13 +1288,40 @@ function ModuleTile({ mod }: { mod: ModuleDef }) {
           {mod.tag && (
             <span className="module-tile__badge module-tile__badge--tag">{mod.tag}</span>
           )}
-          {mod.status === 'coming-soon' && (
-            <span className="module-tile__badge">Coming soon</span>
-          )}
         </div>
         <p className="module-tile__tagline">{mod.tagline}</p>
         <p className="module-tile__desc">{mod.description}</p>
       </div>
+    </>
+  );
+
+  if (mod.href) {
+    const isExternal = mod.href.startsWith('http') || mod.href.startsWith('/');
+    return (
+      <a
+        href={mod.href}
+        className="module-tile"
+        target={isExternal ? '_blank' : undefined}
+        rel={isExternal ? 'noopener' : undefined}
+        onClick={(e) => {
+          if (!isExternal && mod.action) {
+            e.preventDefault();
+            mod.action();
+          }
+        }}
+      >
+        {tileBody}
+      </a>
+    );
+  }
+
+  return (
+    <button
+      type="button"
+      className="module-tile"
+      onClick={mod.action}
+    >
+      {tileBody}
     </button>
   );
 }
@@ -2867,6 +2982,7 @@ function HomePage({ onNavigate }: { onNavigate: (v: HubView) => void }) {
       tagline: 'Full-featured instrument authoring',
       description: 'Opens a blank instrument. Use "Try a demo survey" above to load an example. Tree editing, conditional routing, variables, expressions, and flowchart view.',
       status: 'live',
+      href: `${DESIGNER_URL}/?mode=pro`,
       action: () => window.open(`${DESIGNER_URL}/?mode=pro`, '_blank', 'noopener'),
     },
     {
@@ -2876,6 +2992,7 @@ function HomePage({ onNavigate }: { onNavigate: (v: HubView) => void }) {
       tagline: 'Build a questionnaire question by question',
       description: 'Opens a blank instrument. Use "Try a demo survey" above to load an example. Focused on questions, categories, and simple logic — good for quick questionnaire drafting.',
       status: 'live',
+      href: `${DESIGNER_URL}/?mode=easy`,
       action: () => window.open(`${DESIGNER_URL}/?mode=easy`, '_blank', 'noopener'),
     },
     {
@@ -2885,6 +3002,7 @@ function HomePage({ onNavigate }: { onNavigate: (v: HubView) => void }) {
       tagline: 'Manage live surveys and track who\'s responding',
       description: 'Create and publish surveys, share respondent links, track collection status, and view the response dashboard for each active survey.',
       status: 'live',
+      href: '#collector',
       action: () => onNavigate('collector'),
     },
     {
@@ -2894,6 +3012,7 @@ function HomePage({ onNavigate }: { onNavigate: (v: HubView) => void }) {
       tagline: 'Explore Statistics Canada survey metadata',
       description: 'Search published variables and questions, trace concepts across cycles, and inspect the knowledge graph.',
       status: 'live',
+      href: '#searcher',
       action: () => onNavigate('searcher'),
     },
     {
@@ -2904,6 +3023,7 @@ function HomePage({ onNavigate }: { onNavigate: (v: HubView) => void }) {
       tagline: 'Turn a Word doc or text file into a live survey',
       description: 'Paste or upload any plain-text questionnaire. The engine extracts questions, infers response types, and converts routing hints into skip logic.',
       status: 'live',
+      href: '#migrator',
       action: () => onNavigate('migrator'),
     },
     {
@@ -2913,6 +3033,7 @@ function HomePage({ onNavigate }: { onNavigate: (v: HubView) => void }) {
       tagline: 'Videos and guides to get you started fast',
       description: 'Video overviews, walkthroughs, and resources for learning Modular Survey Tools. Start with a 2-min intro, then explore from first survey to collection management.',
       status: 'live',
+      href: '#trainer',
       action: () => onNavigate('trainer'),
     },
     {
@@ -2939,6 +3060,7 @@ function HomePage({ onNavigate }: { onNavigate: (v: HubView) => void }) {
       tagline: 'Structured forms for business data collection',
       description: "A form-first designer for establishment surveys — numeric data tables with live totals, paste-from-Excel entry, balance edits across sections, and a demo modeled on Statistics Canada's Federal Science Expenditures and Personnel (FSEP) questionnaire.",
       status: 'live',
+      href: `${DESIGNER_URL}/?survey=fsep&mode=pro`,
       action: () => window.open(`${DESIGNER_URL}/?survey=fsep&mode=pro`, '_blank', 'noopener'),
     },
     {
@@ -2949,6 +3071,7 @@ function HomePage({ onNavigate }: { onNavigate: (v: HubView) => void }) {
       tagline: 'Charts and tables for your collected data',
       description: 'Completion funnels, frequency distributions, and field-level charts built from live responses. Export responses or paradata as CSV.',
       status: 'live',
+      href: '#analyzer',
       action: () => onNavigate('analyzer'),
     },
     {
@@ -2959,6 +3082,7 @@ function HomePage({ onNavigate }: { onNavigate: (v: HubView) => void }) {
       tagline: 'Flag, confront, and correct collected data',
       description: 'Post-collection data editing: metadata-derived checks, re-run of collection-time edits, robust statistical outliers, and analyst-authored rules — scored and prioritized into one triage queue.',
       status: 'live',
+      href: '#validator',
       action: () => onNavigate('validator'),
     },
     {
@@ -2977,6 +3101,7 @@ function HomePage({ onNavigate }: { onNavigate: (v: HubView) => void }) {
       tagline: 'Consent-gated GPS and camera questions',
       description: 'Location and photo question types with per-sensor respondent consent: coordinates rounded to an authored precision, photos EXIF-stripped client-side, and optional ML-assisted coding the respondent always confirms (e.g. food items for nutritional studies). Try the last page of the Feature Demo Survey.',
       status: 'live',
+      href: `${RUNTIME_URL}/?survey=demo`,
       action: () => window.open(`${RUNTIME_URL}/?survey=demo`, '_blank', 'noopener'),
     },
   ], [onNavigate]);
@@ -3357,7 +3482,42 @@ function SupervisorView({ onBack }: { onBack: () => void }) {
 // ── Root ──────────────────────────────────────────────────────────────────────
 
 export function App() {
-  const [view, setView] = useState<HubView>('home');
+  const [view, setViewState] = useState<HubView>(() => getViewFromUrl());
+
+  const setView = useCallback((nextView: HubView) => {
+    setViewState(nextView);
+    if (typeof window === 'undefined') return;
+    const rawHash = window.location.hash.replace(/^#[/]?/, '');
+    const hashPart = rawHash.split('?')[0] ?? '';
+    const currentHashView = (hashPart.split('&')[0] ?? '').trim().toLowerCase();
+    if (nextView === 'home') {
+      if (window.location.hash || window.location.search.includes('view=')) {
+        const searchParams = new URLSearchParams(window.location.search);
+        searchParams.delete('view');
+        searchParams.delete('q');
+        searchParams.delete('survey');
+        searchParams.delete('scope');
+        const qs = searchParams.toString();
+        const nextUrl = window.location.pathname + (qs ? `?${qs}` : '');
+        window.history.pushState(null, '', nextUrl);
+      }
+    } else if (currentHashView !== nextView) {
+      window.history.pushState(null, '', `#${nextView}`);
+    }
+  }, []);
+
+  useEffect(() => {
+    const onLocationChange = () => {
+      setViewState(getViewFromUrl());
+    };
+    window.addEventListener('popstate', onLocationChange);
+    window.addEventListener('hashchange', onLocationChange);
+    return () => {
+      window.removeEventListener('popstate', onLocationChange);
+      window.removeEventListener('hashchange', onLocationChange);
+    };
+  }, []);
+
   if (view === 'collector') return <CollectorView onBack={() => setView('home')} />;
   if (view === 'searcher') return <SearcherView onBack={() => setView('home')} />;
   if (view === 'trainer') return <TrainingView onBack={() => setView('home')} />;
