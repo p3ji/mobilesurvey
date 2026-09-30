@@ -2,12 +2,18 @@ import { useEffect, useMemo, useState } from 'react';
 import type {
   CorpusLineageEdge,
   CorpusLineageTarget,
-  CorpusLineageTargetsPage,
   SupabaseCorpusSource,
 } from '@mobilesurvey/metadata-registry';
 import { CorpusLineageDiagram } from './CorpusLineageDiagram.js';
 import { lineageEvidence } from './lineageEvidence.js';
+import featuredDataRaw from './data/featuredDerivations.json';
 
+export interface FeaturedDerivationItem extends CorpusLineageTarget {
+  stages?: number;
+  isPumf?: boolean;
+}
+
+const featuredData = featuredDataRaw as FeaturedDerivationItem[];
 
 export interface CorpusGraphFocus {
   variable: CorpusLineageTarget;
@@ -22,33 +28,19 @@ interface CorpusLineageProps {
 
 export function CorpusLineage({ source, onSelectSearch, initialFocus }: CorpusLineageProps) {
   const initialTarget = initialFocus?.targets[0] ?? null;
-  const [results, setResults] = useState<CorpusLineageTargetsPage | null>(null);
-  const [selected, setSelected] = useState<CorpusLineageTarget | null>(initialTarget ?? null);
+  const [filter, setFilter] = useState<'all' | 'pumf' | 'multi'>('all');
+  const [selected, setSelected] = useState<CorpusLineageTarget | null>(
+    initialTarget ?? (featuredData[0] as CorpusLineageTarget) ?? null
+  );
   const [edges, setEdges] = useState<CorpusLineageEdge[]>([]);
-  const [listLoading, setListLoading] = useState(true);
   const [graphLoading, setGraphLoading] = useState(false);
-  const [listError, setListError] = useState<string | null>(null);
   const [graphError, setGraphError] = useState<string | null>(null);
 
   useEffect(() => {
-    const controller = new AbortController();
-    setListLoading(true);
-    setListError(null);
-    source.lineageTargets('', 15, 0, controller.signal)
-      .then((next) => {
-        setResults(next);
-        setSelected((current) => current ?? initialTarget ?? next.targets[0] ?? null);
-        setListLoading(false);
-      })
-      .catch((error: unknown) => {
-        if (controller.signal.aborted) return;
-        setResults(null);
-        setSelected(initialTarget);
-        setListError(error instanceof Error ? error.message : 'Could not load lineage targets.');
-        setListLoading(false);
-      });
-    return () => controller.abort();
-  }, [source, initialTarget]);
+    if (initialTarget) {
+      setSelected(initialTarget);
+    }
+  }, [initialTarget]);
 
   useEffect(() => {
     if (selected === null) {
@@ -73,13 +65,32 @@ export function CorpusLineage({ source, onSelectSearch, initialFocus }: CorpusLi
   }, [source, selected]);
 
   const featuredTargets = useMemo(() => {
-    if (!results) return [];
-    const base = results.targets;
-    if (!initialFocus) return base;
-    const initialTargets = initialFocus.targets;
-    const missing = initialTargets.filter((t) => !base.some((b) => b.recordId === t.recordId));
-    return [...missing, ...base];
-  }, [results, initialFocus]);
+    let list = featuredData;
+    if (filter === 'pumf') {
+      list = list.filter((t) => t.isPumf);
+    } else if (filter === 'multi') {
+      list = list.filter((t) => (t.stages ?? 1) >= 3);
+    }
+
+    if (!initialFocus) return list;
+    const initialTargets = initialFocus.targets.map((t) => {
+      const match = featuredData.find((f) => f.recordId === t.recordId);
+      return match ?? { ...t, stages: 1, isPumf: false };
+    });
+    const missing = initialTargets.filter((t) => !list.some((b) => b.recordId === t.recordId));
+    return [...missing, ...list];
+  }, [filter, initialFocus]);
+
+  const handleFilterChange = (nextFilter: 'all' | 'pumf' | 'multi') => {
+    setFilter(nextFilter);
+    let nextList = featuredData;
+    if (nextFilter === 'pumf') nextList = nextList.filter((t) => t.isPumf);
+    else if (nextFilter === 'multi') nextList = nextList.filter((t) => (t.stages ?? 1) >= 3);
+
+    if (selected && !nextList.some((t) => t.recordId === selected.recordId)) {
+      if (nextList.length > 0) setSelected(nextList[0]!);
+    }
+  };
 
   const layers = useMemo(() => {
     const byDepth = new Map<number, CorpusLineageEdge[]>();
@@ -108,14 +119,14 @@ export function CorpusLineage({ source, onSelectSearch, initialFocus }: CorpusLi
         <aside className="kg-dag-sidebar">
           <h3 className="kg-dag-sidebar__title">Featured Derivations</h3>
           <p className="kg-dag-sidebar__desc">
-            Complex multi-input and multi-step derivations from Statistics Canada surveys.
+            Multi-stage indicator pipelines and PUMF grouped recodes from Statistics Canada surveys.
           </p>
 
           <div className="kg-dag-searcher-callout">
             <div className="kg-dag-searcher-callout__body">
               <strong>Looking for another variable?</strong>
               <p>
-                Search any collected question or derived indicator in <strong>Variables</strong> to inspect its upstream inputs or downstream uses.
+                Search any collected question or derived indicator in <strong>Search</strong> to inspect its upstream inputs or downstream uses.
               </p>
             </div>
             {onSelectSearch && (
@@ -124,16 +135,35 @@ export function CorpusLineage({ source, onSelectSearch, initialFocus }: CorpusLi
                 className="kg-btn kg-btn--sm kg-btn--primary kg-dag-searcher-callout__btn"
                 onClick={() => onSelectSearch('')}
               >
-                Go to Variables ↗
+                Go to Search ↗
               </button>
             )}
           </div>
 
-          {listLoading && <p className="kg-dag-sidebar__desc" role="status">Loading featured derivations…</p>}
-          {listError && <p className="cs-error" role="alert">{listError}</p>}
-          {!listLoading && !listError && featuredTargets.length === 0 && (
-            <p className="kg-dag-sidebar__desc">No derivation graphs currently published.</p>
-          )}
+          <div className="kg-dag-filter-bar" role="tablist" aria-label="Filter derivations">
+            <button
+              type="button"
+              className={`kg-dag-filter-btn ${filter === 'all' ? 'kg-dag-filter-btn--active' : ''}`}
+              onClick={() => handleFilterChange('all')}
+            >
+              All Multi-Stage ({featuredData.length})
+            </button>
+            <button
+              type="button"
+              className={`kg-dag-filter-btn ${filter === 'pumf' ? 'kg-dag-filter-btn--active' : ''}`}
+              onClick={() => handleFilterChange('pumf')}
+            >
+              PUMF (G) ({featuredData.filter((t) => t.isPumf).length})
+            </button>
+            <button
+              type="button"
+              className={`kg-dag-filter-btn ${filter === 'multi' ? 'kg-dag-filter-btn--active' : ''}`}
+              onClick={() => handleFilterChange('multi')}
+            >
+              3+ Stages ({featuredData.filter((t) => (t.stages ?? 1) >= 3).length})
+            </button>
+          </div>
+
           <div className="kg-dag-list">
             {featuredTargets.map((target) => (
               <button
@@ -145,10 +175,21 @@ export function CorpusLineage({ source, onSelectSearch, initialFocus }: CorpusLi
               >
                 <span className="kg-dag-item__head">
                   <code>{target.name}</code>
-                  <span className="kg-dag-item__survey">{target.surveyAcronym ?? 'Survey'} · {target.cycle ?? target.year ?? '—'}</span>
+                  <span className="kg-dag-item__badges">
+                    {target.stages && target.stages > 1 && (
+                      <span className="kg-badge kg-badge--stages">{target.stages} stages</span>
+                    )}
+                    {target.isPumf && (
+                      <span className="kg-badge kg-badge--pumf">PUMF (G)</span>
+                    )}
+                    <span className="kg-dag-item__survey">{target.surveyAcronym ?? 'Survey'} · {target.cycle ?? target.year ?? '—'}</span>
+                  </span>
                 </span>
                 <span className="kg-dag-item__label">{target.label}</span>
-                <span className="kg-dag-item__meta">{target.inputCount} direct {target.inputCount === 1 ? 'input' : 'inputs'}</span>
+                <span className="kg-dag-item__meta">
+                  {target.inputCount} direct {target.inputCount === 1 ? 'input' : 'inputs'}
+                  {target.stages && target.stages > 1 ? ` · ${target.stages}-stage pipeline` : ''}
+                </span>
               </button>
             ))}
           </div>

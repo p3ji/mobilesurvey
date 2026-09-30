@@ -17,9 +17,10 @@
  *   - Document type comes from the FILENAME, because `docKind` in corpus.jsonl is
  *     uniformly `data-dictionary` (the T-code classifier cannot see "no freqs").
  *   - A PUMF doc pairs with at most ONE master doc: exact subpopulation signature
- *     (`plus`/disability tokens) first, else the base master. One edge per shared name;
- *     a name shared by several PUMF docs of one cycle links only its FIRST (document
- *     order) occurrence to avoid redundant parallel edges.
+ *     (`plus`/disability tokens) first, else the base master. Every shared name between that
+ *     pair becomes an edge — each PUMF document has its own target record, so linking all of a
+ *     cycle's PUMF docs to their master codebook is not redundant (the unique index keys on the
+ *     target record, and distinct documents have distinct records).
  *   - Names present in two or more master docs are ambiguous and withheld.
  */
 
@@ -76,14 +77,14 @@ export type DocType = 'master' | 'pumf' | 'analytical';
 export function classifyDocType(docPath: string, tcode?: string): DocType {
   const fname = docPath.split('/').pop() ?? '';
   if (MASTER_FILENAME_REGEX.test(fname)) return 'master';
-  if (tcode === 'T15.2' || /t15[._-]?2/.test(fname) || /\bf\d+\b/i.test(fname)) return 'pumf';
+  if (tcode === 'T15.2' || /t15[._-]?2/i.test(fname) || /\bf\d+\b/i.test(fname)) return 'pumf';
   return 'analytical';
 }
 
 /** Subpopulation signature: does this doc cover the CIS-Plus and/or disability subpopulations? */
 export function subpopulationSignature(docPath: string): { plus: boolean; dis: boolean } {
   const tokens = (docPath.split('/').pop() ?? '').replace(/\.pdf$/i, '').toLowerCase().split(/[^a-z0-9]+/).filter(Boolean);
-  return { plus: tokens.includes('plus'), dis: tokens.includes('d') };
+  return { plus: tokens.includes('plus'), dis: tokens.includes('d') || tokens.includes('disability') };
 }
 
 // ---------------------------------------------------------------------------------------------
@@ -114,7 +115,7 @@ export async function scanCounterpartPairs(corpusPath: string = CORPUS_JSONL): P
     const v = JSON.parse(line) as CorpusVariable;
     if (v.source?.lang !== 'en') continue;
     scannedEnRecords++;
-    const cycle = v.source.cycle || String(v.source.year ?? '');
+    const cycle = v.source.cycle;
     if (!cycle) continue; // rebased groups: excluded in v1 (see module doc)
     const key = `${v.source.surveyGroup}|${cycle}`;
     let byDoc = idx.get(key);
@@ -156,9 +157,6 @@ export async function scanCounterpartPairs(corpusPath: string = CORPUS_JSONL): P
       }
     }
 
-    // A name already linked to this cycle's master docs links only its first PUMF occurrence.
-    const emittedForCycle = new Set<string>();
-
     for (const pd of pumfDocs) {
       const psig = subpopulationSignature(pd);
       let md = masterDocs.find((m) => {
@@ -177,8 +175,6 @@ export async function scanCounterpartPairs(corpusPath: string = CORPUS_JSONL): P
           withheldAmbiguousNames++;
           continue;
         }
-        if (emittedForCycle.has(nm)) continue;
-        emittedForCycle.add(nm);
         pairs.push({
           surveyGroup,
           cycle,
