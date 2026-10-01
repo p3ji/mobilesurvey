@@ -84,9 +84,9 @@ export function SearcherAbout({
     },
     {
       id: 'next',
-      title: '04 · Next',
+      title: '04 · Pilot',
       cardTitle: 'Follow published data use',
-      cardDetailedText: 'Researcher is in construction. It will connect published works to the surveys and cycles they analyze, beginning with academic research.',
+      cardDetailedText: 'The Researcher pilot links three works published outside Statistics Canada to the surveys and cycles they analyze. Each record links back to its source.',
     },
   ], [linkedPrograms, progress, searchStats]);
 
@@ -178,10 +178,10 @@ export function SearcherAbout({
         <section className="about-next" aria-labelledby="about-next-title">
           <div className="about-next__icon"><Check size={23} aria-hidden="true" /></div>
           <div>
-            <h2 id="about-next-title">Next: Researcher</h2>
-            <p>We are building a way to find published work that uses Statistics Canada surveys,
-              see the cycles and themes it covers, and follow observed publication trends. It will
-              begin with CRDCN and other academic sources. The catalogue and metrics are still in construction.</p>
+            <h2 id="about-next-title">Researcher pilot</h2>
+            <p>Explore three reviewed works published outside Statistics Canada that use its surveys, with source links,
+              themes, and the surveys and cycles each work analyzes. The catalogue is a small pilot;
+              broader discovery and publication use metrics are still in development.</p>
             <button type="button" className="about-next__link" onClick={onResearcher}>
               See the Researcher page <ArrowRight size={17} aria-hidden="true" />
             </button>

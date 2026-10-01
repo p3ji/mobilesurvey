@@ -5,6 +5,7 @@ import { fileURLToPath } from 'node:url';
 import { ResearchQueue } from './queue.js';
 import { extract } from './hermes.js';
 import { validateSource, type SourceWork } from './model.js';
+import { publicPreview } from './public-preview.js';
 
 const ROOT=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
 const dbPath=process.env.RESEARCHER_DB ?? path.join(ROOT,'out','researcher.db');
@@ -36,11 +37,15 @@ async function main() {
           q.complete(job,result.value,result.issues);
           console.log(JSON.stringify({job:job.id,status:'completed',claims:result.value.claims.length,issues:result.issues}));
         } catch(error) {
-          q.fail(job.id,String(error));
-          console.error(JSON.stringify({job:job.id,status:'retry',error:String(error)}));
+          const message=String(error);
+          const retryable=!/Local model HTTP 4\d\d/.test(message);
+          q.fail(job.id,message,retryable);
+          console.error(JSON.stringify({job:job.id,status:retryable?'retry':'failed',error:message}));
         }
       }
     } else if (command==='status') console.log(JSON.stringify(q.stats(),null,2));
+    else if (command==='audit') console.log(JSON.stringify(q.audit()));
+    else if (command==='reset-failed') console.log(JSON.stringify({jobsReset:q.resetFailed()}));
     else if (command==='review') console.log(JSON.stringify(q.reviewRows(args[0] ? Number(args[0]) : 50),null,2));
     else if (command==='approve' || command==='reject') {
       if (!args[0]) throw new Error(`Usage: researcher ${command} <claim-id>`);
@@ -51,7 +56,12 @@ async function main() {
       const records=q.exportReviewed();
       writeFileSync(args[0],records.map(r=>JSON.stringify(r)).join('\n')+(records.length?'\n':''),{flag:'w'});
       console.log(JSON.stringify({reviewedWorks:records.length,path:args[0]}));
-    } else throw new Error('Commands: seed <jsonl> | run [limit] | status | review [limit] | approve <claim-id> | reject <claim-id> | export <jsonl>');
+    } else if (command==='preview') {
+      if (!args[0]) throw new Error('Usage: researcher preview <public.json>');
+      const records=publicPreview(q.exportReviewed());
+      writeFileSync(args[0],JSON.stringify(records,null,2)+'\n',{flag:'w'});
+      console.log(JSON.stringify({publicPilotWorks:records.length,path:args[0]}));
+    } else throw new Error('Commands: seed <jsonl> | run [limit] | status | audit | reset-failed | review [limit] | approve <claim-id> | reject <claim-id> | export <jsonl> | preview <json>');
   } finally { q.close(); }
 }
 

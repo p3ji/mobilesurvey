@@ -15,6 +15,7 @@ export interface SourceWork {
   sourceId?: string;
   year?: number;
   workType?: string;
+  issuingOrganization?: string;
   abstract?: string;
   abstractRights?: 'permitted' | 'restricted' | 'unknown';
   passage: string;
@@ -66,6 +67,7 @@ export function validateSource(value: unknown): SourceWork {
       w.surveyCandidates.some(c => !c || typeof c.program !== 'string' || !Array.isArray(c.aliases) || c.aliases.some(a => typeof a !== 'string')))
     throw new Error('surveyCandidates must contain up to 12 program/aliases entries');
   if (w.year !== undefined && (!Number.isInteger(w.year) || w.year < 1800 || w.year > 2100)) throw new Error('Invalid year');
+  if (w.issuingOrganization !== undefined && (typeof w.issuingOrganization !== 'string' || !w.issuingOrganization.trim())) throw new Error('Invalid issuingOrganization');
   if (w.abstractRights && !['permitted', 'restricted', 'unknown'].includes(w.abstractRights)) throw new Error('Invalid abstractRights');
   return w as SourceWork;
 }

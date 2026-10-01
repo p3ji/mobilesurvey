@@ -1,0 +1,80 @@
+[
+  {
+    "id": "doi:10.1371/journal.pone.0200127",
+    "title": "Trend analysis for national surveys: Application to all variables from the Canadian Health Measures Survey cycle 1 to 4",
+    "doi": "10.1371/journal.pone.0200127",
+    "url": "https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0200127",
+    "year": 2018,
+    "workType": "journal article",
+    "issuingOrganization": null,
+    "sources": [
+      "PLOS ONE"
+    ],
+    "theme": "health",
+    "uses": [
+      {
+        "program": "CHMS",
+        "precision": "range",
+        "cycles": [],
+        "cycleText": "cycle 1 to 4",
+        "evidenceLocation": "Abstract > Data and methods"
+      }
+    ],
+    "mentions": [
+      {
+        "program": "CCHS",
+        "evidenceLocation": "Conclusion"
+      }
+    ]
+  },
+  {
+    "id": "url:4c96bb7a4d673c9866eb25c139b9100998f9f24bba10d6d15a123ff9db37cfcd",
+    "title": "Digital Divide: A Typology of Internet Users in Canada",
+    "doi": null,
+    "url": "https://www.canada.ca/en/employment-social-development/corporate/reports/research/typology-internet-users-canada.html",
+    "year": 2026,
+    "workType": "research summary",
+    "issuingOrganization": null,
+    "sources": [
+      "ESDC"
+    ],
+    "theme": "digital society",
+    "uses": [
+      {
+        "program": "CIUS",
+        "precision": "exact_cycles",
+        "cycles": [
+          "2022"
+        ],
+        "cycleText": "2022",
+        "evidenceLocation": "What we did"
+      }
+    ],
+    "mentions": []
+  },
+  {
+    "id": "url:b127a136d226939893ab1a684e70fc592dd2c9a40a3a9e188c065a274dbee23d",
+    "title": "Top dietary sources of energy, sodium, sugars, and saturated fats among Canadians: insights from the 2015 Canadian Community Health Survey",
+    "doi": null,
+    "url": "https://crdcn.ca/publication/top-dietary-sources-of-energy-sodium-sugars-and-saturated-fats-among-canadians-insights-from-the-2015-canadian-community-health-survey/",
+    "year": 2019,
+    "workType": "journal article",
+    "issuingOrganization": null,
+    "sources": [
+      "CRDCN"
+    ],
+    "theme": "health",
+    "uses": [
+      {
+        "program": "CCHS",
+        "precision": "exact_cycles",
+        "cycles": [
+          "2015"
+        ],
+        "cycleText": "2015",
+        "evidenceLocation": "Overview > Abstract (English)"
+      }
+    ],
+    "mentions": []
+  }
+]

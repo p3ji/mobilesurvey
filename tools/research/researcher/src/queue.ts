@@ -1,7 +1,12 @@
 import { DatabaseSync } from 'node:sqlite';
 import { mkdirSync } from 'node:fs';
 import path from 'node:path';
-import { chunks, hash, PROMPT_VERSION, type Extraction, type SourceWork, workId } from './model.js';
+import { chunks, hash, PROMPT_VERSION, validateExtraction, type Extraction, type SourceWork, workId } from './model.js';
+
+function entryIssues(issues: string[], kind: 'survey'|'variable'|'theme', index: number): string[] {
+  if (kind === 'theme') return issues.filter(issue => issue.startsWith('unknown primary theme') || issue.startsWith('unknown additional theme'));
+  return issues.filter(issue => issue.startsWith(`${kind === 'survey' ? 'claim' : 'variable'} ${index}:`));
+}
 
 export interface Job {
   id: string; work_id: string; chunk: string; chunk_index: number; source_json: string;
@@ -16,7 +21,7 @@ export class ResearchQueue {
     this.db.exec(`PRAGMA journal_mode=WAL; PRAGMA busy_timeout=5000;
       CREATE TABLE IF NOT EXISTS work (
         id TEXT PRIMARY KEY, title TEXT NOT NULL, doi TEXT, url TEXT NOT NULL,
-        year INTEGER, work_type TEXT, abstract TEXT, abstract_rights TEXT,
+        year INTEGER, work_type TEXT, issuing_organization TEXT, abstract TEXT, abstract_rights TEXT,
         created_at INTEGER NOT NULL
       );
       CREATE TABLE IF NOT EXISTS work_source (
@@ -39,6 +44,9 @@ export class ResearchQueue {
       );
       CREATE INDEX IF NOT EXISTS claim_review ON claim(review_status,kind);
     `);
+    const workColumns = this.db.prepare('PRAGMA table_info(work)').all() as Array<{ name: string }>;
+    if (!workColumns.some(column => column.name === 'issuing_organization'))
+      this.db.exec('ALTER TABLE work ADD COLUMN issuing_organization TEXT');
   }
 
   close() { this.db.close(); }
@@ -49,11 +57,12 @@ export class ResearchQueue {
     const parts = chunks(source.passage);
     this.db.exec('BEGIN IMMEDIATE');
     try {
-      this.db.prepare(`INSERT INTO work(id,title,doi,url,year,work_type,abstract,abstract_rights,created_at)
-        VALUES(?,?,?,?,?,?,?,?,?) ON CONFLICT(id) DO UPDATE SET
+      this.db.prepare(`INSERT INTO work(id,title,doi,url,year,work_type,issuing_organization,abstract,abstract_rights,created_at)
+        VALUES(?,?,?,?,?,?,?,?,?,?) ON CONFLICT(id) DO UPDATE SET
         title=excluded.title,doi=COALESCE(excluded.doi,work.doi),year=COALESCE(excluded.year,work.year),
+        issuing_organization=COALESCE(excluded.issuing_organization,work.issuing_organization),
         abstract=COALESCE(excluded.abstract,work.abstract),abstract_rights=COALESCE(excluded.abstract_rights,work.abstract_rights)`)
-        .run(id, source.title, source.doi ?? null, source.url, source.year ?? null, source.workType ?? null,
+        .run(id, source.title, source.doi ?? null, source.url, source.year ?? null, source.workType ?? null, source.issuingOrganization ?? null,
           source.abstractRights === 'permitted' ? (source.abstract ?? null) : null, source.abstractRights ?? 'unknown', now);
       this.db.prepare(`INSERT INTO work_source(work_id,source,source_id,url,retrieved_at,content_hash) VALUES(?,?,?,?,?,?)
         ON CONFLICT(work_id,source,source_id) DO UPDATE SET retrieved_at=excluded.retrieved_at,content_hash=excluded.content_hash,url=excluded.url`)
@@ -74,7 +83,7 @@ export class ResearchQueue {
     const now = Date.now();
     this.db.exec('BEGIN IMMEDIATE');
     try {
-      const row = this.db.prepare(`SELECT id FROM job WHERE (status='pending' OR (status='leased' AND lease_until<?)) AND attempts<3 ORDER BY created_at,id LIMIT 1`).get(now) as {id:string}|undefined;
+      const row = this.db.prepare(`SELECT id FROM job WHERE ((status='pending' AND lease_until<=?) OR (status='leased' AND lease_until<?)) AND attempts<3 ORDER BY created_at,id LIMIT 1`).get(now,now) as {id:string}|undefined;
       if (!row) { this.db.exec('COMMIT'); return null; }
       this.db.prepare(`UPDATE job SET status='leased', attempts=attempts+1,lease_until=?,updated_at=? WHERE id=?`).run(now+300_000,now,row.id);
       const job = this.db.prepare(`SELECT id,work_id,chunk,chunk_index,source_json,status,attempts,lease_until,issues FROM job WHERE id=?`).get(row.id) as unknown as Job;
@@ -83,11 +92,17 @@ export class ResearchQueue {
     } catch (error) { this.db.exec('ROLLBACK'); throw error; }
   }
 
-  fail(id: string, error: string) {
+  fail(id: string, error: string, retryable = true) {
     const row = this.db.prepare('SELECT attempts FROM job WHERE id=?').get(id) as {attempts:number}|undefined;
     if (!row) throw new Error('Unknown job');
     this.db.prepare(`UPDATE job SET status=?,issues=?,lease_until=0,updated_at=? WHERE id=?`)
-      .run(row.attempts >= 3 ? 'failed' : 'pending', error.slice(0,1000), Date.now(), id);
+      .run(!retryable || row.attempts >= 3 ? 'failed' : 'pending', error.slice(0,1000), Date.now(), id);
+    if (retryable && row.attempts < 3)
+      this.db.prepare('UPDATE job SET lease_until=? WHERE id=?').run(Date.now()+Math.min(60_000, 5_000*2**(row.attempts-1)),id);
+  }
+
+  resetFailed(): number {
+    return Number(this.db.prepare(`UPDATE job SET status='pending',attempts=0,lease_until=0,issues=NULL,updated_at=? WHERE status='failed'`).run(Date.now()).changes);
   }
 
   complete(job: Job, extraction: Extraction, issues: string[]) {
@@ -97,17 +112,45 @@ export class ResearchQueue {
       this.db.prepare(`UPDATE job SET status='completed',issues=?,response_json=?,lease_until=0,updated_at=? WHERE id=? AND status='leased'`)
         .run(JSON.stringify(issues), JSON.stringify(extraction), now, job.id);
       const insert = this.db.prepare(`INSERT OR IGNORE INTO claim(id,job_id,work_id,kind,payload_json,issues) VALUES(?,?,?,?,?,?)`);
-      const entries: Array<['survey'|'variable'|'theme', unknown]> = [
-        ...extraction.claims.map(c => ['survey', c] as ['survey', unknown]),
-        ...extraction.variables.map(v => ['variable', v] as ['variable', unknown]),
-        ...((extraction.primaryTheme || extraction.additionalThemes.length) ? [['theme', { primary: extraction.primaryTheme, additional: extraction.additionalThemes, rationale: extraction.themeRationale }] as ['theme', unknown]] : []),
+      const entries: Array<['survey'|'variable'|'theme', unknown, number]> = [
+        ...extraction.claims.map((c,index) => ['survey', c, index] as ['survey', unknown, number]),
+        ...extraction.variables.map((v,index) => ['variable', v, index] as ['variable', unknown, number]),
+        ...((extraction.primaryTheme || extraction.additionalThemes.length) ? [['theme', { primary: extraction.primaryTheme, additional: extraction.additionalThemes, rationale: extraction.themeRationale }, 0] as ['theme', unknown, number]] : []),
       ];
-      for (const [kind, payload] of entries) {
+      for (const [kind, payload, index] of entries) {
         const body = JSON.stringify(payload);
-        insert.run(hash(`${job.id}|${kind}|${body}`), job.id, job.work_id, kind, body, JSON.stringify(issues));
+        insert.run(hash(`${job.id}|${kind}|${body}`), job.id, job.work_id, kind, body, JSON.stringify(entryIssues(issues,kind,index)));
       }
       this.db.exec('COMMIT');
     } catch (error) { this.db.exec('ROLLBACK'); throw error; }
+  }
+
+  audit(): { jobs: number; flaggedClaims: number } {
+    const jobs=this.db.prepare(`SELECT id,chunk,source_json,response_json FROM job WHERE status='completed'`).all() as Array<{id:string;chunk:string;source_json:string;response_json:string}>;
+    let flaggedClaims=0;
+    this.db.exec('BEGIN IMMEDIATE');
+    try {
+      const update=this.db.prepare(`UPDATE claim SET issues=?,review_status=CASE WHEN ? <> '[]' AND review_status='approved' THEN 'needs_review' ELSE review_status END WHERE job_id=? AND kind=? AND payload_json=?`);
+      const updateJob=this.db.prepare('UPDATE job SET issues=? WHERE id=?');
+      for (const job of jobs) {
+        const source=JSON.parse(job.source_json) as SourceWork;
+        const {value,issues}=validateExtraction(JSON.parse(job.response_json),job.chunk,source.surveyCandidates);
+        updateJob.run(JSON.stringify(issues),job.id);
+        const entries: Array<['survey'|'variable'|'theme',unknown,number]>=[
+          ...value.claims.map((claim,index)=>['survey',claim,index] as ['survey',unknown,number]),
+          ...value.variables.map((variable,index)=>['variable',variable,index] as ['variable',unknown,number]),
+          ...((value.primaryTheme || value.additionalThemes.length) ? [['theme',{primary:value.primaryTheme,additional:value.additionalThemes,rationale:value.themeRationale},0] as ['theme',unknown,number]] : []),
+        ];
+        for (const [kind,payload,index] of entries) {
+          const scoped=entryIssues(issues,kind,index);
+          if (scoped.length) flaggedClaims++;
+          const json=JSON.stringify(scoped);
+          update.run(json,json,job.id,kind,JSON.stringify(payload));
+        }
+      }
+      this.db.exec('COMMIT');
+      return {jobs:jobs.length,flaggedClaims};
+    } catch(error) {this.db.exec('ROLLBACK');throw error;}
   }
 
   review(id: string, decision: 'approved'|'rejected') {
@@ -132,12 +175,12 @@ export class ResearchQueue {
   }
 
   exportReviewed(): object[] {
-    const rows = this.db.prepare(`SELECT c.work_id,c.kind,c.payload_json,w.title,w.doi,w.url,w.year,w.work_type,w.abstract,w.abstract_rights
+    const rows = this.db.prepare(`SELECT c.work_id,c.kind,c.payload_json,w.title,w.doi,w.url,w.year,w.work_type,w.issuing_organization,w.abstract,w.abstract_rights
       FROM claim c JOIN work w ON w.id=c.work_id WHERE c.review_status='approved' ORDER BY c.work_id,c.kind`).all() as Array<Record<string,unknown>>;
     const byWork = new Map<string, any>();
     for (const row of rows) {
       const id=String(row.work_id);
-      if (!byWork.has(id)) byWork.set(id,{ id,title:row.title,doi:row.doi,url:row.url,year:row.year,workType:row.work_type,
+      if (!byWork.has(id)) byWork.set(id,{ id,title:row.title,doi:row.doi,url:row.url,year:row.year,workType:row.work_type,issuingOrganization:row.issuing_organization,
         abstract:row.abstract,abstractRights:row.abstract_rights,
         sources:this.db.prepare('SELECT source,source_id,url FROM work_source WHERE work_id=? ORDER BY source').all(id), claims:[],themes:[],variables:[] });
       const target=byWork.get(id);
