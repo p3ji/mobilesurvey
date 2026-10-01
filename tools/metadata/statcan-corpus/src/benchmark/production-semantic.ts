@@ -51,7 +51,7 @@ async function rpc<T>(name: string, args: unknown): Promise<T> {
 
 async function evaluate(query: BenchmarkQuery): Promise<Result> {
   const lexical = await rpc<Array<{ total_count: number }>>('corpus_search', {
-    q: query.query, max_rows: 5, row_offset: 0,
+    q: query.query, max_rows: 5, row_offset: 0, hide_process: true,
   });
   const t0 = performance.now();
   let points: Array<{ record_id: string; score: number }> = [];
@@ -60,7 +60,7 @@ async function evaluate(query: BenchmarkQuery): Promise<Result> {
     const response = await fetch(`${baseUrl}/functions/v1/corpus-semantic-search`, {
       method: 'POST',
       headers: { apikey: key!, Authorization: `Bearer ${key}`, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ query: query.query, limit: 5, score_threshold: 0.55, filters: {} }),
+      body: JSON.stringify({ query: query.query, limit: 5, score_threshold: 0.55, filters: { hide_process: true } }),
       signal: AbortSignal.timeout(2500),
     });
     const body = await response.json() as { points?: Array<{ record_id: string; score: number }>; error?: string };
@@ -122,7 +122,7 @@ async function main(): Promise<void> {
   };
   const reportPath = resolve(import.meta.dirname, '../../../../../docs/search-production-evaluation.md');
   let report = '# Production semantic search check\n\n';
-  report += `**Run:** ${timestamp} · **Endpoint:** \`corpus-semantic-search\` · **Score threshold:** 0.55 · **Queries:** ${results.length}\n\n`;
+  report += `**Run:** ${timestamp} · **Endpoint:** \`corpus-semantic-search\` · **Score threshold:** 0.55 · **Hide process:** on · **Queries:** ${results.length}\n\n`;
   report += `Grades are **${judgments.reviewer}**. ${judgments.scale}. A returned point is not automatically a relevant result. This sample is too small and lacks human sign-off, so it cannot support a claim that semantic search improves overall ranking.\n\n`;
   report += '| Query | Strict lexical total | Semantic candidates | Best score | Provisional direct grades | Verdict |\n';
   report += '| --- | ---: | ---: | ---: | ---: | --- |\n';
