@@ -10,18 +10,14 @@ OUT=""
 PENDING=$(npx tsx src/graph/queue.ts status 2>/dev/null | awk '/pending/{print $4}')
 PENDING=${PENDING:-0}
 
-# --- Self-heal workers (two lanes: flash-next + MoE fast-lane) ---------------
-fast_alive() { [[ -f out/fast-lane.pid ]] && kill -0 "$(cat out/fast-lane.pid)" 2>/dev/null; }
-main_alive() { pgrep -f "queue.ts run main-lane" >/dev/null 2>&1; }
-if [[ "$PENDING" -gt 0 ]]; then
-  if ! fast_alive; then
-    nohup bash scripts/worker-fastlane.sh >> out/fast-lane.log 2>&1 & disown || true
-    OUT+="fast-lane worker restarted (pid $!)\n"
-  fi
-  if ! main_alive; then
-    LOCAL_LLM_MODEL=qwen3.8-flash-next nohup npx tsx src/graph/queue.ts run main-lane >> out/full-drain.log 2>&1 & disown || true
-    OUT+="main worker restarted (pid $!), pending=$PENDING\n"
-  fi
+# --- Self-heal workers (N parallel on one resident model — no engine swaps) --
+WORKER_TARGET=4
+RUNNING=$(pgrep -f "queue.ts run worker-" | wc -l | tr -d ' ')
+if [[ "$PENDING" -gt 0 && "$RUNNING" -lt "$WORKER_TARGET" ]]; then
+  for i in $(seq "$RUNNING" $((WORKER_TARGET - 1))); do
+    LOCAL_LLM_MODEL=qwen3.8-flash-next nohup npx tsx src/graph/queue.ts run "worker-$i" >> out/full-drain.log 2>&1 & disown || true
+    OUT+="worker-$i restarted (pid $!), pending=$PENDING\n"
+  done
 fi
 
 # --- Publish verified edges --------------------------------------------------

@@ -149,6 +149,7 @@ export class DerivationQueue {
     this.db.exec(`
       PRAGMA journal_mode = WAL;
       PRAGMA synchronous = NORMAL;
+      PRAGMA busy_timeout = 30000;
 
       CREATE TABLE IF NOT EXISTS derivation_job (
         job_id        TEXT PRIMARY KEY,
