@@ -2379,19 +2379,21 @@ code { font-family: var(--mono); font-size: 0.88em; }
 }
 .kg-flow__legend-line {
   display: inline-block;
-  width: 22px;
+  width: 24px;
   height: 0;
-  border-top: 2px solid #94a3b8;
   vertical-align: middle;
 }
-.kg-flow__legend-line--teal {
-  border-color: #0d9488;
+.kg-flow__legend-line--solid {
+  border-top: 2.5px solid #334155;
 }
-.kg-flow__legend-line--indigo {
-  border-color: #6366f1;
+.kg-flow__legend-line--counterpart {
+  border-top: 2.5px dashed #0d9488;
 }
-.kg-flow__legend-line--dashed {
-  border-top-style: dashed;
+.kg-flow__legend-line--collapse {
+  border-top: 2.5px dotted #6366f1;
+}
+.kg-flow__legend-line--inferred {
+  border-top: 2px dashed #94a3b8;
 }
 .kg-dag-evidence {
   background: #f8fafc;

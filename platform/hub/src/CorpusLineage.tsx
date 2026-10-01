@@ -109,9 +109,8 @@ export function CorpusLineage({ source, onSelectSearch, initialFocus }: CorpusLi
   return (
     <section className="kg-pane kg-lineage">
       <p className="kg-pane__desc">
-        Examples showcasing published links between derived variables and their inputs. Teal arrows mark
-        master-file counterparts; indigo arrows mark PUMF grouped-recode collapses; grey arrows
-        are note-derived (solid if the source name appears verbatim in the note, dashed otherwise).
+        Examples showcasing published provenance between derived variables and their inputs.
+        Solid lines indicate direct formulas cited verbatim in StatCan notes; long-dashed teal lines bridge public variables to master-file counterparts; dotted indigo lines indicate grouped-recode category collapses; and short-dashed lines indicate inferred question mappings.
         To trace lineage for any specific variable, search for it in the <strong>Search</strong> tab.
       </p>
       <div className="kg-dag-layout">

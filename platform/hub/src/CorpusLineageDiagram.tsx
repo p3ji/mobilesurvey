@@ -151,16 +151,19 @@ export function CorpusLineageDiagram({ target, edges, highlightRecordId }: { tar
       <div className="kg-flow__viewport" ref={viewport}>
         <svg width={diagram.width} height={diagram.height} viewBox={`0 0 ${diagram.width} ${diagram.height}`} role="img" aria-label={`Variable flow for ${target.name}: ${graph.edges.length} published links shown`}>
           <title>Variable flow for {target.name}</title>
-          <desc>Inputs on the left flow to {target.name} on the right. Teal lines: master-file counterparts. Indigo lines: G-suffix collapses. Grey lines: note-derived (solid if named, dashed if inferred).</desc>
+          <desc>Inputs on the left flow to {target.name} on the right. Solid slate lines: direct note-derived formulas. Long-dash teal lines: master-file counterparts. Dotted indigo lines: G-suffix grouped recodes. Short-dash grey lines: inferred mappings.</desc>
           <defs>
-            <marker id="kg-flow-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
-              <path d="M 0 1 L 9 5 L 0 9 z" fill="#64748b" />
+            <marker id="kg-flow-arrow-named" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+              <path d="M 0 1 L 9 5 L 0 9 z" fill="#334155" />
             </marker>
             <marker id="kg-flow-arrow-counterpart" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
               <path d="M 0 1 L 9 5 L 0 9 z" fill="#0d9488" />
             </marker>
             <marker id="kg-flow-arrow-collapse" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
               <path d="M 0 1 L 9 5 L 0 9 z" fill="#6366f1" />
+            </marker>
+            <marker id="kg-flow-arrow-inferred" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+              <path d="M 0 1 L 9 5 L 0 9 z" fill="#94a3b8" />
             </marker>
           </defs>
           {diagram.columns.map((column, depth) => (
@@ -179,9 +182,38 @@ export function CorpusLineageDiagram({ target, edges, highlightRecordId }: { tar
 
             const isCounterpart = edge.derivationType === 'counterpart';
             const isCollapse = edge.derivationType === 'collapse';
-            const strokeColor = isCounterpart ? '#0d9488' : isCollapse ? '#6366f1' : edge.evidence === 'provisional' ? '#cbd5e1' : '#94a3b8';
-            const markerId = isCounterpart ? 'url(#kg-flow-arrow-counterpart)' : isCollapse ? 'url(#kg-flow-arrow-collapse)' : 'url(#kg-flow-arrow)';
-            const dashArray = isCounterpart || isCollapse ? undefined : (edge.evidence === 'provisional' || edge.evidence === 'mapped' ? '4 4' : undefined);
+            const isNamed = edge.evidence === 'named' && !isCounterpart && !isCollapse;
+
+            // Distinct stroke pattern + color + marker for each connection type:
+            // 1. Note-derived (named verbatim): solid line (slate-700)
+            // 2. Counterpart (PUMF ↔ Master bridge): long-dashed line (teal-600)
+            // 3. G-collapse (grouped recode reduction): dotted line (indigo-500)
+            // 4. Inferred / mapped: short-dashed line (slate-400)
+            const strokeColor = isCounterpart
+              ? '#0d9488'
+              : isCollapse
+                ? '#6366f1'
+                : isNamed
+                  ? '#334155'
+                  : '#94a3b8';
+
+            const dashArray = isCounterpart
+              ? '8 4'
+              : isCollapse
+                ? '2 3'
+                : isNamed
+                  ? undefined
+                  : '4 4';
+
+            const markerId = isCounterpart
+              ? 'url(#kg-flow-arrow-counterpart)'
+              : isCollapse
+                ? 'url(#kg-flow-arrow-collapse)'
+                : isNamed
+                  ? 'url(#kg-flow-arrow-named)'
+                  : 'url(#kg-flow-arrow-inferred)';
+
+            const strokeWidth = isCounterpart || isCollapse || isNamed ? '1.8' : '1.5';
 
             const title = isCounterpart
               ? 'Master-file counterpart; deterministic rule'
@@ -199,7 +231,7 @@ export function CorpusLineageDiagram({ target, edges, highlightRecordId }: { tar
                 d={`M ${x1} ${y1} C ${bend} ${y1}, ${bend} ${y2}, ${x2} ${y2}`}
                 fill="none"
                 stroke={strokeColor}
-                strokeWidth={isCounterpart || isCollapse ? '1.8' : '1.6'}
+                strokeWidth={strokeWidth}
                 strokeDasharray={dashArray}
                 markerEnd={markerId}
               >
@@ -218,10 +250,18 @@ export function CorpusLineageDiagram({ target, edges, highlightRecordId }: { tar
         </svg>
       </div>
       <div className="kg-flow__legend">
-        <span className="kg-flow__legend-item"><span className="kg-flow__legend-line kg-flow__legend-line--teal" /> Counterpart</span>
-        <span className="kg-flow__legend-item"><span className="kg-flow__legend-line kg-flow__legend-line--indigo" /> G-collapse</span>
-        <span className="kg-flow__legend-item"><span className="kg-flow__legend-line" /> Note-derived</span>
-        <span className="kg-flow__legend-item"><span className="kg-flow__legend-line kg-flow__legend-line--dashed" /> Inferred</span>
+        <span className="kg-flow__legend-item" title="Explicit formula: source variable named verbatim in note">
+          <span className="kg-flow__legend-line kg-flow__legend-line--solid" /> Solid: Note-derived
+        </span>
+        <span className="kg-flow__legend-item" title="Cross-document link: connects PUMF variable to detailed Master codebook">
+          <span className="kg-flow__legend-line kg-flow__legend-line--counterpart" /> Long dash: Counterpart
+        </span>
+        <span className="kg-flow__legend-item" title="Grouped recode: categorical collapse (e.g. AGEG from AGE)">
+          <span className="kg-flow__legend-line kg-flow__legend-line--collapse" /> Dotted: G-collapse
+        </span>
+        <span className="kg-flow__legend-item" title="Inferred link: mapped from questionnaire question or note wording">
+          <span className="kg-flow__legend-line kg-flow__legend-line--inferred" /> Short dash: Inferred
+        </span>
       </div>
     </div>
   );
