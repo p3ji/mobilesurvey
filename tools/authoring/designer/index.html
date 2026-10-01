@@ -4,6 +4,12 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚙</text></svg>">
+    <script>
+      if (window.location.hostname === 'p3ji.github.io') {
+        var p = window.location.pathname.replace(/^\/mobilesurvey/, '') || '/';
+        window.location.replace('https://msurvey.peji.ca' + p + window.location.search + window.location.hash);
+      }
+    </script>
     <title>Modular Survey Tools — Designer</title>
   </head>
   <body>
