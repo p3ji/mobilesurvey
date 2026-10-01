@@ -72,6 +72,62 @@
     "mentions": []
   },
   {
+    "id": "doi:10.1002/hec.4261",
+    "title": "Dying from envy: The role of inequality",
+    "doi": "10.1002/hec.4261",
+    "url": "https://doi.org/10.1002/hec.4261",
+    "year": 2021,
+    "workType": "article",
+    "issuingOrganization": "Wiley",
+    "sources": [
+      "OpenAlex"
+    ],
+    "theme": "income and inequality",
+    "uses": [
+      {
+        "program": "CCHS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Abstract"
+      },
+      {
+        "program": "SHS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Abstract"
+      }
+    ],
+    "mentions": []
+  },
+  {
+    "id": "doi:10.1002/jae.2312",
+    "title": "THE DEMAND FOR GASOLINE: EVIDENCE FROM HOUSEHOLD SURVEY DATA",
+    "doi": "10.1002/jae.2312",
+    "url": "https://doi.org/10.1002/jae.2312",
+    "year": 2013,
+    "workType": "article",
+    "issuingOrganization": "Wiley",
+    "sources": [
+      "OpenAlex"
+    ],
+    "theme": "digital society",
+    "uses": [
+      {
+        "program": "SHS",
+        "precision": "exact_cycles",
+        "cycles": [
+          "1997",
+          "2009"
+        ],
+        "cycleText": "1997, 2009",
+        "evidenceLocation": "Abstract"
+      }
+    ],
+    "mentions": []
+  },
+  {
     "id": "doi:10.1007/bf03405602",
     "title": "Physical activity and ethnicity: evidence from the Canadian Community Health Survey.",
     "doi": "10.1007/bf03405602",
@@ -147,6 +203,57 @@
     "mentions": []
   },
   {
+    "id": "doi:10.1007/s10803-020-04603-3",
+    "title": "Employment, Education, and Income for Canadians with Developmental Disability: Analysis from the 2017 Canadian Survey on Disability",
+    "doi": "10.1007/s10803-020-04603-3",
+    "url": "https://doi.org/10.1007/s10803-020-04603-3",
+    "year": 2020,
+    "workType": "article",
+    "issuingOrganization": "Springer Science+Business Media",
+    "sources": [
+      "OpenAlex"
+    ],
+    "theme": "income and inequality",
+    "uses": [
+      {
+        "program": "CSD",
+        "precision": "exact_cycles",
+        "cycles": [
+          "2017"
+        ],
+        "cycleText": "2017",
+        "evidenceLocation": "Abstract"
+      }
+    ],
+    "mentions": []
+  },
+  {
+    "id": "doi:10.1007/s10803-026-07489-9",
+    "title": "National Trends in Education and Employment Outcomes for Canadians With Developmental Disabilities and Autism: Findings From the 2017 and 2022 Canadian Survey on Disability",
+    "doi": "10.1007/s10803-026-07489-9",
+    "url": "https://doi.org/10.1007/s10803-026-07489-9",
+    "year": 2026,
+    "workType": "article",
+    "issuingOrganization": "Springer Science+Business Media",
+    "sources": [
+      "OpenAlex"
+    ],
+    "theme": "digital society",
+    "uses": [
+      {
+        "program": "CSD",
+        "precision": "exact_cycles",
+        "cycles": [
+          "2017",
+          "2022"
+        ],
+        "cycleText": "2017, 2022",
+        "evidenceLocation": "Abstract"
+      }
+    ],
+    "mentions": []
+  },
+  {
     "id": "doi:10.1007/s10896-025-00847-8",
     "title": "“I Thought About Killing Myself, but a Part of Me Insisted on Getting Help”: Coping Experiences of Male Survivors of Intimate Partner Violence",
     "doi": "10.1007/s10896-025-00847-8",
@@ -189,6 +296,31 @@
         "precision": "program_only",
         "cycles": [],
         "cycleText": "",
+        "evidenceLocation": "Abstract"
+      }
+    ],
+    "mentions": []
+  },
+  {
+    "id": "doi:10.1007/s11205-022-02900-1",
+    "title": "Disability Considerations for Measuring Poverty in Canada Using the Market Basket Measure",
+    "doi": "10.1007/s11205-022-02900-1",
+    "url": "https://doi.org/10.1007/s11205-022-02900-1",
+    "year": 2022,
+    "workType": "article",
+    "issuingOrganization": "Springer Science+Business Media",
+    "sources": [
+      "OpenAlex"
+    ],
+    "theme": "income and inequality",
+    "uses": [
+      {
+        "program": "CSD",
+        "precision": "exact_cycles",
+        "cycles": [
+          "2017"
+        ],
+        "cycleText": "2017",
         "evidenceLocation": "Abstract"
       }
     ],
@@ -287,6 +419,29 @@
         "precision": "range",
         "cycles": [],
         "cycleText": "2005-2014",
+        "evidenceLocation": "Abstract"
+      }
+    ],
+    "mentions": []
+  },
+  {
+    "id": "doi:10.1016/j.amepre.2023.01.027",
+    "title": "Effect of Canada Child Benefit on Food Insecurity: A Propensity Score−Matched Analysis",
+    "doi": "10.1016/j.amepre.2023.01.027",
+    "url": "https://doi.org/10.1016/j.amepre.2023.01.027",
+    "year": 2023,
+    "workType": "article",
+    "issuingOrganization": "Elsevier BV",
+    "sources": [
+      "OpenAlex"
+    ],
+    "theme": "families",
+    "uses": [
+      {
+        "program": "CIS",
+        "precision": "range",
+        "cycles": [],
+        "cycleText": "2018-2020",
         "evidenceLocation": "Abstract"
       }
     ],
@@ -644,6 +799,29 @@
     "mentions": []
   },
   {
+    "id": "doi:10.1016/j.jth.2022.101512",
+    "title": "Short report: An algorithm based on the Canadian survey on disability to propose paratransit eligibility of the Quebec's population",
+    "doi": "10.1016/j.jth.2022.101512",
+    "url": "https://doi.org/10.1016/j.jth.2022.101512",
+    "year": 2022,
+    "workType": "article",
+    "issuingOrganization": "Elsevier BV",
+    "sources": [
+      "OpenAlex"
+    ],
+    "theme": "health",
+    "uses": [
+      {
+        "program": "CSD",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Title"
+      }
+    ],
+    "mentions": []
+  },
+  {
     "id": "doi:10.1016/j.jth.2025.102046",
     "title": "Cycling infrastructure and transportational and recreational physical activity in Canadians",
     "doi": "10.1016/j.jth.2025.102046",
@@ -771,6 +949,31 @@
     "mentions": []
   },
   {
+    "id": "doi:10.1016/j.ridd.2017.04.003",
+    "title": "Describing heterogeneity of unmet needs among adults with a developmental disability: An examination of the 2012 Canadian Survey on Disability",
+    "doi": "10.1016/j.ridd.2017.04.003",
+    "url": "https://doi.org/10.1016/j.ridd.2017.04.003",
+    "year": 2017,
+    "workType": "article",
+    "issuingOrganization": "Elsevier BV",
+    "sources": [
+      "OpenAlex"
+    ],
+    "theme": "labour",
+    "uses": [
+      {
+        "program": "CSD",
+        "precision": "exact_cycles",
+        "cycles": [
+          "2012"
+        ],
+        "cycleText": "2012",
+        "evidenceLocation": "Abstract"
+      }
+    ],
+    "mentions": []
+  },
+  {
     "id": "doi:10.1016/j.socscimed.2025.117935",
     "title": "Work-family interface and mental health inequalities between women and men: A gendered exposure model across Canadian provinces",
     "doi": "10.1016/j.socscimed.2025.117935",
@@ -790,6 +993,31 @@
           "2022"
         ],
         "cycleText": "2022",
+        "evidenceLocation": "Abstract"
+      }
+    ],
+    "mentions": []
+  },
+  {
+    "id": "doi:10.1016/j.ssmqr.2024.100406",
+    "title": "Caring for the caregiver: An exploration of the experiences of caregivers of adults with mental illness",
+    "doi": "10.1016/j.ssmqr.2024.100406",
+    "url": "https://doi.org/10.1016/j.ssmqr.2024.100406",
+    "year": 2024,
+    "workType": "article",
+    "issuingOrganization": "Elsevier BV",
+    "sources": [
+      "OpenAlex"
+    ],
+    "theme": "health",
+    "uses": [
+      {
+        "program": "CSD",
+        "precision": "exact_cycles",
+        "cycles": [
+          "2017"
+        ],
+        "cycleText": "2017",
         "evidenceLocation": "Abstract"
       }
     ],
@@ -920,6 +1148,128 @@
     "mentions": []
   },
   {
+    "id": "doi:10.1016/j.ypmed.2019.105876",
+    "title": "Money speaks: Reductions in severe food insecurity follow the Canada Child Benefit",
+    "doi": "10.1016/j.ypmed.2019.105876",
+    "url": "https://doi.org/10.1016/j.ypmed.2019.105876",
+    "year": 2019,
+    "workType": "article",
+    "issuingOrganization": "Elsevier BV",
+    "sources": [
+      "OpenAlex"
+    ],
+    "theme": "income and inequality",
+    "uses": [
+      {
+        "program": "CCHS",
+        "precision": "range",
+        "cycles": [],
+        "cycleText": "2015-2018",
+        "evidenceLocation": "Abstract"
+      }
+    ],
+    "mentions": []
+  },
+  {
+    "id": "doi:10.1016/j.ypmed.2023.107475",
+    "title": "Employment Insurance may mitigate impact of unemployment on food security: Analysis on a propensity-score matched sample from the Canadian Income Survey",
+    "doi": "10.1016/j.ypmed.2023.107475",
+    "url": "https://doi.org/10.1016/j.ypmed.2023.107475",
+    "year": 2023,
+    "workType": "article",
+    "issuingOrganization": "Elsevier BV",
+    "sources": [
+      "OpenAlex"
+    ],
+    "theme": "labour",
+    "uses": [
+      {
+        "program": "CIS",
+        "precision": "range",
+        "cycles": [],
+        "cycleText": "2018-2019",
+        "evidenceLocation": "Abstract"
+      }
+    ],
+    "mentions": []
+  },
+  {
+    "id": "doi:10.1017/s0008423925100516",
+    "title": "Income Inequality and Parent Education Spending in Canada",
+    "doi": "10.1017/s0008423925100516",
+    "url": "https://doi.org/10.1017/s0008423925100516",
+    "year": 2025,
+    "workType": "article",
+    "issuingOrganization": "Cambridge University Press",
+    "sources": [
+      "OpenAlex"
+    ],
+    "theme": "families",
+    "uses": [
+      {
+        "program": "SHS",
+        "precision": "exact_cycles",
+        "cycles": [
+          "2006",
+          "2019"
+        ],
+        "cycleText": "2006, 2019",
+        "evidenceLocation": "Abstract"
+      }
+    ],
+    "mentions": []
+  },
+  {
+    "id": "doi:10.1017/s136898000700081x",
+    "title": "Adequacy of food spending is related to housing expenditures among lower-income Canadian households",
+    "doi": "10.1017/s136898000700081x",
+    "url": "https://doi.org/10.1017/s136898000700081x",
+    "year": 2007,
+    "workType": "article",
+    "issuingOrganization": "Cambridge University Press",
+    "sources": [
+      "OpenAlex"
+    ],
+    "theme": "income and inequality",
+    "uses": [
+      {
+        "program": "SHS",
+        "precision": "exact_cycles",
+        "cycles": [
+          "2001"
+        ],
+        "cycleText": "2001",
+        "evidenceLocation": "Abstract"
+      }
+    ],
+    "mentions": []
+  },
+  {
+    "id": "doi:10.1017/s1368980018000472",
+    "title": "Prioritization of the essentials in the spending patterns of Canadian households experiencing food insecurity",
+    "doi": "10.1017/s1368980018000472",
+    "url": "https://doi.org/10.1017/s1368980018000472",
+    "year": 2018,
+    "workType": "article",
+    "issuingOrganization": "Cambridge University Press",
+    "sources": [
+      "OpenAlex"
+    ],
+    "theme": "income and inequality",
+    "uses": [
+      {
+        "program": "SHS",
+        "precision": "exact_cycles",
+        "cycles": [
+          "2010"
+        ],
+        "cycleText": "2010",
+        "evidenceLocation": "Abstract"
+      }
+    ],
+    "mentions": []
+  },
+  {
     "id": "doi:10.1037/cap0000103",
     "title": "Prevalence and correlates of depression in Canada: Findings from the Canadian Community Health Survey.",
     "doi": "10.1037/cap0000103",
@@ -943,6 +1293,59 @@
     "mentions": []
   },
   {
+    "id": "doi:10.1037/cap0000116",
+    "title": "Learning disabilities in Canada: Definitions and accommodations.",
+    "doi": "10.1037/cap0000116",
+    "url": "https://doi.org/10.1037/cap0000116",
+    "year": 2017,
+    "workType": "article",
+    "issuingOrganization": "American Psychological Association",
+    "sources": [
+      "OpenAlex"
+    ],
+    "theme": "education",
+    "uses": [
+      {
+        "program": "CSD",
+        "precision": "exact_cycles",
+        "cycles": [
+          "2006",
+          "2009",
+          "2012",
+          "2015"
+        ],
+        "cycleText": "2006, 2009, 2012, 2015",
+        "evidenceLocation": "Abstract"
+      }
+    ],
+    "mentions": []
+  },
+  {
+    "id": "doi:10.1057/9780230227323_7",
+    "title": "Using the Internet as a Health Intermediary: Providing Information and Services to Marginalized Sexual Communities",
+    "doi": "10.1057/9780230227323_7",
+    "url": "https://doi.org/10.1057/9780230227323_7",
+    "year": 2008,
+    "workType": "book-chapter",
+    "issuingOrganization": "Palgrave Macmillan",
+    "sources": [
+      "OpenAlex"
+    ],
+    "theme": "digital society",
+    "uses": [
+      {
+        "program": "CIUS",
+        "precision": "exact_cycles",
+        "cycles": [
+          "2005"
+        ],
+        "cycleText": "2005",
+        "evidenceLocation": "Abstract"
+      }
+    ],
+    "mentions": []
+  },
+  {
     "id": "doi:10.1080/00332747.2025.2528528",
     "title": "The Mediating and Moderating Role of Sleep Disturbance Between Chronic Pain and Psychological Distress: Evidence from Canadian Community Health Survey",
     "doi": "10.1080/00332747.2025.2528528",
@@ -960,6 +1363,68 @@
         "precision": "program_only",
         "cycles": [],
         "cycleText": "",
+        "evidenceLocation": "Abstract"
+      }
+    ],
+    "mentions": []
+  },
+  {
+    "id": "doi:10.1080/00343400601120205",
+    "title": "Forecasting Regional Employment with Shift–Share and ARIMA Modelling",
+    "doi": "10.1080/00343400601120205",
+    "url": "https://doi.org/10.1080/00343400601120205",
+    "year": 2007,
+    "workType": "article",
+    "issuingOrganization": "Routledge",
+    "sources": [
+      "OpenAlex"
+    ],
+    "theme": "other",
+    "uses": [
+      {
+        "program": "LFS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Abstract"
+      },
+      {
+        "program": "LFS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Abstract"
+      },
+      {
+        "program": "LFS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Abstract"
+      }
+    ],
+    "mentions": []
+  },
+  {
+    "id": "doi:10.1080/00343409512331349103",
+    "title": "Male Joblessness and Job Search: Regional Perspectives in the UK, 1981–1993",
+    "doi": "10.1080/00343409512331349103",
+    "url": "https://doi.org/10.1080/00343409512331349103",
+    "year": 1995,
+    "workType": "article",
+    "issuingOrganization": "Routledge",
+    "sources": [
+      "OpenAlex"
+    ],
+    "theme": "education",
+    "uses": [
+      {
+        "program": "LFS",
+        "precision": "exact_cycles",
+        "cycles": [
+          "1993"
+        ],
+        "cycleText": "1993",
         "evidenceLocation": "Abstract"
       }
     ],
@@ -989,6 +1454,77 @@
     "mentions": []
   },
   {
+    "id": "doi:10.1080/07474939808800425",
+    "title": "A distribution-free test for deprivation dominance",
+    "doi": "10.1080/07474939808800425",
+    "url": "https://doi.org/10.1080/07474939808800425",
+    "year": 1998,
+    "workType": "article",
+    "issuingOrganization": "Taylor & Francis",
+    "sources": [
+      "OpenAlex"
+    ],
+    "theme": "income and inequality",
+    "uses": [
+      {
+        "program": "CIS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Abstract"
+      }
+    ],
+    "mentions": []
+  },
+  {
+    "id": "doi:10.1080/09638288.2022.2076938",
+    "title": "Hearing disability and employment: a population-based analysis using the 2017 Canadian survey on disability",
+    "doi": "10.1080/09638288.2022.2076938",
+    "url": "https://doi.org/10.1080/09638288.2022.2076938",
+    "year": 2022,
+    "workType": "article",
+    "issuingOrganization": "Informa",
+    "sources": [
+      "OpenAlex"
+    ],
+    "theme": "digital society",
+    "uses": [
+      {
+        "program": "CSD",
+        "precision": "exact_cycles",
+        "cycles": [
+          "2017"
+        ],
+        "cycleText": "2017",
+        "evidenceLocation": "Abstract"
+      }
+    ],
+    "mentions": []
+  },
+  {
+    "id": "doi:10.1080/10168737.2010.525983",
+    "title": "Evaluation of the Underground Economy in Quebec: A Microeconomic Approach",
+    "doi": "10.1080/10168737.2010.525983",
+    "url": "https://doi.org/10.1080/10168737.2010.525983",
+    "year": 2010,
+    "workType": "article",
+    "issuingOrganization": "Taylor & Francis",
+    "sources": [
+      "OpenAlex"
+    ],
+    "theme": "digital society",
+    "uses": [
+      {
+        "program": "SHS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Abstract"
+      }
+    ],
+    "mentions": []
+  },
+  {
     "id": "doi:10.1080/10242694.2025.2487201",
     "title": "Origin country conflict and immigrant physical health",
     "doi": "10.1080/10242694.2025.2487201",
@@ -1003,6 +1539,52 @@
     "uses": [
       {
         "program": "CCHS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Abstract"
+      }
+    ],
+    "mentions": []
+  },
+  {
+    "id": "doi:10.1080/10796126.2015.1089147",
+    "title": "Measuring poverty and inequality in northern Canada",
+    "doi": "10.1080/10796126.2015.1089147",
+    "url": "https://doi.org/10.1080/10796126.2015.1089147",
+    "year": 2015,
+    "workType": "article",
+    "issuingOrganization": "Routledge",
+    "sources": [
+      "OpenAlex"
+    ],
+    "theme": "income and inequality",
+    "uses": [
+      {
+        "program": "SHS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Abstract"
+      }
+    ],
+    "mentions": []
+  },
+  {
+    "id": "doi:10.1080/10875549.2022.2071663",
+    "title": "Working Hard or Hardly Working? Who are Canada’s Working Poor?",
+    "doi": "10.1080/10875549.2022.2071663",
+    "url": "https://doi.org/10.1080/10875549.2022.2071663",
+    "year": 2022,
+    "workType": "article",
+    "issuingOrganization": "Taylor & Francis",
+    "sources": [
+      "OpenAlex"
+    ],
+    "theme": "families",
+    "uses": [
+      {
+        "program": "CIS",
         "precision": "program_only",
         "cycles": [],
         "cycleText": "",
@@ -1083,6 +1665,56 @@
     "mentions": []
   },
   {
+    "id": "doi:10.1080/17483107.2020.1741703",
+    "title": "Assistive technology use and unmet need in Canada",
+    "doi": "10.1080/17483107.2020.1741703",
+    "url": "https://doi.org/10.1080/17483107.2020.1741703",
+    "year": 2020,
+    "workType": "article",
+    "issuingOrganization": "Taylor & Francis",
+    "sources": [
+      "OpenAlex"
+    ],
+    "theme": "digital society",
+    "uses": [
+      {
+        "program": "CSD",
+        "precision": "exact_cycles",
+        "cycles": [
+          "2012"
+        ],
+        "cycleText": "2012",
+        "evidenceLocation": "Abstract"
+      }
+    ],
+    "mentions": []
+  },
+  {
+    "id": "doi:10.1080/20932685.2013.878108",
+    "title": "Clothing purchase behavior and the Canadian household life cycle",
+    "doi": "10.1080/20932685.2013.878108",
+    "url": "https://doi.org/10.1080/20932685.2013.878108",
+    "year": 2014,
+    "workType": "article",
+    "issuingOrganization": "Taylor & Francis",
+    "sources": [
+      "OpenAlex"
+    ],
+    "theme": "families",
+    "uses": [
+      {
+        "program": "SHS",
+        "precision": "exact_cycles",
+        "cycles": [
+          "2009"
+        ],
+        "cycleText": "2009",
+        "evidenceLocation": "Abstract"
+      }
+    ],
+    "mentions": []
+  },
+  {
     "id": "doi:10.1093/bjc/azag080",
     "title": "Victimization, discrimination, community belonging and confidence in the police among young adults in Canada: A trauma-informed analysis",
     "doi": "10.1093/bjc/azag080",
@@ -1154,6 +1786,31 @@
     "mentions": []
   },
   {
+    "id": "doi:10.1093/ptj/pzy038",
+    "title": "Walking Aid Use in Canada: Prevalence and Demographic Characteristics Among Community-Dwelling Users",
+    "doi": "10.1093/ptj/pzy038",
+    "url": "https://doi.org/10.1093/ptj/pzy038",
+    "year": 2018,
+    "workType": "article",
+    "issuingOrganization": "Oxford University Press",
+    "sources": [
+      "OpenAlex"
+    ],
+    "theme": "digital society",
+    "uses": [
+      {
+        "program": "CSD",
+        "precision": "exact_cycles",
+        "cycles": [
+          "2012"
+        ],
+        "cycleText": "2012",
+        "evidenceLocation": "Abstract"
+      }
+    ],
+    "mentions": []
+  },
+  {
     "id": "doi:10.1093/sw/swaf041",
     "title": "The Moderating Role of Perceived Community Belonging in the Association between Food Insecurity and Health and Well-Being",
     "doi": "10.1093/sw/swaf041",
@@ -1171,6 +1828,31 @@
         "precision": "range",
         "cycles": [],
         "cycleText": "2017-2018",
+        "evidenceLocation": "Abstract"
+      }
+    ],
+    "mentions": []
+  },
+  {
+    "id": "doi:10.1096/fasebj.29.1_supplement.261.6",
+    "title": "Shelter Expenditures Increase Vulnerability to Household Food Insecurity",
+    "doi": "10.1096/fasebj.29.1_supplement.261.6",
+    "url": "https://doi.org/10.1096/fasebj.29.1_supplement.261.6",
+    "year": 2015,
+    "workType": "article",
+    "issuingOrganization": "Wiley",
+    "sources": [
+      "OpenAlex"
+    ],
+    "theme": "housing",
+    "uses": [
+      {
+        "program": "SHS",
+        "precision": "exact_cycles",
+        "cycles": [
+          "2010"
+        ],
+        "cycleText": "2010",
         "evidenceLocation": "Abstract"
       }
     ],
@@ -1327,6 +2009,29 @@
     "mentions": []
   },
   {
+    "id": "doi:10.1108/edi-09-2021-0239",
+    "title": "Earnings of persons with disabilities: Who earns more (less) from entrepreneurial pursuit?",
+    "doi": "10.1108/edi-09-2021-0239",
+    "url": "https://doi.org/10.1108/edi-09-2021-0239",
+    "year": 2022,
+    "workType": "article",
+    "issuingOrganization": "Emerald Publishing Limited",
+    "sources": [
+      "OpenAlex"
+    ],
+    "theme": "labour",
+    "uses": [
+      {
+        "program": "CSD",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Abstract"
+      }
+    ],
+    "mentions": []
+  },
+  {
     "id": "doi:10.1109/wts.2015.7117263",
     "title": "Mobile device access: Effect on online purchases",
     "doi": "10.1109/wts.2015.7117263",
@@ -1341,6 +2046,82 @@
     "uses": [
       {
         "program": "CIUS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Abstract"
+      }
+    ],
+    "mentions": []
+  },
+  {
+    "id": "doi:10.1111/cag.12750",
+    "title": "Quantifying the prevalence of energy poverty across Canada: Estimating domestic energy burden using an expenditures approach",
+    "doi": "10.1111/cag.12750",
+    "url": "https://doi.org/10.1111/cag.12750",
+    "year": 2022,
+    "workType": "article",
+    "issuingOrganization": "Wiley",
+    "sources": [
+      "OpenAlex"
+    ],
+    "theme": "income and inequality",
+    "uses": [
+      {
+        "program": "SHS",
+        "precision": "exact_cycles",
+        "cycles": [
+          "2016"
+        ],
+        "cycleText": "2016",
+        "evidenceLocation": "Abstract"
+      }
+    ],
+    "mentions": []
+  },
+  {
+    "id": "doi:10.1111/caje.12143",
+    "title": "Consumption inequality in Canada, 1997 to 2009",
+    "doi": "10.1111/caje.12143",
+    "url": "https://doi.org/10.1111/caje.12143",
+    "year": 2015,
+    "workType": "article",
+    "issuingOrganization": "Wiley",
+    "sources": [
+      "OpenAlex"
+    ],
+    "theme": "housing",
+    "uses": [
+      {
+        "program": "SHS",
+        "precision": "exact_cycles",
+        "cycles": [
+          "1997",
+          "2009",
+          "1997",
+          "2006"
+        ],
+        "cycleText": "1997, 2009, 1997, 2006",
+        "evidenceLocation": "Abstract"
+      }
+    ],
+    "mentions": []
+  },
+  {
+    "id": "doi:10.1111/caje.12546",
+    "title": "The heterogeneous effects of COVID‐19 on Canadian household consumption, debt and savings",
+    "doi": "10.1111/caje.12546",
+    "url": "https://doi.org/10.1111/caje.12546",
+    "year": 2022,
+    "workType": "article",
+    "issuingOrganization": "Wiley",
+    "sources": [
+      "OpenAlex"
+    ],
+    "theme": "labour",
+    "uses": [
+      {
+        "program": "SHS",
         "precision": "program_only",
         "cycles": [],
         "cycleText": "",
@@ -1516,6 +2297,31 @@
     "mentions": []
   },
   {
+    "id": "doi:10.1139/apnm-2020-0760",
+    "title": "Protein consumption in Canadian habitual diets: usual intake, inadequacy, and the contribution of animal- and plant-based foods to nutrient intakes",
+    "doi": "10.1139/apnm-2020-0760",
+    "url": "https://doi.org/10.1139/apnm-2020-0760",
+    "year": 2020,
+    "workType": "article",
+    "issuingOrganization": "NRC Research Press",
+    "sources": [
+      "OpenAlex"
+    ],
+    "theme": "health",
+    "uses": [
+      {
+        "program": "CCHS",
+        "precision": "exact_cycles",
+        "cycles": [
+          "2015"
+        ],
+        "cycleText": "2015",
+        "evidenceLocation": "Abstract"
+      }
+    ],
+    "mentions": []
+  },
+  {
     "id": "doi:10.1139/apnm-2024-0027",
     "title": "Nutrient intakes of Canadian children and adolescents at school by meal occasion and location of food preparation",
     "doi": "10.1139/apnm-2024-0027",
@@ -1613,6 +2419,29 @@
           "2017"
         ],
         "cycleText": "2007, 2017",
+        "evidenceLocation": "Abstract"
+      }
+    ],
+    "mentions": []
+  },
+  {
+    "id": "doi:10.1142/s2737436x22500029",
+    "title": "A Renewed Study on Charitable Giving Among Canadians",
+    "doi": "10.1142/s2737436x22500029",
+    "url": "https://doi.org/10.1142/s2737436x22500029",
+    "year": 2022,
+    "workType": "article",
+    "issuingOrganization": "Journal of Economics Management and Religion",
+    "sources": [
+      "OpenAlex"
+    ],
+    "theme": "digital society",
+    "uses": [
+      {
+        "program": "SHS",
+        "precision": "range",
+        "cycles": [],
+        "cycleText": "2012 to 2015",
         "evidenceLocation": "Abstract"
       }
     ],
@@ -1792,6 +2621,31 @@
     "mentions": []
   },
   {
+    "id": "doi:10.1186/s12889-023-15756-y",
+    "title": "Prevalence and sociodemographic correlates of food insecurity among post-secondary students and non-students of similar age in Canada",
+    "doi": "10.1186/s12889-023-15756-y",
+    "url": "https://doi.org/10.1186/s12889-023-15756-y",
+    "year": 2023,
+    "workType": "article",
+    "issuingOrganization": "BioMed Central",
+    "sources": [
+      "OpenAlex"
+    ],
+    "theme": "education",
+    "uses": [
+      {
+        "program": "CIS",
+        "precision": "exact_cycles",
+        "cycles": [
+          "2018"
+        ],
+        "cycleText": "2018",
+        "evidenceLocation": "Abstract"
+      }
+    ],
+    "mentions": []
+  },
+  {
     "id": "doi:10.1186/s12889-026-27408-y",
     "title": "Objective and perceived neighbourhood walkability: population-average associations with transportation and recreational physical activity in urban-dwelling Canadian adults",
     "doi": "10.1186/s12889-026-27408-y",
@@ -1834,6 +2688,31 @@
           "2014"
         ],
         "cycleText": "2014",
+        "evidenceLocation": "Abstract"
+      }
+    ],
+    "mentions": []
+  },
+  {
+    "id": "doi:10.1186/s12939-019-1114-z",
+    "title": "Homeownership status and risk of food insecurity: examining the role of housing debt, housing expenditure and housing asset using a cross-sectional population-based survey of Canadian households",
+    "doi": "10.1186/s12939-019-1114-z",
+    "url": "https://doi.org/10.1186/s12939-019-1114-z",
+    "year": 2020,
+    "workType": "article",
+    "issuingOrganization": "BioMed Central",
+    "sources": [
+      "OpenAlex"
+    ],
+    "theme": "housing",
+    "uses": [
+      {
+        "program": "SHS",
+        "precision": "exact_cycles",
+        "cycles": [
+          "2010"
+        ],
+        "cycleText": "2010",
         "evidenceLocation": "Abstract"
       }
     ],
@@ -2036,6 +2915,29 @@
     "mentions": []
   },
   {
+    "id": "doi:10.1332/174426421x16146827140135",
+    "title": "Drawing hidden figures of disability: youth and adults with disabilities in Canada",
+    "doi": "10.1332/174426421x16146827140135",
+    "url": "https://doi.org/10.1332/174426421x16146827140135",
+    "year": 2021,
+    "workType": "article",
+    "issuingOrganization": "Policy Press",
+    "sources": [
+      "OpenAlex"
+    ],
+    "theme": "health",
+    "uses": [
+      {
+        "program": "CSD",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Abstract"
+      }
+    ],
+    "mentions": []
+  },
+  {
     "id": "doi:10.1371/journal.pgph.0006540",
     "title": "The association between digital communication tool use and perceived mental health among older adults in Canada",
     "doi": "10.1371/journal.pgph.0006540",
@@ -2110,6 +3012,31 @@
         "evidenceLocation": "Conclusion"
       }
     ]
+  },
+  {
+    "id": "doi:10.1371/journal.pone.0260160",
+    "title": "Employment outcomes and experiences of people with seeing disability in Canada: An analysis of the Canadian Survey on Disability 2017",
+    "doi": "10.1371/journal.pone.0260160",
+    "url": "https://doi.org/10.1371/journal.pone.0260160",
+    "year": 2021,
+    "workType": "article",
+    "issuingOrganization": "Public Library of Science",
+    "sources": [
+      "OpenAlex"
+    ],
+    "theme": "labour",
+    "uses": [
+      {
+        "program": "CSD",
+        "precision": "exact_cycles",
+        "cycles": [
+          "2017"
+        ],
+        "cycleText": "2017",
+        "evidenceLocation": "Abstract"
+      }
+    ],
+    "mentions": []
   },
   {
     "id": "doi:10.1371/journal.pone.0331973",
@@ -2229,6 +3156,56 @@
     "mentions": []
   },
   {
+    "id": "doi:10.14738/abr.1402.20035",
+    "title": "Labour Market Outcomes in Rural Areas and Small Towns in Ontario, Canada",
+    "doi": "10.14738/abr.1402.20035",
+    "url": "https://doi.org/10.14738/abr.1402.20035",
+    "year": 2026,
+    "workType": "article",
+    "issuingOrganization": "Services for Science and Education",
+    "sources": [
+      "OpenAlex"
+    ],
+    "theme": "labour",
+    "uses": [
+      {
+        "program": "CIS",
+        "precision": "exact_cycles",
+        "cycles": [
+          "2020"
+        ],
+        "cycleText": "2020",
+        "evidenceLocation": "Abstract"
+      }
+    ],
+    "mentions": []
+  },
+  {
+    "id": "doi:10.14738/abr.1408.12137",
+    "title": "Determinants of Part-Time Employment in Rural Areas and Small Towns in Ontario, Canada",
+    "doi": "10.14738/abr.1408.12137",
+    "url": "https://doi.org/10.14738/abr.1408.12137",
+    "year": 2026,
+    "workType": "article",
+    "issuingOrganization": "Services for Science and Education",
+    "sources": [
+      "OpenAlex"
+    ],
+    "theme": "labour",
+    "uses": [
+      {
+        "program": "CIS",
+        "precision": "exact_cycles",
+        "cycles": [
+          "2020"
+        ],
+        "cycleText": "2020",
+        "evidenceLocation": "Abstract"
+      }
+    ],
+    "mentions": []
+  },
+  {
     "id": "doi:10.1503/cmaj.170317",
     "title": "Age- and sex-specific Canadian utility norms, based on the 2013–2014 Canadian Community Health Survey",
     "doi": "10.1503/cmaj.170317",
@@ -2246,6 +3223,31 @@
         "precision": "range",
         "cycles": [],
         "cycleText": "2013-2014",
+        "evidenceLocation": "Abstract"
+      }
+    ],
+    "mentions": []
+  },
+  {
+    "id": "doi:10.1503/cmaj.190597",
+    "title": "Neurosciences, Rehabilitation and Vision Strategic Clinical Network",
+    "doi": "10.1503/cmaj.190597",
+    "url": "https://doi.org/10.1503/cmaj.190597",
+    "year": 2019,
+    "workType": "article",
+    "issuingOrganization": "Canadian Medical Association",
+    "sources": [
+      "OpenAlex"
+    ],
+    "theme": "health",
+    "uses": [
+      {
+        "program": "CSD",
+        "precision": "exact_cycles",
+        "cycles": [
+          "2017"
+        ],
+        "cycleText": "2017",
         "evidenceLocation": "Abstract"
       }
     ],
@@ -2355,6 +3357,217 @@
     "mentions": []
   },
   {
+    "id": "doi:10.24095/hpcdp.28.3.02f",
+    "title": "Une nouvelle mesure, fondée sur la population, du fardeau économique de la maladie mentale au Canada",
+    "doi": "10.24095/hpcdp.28.3.02f",
+    "url": "https://doi.org/10.24095/hpcdp.28.3.02f",
+    "year": 2008,
+    "workType": "article",
+    "issuingOrganization": "Minister of Health",
+    "sources": [
+      "OpenAlex"
+    ],
+    "theme": "digital society",
+    "uses": [
+      {
+        "program": "CCHS",
+        "precision": "exact_cycles",
+        "cycles": [
+          "2003"
+        ],
+        "cycleText": "2003",
+        "evidenceLocation": "Abstract"
+      }
+    ],
+    "mentions": []
+  },
+  {
+    "id": "doi:10.24095/hpcdp.37.4.03f",
+    "title": "Mesurer la santé mentale positive au Canada : validation des concepts du Continuum de santé mentale – Questionnaire abrégé",
+    "doi": "10.24095/hpcdp.37.4.03f",
+    "url": "https://doi.org/10.24095/hpcdp.37.4.03f",
+    "year": 2017,
+    "workType": "article",
+    "issuingOrganization": "Public Health Agency of Canada",
+    "sources": [
+      "OpenAlex"
+    ],
+    "theme": "digital society",
+    "uses": [
+      {
+        "program": "CCHS",
+        "precision": "exact_cycles",
+        "cycles": [
+          "2012"
+        ],
+        "cycleText": "2012",
+        "evidenceLocation": "Abstract"
+      }
+    ],
+    "mentions": []
+  },
+  {
+    "id": "doi:10.24095/hpcdp.38.10.05",
+    "title": "At-a-glance - How Healthy are Canadians? A brief update",
+    "doi": "10.24095/hpcdp.38.10.05",
+    "url": "https://doi.org/10.24095/hpcdp.38.10.05",
+    "year": 2018,
+    "workType": "article",
+    "issuingOrganization": "Public Health Agency of Canada",
+    "sources": [
+      "OpenAlex"
+    ],
+    "theme": "health",
+    "uses": [
+      {
+        "program": "CCHS",
+        "precision": "exact_cycles",
+        "cycles": [
+          "2016"
+        ],
+        "cycleText": "2016",
+        "evidenceLocation": "Abstract"
+      }
+    ],
+    "mentions": []
+  },
+  {
+    "id": "doi:10.24095/hpcdp.39.1.02",
+    "title": "Exploring and visualizing the small-area-level socioeconomic factors, alcohol availability and built environment influences of alcohol expenditure for the City of Toronto: a spatial analysis approach",
+    "doi": "10.24095/hpcdp.39.1.02",
+    "url": "https://doi.org/10.24095/hpcdp.39.1.02",
+    "year": 2019,
+    "workType": "article",
+    "issuingOrganization": "Public Health Agency of Canada",
+    "sources": [
+      "OpenAlex"
+    ],
+    "theme": "digital society",
+    "uses": [
+      {
+        "program": "SHS",
+        "precision": "exact_cycles",
+        "cycles": [
+          "2010"
+        ],
+        "cycleText": "2010",
+        "evidenceLocation": "Abstract"
+      }
+    ],
+    "mentions": []
+  },
+  {
+    "id": "doi:10.24095/hpcdp.39.10.02",
+    "title": "At-a-glance - Canadian Chronic Disease Indicators, 2019 – Updating the data and taking into account mental health",
+    "doi": "10.24095/hpcdp.39.10.02",
+    "url": "https://doi.org/10.24095/hpcdp.39.10.02",
+    "year": 2019,
+    "workType": "article",
+    "issuingOrganization": "Public Health Agency of Canada",
+    "sources": [
+      "OpenAlex"
+    ],
+    "theme": "health",
+    "uses": [
+      {
+        "program": "CCHS",
+        "precision": "exact_cycles",
+        "cycles": [
+          "2017"
+        ],
+        "cycleText": "2017",
+        "evidenceLocation": "Abstract"
+      }
+    ],
+    "mentions": []
+  },
+  {
+    "id": "doi:10.24095/hpcdp.41.11.05f",
+    "title": "Santé mentale positive et changement perçu de la santé mentale chez les adultes au Canada pendant la deuxième vague de la pandémie de COVID-19",
+    "doi": "10.24095/hpcdp.41.11.05f",
+    "url": "https://doi.org/10.24095/hpcdp.41.11.05f",
+    "year": 2021,
+    "workType": "article",
+    "issuingOrganization": "Public Health Agency of Canada",
+    "sources": [
+      "OpenAlex"
+    ],
+    "theme": "health",
+    "uses": [
+      {
+        "program": "CCHS",
+        "precision": "exact_cycles",
+        "cycles": [
+          "2020",
+          "2019",
+          "2020",
+          "2019"
+        ],
+        "cycleText": "2020, 2019, 2020, 2019",
+        "evidenceLocation": "Abstract"
+      }
+    ],
+    "mentions": []
+  },
+  {
+    "id": "doi:10.24095/hpcdp.41.11.06f",
+    "title": "Idées suicidaires au Canada pendant la pandémie de COVID-19",
+    "doi": "10.24095/hpcdp.41.11.06f",
+    "url": "https://doi.org/10.24095/hpcdp.41.11.06f",
+    "year": 2021,
+    "workType": "article",
+    "issuingOrganization": "Public Health Agency of Canada",
+    "sources": [
+      "OpenAlex"
+    ],
+    "theme": "health",
+    "uses": [
+      {
+        "program": "CCHS",
+        "precision": "exact_cycles",
+        "cycles": [
+          "2020",
+          "2019",
+          "2020",
+          "2019"
+        ],
+        "cycleText": "2020, 2019, 2020, 2019",
+        "evidenceLocation": "Abstract"
+      }
+    ],
+    "mentions": []
+  },
+  {
+    "id": "doi:10.24095/hpcdp.42.10.04",
+    "title": "Moment of reckoning for household food insecurity monitoring in Canada",
+    "doi": "10.24095/hpcdp.42.10.04",
+    "url": "https://doi.org/10.24095/hpcdp.42.10.04",
+    "year": 2022,
+    "workType": "article",
+    "issuingOrganization": "Public Health Agency of Canada",
+    "sources": [
+      "OpenAlex"
+    ],
+    "theme": "health",
+    "uses": [
+      {
+        "program": "CCHS",
+        "precision": "range",
+        "cycles": [],
+        "cycleText": "2017 to 2018",
+        "evidenceLocation": "Abstract"
+      },
+      {
+        "program": "CIS",
+        "precision": "range",
+        "cycles": [],
+        "cycleText": "2017 to 2018",
+        "evidenceLocation": "Abstract"
+      }
+    ],
+    "mentions": []
+  },
+  {
     "id": "doi:10.24095/hpcdp.45.5.03",
     "title": "The contribution of active transportation to population physical activity levels",
     "doi": "10.24095/hpcdp.45.5.03",
@@ -2451,6 +3664,31 @@
     "mentions": []
   },
   {
+    "id": "doi:10.2522/ptj.20150574",
+    "title": "Prevalence of Wheelchair and Scooter Use Among Community-Dwelling Canadians",
+    "doi": "10.2522/ptj.20150574",
+    "url": "https://doi.org/10.2522/ptj.20150574",
+    "year": 2016,
+    "workType": "article",
+    "issuingOrganization": "Oxford University Press",
+    "sources": [
+      "OpenAlex"
+    ],
+    "theme": "health",
+    "uses": [
+      {
+        "program": "CSD",
+        "precision": "exact_cycles",
+        "cycles": [
+          "2012"
+        ],
+        "cycleText": "2012",
+        "evidenceLocation": "Abstract"
+      }
+    ],
+    "mentions": []
+  },
+  {
     "id": "doi:10.26187/deakin.32685330",
     "title": "Remote work intensity and wages: evidence from a representative canadian labour force survey",
     "doi": "10.26187/deakin.32685330",
@@ -2494,6 +3732,80 @@
           "2021"
         ],
         "cycleText": "2023, 2021",
+        "evidenceLocation": "Abstract"
+      }
+    ],
+    "mentions": []
+  },
+  {
+    "id": "doi:10.3138/cpp.2019-031",
+    "title": "Using an Engel Curve Approach to Infer Cost of Living Experienced by Canadian Households",
+    "doi": "10.3138/cpp.2019-031",
+    "url": "https://doi.org/10.3138/cpp.2019-031",
+    "year": 2020,
+    "workType": "article",
+    "issuingOrganization": "University of Toronto Press",
+    "sources": [
+      "OpenAlex"
+    ],
+    "theme": "income and inequality",
+    "uses": [
+      {
+        "program": "SHS",
+        "precision": "exact_cycles",
+        "cycles": [
+          "1997",
+          "2015"
+        ],
+        "cycleText": "1997, 2015",
+        "evidenceLocation": "Abstract"
+      }
+    ],
+    "mentions": []
+  },
+  {
+    "id": "doi:10.3138/cpp.2020-020",
+    "title": "Une évaluation de l’effet du crédit d’impôt pour prolongation de carrière sur l’emploi et le taux d’activité des travailleurs de 60 ans et plus au Québec",
+    "doi": "10.3138/cpp.2020-020",
+    "url": "https://doi.org/10.3138/cpp.2020-020",
+    "year": 2021,
+    "workType": "article",
+    "issuingOrganization": "University of Toronto Press",
+    "sources": [
+      "OpenAlex"
+    ],
+    "theme": "digital society",
+    "uses": [
+      {
+        "program": "LFS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Abstract"
+      }
+    ],
+    "mentions": []
+  },
+  {
+    "id": "doi:10.3138/cpp.2020-077",
+    "title": "COVID-19 and the Gender Employment Gap among Parents of Young Children",
+    "doi": "10.3138/cpp.2020-077",
+    "url": "https://doi.org/10.3138/cpp.2020-077",
+    "year": 2020,
+    "workType": "article",
+    "issuingOrganization": "University of Toronto Press",
+    "sources": [
+      "OpenAlex"
+    ],
+    "theme": "labour",
+    "uses": [
+      {
+        "program": "LFS",
+        "precision": "exact_cycles",
+        "cycles": [
+          "2020"
+        ],
+        "cycleText": "2020",
         "evidenceLocation": "Abstract"
       }
     ],
@@ -2642,6 +3954,54 @@
     "mentions": []
   },
   {
+    "id": "doi:10.33137/cpoj.v1i2.32027",
+    "title": "RESEARCH PRODUCTIVITY TRENDS IN PROSTHETICS AND ORTHOTICS IN CANADA",
+    "doi": "10.33137/cpoj.v1i2.32027",
+    "url": "https://doi.org/10.33137/cpoj.v1i2.32027",
+    "year": 2018,
+    "workType": "article",
+    "issuingOrganization": "Canadian Prosthetics & Orthotics Journal",
+    "sources": [
+      "OpenAlex"
+    ],
+    "theme": "digital society",
+    "uses": [
+      {
+        "program": "CSD",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Abstract"
+      }
+    ],
+    "mentions": []
+  },
+  {
+    "id": "doi:10.33137/utjph.v1i1.33825",
+    "title": "Developmental Disorders in Canada",
+    "doi": "10.33137/utjph.v1i1.33825",
+    "url": "https://doi.org/10.33137/utjph.v1i1.33825",
+    "year": 2020,
+    "workType": "article",
+    "issuingOrganization": "University of Toronto Journal of Public Health",
+    "sources": [
+      "OpenAlex"
+    ],
+    "theme": "health",
+    "uses": [
+      {
+        "program": "CSD",
+        "precision": "exact_cycles",
+        "cycles": [
+          "2017"
+        ],
+        "cycleText": "2017",
+        "evidenceLocation": "Abstract"
+      }
+    ],
+    "mentions": []
+  },
+  {
     "id": "doi:10.3386/w35432",
     "title": "The Effect of School Disruptions on Parental Labor Supply: Evidence from Canadian Panel Data",
     "doi": "10.3386/w35432",
@@ -2684,6 +4044,29 @@
           "2017"
         ],
         "cycleText": "2017",
+        "evidenceLocation": "Abstract"
+      }
+    ],
+    "mentions": []
+  },
+  {
+    "id": "doi:10.3390/curroncol29070359",
+    "title": "The Burden of Health-Related Out-of-Pocket Cancer Costs in Canada: A Case-Control Study Using Linked Data",
+    "doi": "10.3390/curroncol29070359",
+    "url": "https://doi.org/10.3390/curroncol29070359",
+    "year": 2022,
+    "workType": "article",
+    "issuingOrganization": "Multidisciplinary Digital Publishing Institute",
+    "sources": [
+      "OpenAlex"
+    ],
+    "theme": "health",
+    "uses": [
+      {
+        "program": "SHS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
         "evidenceLocation": "Abstract"
       }
     ],
@@ -2761,6 +4144,69 @@
     "mentions": []
   },
   {
+    "id": "doi:10.34196/ijm.00121",
+    "title": "Creating a synthetic database for use in microsimulation models to investigate alternative health care financing strategies in Canada",
+    "doi": "10.34196/ijm.00121",
+    "url": "https://doi.org/10.34196/ijm.00121",
+    "year": 2014,
+    "workType": "article",
+    "issuingOrganization": null,
+    "sources": [
+      "OpenAlex"
+    ],
+    "theme": "health",
+    "uses": [
+      {
+        "program": "CCHS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Abstract"
+      },
+      {
+        "program": "CHMS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Abstract"
+      },
+      {
+        "program": "SHS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Abstract"
+      }
+    ],
+    "mentions": []
+  },
+  {
+    "id": "doi:10.34989/swp-2015-22",
+    "title": "Sheltered Income: Estimating Income Under-Reporting in Canada, 1998 and 2004",
+    "doi": "10.34989/swp-2015-22",
+    "url": "https://www.bankofcanada.ca/wp-content/uploads/2015/06/wp2015-22.pdf",
+    "year": 2021,
+    "workType": "preprint",
+    "issuingOrganization": "Federal Reserve Bank of St. Louis",
+    "sources": [
+      "OpenAlex"
+    ],
+    "theme": "digital society",
+    "uses": [
+      {
+        "program": "SHS",
+        "precision": "exact_cycles",
+        "cycles": [
+          "1998",
+          "2004"
+        ],
+        "cycleText": "1998, 2004",
+        "evidenceLocation": "Abstract"
+      }
+    ],
+    "mentions": []
+  },
+  {
     "id": "doi:10.34989/tr-103",
     "title": "2013 Methods-of-Payment Survey: Sample Calibration Analysis",
     "doi": "10.34989/tr-103",
@@ -2787,10 +4233,129 @@
     "mentions": []
   },
   {
+    "id": "doi:10.3917/esp.148.0017",
+    "title": "Le logement, facteur de sécurisation pour des classes moyennes fragilisées ?",
+    "doi": "10.3917/esp.148.0017",
+    "url": "https://doi.org/10.3917/esp.148.0017",
+    "year": 2012,
+    "workType": "article",
+    "issuingOrganization": "Éditions Érès",
+    "sources": [
+      "OpenAlex"
+    ],
+    "theme": "digital society",
+    "uses": [
+      {
+        "program": "LFS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Abstract"
+      }
+    ],
+    "mentions": []
+  },
+  {
+    "id": "doi:10.3917/machr1.073.0078",
+    "title": "Morphologie sociale de la banlieue-est de Beyrouth",
+    "doi": "10.3917/machr1.073.0078",
+    "url": "https://doi.org/10.3917/machr1.073.0078",
+    "year": 1976,
+    "workType": "article",
+    "issuingOrganization": "Maghreb - Machrek",
+    "sources": [
+      "OpenAlex"
+    ],
+    "theme": "education",
+    "uses": [
+      {
+        "program": "LFS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Abstract"
+      }
+    ],
+    "mentions": []
+  },
+  {
+    "id": "doi:10.3934/publichealth.2014.2.84",
+    "title": "Mental Health Service Utilization among Students and Staff in 18 Months Following Dawson College Shooting",
+    "doi": "10.3934/publichealth.2014.2.84",
+    "url": "https://doi.org/10.3934/publichealth.2014.2.84",
+    "year": 2014,
+    "workType": "article",
+    "issuingOrganization": "AIMS Press",
+    "sources": [
+      "OpenAlex"
+    ],
+    "theme": "education",
+    "uses": [
+      {
+        "program": "CCHS",
+        "precision": "exact_cycles",
+        "cycles": [
+          "2002"
+        ],
+        "cycleText": "2002",
+        "evidenceLocation": "Abstract"
+      }
+    ],
+    "mentions": []
+  },
+  {
+    "id": "doi:10.4000/12k6s",
+    "title": "Atlas sur les migrations internationales",
+    "doi": "10.4000/12k6s",
+    "url": "https://doi.org/10.4000/12k6s",
+    "year": 2009,
+    "workType": "article",
+    "issuingOrganization": "e-Migrinter",
+    "sources": [
+      "OpenAlex"
+    ],
+    "theme": "digital society",
+    "uses": [
+      {
+        "program": "CIS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Abstract"
+      }
+    ],
+    "mentions": []
+  },
+  {
     "id": "doi:10.48550/arxiv.2301.07855",
     "title": "Digital Divide: Evidence from the 2020 Canadian Internet Use Survey",
     "doi": "10.48550/arxiv.2301.07855",
     "url": "http://arxiv.org/pdf/2301.07855",
+    "year": 2023,
+    "workType": "preprint",
+    "issuingOrganization": "Federal Reserve Bank of St. Louis",
+    "sources": [
+      "OpenAlex"
+    ],
+    "theme": "digital society",
+    "uses": [
+      {
+        "program": "CIUS",
+        "precision": "exact_cycles",
+        "cycles": [
+          "2020"
+        ],
+        "cycleText": "2020",
+        "evidenceLocation": "Abstract"
+      }
+    ],
+    "mentions": []
+  },
+  {
+    "id": "doi:10.48550/arxiv.2304.07855",
+    "title": "Penalized Likelihood Inference with Survey Data",
+    "doi": "10.48550/arxiv.2304.07855",
+    "url": "http://arxiv.org/pdf/2304.07855",
     "year": 2023,
     "workType": "preprint",
     "issuingOrganization": "Federal Reserve Bank of St. Louis",
@@ -2835,6 +4400,29 @@
     "mentions": []
   },
   {
+    "id": "doi:10.52324/001c.12056",
+    "title": "Estimating the Regional Economic Impacts of First Nation Spending in Saskatchewan, Canada",
+    "doi": "10.52324/001c.12056",
+    "url": "https://doi.org/10.52324/001c.12056",
+    "year": 2020,
+    "workType": "article",
+    "issuingOrganization": "Southern Regional Science Association",
+    "sources": [
+      "OpenAlex"
+    ],
+    "theme": "labour",
+    "uses": [
+      {
+        "program": "SHS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Abstract"
+      }
+    ],
+    "mentions": []
+  },
+  {
     "id": "doi:10.5271/sjweh.4312",
     "title": "Large language model exposure and precarious occupations: Unpacking relationships in the Canadian labor force",
     "doi": "10.5271/sjweh.4312",
@@ -2849,6 +4437,60 @@
     "uses": [
       {
         "program": "LFS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Abstract"
+      }
+    ],
+    "mentions": []
+  },
+  {
+    "id": "doi:10.5465/ambpp.2017.17398abstract",
+    "title": "Demographic Structure, Intersecting Identities, and Employment Inequalities",
+    "doi": "10.5465/ambpp.2017.17398abstract",
+    "url": "https://doi.org/10.5465/ambpp.2017.17398abstract",
+    "year": 2017,
+    "workType": "conference-abstract",
+    "issuingOrganization": "Academy of Management",
+    "sources": [
+      "OpenAlex"
+    ],
+    "theme": "health",
+    "uses": [
+      {
+        "program": "CSD",
+        "precision": "exact_cycles",
+        "cycles": [
+          "2001",
+          "2006",
+          "2001",
+          "2006",
+          "2012",
+          "2011",
+          "2011"
+        ],
+        "cycleText": "2001, 2006, 2001, 2006, 2012, 2011, 2011",
+        "evidenceLocation": "Abstract"
+      }
+    ],
+    "mentions": []
+  },
+  {
+    "id": "doi:10.5465/ambpp.2021.11959abstract",
+    "title": "Persons with Disabilities: Who Earns More (Less) from Entrepreneurial Pursuit?",
+    "doi": "10.5465/ambpp.2021.11959abstract",
+    "url": "https://doi.org/10.5465/ambpp.2021.11959abstract",
+    "year": 2021,
+    "workType": "conference-abstract",
+    "issuingOrganization": "Academy of Management",
+    "sources": [
+      "OpenAlex"
+    ],
+    "theme": "labour",
+    "uses": [
+      {
+        "program": "CSD",
         "precision": "program_only",
         "cycles": [],
         "cycleText": "",
@@ -2886,6 +4528,144 @@
     "mentions": []
   },
   {
+    "id": "doi:10.5683/sp3/3rrcpz",
+    "title": "Enquête sur la population active, avril 2026 [Canada]",
+    "doi": "10.5683/sp3/3rrcpz",
+    "url": "https://doi.org/10.5683/sp3/3rrcpz",
+    "year": 2026,
+    "workType": "dataset",
+    "issuingOrganization": "Borealis",
+    "sources": [
+      "OpenAlex"
+    ],
+    "theme": "digital society",
+    "uses": [
+      {
+        "program": "LFS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Abstract"
+      }
+    ],
+    "mentions": []
+  },
+  {
+    "id": "doi:10.5683/sp3/czesyf",
+    "title": "Enquête sur la population active, février 2026 [Canada]",
+    "doi": "10.5683/sp3/czesyf",
+    "url": "https://doi.org/10.5683/sp3/czesyf",
+    "year": 2026,
+    "workType": "dataset",
+    "issuingOrganization": "Borealis",
+    "sources": [
+      "OpenAlex"
+    ],
+    "theme": "digital society",
+    "uses": [
+      {
+        "program": "LFS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Abstract"
+      }
+    ],
+    "mentions": []
+  },
+  {
+    "id": "doi:10.5683/sp3/gfm492",
+    "title": "Enquête sur la population active, mars 2026 [Canada]",
+    "doi": "10.5683/sp3/gfm492",
+    "url": "https://doi.org/10.5683/sp3/gfm492",
+    "year": 2026,
+    "workType": "dataset",
+    "issuingOrganization": "Borealis",
+    "sources": [
+      "OpenAlex"
+    ],
+    "theme": "digital society",
+    "uses": [
+      {
+        "program": "LFS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Abstract"
+      }
+    ],
+    "mentions": []
+  },
+  {
+    "id": "doi:10.5683/sp3/nphsrg",
+    "title": "Enquête sur la population active, novembre 2025 [Canada]",
+    "doi": "10.5683/sp3/nphsrg",
+    "url": "https://doi.org/10.5683/sp3/nphsrg",
+    "year": 2025,
+    "workType": "dataset",
+    "issuingOrganization": "Borealis",
+    "sources": [
+      "OpenAlex"
+    ],
+    "theme": "digital society",
+    "uses": [
+      {
+        "program": "LFS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Abstract"
+      }
+    ],
+    "mentions": []
+  },
+  {
+    "id": "doi:10.5683/sp3/pb6vjy",
+    "title": "Enquête sur la population active, janvier 2026 [Canada]",
+    "doi": "10.5683/sp3/pb6vjy",
+    "url": "https://doi.org/10.5683/sp3/pb6vjy",
+    "year": 2026,
+    "workType": "dataset",
+    "issuingOrganization": "Borealis",
+    "sources": [
+      "OpenAlex"
+    ],
+    "theme": "digital society",
+    "uses": [
+      {
+        "program": "LFS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Abstract"
+      }
+    ],
+    "mentions": []
+  },
+  {
+    "id": "doi:10.5683/sp3/qx6qun",
+    "title": "Enquête sur la population active, décembre 2025 [Canada]",
+    "doi": "10.5683/sp3/qx6qun",
+    "url": "https://doi.org/10.5683/sp3/qx6qun",
+    "year": 2026,
+    "workType": "dataset",
+    "issuingOrganization": "Borealis",
+    "sources": [
+      "OpenAlex"
+    ],
+    "theme": "digital society",
+    "uses": [
+      {
+        "program": "LFS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Abstract"
+      }
+    ],
+    "mentions": []
+  },
+  {
     "id": "doi:10.5683/sp3/uguyc3",
     "title": "Canadian Income Survey, 2022",
     "doi": "10.5683/sp3/uguyc3",
@@ -2897,6 +4677,121 @@
       "OpenAlex"
     ],
     "theme": "education",
+    "uses": [
+      {
+        "program": "LFS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Abstract"
+      }
+    ],
+    "mentions": []
+  },
+  {
+    "id": "doi:10.5683/sp3/xlc7le",
+    "title": "Enquête sur la population active, octobre 2025 [Canada]",
+    "doi": "10.5683/sp3/xlc7le",
+    "url": "https://doi.org/10.5683/sp3/xlc7le",
+    "year": 2025,
+    "workType": "dataset",
+    "issuingOrganization": "Borealis",
+    "sources": [
+      "OpenAlex"
+    ],
+    "theme": "digital society",
+    "uses": [
+      {
+        "program": "LFS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Abstract"
+      }
+    ],
+    "mentions": []
+  },
+  {
+    "id": "doi:10.5683/sp4/9eq3cw",
+    "title": "Survey of Household Spending, 2023 [Canada]",
+    "doi": "10.5683/sp4/9eq3cw",
+    "url": "https://doi.org/10.5683/sp4/9eq3cw",
+    "year": 2026,
+    "workType": "dataset",
+    "issuingOrganization": "Borealis",
+    "sources": [
+      "OpenAlex"
+    ],
+    "theme": "digital society",
+    "uses": [
+      {
+        "program": "SHS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Abstract"
+      }
+    ],
+    "mentions": []
+  },
+  {
+    "id": "doi:10.5683/sp4/amucjl",
+    "title": "Enquête sur la population active, juillet 2026 [Canada]",
+    "doi": "10.5683/sp4/amucjl",
+    "url": "https://doi.org/10.5683/sp4/amucjl",
+    "year": 2026,
+    "workType": "dataset",
+    "issuingOrganization": "Borealis",
+    "sources": [
+      "OpenAlex"
+    ],
+    "theme": "digital society",
+    "uses": [
+      {
+        "program": "LFS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Abstract"
+      }
+    ],
+    "mentions": []
+  },
+  {
+    "id": "doi:10.5683/sp4/b4mid3",
+    "title": "Enquête sur la population active, juin 2026 [Canada]",
+    "doi": "10.5683/sp4/b4mid3",
+    "url": "https://doi.org/10.5683/sp4/b4mid3",
+    "year": 2026,
+    "workType": "dataset",
+    "issuingOrganization": "Borealis",
+    "sources": [
+      "OpenAlex"
+    ],
+    "theme": "digital society",
+    "uses": [
+      {
+        "program": "LFS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Abstract"
+      }
+    ],
+    "mentions": []
+  },
+  {
+    "id": "doi:10.5683/sp4/byjdjp",
+    "title": "Enquête sur la population active, mai 2026 [Canada]",
+    "doi": "10.5683/sp4/byjdjp",
+    "url": "https://doi.org/10.5683/sp4/byjdjp",
+    "year": 2026,
+    "workType": "dataset",
+    "issuingOrganization": "Borealis",
+    "sources": [
+      "OpenAlex"
+    ],
+    "theme": "digital society",
     "uses": [
       {
         "program": "LFS",
@@ -3062,6 +4957,29 @@
     "mentions": []
   },
   {
+    "id": "doi:10.70385/001c.146942",
+    "title": "Work Life Expectancy Values Emanating From the ASEC and ACS in the United States and the PALS in Canada.",
+    "doi": "10.70385/001c.146942",
+    "url": "https://doi.org/10.70385/001c.146942",
+    "year": 2015,
+    "workType": "article",
+    "issuingOrganization": "The Rehabilitation Professional",
+    "sources": [
+      "OpenAlex"
+    ],
+    "theme": "digital society",
+    "uses": [
+      {
+        "program": "CSD",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Abstract"
+      }
+    ],
+    "mentions": []
+  },
+  {
     "id": "doi:10.7759/cureus.104372",
     "title": "Association Between Lifestyle Factors and Self-Reported Cardiovascular Disease Among Canadian Adults Aged 35 Years and Older: A Study Based on Data From the Canadian Community Health Survey",
     "doi": "10.7759/cureus.104372",
@@ -3135,6 +5053,32 @@
     "mentions": []
   },
   {
+    "id": "url:04d9dc24ef9a3b469f28aba514fa41de6577e438bf9cc860302a1a9975de7ebc",
+    "title": "Trends in out-of-pocket health care expenditures in Canada, by household income, 1997 to 2009.",
+    "doi": null,
+    "url": "https://pubmed.ncbi.nlm.nih.gov/24744043",
+    "year": 2014,
+    "workType": "article",
+    "issuingOrganization": "National Institutes of Health",
+    "sources": [
+      "OpenAlex"
+    ],
+    "theme": "income and inequality",
+    "uses": [
+      {
+        "program": "SHS",
+        "precision": "exact_cycles",
+        "cycles": [
+          "1997",
+          "2009"
+        ],
+        "cycleText": "1997, 2009",
+        "evidenceLocation": "Abstract"
+      }
+    ],
+    "mentions": []
+  },
+  {
     "id": "url:0887fd6bebfe556342fcbf25698d884a5a53c237b304e631b394373386c585da",
     "title": "Impact of identifying plausible respondents on the under-reporting of energy intake in the Canadian Community Health Survey.",
     "doi": null,
@@ -3181,6 +5125,29 @@
     "mentions": []
   },
   {
+    "id": "url:130d1ebe8b503fe55af08f7d86f2d84f93eb3f5416f0784f5c535ec70c67e21a",
+    "title": "Le stress au travail dans le Bas-Saint-Laurent enquête sur la santé dans les collectivités canadiennes ... / [Équipe de surveillance, infocentre et ententes de gestion de l'Agence de la santé et des services sociaux du Bas-Saint-Laurent]",
+    "doi": null,
+    "url": "https://numerique.banq.qc.ca/patrimoine/details/52327/63343",
+    "year": 2008,
+    "workType": "article",
+    "issuingOrganization": null,
+    "sources": [
+      "OpenAlex"
+    ],
+    "theme": "digital society",
+    "uses": [
+      {
+        "program": "CCHS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Title"
+      }
+    ],
+    "mentions": []
+  },
+  {
     "id": "url:1852d6711ac9efee8fd2126175d5f93de2ff45589bedaeeee47b3aabd3464157",
     "title": "Malocclusion, Orthodontic Treatment Needs and Their Social Determinants among Canadian Children, Adolescents, and Young Adults: A Population-Based Study",
     "doi": null,
@@ -3195,6 +5162,92 @@
     "uses": [
       {
         "program": "CHMS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Abstract"
+      }
+    ],
+    "mentions": []
+  },
+  {
+    "id": "url:1c71b935d22f67d4021f9362acbfecb49c519c47691c3822f603ee73ea430ab8",
+    "title": "Needs for mobility devices, home modifications and personal assistance among Canadians with disabilities.",
+    "doi": null,
+    "url": "https://pubmed.ncbi.nlm.nih.gov/29044443",
+    "year": 2017,
+    "workType": "article",
+    "issuingOrganization": "National Institutes of Health",
+    "sources": [
+      "OpenAlex"
+    ],
+    "theme": "digital society",
+    "uses": [
+      {
+        "program": "CSD",
+        "precision": "exact_cycles",
+        "cycles": [
+          "2012",
+          "2011"
+        ],
+        "cycleText": "2012, 2011",
+        "evidenceLocation": "Abstract"
+      }
+    ],
+    "mentions": []
+  },
+  {
+    "id": "url:23c8869c6c0b4fb44081b929317873f0bca7d3ad69150b6150f648f11940d20e",
+    "title": "Personal finances of residents at three Canadian universities.",
+    "doi": null,
+    "url": "https://pubmed.ncbi.nlm.nih.gov/15757033",
+    "year": 2005,
+    "workType": "article",
+    "issuingOrganization": "National Institutes of Health",
+    "sources": [
+      "OpenAlex"
+    ],
+    "theme": "education",
+    "uses": [
+      {
+        "program": "SHS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Abstract"
+      }
+    ],
+    "mentions": []
+  },
+  {
+    "id": "url:251a868f987fd0b5707792782a1154ad1a7aecf8fd93f34d41ff497c2450e54b",
+    "title": "Young men and women without a high school diploma",
+    "doi": null,
+    "url": "https://www.voced.edu.au/content/ngv%3A76222",
+    "year": 2017,
+    "workType": "article",
+    "issuingOrganization": null,
+    "sources": [
+      "OpenAlex"
+    ],
+    "theme": "labour",
+    "uses": [
+      {
+        "program": "LFS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Abstract"
+      },
+      {
+        "program": "CIS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Abstract"
+      },
+      {
+        "program": "CSD",
         "precision": "program_only",
         "cycles": [],
         "cycleText": "",
@@ -3275,6 +5328,58 @@
     "mentions": []
   },
   {
+    "id": "url:3bcb9b6628cf9892525d6035d44220a94d51b75ca8ccfa13bd6dc640554a8bb5",
+    "title": "Employment profile of adults with seeing disability in Canada: An analysis of the Canadian Survey on Disability 2017",
+    "doi": null,
+    "url": "https://iovs.arvojournals.org/article.aspx?articleid=2775982",
+    "year": 2021,
+    "workType": "article",
+    "issuingOrganization": "Cadmus Press",
+    "sources": [
+      "OpenAlex"
+    ],
+    "theme": "health",
+    "uses": [
+      {
+        "program": "CSD",
+        "precision": "exact_cycles",
+        "cycles": [
+          "2017"
+        ],
+        "cycleText": "2017",
+        "evidenceLocation": "Title"
+      }
+    ],
+    "mentions": []
+  },
+  {
+    "id": "url:4430855288db3c8c878a39a09fc77cebcc14069269aa811eeda7c0e4a813c821",
+    "title": "Household spending on health care.",
+    "doi": null,
+    "url": "https://pubmed.ncbi.nlm.nih.gov/11565114",
+    "year": 2000,
+    "workType": "article",
+    "issuingOrganization": "National Institutes of Health",
+    "sources": [
+      "OpenAlex"
+    ],
+    "theme": "families",
+    "uses": [
+      {
+        "program": "SHS",
+        "precision": "exact_cycles",
+        "cycles": [
+          "1996",
+          "1997",
+          "1998"
+        ],
+        "cycleText": "1996, 1997, 1998",
+        "evidenceLocation": "Abstract"
+      }
+    ],
+    "mentions": []
+  },
+  {
     "id": "url:4c96bb7a4d673c9866eb25c139b9100998f9f24bba10d6d15a123ff9db37cfcd",
     "title": "Digital Divide: A Typology of Internet Users in Canada",
     "doi": null,
@@ -3295,6 +5400,29 @@
         ],
         "cycleText": "2022",
         "evidenceLocation": "What we did"
+      }
+    ],
+    "mentions": []
+  },
+  {
+    "id": "url:50fd12997bdd45a0152eec64e3d86e0d95db21eb7b3befa2f7629901088100b7",
+    "title": "Les comportements sexuels des jeunes de 15-24 ans du Bas-Saint-Laurent enquête sur la santé dans les collectivités canadiennes ... / [Équipe de surveillance, infocentre et entente de gestion de l'Agence de la santé et des services sociaux du Bas-Saint-Laurent]",
+    "doi": null,
+    "url": "http://collections.banq.qc.ca/ark:/52327/63311",
+    "year": 2007,
+    "workType": "article",
+    "issuingOrganization": null,
+    "sources": [
+      "OpenAlex"
+    ],
+    "theme": "digital society",
+    "uses": [
+      {
+        "program": "CCHS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Title"
       }
     ],
     "mentions": []
@@ -3545,6 +5673,31 @@
           "2004"
         ],
         "cycleText": "2004",
+        "evidenceLocation": "Abstract"
+      }
+    ],
+    "mentions": []
+  },
+  {
+    "id": "url:921d5af1114dfd93c1f75bf0528c49c4d4dfc90347599f2f6983cc58e98fb4df",
+    "title": "Financial burden of household out-of-pocket expenditures for prescription drugs: cross-sectional analysis based on national survey data.",
+    "doi": null,
+    "url": "https://pubmed.ncbi.nlm.nih.gov/22046212",
+    "year": 2011,
+    "workType": "article",
+    "issuingOrganization": "National Institutes of Health",
+    "sources": [
+      "OpenAlex"
+    ],
+    "theme": "digital society",
+    "uses": [
+      {
+        "program": "SHS",
+        "precision": "exact_cycles",
+        "cycles": [
+          "2006"
+        ],
+        "cycleText": "2006",
         "evidenceLocation": "Abstract"
       }
     ],
@@ -3879,6 +6032,69 @@
     "mentions": []
   },
   {
+    "id": "url:cabe4e993ee0edb9a3302156e3569379e198b045c83086587f529373173ff418",
+    "title": "Employment Realities of Recent Junior/Community College and University Graduates and Premature Leavers with Disabilities.",
+    "doi": null,
+    "url": "https://files.eric.ed.gov/fulltext/ED567880.pdf",
+    "year": 2015,
+    "workType": "article",
+    "issuingOrganization": null,
+    "sources": [
+      "OpenAlex"
+    ],
+    "theme": "education",
+    "uses": [
+      {
+        "program": "CSD",
+        "precision": "exact_cycles",
+        "cycles": [
+          "2011",
+          "2012",
+          "2014",
+          "2014",
+          "2014"
+        ],
+        "cycleText": "2011, 2012, 2014, 2014, 2014",
+        "evidenceLocation": "Abstract"
+      }
+    ],
+    "mentions": []
+  },
+  {
+    "id": "url:d8e20647b371633bdb8d65cfe33d4955a4ca0447ded1ab95303cac0e28e5c502",
+    "title": "Household Food Insecurity in Canada: An Examination of Nutrition Implications and Factors Associated with Vulnerability",
+    "doi": null,
+    "url": "http://hdl.handle.net/1807/11220",
+    "year": 2008,
+    "workType": "dissertation",
+    "issuingOrganization": "University of Toronto",
+    "sources": [
+      "OpenAlex"
+    ],
+    "theme": "health",
+    "uses": [
+      {
+        "program": "CCHS",
+        "precision": "exact_cycles",
+        "cycles": [
+          "2004"
+        ],
+        "cycleText": "2004",
+        "evidenceLocation": "Abstract"
+      },
+      {
+        "program": "SHS",
+        "precision": "exact_cycles",
+        "cycles": [
+          "2001"
+        ],
+        "cycleText": "2001",
+        "evidenceLocation": "Abstract"
+      }
+    ],
+    "mentions": []
+  },
+  {
     "id": "url:d9effe8a5f695a25b05d17eac423831c2b3008719941ae8b2f37244a0bbd504f",
     "title": "A Comparative Analysis of Internet Health Information Use between Canadian Baby Boomers and Older Adults",
     "doi": null,
@@ -3925,6 +6141,52 @@
         ],
         "cycleText": "2024",
         "evidenceLocation": "Methods"
+      }
+    ],
+    "mentions": []
+  },
+  {
+    "id": "url:e8936f6bb28ecd1b054152fd47e7de3866b3f27338b380465be8b34af1c626ab",
+    "title": "La consommation d'alcool au Bas-Saint-Laurent enquête sur la santé dans les collectivités canadiennes ... / [Équipe de surveillance, infocentre et ententes de gestion de l'Agence de la santé et des services sociaux du Bas-Saint-Laurent]",
+    "doi": null,
+    "url": "http://collections.banq.qc.ca/ark:/52327/63309",
+    "year": 2007,
+    "workType": "article",
+    "issuingOrganization": null,
+    "sources": [
+      "OpenAlex"
+    ],
+    "theme": "digital society",
+    "uses": [
+      {
+        "program": "CCHS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Title"
+      }
+    ],
+    "mentions": []
+  },
+  {
+    "id": "url:f179c8caf357e2cb78e989b49c863905e33016e297255f4a81aad2f226a9a8ea",
+    "title": "The Power of the Purse: New Evidence on the Distribution of Income and Expenditures within the Family from a Canadian Experiment",
+    "doi": null,
+    "url": "http://www.cirpee.org/fileadmin/documents/Cahiers_2014/CIRPEE14-15.pdf",
+    "year": 2014,
+    "workType": "preprint",
+    "issuingOrganization": "Federal Reserve Bank of St. Louis",
+    "sources": [
+      "OpenAlex"
+    ],
+    "theme": "digital society",
+    "uses": [
+      {
+        "program": "SHS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Abstract"
       }
     ],
     "mentions": []

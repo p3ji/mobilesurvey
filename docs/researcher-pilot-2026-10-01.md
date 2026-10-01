@@ -15,18 +15,27 @@ Final review across the full local pilot: four reviewed works; five approved sur
 
 The reviewed JSONL remains in ignored `tools/research/researcher/out/reviewed.jsonl`. The rights-safe static snapshot at `platform/hub/src/researcherPilot.json` is generated with `pnpm --filter @mobilesurvey/researcher researcher preview ../../../platform/hub/src/researcherPilot.json`; it excludes Statistics Canada-issued works and includes outside titles, source links, reviewed relationships and evidence locations, while omitting abstract and evidence quote text. Issuing organization is stored separately from discovery source for new intake; older pilot records are also checked by publication URL. A durable Researcher database, automated source acquisition, larger gold set, and public coverage metrics remain outstanding. The Hub preview does not imply full coverage or an impact measure.
 
-## Expansion: 2025–2026 full cohort and grey literature database (2026-10-01)
+## Expansion: 2025–2026 full cohort, CSD/SHS intake, and grey literature database (2026-10-01)
 
-The pilot was expanded from 4 initial works to a production cohort of **167 outside verified works** analyzing Statistics Canada survey microdata:
-- **116 works published in the last year (2025–2026)** discovered via OpenAlex across CCHS, CHMS, CIS, CIUS, GSS, and LFS.
+The pilot was expanded from 4 initial works to a production cohort of **257 outside verified works** analyzing Statistics Canada survey microdata:
+- **131 works published in the last year (2025–2026)** discovered via OpenAlex.
 - **27 Canadian policy and NGO reports** across municipal and provincial public health bodies (*Toronto Public Health, Public Health Ontario, BC Centre for Disease Control, Ottawa Public Health, INSPQ*) and policy non-profits (*PROOF, Food Banks Canada, CCPA, Wellesley Institute, Maytree, C.D. Howe Institute, Fraser Institute, CMHA, IRPP*).
-- **100% verified evidence grounding**: 380 survey claims audited with zero evidence issues.
+- **8 Canonical Survey Programs Classified**:
+  - CCHS: 91 publications
+  - CHMS: 36 publications
+  - LFS: 35 publications
+  - SHS: 28 publications
+  - CSD: 25 publications
+  - CIS: 22 publications
+  - GSS: 18 publications
+  - CIUS: 16 publications
+- **100% verified evidence grounding**: 456 survey claims audited with zero evidence issues.
 - **Interactive UI**: `#researcher` screen augmented with document type filters (all / reports / articles / preprints), 2025–2026 year window toggle, and an interactive survey quick stats panel featuring clickable spark-histograms for analyzed survey cycles and publication release years.
 
 ### Measured storage and 10,000-record sizing
 
-- `researcherPilot.json`: 111 KB raw (665 bytes/record), **16.5 KB gzipped (98 bytes/record)**.
-- `reviewed.jsonl`: 181 KB (1.08 KB/record).
-- SQLite DB (`researcher.db`): ~1.5 MB clean core relational data; 10 MB with full raw HTTP response cache for offline replay.
+- `researcherPilot.json`: 172 KB raw (669 bytes/record), **24.8 KB gzipped (96 bytes/record)**.
+- `reviewed.jsonl`: 279 KB (1.08 KB/record).
+- SQLite DB (`researcher.db`): ~2.5 MB clean core relational data; 16 MB with full raw HTTP response cache for offline replay.
 - **10,000-record projection**: ~980 KB gzipped client bundle; ~15–20 MB clean SQLite database; ~20–25 MB in Supabase; ~4–8 MB RAM in Qdrant Cloud.
 - **Qdrant sidecar decision**: A dedicated `researcher_publications` collection in Qdrant Cloud (~5.6% of existing 177k variable collection) is documented in `docs/researcher-plan.md` for dual semantic topic retrieval and hard metadata faceting at scale.
