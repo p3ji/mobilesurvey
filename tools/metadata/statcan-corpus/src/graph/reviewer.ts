@@ -38,6 +38,21 @@ export interface CandidateEdgeRow {
   confidence: number;
   review_status: string;
   created_at: number;
+  auditor?: string | null;
+  audit_notes?: string | null;
+}
+
+/**
+ * Checks whether a candidate variable appears as a whole-word identifier in the evidence note.
+ * Uses identifier boundary [^A-Z0-9_] so that a hallucinated "AGE" does not pass on a note
+ * that only mentions "AGEGRP" or "DAGE".
+ */
+export function isTextuallyGrounded(sourceVarName: string, evidence: string): boolean {
+  const trimmed = sourceVarName.trim();
+  if (!trimmed) return false;
+  const escaped = trimmed.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  const wholeWordRe = new RegExp(`(^|[^A-Z0-9_])${escaped}([^A-Z0-9_]|$)`, 'i');
+  return wholeWordRe.test(evidence);
 }
 
 /**
@@ -295,9 +310,7 @@ export class ReviewerAgent {
     let retargetedEdges = 0;
 
     for (const edge of candidates) {
-      const noteLower = edge.raw_evidence.toLowerCase();
       const srcUpper = edge.source_var_name.toUpperCase();
-      const srcLower = edge.source_var_name.toLowerCase();
 
       // Check 1: Self-referential loop
       if (edge.target_var_name.toUpperCase() === srcUpper) {
@@ -359,11 +372,8 @@ export class ReviewerAgent {
         continue;
       }
 
-      // Check 2b: Verbatim textual grounding OR valid alphanumeric range expansion
-      const mentionedInText =
-        noteLower.includes(srcLower) ||
-        noteLower.includes(srcUpper) ||
-        edge.raw_evidence.includes(edge.source_var_name);
+      // Check 2b: Verbatim textual grounding (whole-word) OR valid alphanumeric range expansion
+      const mentionedInText = isTextuallyGrounded(edge.source_var_name, edge.raw_evidence);
 
       const inRangeExpansion = !mentionedInText && matchesTextualRange(srcUpper, edge.raw_evidence);
 
@@ -629,7 +639,10 @@ insert into corpus_derivation_edge (
   ai_expression_summary, statcan_verbatim_note, extraction_method, confidence, review_status
 )
 select target.record_id, source.record_id, i.source_var_name, i.survey_group, i.cycle,
-       'ai_inferred', i.ai_model, 'reviewer_agent_v1', i.derivation_type,
+       case when i.extraction_method = 'human_review' then 'human_verified' else 'ai_inferred' end,
+       i.ai_model,
+       case when i.extraction_method = 'human_review' then 'human_suggestion_accept' else 'reviewer_agent_v1' end,
+       i.derivation_type,
        i.ai_expression_summary, i.statcan_verbatim_note, i.extraction_method,
        i.confidence, 'verified'
   from incoming i
@@ -654,6 +667,14 @@ export function isPublishableEdge(edge: CandidateEdgeRow): boolean {
   if (edge.survey_group === 'BC_CB_K12') return false; // mixed data-source/provenance notes
   if (source === target) return false; // same-name occurrences need document-level resolution
   if (/(?:SAMPLEID|PERSONID|MASTERID|_ID)$/.test(source)) return false;
+  // Human-approved suggestions (Check 4 accept) are explicitly vetted
+  if (
+    edge.extraction_method === 'human_review' ||
+    edge.auditor === 'human_suggestion_accept' ||
+    evidence.startsWith('human-approved')
+  ) {
+    return true;
+  }
   if (/calculated the same as|this question is the same as/.test(evidence)) return false;
   return /^(?:derived based on|derived based |derived from|based on|this variable uses|this derived variable combines|if a respondent answered|the number of|this variable is derived from|derived variable to account for)/.test(evidence);
 }

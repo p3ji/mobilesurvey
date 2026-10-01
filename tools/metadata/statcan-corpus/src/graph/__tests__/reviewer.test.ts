@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { matchesTextualRange, expandRangeToken, findComponentSiblings, renderVerifiedSql, isPublishableEdge, type CandidateEdgeRow } from '../reviewer.js';
+import { matchesTextualRange, expandRangeToken, findComponentSiblings, renderVerifiedSql, isPublishableEdge, isTextuallyGrounded, type CandidateEdgeRow } from '../reviewer.js';
 import { parseAliasBlocks } from '../aliases.js';
 
 describe('matchesTextualRange', () => {
@@ -54,6 +54,37 @@ describe('verified SQL export', () => {
     expect(isPublishableEdge({ ...base, raw_evidence: 'Calculated the same as AGE.' })).toBe(false);
     expect(isPublishableEdge({ ...base, survey_group: 'BC_CB_K12' })).toBe(false);
     expect(isPublishableEdge({ ...base, review_status: 'needs_review' })).toBe(false);
+  });
+
+  it('permits human-approved suggestions regardless of evidence wording and sets epistemic authority', () => {
+    const humanEdge = {
+      target_var_name: 'DNUMDENT', source_var_name: 'C06A', survey_group: 'CSIT_ECCI',
+      cycle: '2023', derivation_type: 'formula', expression_summary: 'DNUMDENT derived from C06A',
+      raw_evidence: "Human-approved suggestion for unresolved source 'Q06A'",
+      extraction_method: 'human_review', auditor: 'human_suggestion_accept',
+      confidence: 0.95, review_status: 'verified',
+    } as CandidateEdgeRow;
+    expect(isPublishableEdge(humanEdge)).toBe(true);
+    const sql = renderVerifiedSql([humanEdge]);
+    expect(sql).toContain("case when i.extraction_method = 'human_review' then 'human_verified' else 'ai_inferred' end");
+    expect(sql).toContain("case when i.extraction_method = 'human_review' then 'human_suggestion_accept' else 'reviewer_agent_v1' end");
+  });
+});
+
+describe('isTextuallyGrounded', () => {
+  it('requires whole-word identifier matches to prevent substring hallucinations', () => {
+    expect(isTextuallyGrounded('AGE', 'Derived based on AGEGRP.')).toBe(false);
+    expect(isTextuallyGrounded('AGE', 'Derived based on DAGE.')).toBe(false);
+    expect(isTextuallyGrounded('F31A', 'Derived based on F31AB and F31AC.')).toBe(false);
+    expect(isTextuallyGrounded('C13A', 'Derived based on C13A_1.')).toBe(false);
+  });
+
+  it('accepts whole-word identifier matches across punctuation and whitespace', () => {
+    expect(isTextuallyGrounded('AGE', 'Derived based on AGE.')).toBe(true);
+    expect(isTextuallyGrounded('AGE', 'Derived based on (AGE), rounded')).toBe(true);
+    expect(isTextuallyGrounded('AGE', 'Derived from AGE and SEX.')).toBe(true);
+    expect(isTextuallyGrounded('F31A', 'Derived based on F31A, F31B.')).toBe(true);
+    expect(isTextuallyGrounded('C13A_1', 'Derived based on C13A_1.')).toBe(true);
   });
 });
 
