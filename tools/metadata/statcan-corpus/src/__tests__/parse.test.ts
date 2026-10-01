@@ -237,6 +237,30 @@ describe('parseDictionary — labelled layout', () => {
     expect(variables[0]!.source.page).toBe(1);
     expect(variables[0]!.source.surveyAcronym).toBe('CCHS');
   });
+
+  it('accumulates multi-line wrapped question text and option labels in select-all questions', () => {
+    const rows = [
+      'Variable Name: C050601 Length: 1.0 Position: 41',
+      'Question Name: C05_Q06',
+      'Concept: Requirement - security measures - Privacy Commissioner',
+      'Question Text: Which Canadian departments, agencies or organizations require your business',
+      'to implement certain cyber security measures?',
+      'Office of the Privacy Commissioner',
+      'Universe: All businesses that indicated they were required',
+      'Note: This is a mark all that apply question.',
+      'Answer Categories Code Frequency Weighted Frequency %',
+      'Yes 1 200 1,200 60.0',
+      'No 2 100 800 40.0',
+    ];
+    const { variables } = parseDictionary(doc(rows), mint);
+    expect(variables).toHaveLength(1);
+    const v = variables[0]!;
+    expect(v.questionText).toBe(
+      'Which Canadian departments, agencies or organizations require your business to implement certain cyber security measures? Office of the Privacy Commissioner',
+    );
+    expect(v.universe).toBe('All businesses that indicated they were required');
+    expect(v.note).toBe('This is a mark all that apply question.');
+  });
 });
 
 describe('parseDictionary — collection layout', () => {

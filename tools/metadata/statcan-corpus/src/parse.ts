@@ -163,6 +163,62 @@ function fieldByLabel(rows: readonly string[], label: RegExp): string | undefine
   return undefined;
 }
 
+/**
+ * In labelled dictionaries, fields like `Question Text`, `Note`, and `Universe` often wrap
+ * onto subsequent lines or include sub-item / option lines before the next field header or code table.
+ */
+function collectLabelledFields(rows: readonly string[]): Map<string, string> {
+  const fields = new Map<string, string[]>();
+  let currentKey: string | undefined;
+
+  for (const row of rows) {
+    const labelledEntries = splitLabelledRow(row);
+    if (labelledEntries.length > 0) {
+      for (const { label: key, value } of labelledEntries) {
+        currentKey = key;
+        if (!fields.has(currentKey)) fields.set(currentKey, []);
+        if (value !== '') fields.get(currentKey)!.push(value);
+      }
+    } else if (currentKey !== undefined) {
+      const text = row.trim();
+      if (text === '') continue;
+      // Skip page furniture or table headers
+      if (/^Page\s+\d+/i.test(text) || /^Totals?\s+may\s+not\s+add/i.test(text) || /-\s*Data Dictionary/i.test(text)) continue;
+      if (/^(?:Answer Categories|Cat[ée]gories de r[ée]ponse)/i.test(text)) {
+        currentKey = undefined;
+        continue;
+      }
+      if (readCodeRow(row) !== undefined) {
+        currentKey = undefined;
+        continue;
+      }
+      // Only multi-line fields accumulate continuation rows
+      if (
+        labelMatches(LABELS.questionText, currentKey) ||
+        labelMatches(LABELS.note, currentKey) ||
+        labelMatches(LABELS.universe, currentKey) ||
+        labelMatches(LABELS.coverage, currentKey)
+      ) {
+        fields.get(currentKey)!.push(text);
+      }
+    }
+  }
+
+  const result = new Map<string, string>();
+  for (const [k, v] of fields) {
+    const joined = v.join(' ').trim();
+    if (joined !== '') result.set(k, joined);
+  }
+  return result;
+}
+
+function fieldFromMap(map: Map<string, string>, label: RegExp): string | undefined {
+  for (const [key, value] of map) {
+    if (labelMatches(label, key)) return value;
+  }
+  return undefined;
+}
+
 /* -------------------------------------------------------------------------------------------- *
  * Shared helpers
  * -------------------------------------------------------------------------------------------- */
@@ -407,14 +463,15 @@ function parseLabelled(doc: ExtractedDoc): Array<Omit<CorpusVariable, 'recordId'
       const name = fieldByLabel([block.rows[0]!], LABELS.variableName)?.split(/\s+/)[0];
       if (name === undefined || !VAR_NAME.test(name)) return undefined;
       const codes = block.rows.map(readCodeRow).filter((c): c is CodeEntry => c !== undefined);
+      const fields = collectLabelledFields(block.rows);
       return makeVariable(doc.file, block.page, {
         name,
-        position: fieldByLabel(block.rows, LABELS.position),
-        length: fieldByLabel(block.rows, LABELS.length),
-        concept: fieldByLabel(block.rows, LABELS.concept),
-        questionText: fieldByLabel(block.rows, LABELS.questionText),
-        universe: fieldByLabel(block.rows, LABELS.universe),
-        note: fieldByLabel(block.rows, LABELS.note),
+        position: fieldFromMap(fields, LABELS.position) ?? fieldByLabel(block.rows, LABELS.position),
+        length: fieldFromMap(fields, LABELS.length) ?? fieldByLabel(block.rows, LABELS.length),
+        concept: fieldFromMap(fields, LABELS.concept) ?? fieldByLabel(block.rows, LABELS.concept),
+        questionText: fieldFromMap(fields, LABELS.questionText),
+        universe: fieldFromMap(fields, LABELS.universe),
+        note: fieldFromMap(fields, LABELS.note),
         codes,
       });
     })
