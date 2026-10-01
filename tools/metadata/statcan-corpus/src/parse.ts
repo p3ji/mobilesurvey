@@ -219,6 +219,70 @@ function fieldFromMap(map: Map<string, string>, label: RegExp): string | undefin
   return undefined;
 }
 
+/**
+ * A two-column code row (label + code, or code + label) without frequency/count columns.
+ * E.g. `Yes 1` or `1 Yes`, common in dictionaries that omit frequency distributions.
+ */
+function readTwoColumnCodeRow(row: string): CodeEntry | undefined {
+  // Format A: Label Code (e.g. "Yes 1", "Not stated 9")
+  const mA = /^\s*(.{1,120}?)\s+(\d{1,9}(?:\s*[-–]\s*\d{1,9})?|[A-Z]\d?)$/.exec(row);
+  if (mA !== null) {
+    const label = mA[1]!.trim();
+    const code = mA[2]!.trim();
+    if (
+      /[A-Za-zÀ-ÿ]/.test(label) &&
+      isCodeToken(code) &&
+      !NOT_A_CATEGORY.test(label) &&
+      !VARIABLE_LISTING_ROW.test(label) &&
+      !/^(?:Page|Totals?\s+may)/i.test(label)
+    ) {
+      return { code, label };
+    }
+  }
+  // Format B: Code Label (e.g. "1 Yes", "9 Not stated")
+  const mB = /^\s*(\d{1,9}(?:\s*[-–]\s*\d{1,9})?|[A-Z]\d?)\s+(.{1,120}?)$/.exec(row);
+  if (mB !== null) {
+    const code = mB[1]!.trim();
+    const label = mB[2]!.trim();
+    if (
+      /[A-Za-zÀ-ÿ]/.test(label) &&
+      isCodeToken(code) &&
+      !NOT_A_CATEGORY.test(label) &&
+      !VARIABLE_LISTING_ROW.test(label) &&
+      !/^(?:Page|Totals?\s+may)/i.test(label)
+    ) {
+      return { code, label };
+    }
+  }
+  return undefined;
+}
+
+/**
+ * Extracts category codes from a labelled variable block.
+ * Tries standard count-bearing rows first; falls back to 2-column (label+code) rows under the table header.
+ */
+function parseLabelledCodes(rows: readonly string[]): CodeEntry[] {
+  const standardCodes = rows.map(readCodeRow).filter((c): c is CodeEntry => c !== undefined);
+  if (standardCodes.length > 0) return standardCodes;
+
+  const tableHeaderIndex = rows.findIndex((r) =>
+    /^(?:Answer Categories|Cat[ée]gories de r[ée]ponse)/i.test(r.trim()),
+  );
+  if (tableHeaderIndex === -1) return [];
+
+  const codes: CodeEntry[] = [];
+  for (let i = tableHeaderIndex + 1; i < rows.length; i++) {
+    const row = rows[i]!.trim();
+    if (row === '') continue;
+    if (/^Page\s+\d+/i.test(row) || /^Totals?\s+may\s+not/i.test(row) || /-\s*Data Dictionary/i.test(row)) continue;
+    if (/^Total(?:\s+[\d.,\s]+)?$/i.test(row)) continue;
+    if (ANY_LABEL.test(row) || splitLabelledRow(row).length > 0) break;
+    const entry = readTwoColumnCodeRow(row);
+    if (entry !== undefined) codes.push(entry);
+  }
+  return codes;
+}
+
 /* -------------------------------------------------------------------------------------------- *
  * Shared helpers
  * -------------------------------------------------------------------------------------------- */
@@ -462,7 +526,7 @@ function parseLabelled(doc: ExtractedDoc): Array<Omit<CorpusVariable, 'recordId'
       // next label, so it reads as `REFPER` even though `Longueur : 13.0` follows on the same row.
       const name = fieldByLabel([block.rows[0]!], LABELS.variableName)?.split(/\s+/)[0];
       if (name === undefined || !VAR_NAME.test(name)) return undefined;
-      const codes = block.rows.map(readCodeRow).filter((c): c is CodeEntry => c !== undefined);
+      const codes = parseLabelledCodes(block.rows);
       const fields = collectLabelledFields(block.rows);
       return makeVariable(doc.file, block.page, {
         name,

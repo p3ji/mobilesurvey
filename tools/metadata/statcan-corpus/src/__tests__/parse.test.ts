@@ -261,6 +261,32 @@ describe('parseDictionary — labelled layout', () => {
     expect(v.universe).toBe('All businesses that indicated they were required');
     expect(v.note).toBe('This is a mark all that apply question.');
   });
+
+  it('parses two-column code lists without frequency distributions', () => {
+    const rows = [
+      'Variable Name: CC_05C Length: 1.0 Position: 101',
+      'Question Name: CC_Q05',
+      'Concept: Climate change - People in your community',
+      'Question Text: Who or what do you think will be most affected by climate change? - People in your',
+      'community',
+      'Universe: All respondents',
+      'Answer Categories Code',
+      'Yes 1',
+      'No 2',
+      'Not stated 9',
+    ];
+    const { variables } = parseDictionary(doc(rows), mint);
+    expect(variables).toHaveLength(1);
+    const v = variables[0]!;
+    expect(v.questionText).toBe(
+      'Who or what do you think will be most affected by climate change? - People in your community',
+    );
+    expect(v.codes).toEqual([
+      { code: '1', label: 'Yes' },
+      { code: '2', label: 'No' },
+      { code: '9', label: 'Not stated' },
+    ]);
+  });
 });
 
 describe('parseDictionary — collection layout', () => {
