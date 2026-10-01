@@ -295,6 +295,11 @@ When exporting metadata to semantic formats (JSON-LD / RDF / DDI-CDI):
 - `prov:wasAttributedTo`: Explicitly declares `:mobilesurvey-ai-agent` rather than `:StatisticsCanada`.
 - `prov:hadPrimarySource`: Directly points to the official StatCan documentation asset URI.
 
+### 6.4. Standards Alignment (SDTL, VTL, DDI-CDI)
+- **SDTL (Structured Data Transformation Language)**: Relational DAG edges (`target_record_id` ← `source_record_id` in `corpus_derivation_edge`) provide immediate machine-readable graph lineage in PostgreSQL/Supabase. AST-level SDTL `Compute`/`Recode` commands remain an export serialization target for Phase 20 rather than an ingestion-time requirement.
+- **VTL (Validation and Transformation Language)**: The survey runtime and Designer use `@mobilesurvey/expression-engine` for fast, lightweight, eval-free execution in browsers and mobile devices. VTL 2.0 (`check(...)`, `:=`) is treated as an optional external interchange format rather than an internal runtime dependency.
+- **DDI-CDI (Cross-Domain Integration)**: Fully adopted in concept continuity (`sql/concept_continuity.sql`). Multi-cycle variables (e.g. CIUS `ONL_SHOP` 2020→2022) map as separate `InstanceVariable` occurrences tied to one `ConceptualVariable`, explicitly preserving universe shifts and question wording changes rather than artificially collapsing them into identical cascade members.
+
 ---
 
 ## 7. Phased Implementation Roadmap
