@@ -15,7 +15,7 @@ WORKER_TARGET=4
 RUNNING=$(pgrep -f "queue.ts run worker-" | wc -l | tr -d ' ')
 if [[ "$PENDING" -gt 0 && "$RUNNING" -lt "$WORKER_TARGET" ]]; then
   for i in $(seq "$RUNNING" $((WORKER_TARGET - 1))); do
-    LOCAL_LLM_MODEL=qwen3.8-flash-next nohup npx tsx src/graph/queue.ts run "worker-$i" >> out/full-drain.log 2>&1 & disown || true
+    LOCAL_LLM_MODEL=qwen3.6-35b-a3b-ud-q4_k_m_gguf nohup npx tsx src/graph/queue.ts run "worker-$i" >> out/full-drain.log 2>&1 & disown || true
     OUT+="worker-$i restarted (pid $!), pending=$PENDING\n"
   done
 fi

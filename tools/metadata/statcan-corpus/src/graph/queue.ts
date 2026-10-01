@@ -146,10 +146,13 @@ export class DerivationQueue {
   }
 
   private init() {
+    // busy_timeout must precede journal_mode: switching to WAL takes a brief
+    // exclusive lock, which fails instantly without a timeout under concurrent
+    // workers (errcode 261 'database is locked' in the constructor).
     this.db.exec(`
+      PRAGMA busy_timeout = 30000;
       PRAGMA journal_mode = WAL;
       PRAGMA synchronous = NORMAL;
-      PRAGMA busy_timeout = 30000;
 
       CREATE TABLE IF NOT EXISTS derivation_job (
         job_id        TEXT PRIMARY KEY,
@@ -462,7 +465,7 @@ Extract all source variables and the derivation logic.`;
         },
       },
       temperature: 0.1,
-      max_tokens: 1500,
+      max_tokens: 4096,
     }),
   });
 
@@ -609,7 +612,9 @@ if (process.argv[1] && process.argv[1].endsWith('queue.ts')) {
               errMsg.includes('fetch failed') ||
               errMsg.includes('ECONNREFUSED') ||
               errMsg.includes('ECONNRESET') ||
-              errMsg.includes('timed out')
+              errMsg.includes('timed out') ||
+              // Truncated/malformed LLM JSON is transient — retry, don't burn the attempt.
+              errMsg.includes('JSON')
             ) {
               console.warn(`  [connection error] Local LLM unreachable. Backing off 10s; leaving ${job.var_name} pending...`);
               await new Promise((r) => setTimeout(r, 10000));
