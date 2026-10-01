@@ -182,13 +182,35 @@ function collectLabelledFields(rows: readonly string[]): Map<string, string> {
     } else if (currentKey !== undefined) {
       const text = row.trim();
       if (text === '') continue;
-      // Skip page furniture or table headers
-      if (/^Page\s+\d+/i.test(text) || /^Totals?\s+may\s+not\s+add/i.test(text) || /-\s*Data Dictionary/i.test(text)) continue;
+
+      // Terminators: Index, Appendix, Table of contents, or dot-leader index rows mean the variable block has ended
+      if (
+        /^(?:(?:Topical|Alphabetical|Variable)?\s*Index|Index\s+(?:th[ée]matique|alphab[ée]tique)|Appendix|Annexe|Table\s+of\s+Contents|Section\s*:)\b/i.test(text) ||
+        /\.{4,}\s*\d+$/.test(text)
+      ) {
+        currentKey = undefined;
+        break;
+      }
+
+      // Skip page furniture, dates, or table headers
+      if (
+        /^Page\s+\d+/i.test(text) ||
+        /^\d+\s*[-–]\s*\d+$/i.test(text) ||
+        /^Totals?\s+may\s+not\s+add/i.test(text) ||
+        /-\s*Data Dictionary/i.test(text) ||
+        /^(?:FREQ|WTD|POND)\b/i.test(text) ||
+        /^={4,}/.test(text) ||
+        /^(?:(?:January|February|March|April|May|June|July|August|September|October|November|December)\s+\d{1,2},\s+\d{4})/i.test(text) ||
+        /(?:Analytical\s+File|Master\s+file|No\s+Frequencies)/i.test(text)
+      ) {
+        continue;
+      }
+
       if (/^(?:Answer Categories|Cat[ée]gories de r[ée]ponse)/i.test(text)) {
         currentKey = undefined;
         continue;
       }
-      if (readCodeRow(row) !== undefined) {
+      if (readCodeRow(row) !== undefined || readTwoColumnCodeRow(row) !== undefined) {
         currentKey = undefined;
         continue;
       }
@@ -199,6 +221,11 @@ function collectLabelledFields(rows: readonly string[]): Map<string, string> {
         labelMatches(LABELS.universe, currentKey) ||
         labelMatches(LABELS.coverage, currentKey)
       ) {
+        // Question text should not accumulate endless lines (max 4 continuation lines)
+        if (labelMatches(LABELS.questionText, currentKey) && fields.get(currentKey)!.length >= 5) {
+          currentKey = undefined;
+          continue;
+        }
         fields.get(currentKey)!.push(text);
       }
     }
