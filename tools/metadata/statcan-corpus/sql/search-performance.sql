@@ -228,7 +228,7 @@ grant select, insert, update, delete on corpus_survey_counts to service_role;
 create or replace function corpus_refresh_facets()
 returns void language plpgsql volatile security invoker set search_path = public as $$
 begin
-  delete from corpus_survey_counts;
+  delete from corpus_survey_counts where true;
   insert into corpus_survey_counts
     (survey_group, survey_acronym, variables, documents, year_min, year_max, with_codes, with_question)
   select survey_group, mode() within group (order by survey_acronym), count(*),
