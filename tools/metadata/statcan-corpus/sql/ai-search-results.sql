@@ -83,7 +83,7 @@ as $$
          b.score::real, (select n from counted)
     from best b join corpus_variable v on v.record_id = b.record_id
    order by case when sort_mode = 'recent' then v.year end desc nulls last,
-            b.score desc, v.name, v.record_id
+            b.score desc, v.year desc nulls last, v.name, v.record_id
    limit greatest(1, least(coalesce(max_rows, 25), 100))
   offset greatest(0, coalesce(row_offset, 0));
 $$;

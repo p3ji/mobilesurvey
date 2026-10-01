@@ -203,7 +203,7 @@ as $$
          m.survey_acronym, m.cycle, m.year, m.lang, m.rank::real,
          (select n from counted) as total_count
     from matched m
-   order by m.rank desc, m.name asc, m.record_id asc
+   order by m.rank desc, m.year desc nulls last, m.name asc, m.record_id asc
    limit greatest(1, least(coalesce(max_rows, 50), 200))
   offset greatest(0, coalesce(row_offset, 0));
 $$;

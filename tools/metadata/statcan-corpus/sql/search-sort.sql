@@ -114,7 +114,7 @@ as $$
          (select n from counted) as total_count
     from matched m
    order by case when sort_mode = 'recent' then m.year end desc nulls last,
-            m.rank desc, m.name asc, m.record_id asc
+            m.rank desc, m.year desc nulls last, m.name asc, m.record_id asc
    limit greatest(1, least(coalesce(max_rows, 50), 200))
   offset greatest(0, coalesce(row_offset, 0));
 $$;
