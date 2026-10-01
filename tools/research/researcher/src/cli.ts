@@ -12,6 +12,7 @@ import { fetchCrdcnPage, parseCrdcnHtml } from './adapters/crdcn.js';
 import { assembleCandidates } from './adapters/discovery.js';
 import { evaluateExtractionAgainstGold, type GoldRecord } from './evaluation.js';
 import { extractDeterministic } from './deterministic.js';
+import { getGreyLiteratureCandidates } from './adapters/grey-literature.js';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const dbPath = process.env.RESEARCHER_DB ?? path.join(ROOT, 'out', 'researcher.db');
@@ -97,6 +98,11 @@ async function main() {
       const records = publicPreview(q.exportReviewed());
       writeFileSync(args[0], JSON.stringify(records, null, 2) + '\n', { flag: 'w' });
       console.log(JSON.stringify({ publicPilotWorks: records.length, path: args[0] }));
+    } else if (command === 'compile-grey-literature') {
+      const outFile = getArgValue('--out') ?? path.join(ROOT, 'out', 'grey-literature.jsonl');
+      const candidates = getGreyLiteratureCandidates();
+      writeFileSync(outFile, candidates.map(c => JSON.stringify(c)).join('\n') + '\n', { flag: 'w' });
+      console.log(JSON.stringify({ greyLiteratureWorks: candidates.length, path: outFile }));
     } else if (command === 'discover-openalex') {
       const query = args.find(a => !a.startsWith('--'));
       if (!query) throw new Error('Usage: researcher discover-openalex "<query>" [--limit=N] [--year=YYYY|YYYY] [--filter=...] [--out=candidates.jsonl]');

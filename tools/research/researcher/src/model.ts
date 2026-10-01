@@ -56,6 +56,8 @@ export interface CandidateWork {
   openAccessUrl?: string;
   topics?: string[];
   suggestedPrograms?: string[];
+  passage?: string;
+  passageLocation?: string;
 }
 
 export interface SurveyCandidateSpec {
@@ -89,6 +91,21 @@ export const CANONICAL_SURVEYS: Record<string, SurveyCandidateSpec> = {
     program: 'LFS',
     name: 'Labour Force Survey',
     aliases: ['Labour Force Survey', 'LFS', "Enquête sur la population active", 'EPA'],
+  },
+  CIS: {
+    program: 'CIS',
+    name: 'Canadian Income Survey',
+    aliases: ['Canadian Income Survey', 'CIS', "Enquête canadienne sur le revenu", 'ECR'],
+  },
+  CSD: {
+    program: 'CSD',
+    name: 'Canadian Survey on Disability',
+    aliases: ['Canadian Survey on Disability', 'CSD', "Enquête canadienne sur l'incapacité", 'ECI'],
+  },
+  SHS: {
+    program: 'SHS',
+    name: 'Survey of Household Spending',
+    aliases: ['Survey of Household Spending', 'SHS', "Enquête sur les dépenses des ménages", 'EDM'],
   },
 };
 

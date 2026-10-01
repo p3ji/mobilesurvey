@@ -55,6 +55,10 @@ export function deduplicateCandidates(candidates: CandidateWork[]): CandidateWor
         base.abstractRights = other.abstractRights;
       }
       if (!base.openAccessUrl && other.openAccessUrl) base.openAccessUrl = other.openAccessUrl;
+      if (!base.passage && other.passage) {
+        base.passage = other.passage;
+        base.passageLocation = other.passageLocation;
+      }
     }
     base.topics = allTopics;
     base.suggestedPrograms = allPrograms;
@@ -73,12 +77,16 @@ export function candidateToSourceWork(
   if (isStatisticsCanadaPublication(candidate)) return null;
 
   const targetSurveys = options.targetSurveys ?? ['CIUS', 'CCHS', 'CHMS'];
-  const passageText = (candidate.abstract && candidate.abstract.length >= 40)
+  const passageText = (candidate.passage && candidate.passage.length >= 20)
+    ? candidate.passage
+    : (candidate.abstract && candidate.abstract.length >= 40)
     ? candidate.abstract
     : candidate.title;
-  const passageLocation = (candidate.abstract && candidate.abstract.length >= 40)
-    ? 'Abstract'
-    : 'Title';
+  const passageLocation = candidate.passageLocation ?? (
+    (candidate.abstract && candidate.abstract.length >= 40)
+      ? 'Abstract'
+      : 'Title'
+  );
 
   if (options.requireAbstract && passageLocation !== 'Abstract') return null;
 

@@ -33,6 +33,8 @@ const programNames: Record<string, string> = {
   GSS: 'General Social Survey',
   LFS: 'Labour Force Survey',
   CIS: 'Canadian Income Survey',
+  CSD: 'Canadian Survey on Disability',
+  SHS: 'Survey of Household Spending',
 };
 
 function initialSurveys(): string[] {
@@ -52,6 +54,7 @@ export function ResearcherPage({ onHome }: { onHome: () => void; onSearcher?: ()
   const [selectedTheme, setSelectedTheme] = useState<string>('all');
   const [selectedPrecision, setSelectedPrecision] = useState<string>('all');
   const [selectedYearWindow, setSelectedYearWindow] = useState<'all' | 'recent' | 'historical'>('all');
+  const [selectedType, setSelectedType] = useState<string>('all');
   const [sortOption, setSortOption] = useState<'year_desc' | 'year_asc' | 'title_asc'>('year_desc');
   const [query, setQuery] = useState('');
   const [displayLimit, setDisplayLimit] = useState(30);
@@ -81,6 +84,10 @@ export function ResearcherPage({ onHome }: { onHome: () => void; onSearcher?: ()
       // Year window filter
       if (selectedYearWindow === 'recent' && (work.year ?? 0) < 2025) return false;
       if (selectedYearWindow === 'historical' && (work.year ?? 0) >= 2025) return false;
+      // Document type filter
+      if (selectedType === 'report' && work.workType !== 'report') return false;
+      if (selectedType === 'article' && work.workType !== 'article' && work.workType !== 'journal article') return false;
+      if (selectedType === 'preprint' && work.workType !== 'preprint') return false;
       // Query search
       if (term) {
         const hay = [
@@ -100,12 +107,14 @@ export function ResearcherPage({ onHome }: { onHome: () => void; onSearcher?: ()
       if (sortOption === 'year_asc') return (a.year ?? 0) - (b.year ?? 0);
       return a.title.localeCompare(b.title);
     });
-  }, [query, selectedSurveys, selectedTheme, selectedPrecision, selectedYearWindow, sortOption]);
+  }, [query, selectedSurveys, selectedTheme, selectedPrecision, selectedYearWindow, selectedType, sortOption]);
 
   const recentCount = useMemo(() => works.filter(w => (w.year ?? 0) >= 2025).length, []);
+  const reportsCount = useMemo(() => works.filter(w => w.workType === 'report').length, []);
+  const articlesCount = useMemo(() => works.filter(w => w.workType === 'article' || w.workType === 'journal article').length, []);
+  const preprintsCount = useMemo(() => works.filter(w => w.workType === 'preprint').length, []);
   const exactCount = works.filter(w => w.uses.some(u => u.precision === 'exact_cycles')).length;
   const exactPercentage = works.length > 0 ? Math.round((exactCount / works.length) * 100) : 0;
-  const unresolved = works.filter(work => work.uses.some(use => use.precision !== 'exact_cycles')).length;
 
   function selectSurvey(program: string | null) {
     const next = program === null ? [] : selectedSurveys.includes(program)
@@ -121,6 +130,7 @@ export function ResearcherPage({ onHome }: { onHome: () => void; onSearcher?: ()
     setSelectedTheme('all');
     setSelectedPrecision('all');
     setSelectedYearWindow('all');
+    setSelectedType('all');
     setQuery('');
     setSortOption('year_desc');
     setDisplayLimit(30);
@@ -155,6 +165,7 @@ export function ResearcherPage({ onHome }: { onHome: () => void; onSearcher?: ()
                 className="researcher-link researcher-link--primary"
                 onClick={() => {
                   setSelectedYearWindow('recent');
+                  setSelectedType('all');
                   document.getElementById('researcher-results')?.scrollIntoView({ behavior: 'smooth' });
                 }}
               >
@@ -164,7 +175,18 @@ export function ResearcherPage({ onHome }: { onHome: () => void; onSearcher?: ()
                 type="button"
                 className="researcher-link researcher-link--secondary"
                 onClick={() => {
+                  setSelectedType('report');
                   setSelectedYearWindow('all');
+                  document.getElementById('researcher-results')?.scrollIntoView({ behavior: 'smooth' });
+                }}
+              >
+                Policy & NGO Reports ({reportsCount})
+              </button>
+              <button
+                type="button"
+                className="researcher-link researcher-link--secondary"
+                onClick={() => {
+                  resetFilters();
                   document.getElementById('researcher-results')?.scrollIntoView({ behavior: 'smooth' });
                 }}
               >
@@ -177,6 +199,9 @@ export function ResearcherPage({ onHome }: { onHome: () => void; onSearcher?: ()
             <strong>{works.length.toString().padStart(2, '0')}</strong>
             <span>reviewed works</span>
             <div className="researcher-hero__summary-line">
+              <b>{reportsCount}</b> policy & NGO reports
+            </div>
+            <div className="researcher-hero__summary-line">
               <b>{recentCount}</b> published in 2025–2026 (last year)
             </div>
             <div className="researcher-hero__summary-line">
@@ -184,9 +209,6 @@ export function ResearcherPage({ onHome }: { onHome: () => void; onSearcher?: ()
             </div>
             <div className="researcher-hero__summary-line">
               <b>{exactPercentage}%</b> exact-cycle precision
-            </div>
-            <div className="researcher-hero__summary-line">
-              <b>{unresolved}</b> with range or unstated cycle
             </div>
           </div>
         </section>
@@ -260,6 +282,21 @@ export function ResearcherPage({ onHome }: { onHome: () => void; onSearcher?: ()
             <div className="researcher-controls">
               <select
                 className="researcher-select"
+                value={selectedType}
+                onChange={e => {
+                  setSelectedType(e.target.value);
+                  setDisplayLimit(30);
+                }}
+                aria-label="Filter by document type"
+              >
+                <option value="all">All Document Types ({works.length})</option>
+                <option value="report">Policy & NGO Reports ({reportsCount})</option>
+                <option value="article">Journal Articles ({articlesCount})</option>
+                <option value="preprint">Preprints & Working Papers ({preprintsCount})</option>
+              </select>
+
+              <select
+                className="researcher-select"
                 value={selectedYearWindow}
                 onChange={e => {
                   setSelectedYearWindow(e.target.value as any);
@@ -302,7 +339,7 @@ export function ResearcherPage({ onHome }: { onHome: () => void; onSearcher?: ()
 
           <p className="researcher-count" aria-live="polite">
             Showing {Math.min(shown.length, displayLimit)} of {shown.length} matched works ({works.length} total reviewed)
-            {(selectedSurveys.length > 0 || selectedTheme !== 'all' || selectedPrecision !== 'all' || selectedYearWindow !== 'all' || query.trim()) && (
+            {(selectedSurveys.length > 0 || selectedTheme !== 'all' || selectedPrecision !== 'all' || selectedYearWindow !== 'all' || selectedType !== 'all' || query.trim()) && (
               <button type="button" onClick={resetFilters} style={{ marginLeft: '12px', background: 'none', border: 'none', color: '#0284c7', cursor: 'pointer', fontSize: '11px', fontWeight: 700 }}>
                 Reset all filters
               </button>

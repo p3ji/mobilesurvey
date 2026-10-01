@@ -3158,6 +3158,29 @@
     "mentions": []
   },
   {
+    "id": "url:0e1dcdee5471c512a6c46159004e5e5f77c19f2e5c0fe632a37ffa86844a66c4",
+    "title": "Surveillance de l'état de santé de la population québécoise : Inégalités sociales de santé",
+    "doi": null,
+    "url": "https://www.inspq.qc.ca/publications/inegalites-sociales-sante-2024",
+    "year": 2024,
+    "workType": "report",
+    "issuingOrganization": "Institut national de santé publique du Québec",
+    "sources": [
+      "Grey Literature"
+    ],
+    "theme": "education",
+    "uses": [
+      {
+        "program": "CCHS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Sources de données"
+      }
+    ],
+    "mentions": []
+  },
+  {
     "id": "url:1852d6711ac9efee8fd2126175d5f93de2ff45589bedaeeee47b3aabd3464157",
     "title": "Malocclusion, Orthodontic Treatment Needs and Their Social Determinants among Canadian Children, Adolescents, and Young Adults: A Population-Based Study",
     "doi": null,
@@ -3199,6 +3222,31 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "Abstract"
+      }
+    ],
+    "mentions": []
+  },
+  {
+    "id": "url:38d6a7bce7897b10c9fcafbe44f858cf6ebed3889514326548d0d73363d600c9",
+    "title": "Poverty Report Card 2024: A National and Provincial Assessment",
+    "doi": null,
+    "url": "https://foodbankscanada.ca/poverty-report-card-2024/",
+    "year": 2024,
+    "workType": "report",
+    "issuingOrganization": "Food Banks Canada",
+    "sources": [
+      "Grey Literature"
+    ],
+    "theme": "income and inequality",
+    "uses": [
+      {
+        "program": "CIS",
+        "precision": "exact_cycles",
+        "cycles": [
+          "2022"
+        ],
+        "cycleText": "2022",
+        "evidenceLocation": "Data Sources"
       }
     ],
     "mentions": []
@@ -3275,6 +3323,75 @@
     "mentions": []
   },
   {
+    "id": "url:59df96febec08c173a7139824cb302b41c1cabb9afc9b6da9c27b7789c5f30a5",
+    "title": "Public Health Snapshots: Chronic Disease and Health Behaviour Indicators in Ontario",
+    "doi": null,
+    "url": "https://www.publichealthontario.ca/en/data-and-analysis/health-indicators",
+    "year": 2025,
+    "workType": "report",
+    "issuingOrganization": "Public Health Ontario",
+    "sources": [
+      "Grey Literature"
+    ],
+    "theme": "health",
+    "uses": [
+      {
+        "program": "CCHS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Technical Notes"
+      }
+    ],
+    "mentions": []
+  },
+  {
+    "id": "url:5c2f629f04fcdfcabf9d6beafad298d48d878ced7696ed017fd86470390eaa79",
+    "title": "Status of Mental Health and Well-being in Ottawa: Population Health Surveillance",
+    "doi": null,
+    "url": "https://www.ottawapublichealth.ca/en/reports-research-and-stats/mental-health-reports.aspx",
+    "year": 2024,
+    "workType": "report",
+    "issuingOrganization": "Ottawa Public Health",
+    "sources": [
+      "Grey Literature"
+    ],
+    "theme": "health",
+    "uses": [
+      {
+        "program": "CCHS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Methods"
+      }
+    ],
+    "mentions": []
+  },
+  {
+    "id": "url:5feab0801127f788905c9be47b1cb3d72c8f4445e4a2aa563a6bf29aef3f97b5",
+    "title": "Prescription Medication Gaps Among Non-Standard and Part-Time Workers in Canada",
+    "doi": null,
+    "url": "https://www.wellesleyinstitute.com/publications/prescription-drug-benefit-gaps-2024/",
+    "year": 2024,
+    "workType": "report",
+    "issuingOrganization": "Wellesley Institute",
+    "sources": [
+      "Grey Literature"
+    ],
+    "theme": "health",
+    "uses": [
+      {
+        "program": "CCHS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Data and Methods"
+      }
+    ],
+    "mentions": []
+  },
+  {
     "id": "url:6dd22bebdac036f388ef38c09bd8695fe32c541e6cf9cff6af7112f7d1b721d6",
     "title": "Perceived need for mental health care in Canada: Results from the 2012 Canadian Community Health Survey-Mental Health.",
     "doi": null,
@@ -3295,6 +3412,29 @@
         ],
         "cycleText": "2012",
         "evidenceLocation": "Abstract"
+      }
+    ],
+    "mentions": []
+  },
+  {
+    "id": "url:6fa60de90fdf79b7c5514dab27a176457c0c868f4e9964cee8414d8fd9f838be",
+    "title": "Everyday Discrimination and Health Inequities in the Greater Toronto Area",
+    "doi": null,
+    "url": "https://www.wellesleyinstitute.com/publications/health-inequities-gta-2024/",
+    "year": 2024,
+    "workType": "report",
+    "issuingOrganization": "Wellesley Institute",
+    "sources": [
+      "Grey Literature"
+    ],
+    "theme": "health",
+    "uses": [
+      {
+        "program": "CCHS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Methods"
       }
     ],
     "mentions": []
@@ -3325,6 +3465,67 @@
     "mentions": []
   },
   {
+    "id": "url:79609c0c68585ebed578e1d43cc4455e1701460d87017b2dd9540435f96e806b",
+    "title": "Poverty, Low Wages, and Inequity in British Columbia",
+    "doi": null,
+    "url": "https://policyalternatives.ca/publications/reports/poverty-low-wages-bc-2025",
+    "year": 2025,
+    "workType": "report",
+    "issuingOrganization": "Canadian Centre for Policy Alternatives",
+    "sources": [
+      "Grey Literature"
+    ],
+    "theme": "labour",
+    "uses": [
+      {
+        "program": "LFS",
+        "precision": "exact_cycles",
+        "cycles": [
+          "2024",
+          "2023"
+        ],
+        "cycleText": "2024, 2023",
+        "evidenceLocation": "Data Sources"
+      },
+      {
+        "program": "CIS",
+        "precision": "exact_cycles",
+        "cycles": [
+          "2024",
+          "2023"
+        ],
+        "cycleText": "2024, 2023",
+        "evidenceLocation": "Data Sources"
+      }
+    ],
+    "mentions": []
+  },
+  {
+    "id": "url:8ae1bda1e6aec4e2a8ea22de84a368381d161fa650273598ceba1a7a9ea1883d",
+    "title": "Supporting Working-Age Adults with Disabilities: Evidence from the Canadian Survey on Disability",
+    "doi": null,
+    "url": "https://irpp.org/research-studies/working-age-adults-with-disabilities-2024/",
+    "year": 2024,
+    "workType": "report",
+    "issuingOrganization": "Institute for Research on Public Policy",
+    "sources": [
+      "Grey Literature"
+    ],
+    "theme": "labour",
+    "uses": [
+      {
+        "program": "CSD",
+        "precision": "exact_cycles",
+        "cycles": [
+          "2022"
+        ],
+        "cycleText": "2022",
+        "evidenceLocation": "Data and Empirical Strategy"
+      }
+    ],
+    "mentions": []
+  },
+  {
     "id": "url:8e4e37c3602efb789558ea434c6af110d0003bcbbd4091b6a67a475338dd626a",
     "title": "Under-reporting of energy intake in the Canadian Community Health Survey.",
     "doi": null,
@@ -3350,6 +3551,208 @@
     "mentions": []
   },
   {
+    "id": "url:95a26c416f4106c9651dccd6f4aa9abe66326c133259525350aa7eb6cbb3a729",
+    "title": "Household Food Insecurity in Canada, 2022",
+    "doi": null,
+    "url": "https://proof.utoronto.ca/resource/household-food-insecurity-in-canada-2022/",
+    "year": 2023,
+    "workType": "report",
+    "issuingOrganization": "PROOF (University of Toronto)",
+    "sources": [
+      "Grey Literature"
+    ],
+    "theme": "income and inequality",
+    "uses": [
+      {
+        "program": "CIS",
+        "precision": "exact_cycles",
+        "cycles": [
+          "2022"
+        ],
+        "cycleText": "2022",
+        "evidenceLocation": "Executive Summary"
+      }
+    ],
+    "mentions": []
+  },
+  {
+    "id": "url:95c7661d9bed1268e442868f30a9e9ff4002760f359b19a3a9f710f82b8d1435",
+    "title": "Labour Force Participation and Retirement Timing in Canada",
+    "doi": null,
+    "url": "https://www.cdhowe.org/public-policy-research/retirement-timing-canada-2024",
+    "year": 2024,
+    "workType": "report",
+    "issuingOrganization": "C.D. Howe Institute",
+    "sources": [
+      "Grey Literature"
+    ],
+    "theme": "labour",
+    "uses": [
+      {
+        "program": "LFS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Data and Empirical Approach"
+      }
+    ],
+    "mentions": []
+  },
+  {
+    "id": "url:9613bce00488d2dfc2e58fe05cbbdfb206859d38cf78560a7f587f653cf7ac32",
+    "title": "Poverty Report Card 2025: Assessing Poverty Across Canada",
+    "doi": null,
+    "url": "https://foodbankscanada.ca/poverty-report-card-2025/",
+    "year": 2025,
+    "workType": "report",
+    "issuingOrganization": "Food Banks Canada",
+    "sources": [
+      "Grey Literature"
+    ],
+    "theme": "income and inequality",
+    "uses": [
+      {
+        "program": "CIS",
+        "precision": "exact_cycles",
+        "cycles": [
+          "2023"
+        ],
+        "cycleText": "2023",
+        "evidenceLocation": "Methodology"
+      }
+    ],
+    "mentions": []
+  },
+  {
+    "id": "url:a2504c1e810779e2b6c1131b6091a018c148f2e6b38c69b9096474f9bb51758e",
+    "title": "Welfare in Canada, 2023: Total Welfare Incomes Across Provinces",
+    "doi": null,
+    "url": "https://maytree.com/welfare-in-canada/",
+    "year": 2024,
+    "workType": "report",
+    "issuingOrganization": "Maytree",
+    "sources": [
+      "Grey Literature"
+    ],
+    "theme": "income and inequality",
+    "uses": [
+      {
+        "program": "CIS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Methodology and Benchmarks"
+      }
+    ],
+    "mentions": []
+  },
+  {
+    "id": "url:a462efe613ae43822b3024e475b2df041766e279e8be6f2341287793404f6cec",
+    "title": "Food Costing in BC 2024: Assessing Food Insecurity Across Health Authorities",
+    "doi": null,
+    "url": "http://www.bccdc.ca/our-services/programs/food-costing-in-bc",
+    "year": 2024,
+    "workType": "report",
+    "issuingOrganization": "BC Centre for Disease Control",
+    "sources": [
+      "Grey Literature"
+    ],
+    "theme": "income and inequality",
+    "uses": [
+      {
+        "program": "CIS",
+        "precision": "exact_cycles",
+        "cycles": [
+          "2023"
+        ],
+        "cycleText": "2023",
+        "evidenceLocation": "Context and Data Sources"
+      }
+    ],
+    "mentions": []
+  },
+  {
+    "id": "url:a7355062b0dfabeb27cbb7bf78a6eb1d938fae79316d1cd02edaf3cca8839db9",
+    "title": "Population Health Surveillance: Chronic Disease Risk Factors in British Columbia",
+    "doi": null,
+    "url": "http://www.bccdc.ca/health-info/disease-system-statistics/chronic-disease-surveillance",
+    "year": 2024,
+    "workType": "report",
+    "issuingOrganization": "BC Centre for Disease Control",
+    "sources": [
+      "Grey Literature"
+    ],
+    "theme": "health",
+    "uses": [
+      {
+        "program": "CCHS",
+        "precision": "exact_cycles",
+        "cycles": [
+          "2021",
+          "2022"
+        ],
+        "cycleText": "2021, 2022",
+        "evidenceLocation": "Surveillance Methods"
+      }
+    ],
+    "mentions": []
+  },
+  {
+    "id": "url:ad030bbd0619e0ab3742383d91c835e5869011299dc4cdd578050e88faa029e1",
+    "title": "Living Wages in Canada: Measuring Family Living Expenses in 2024",
+    "doi": null,
+    "url": "https://policyalternatives.ca/publications/reports/living-wages-canada-2024",
+    "year": 2024,
+    "workType": "report",
+    "issuingOrganization": "Canadian Centre for Policy Alternatives",
+    "sources": [
+      "Grey Literature"
+    ],
+    "theme": "income and inequality",
+    "uses": [
+      {
+        "program": "SHS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Methodology"
+      },
+      {
+        "program": "CIS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Methodology"
+      }
+    ],
+    "mentions": []
+  },
+  {
+    "id": "url:aec806670df090c1b5cb605688b577ad17de2ca14b755e07aaae1bb4ba8d4b0b",
+    "title": "Measuring Labour Market Flexibility and Job Creation Across Canadian Provinces",
+    "doi": null,
+    "url": "https://www.fraserinstitute.org/studies/measuring-labour-market-flexibility-2024",
+    "year": 2024,
+    "workType": "report",
+    "issuingOrganization": "Fraser Institute",
+    "sources": [
+      "Grey Literature"
+    ],
+    "theme": "labour",
+    "uses": [
+      {
+        "program": "LFS",
+        "precision": "exact_cycles",
+        "cycles": [
+          "2023"
+        ],
+        "cycleText": "2023",
+        "evidenceLocation": "Data and Empirical Methodology"
+      }
+    ],
+    "mentions": []
+  },
+  {
     "id": "url:b127a136d226939893ab1a684e70fc592dd2c9a40a3a9e188c065a274dbee23d",
     "title": "Top dietary sources of energy, sodium, sugars, and saturated fats among Canadians: insights from the 2015 Canadian Community Health Survey",
     "doi": null,
@@ -3370,6 +3773,84 @@
         ],
         "cycleText": "2015",
         "evidenceLocation": "Overview > Abstract (English)"
+      }
+    ],
+    "mentions": []
+  },
+  {
+    "id": "url:b38e2d1beb9a6c62c54ad9132b7c4ff508d493e338bac772e6668413fd22eb59",
+    "title": "Toronto Poverty Reduction Strategy: Progress Report on Low Income Benchmarks",
+    "doi": null,
+    "url": "https://www.toronto.ca/city-government/accountability-operations-customer-service/long-term-vision-plans-and-strategies/poverty-reduction-strategy/",
+    "year": 2025,
+    "workType": "report",
+    "issuingOrganization": "City of Toronto",
+    "sources": [
+      "Grey Literature"
+    ],
+    "theme": "labour",
+    "uses": [
+      {
+        "program": "CIS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Measurement Framework"
+      },
+      {
+        "program": "LFS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Measurement Framework"
+      }
+    ],
+    "mentions": []
+  },
+  {
+    "id": "url:b612c8a5f5b3431a867734f00c944cf19d8fba64f5cfddc72e24581cb4d7bf75",
+    "title": "Population Health Profile: Mental Health and Substance Use in Toronto",
+    "doi": null,
+    "url": "https://www.toronto.ca/community-people/health-wellness-care/health-inspections-monitoring/population-health-surveillance/",
+    "year": 2024,
+    "workType": "report",
+    "issuingOrganization": "Toronto Public Health",
+    "sources": [
+      "Grey Literature"
+    ],
+    "theme": "health",
+    "uses": [
+      {
+        "program": "CCHS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Surveillance Overview"
+      }
+    ],
+    "mentions": []
+  },
+  {
+    "id": "url:bd1b79e01b0d8d8f39144db191d88b5e16404a462be0b71467d24634f238b722",
+    "title": "Household Food Insecurity in Canada, 2021",
+    "doi": null,
+    "url": "https://proof.utoronto.ca/resource/household-food-insecurity-in-canada-in-2021-webinar/",
+    "year": 2022,
+    "workType": "report",
+    "issuingOrganization": "PROOF (University of Toronto)",
+    "sources": [
+      "Grey Literature"
+    ],
+    "theme": "digital society",
+    "uses": [
+      {
+        "program": "CIS",
+        "precision": "exact_cycles",
+        "cycles": [
+          "2021"
+        ],
+        "cycleText": "2021",
+        "evidenceLocation": "Introduction"
       }
     ],
     "mentions": []
@@ -3419,6 +3900,192 @@
         ],
         "cycleText": "2005, 2000",
         "evidenceLocation": "Abstract"
+      }
+    ],
+    "mentions": []
+  },
+  {
+    "id": "url:e5e1438aa066e4d0ec43305da13082de93db846c5d6a1fd8973d809e25cd3038",
+    "title": "Nova Scotia's Labour Market: Assessing Job Quality and Precarity",
+    "doi": null,
+    "url": "https://policyalternatives.ca/publications/reports/nova-scotias-labour-market-2026",
+    "year": 2026,
+    "workType": "report",
+    "issuingOrganization": "Canadian Centre for Policy Alternatives",
+    "sources": [
+      "Grey Literature"
+    ],
+    "theme": "labour",
+    "uses": [
+      {
+        "program": "LFS",
+        "precision": "exact_cycles",
+        "cycles": [
+          "2024"
+        ],
+        "cycleText": "2024",
+        "evidenceLocation": "Methods"
+      }
+    ],
+    "mentions": []
+  },
+  {
+    "id": "url:f271bc2f1299b6f1a17962cb3fcd83c52503c56cc0bde13346e699723d4831ae",
+    "title": "New data on household food insecurity in 2025",
+    "doi": null,
+    "url": "https://proof.utoronto.ca/2026/new-data-on-household-food-insecurity-in-2025/",
+    "year": 2026,
+    "workType": "report",
+    "issuingOrganization": "PROOF (University of Toronto)",
+    "sources": [
+      "Grey Literature"
+    ],
+    "theme": "income and inequality",
+    "uses": [
+      {
+        "program": "CIS",
+        "precision": "exact_cycles",
+        "cycles": [
+          "2024"
+        ],
+        "cycleText": "2024",
+        "evidenceLocation": "Methods"
+      }
+    ],
+    "mentions": []
+  },
+  {
+    "id": "url:f6db12be10d6ef282016e55c7789a4739b662479757854c3a70c07b815a6cf31",
+    "title": "Gender Wage Inequity and Occupational Segregation in Atlantic Canada",
+    "doi": null,
+    "url": "https://policyalternatives.ca/publications/reports/gender-wage-gaps-atlantic-2026",
+    "year": 2026,
+    "workType": "report",
+    "issuingOrganization": "Canadian Centre for Policy Alternatives",
+    "sources": [
+      "Grey Literature"
+    ],
+    "theme": "labour",
+    "uses": [
+      {
+        "program": "LFS",
+        "precision": "exact_cycles",
+        "cycles": [
+          "2025"
+        ],
+        "cycleText": "2025",
+        "evidenceLocation": "Methods and Data"
+      }
+    ],
+    "mentions": []
+  },
+  {
+    "id": "url:f9fad15db5ccce7a860f9ba423bba03c0f80cf349b822d7d4a21ebc664641fc2",
+    "title": "Alternative Federal Budget 2026-27: Building Resilient Communities",
+    "doi": null,
+    "url": "https://policyalternatives.ca/publications/reports/alternative-federal-budget-2026",
+    "year": 2025,
+    "workType": "report",
+    "issuingOrganization": "Canadian Centre for Policy Alternatives",
+    "sources": [
+      "Grey Literature"
+    ],
+    "theme": "income and inequality",
+    "uses": [
+      {
+        "program": "CIS",
+        "precision": "exact_cycles",
+        "cycles": [
+          "2024",
+          "2024"
+        ],
+        "cycleText": "2024, 2024",
+        "evidenceLocation": "Technical Annex"
+      },
+      {
+        "program": "LFS",
+        "precision": "exact_cycles",
+        "cycles": [
+          "2024",
+          "2024"
+        ],
+        "cycleText": "2024, 2024",
+        "evidenceLocation": "Technical Annex"
+      }
+    ],
+    "mentions": []
+  },
+  {
+    "id": "url:faa34e6f6f5158620a913b24d9fc93381cf915e15ad89d314abda47e473716e2",
+    "title": "The State of Mental Health in Canada 2024: Access, Affordability, and Inequity",
+    "doi": null,
+    "url": "https://cmha.ca/state-of-mental-health-2024/",
+    "year": 2024,
+    "workType": "report",
+    "issuingOrganization": "Canadian Mental Health Association",
+    "sources": [
+      "Grey Literature"
+    ],
+    "theme": "health",
+    "uses": [
+      {
+        "program": "CCHS",
+        "precision": "exact_cycles",
+        "cycles": [
+          "2022"
+        ],
+        "cycleText": "2022",
+        "evidenceLocation": "Methodology"
+      }
+    ],
+    "mentions": []
+  },
+  {
+    "id": "url:fc83cd07ae1bb286874a0c13b460152887a864b141d633277b0a2c72a4bb8ba7",
+    "title": "Poverty and Child Benefits: Evaluating the Canada Child Benefit with CIS Microdata",
+    "doi": null,
+    "url": "https://maytree.com/publications/child-benefits-cis-2024/",
+    "year": 2024,
+    "workType": "report",
+    "issuingOrganization": "Maytree",
+    "sources": [
+      "Grey Literature"
+    ],
+    "theme": "income and inequality",
+    "uses": [
+      {
+        "program": "CIS",
+        "precision": "exact_cycles",
+        "cycles": [
+          "2022"
+        ],
+        "cycleText": "2022",
+        "evidenceLocation": "Methodology"
+      }
+    ],
+    "mentions": []
+  },
+  {
+    "id": "url:fecec1c99d8ff23ee9ad4ea373cf773772783eef1b2a8d470e6fdd293850c19d",
+    "title": "Caregiving in Canada: Valuing Informal Care and Supporting Family Caregivers",
+    "doi": null,
+    "url": "https://irpp.org/research-studies/caregiving-in-canada-2024/",
+    "year": 2024,
+    "workType": "report",
+    "issuingOrganization": "Institute for Research on Public Policy",
+    "sources": [
+      "Grey Literature"
+    ],
+    "theme": "families",
+    "uses": [
+      {
+        "program": "GSS",
+        "precision": "exact_cycles",
+        "cycles": [
+          "2022"
+        ],
+        "cycleText": "2022",
+        "evidenceLocation": "Data and Sample"
       }
     ],
     "mentions": []
