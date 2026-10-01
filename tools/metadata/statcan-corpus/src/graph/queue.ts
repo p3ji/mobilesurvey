@@ -333,7 +333,7 @@ export class DerivationQueue {
   public recordJobResult(
     jobId: string,
     result: {
-      status: 'completed' | 'no_formula' | 'failed';
+      status: 'completed' | 'no_formula' | 'failed' | 'pending';
       rawResponse?: string;
       candidates?: unknown[];
     }
@@ -602,11 +602,26 @@ if (process.argv[1] && process.argv[1].endsWith('queue.ts')) {
               `  -> Extracted ${candidateEdges.length} edges (${candidateEdges.filter((e) => e.source_record_id).length} resolved).`
             );
           } catch (err: unknown) {
-            console.error(`  -> Failed on ${job.var_name}:`, (err as Error).message);
-            queue.recordJobResult(job.job_id, {
-              status: 'failed',
-              rawResponse: String((err as Error).message),
-            });
+            const errMsg = String((err as Error).message || err);
+            console.error(`  -> Failed on ${job.var_name}:`, errMsg);
+            if (
+              errMsg.includes('fetch failed') ||
+              errMsg.includes('ECONNREFUSED') ||
+              errMsg.includes('ECONNRESET') ||
+              errMsg.includes('timed out')
+            ) {
+              console.warn(`  [connection error] Local LLM unreachable. Backing off 10s; leaving ${job.var_name} pending...`);
+              await new Promise((r) => setTimeout(r, 10000));
+              queue.recordJobResult(job.job_id, {
+                status: 'pending',
+                rawResponse: errMsg,
+              });
+            } else {
+              queue.recordJobResult(job.job_id, {
+                status: 'failed',
+                rawResponse: errMsg,
+              });
+            }
           }
         }
       }
