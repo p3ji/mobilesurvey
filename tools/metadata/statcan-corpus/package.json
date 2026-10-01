@@ -28,7 +28,9 @@
     "corpus:vector:setup": "tsx src/vector/setup.ts",
     "corpus:vector:embed": "tsx src/vector/embed-pilot.ts",
     "corpus:vector:full": "tsx src/vector/embed-corpus.ts",
-    "corpus:benchmark": "tsx src/benchmark/evaluate.ts"
+    "corpus:vector:sync-roles": "tsx src/vector/sync-roles.ts",
+    "corpus:benchmark": "tsx src/benchmark/evaluate.ts",
+    "corpus:benchmark:production": "tsx src/benchmark/production-semantic.ts"
   },
   "dependencies": {
     "@mobilesurvey/ddi-xml": "workspace:*",

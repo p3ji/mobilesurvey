@@ -372,6 +372,76 @@ export function corpusChunkStart(page: number): number {
   return Math.floor((safe - 1) / CORPUS_PAGES_PER_CHUNK) * CORPUS_PAGES_PER_CHUNK + 1;
 }
 
+/**
+ * Detects whether a variable is part of Statistics Canada's standard
+ * Harmonized Content (core sociodemographics common across most household surveys:
+ * respondent age, birth date, sex at birth, gender, marital status, province/geography,
+ * mother tongue, basic student/activity screening, household size).
+ */
+export function isHarmonizedContent(variable: {
+  name: string;
+  concept?: string | null;
+  question_text?: string | null;
+  questionText?: string | null;
+}): boolean {
+  const name = variable.name.toUpperCase();
+  const concept = (variable.concept ?? '').toLowerCase().trim();
+  const q = (variable.question_text ?? variable.questionText ?? '').toLowerCase().trim();
+
+  // 1. Age and Date of birth of the respondent
+  if (
+    /^(AGE_01[A-Z]|DOB|DOB_[YMD]|AWCAGE|DHHGAGE|DHH_AGE|AGEGRP|AGEC|AGE_GRP|AGE_D|AGE_M|AGE_Y|BTH_[A-Z0-9]+|AGE|AGEM|AGEY)$/i.test(name) ||
+    /^(day of birth|date of birth|month of birth|year of birth|birth date|age of respondent|age - respondent|age group - respondent|age - \(g\)|age group - \(g\)|âge du répondant|date de naissance|jour de naissance|mois de naissance|année de naissance)$/i.test(concept) ||
+    concept === 'age' || concept === 'âge' ||
+    /what is (your|respondent.*) date of birth/i.test(q) ||
+    /quel est .* date de naissance/i.test(q)
+  ) return true;
+
+  // 2. Sex and Gender of the respondent
+  if (
+    /^(SEX|DHH_SEX|GENDER|GENDER_[0-9]+|GENDR_[0-9]+|GDR|GDRA_10|GDRA_[0-9]+|GENDR_2|DHHGGDR|SEX_RESP|GDR_RESP|SEXE)$/i.test(name) ||
+    /^(sex|sex at birth|gender|gender of respondent|sexe|genre|sexe du répondant|genre du répondant|gender - imputed)$/i.test(concept) ||
+    concept === 'sex' || concept === 'gender' || concept === 'sexe' || concept === 'genre' ||
+    /what is your (sex|gender)/i.test(q) ||
+    /quel est votre (sexe|genre)/i.test(q)
+  ) return true;
+
+  // 3. Marital status
+  if (
+    /^(MS|MS_01|MS_[0-9]+|MARSTAT|DHHGMS|MST|DOMS|MARIT|MAR)$/i.test(name) ||
+    /^(marital status|legal marital status|marital status - \(g\)|état matrimonial|statut matrimonial)$/i.test(concept) ||
+    concept === 'marital status' || concept === 'état matrimonial' ||
+    /what is your marital status/i.test(q) ||
+    /quel est votre état matrimonial/i.test(q)
+  ) return true;
+
+  // 4. Province / Geography of residence
+  if (
+    /^(GEO_PRV|PRV|PRVDV|PROV|PROVINCE|REGION|CMA|URBRUR|GEODVPRV)$/i.test(name) ||
+    /^(province|province of residence|province of respondent|region|région|province de résidence|postal code)$/i.test(concept)
+  ) return true;
+
+  // 5. Language / Mother tongue
+  if (
+    /^(LAN_01|MOTHTONG|FOS|LANH|LANG_RESP|LANG1|LANG_01)$/i.test(name) ||
+    /^(mother tongue|first official language spoken|langue maternelle|première langue officielle)$/i.test(concept)
+  ) return true;
+
+  // 6. Core main activity & school attendance screening
+  if (
+    /^(MA_01|MA_01A|MA_02|DOMAC|EDC_10|EDC_20|DOEDC|LFSSTAT)$/i.test(name) ||
+    /^(main activity|main activity - worked|student status|currently attending school|activité principale)$/i.test(concept)
+  ) return true;
+
+  // 7. Core household size / dwelling
+  if (
+    /^(HHSIZE|DHH_SIZE|HHTYPE|DWLTYPE|DHH_HS|HH_SIZE)$/i.test(name) ||
+    /^(household size|number of persons in household|taille du ménage|nombre de personnes dans le ménage)$/i.test(concept)
+  ) return true;
+
+  return false;
+}
+
 export class SupabaseCorpusSource {
   readonly id = 'statcan-corpus';
   readonly license = CORPUS_LICENSE;
@@ -446,6 +516,33 @@ export class SupabaseCorpusSource {
     };
   }
 
+  /** At least two search terms; call only after the strict search returns no rows. */
+  async searchRelaxed(query: string, options: CorpusSearchOptions = {}): Promise<CorpusSearchResult> {
+    const trimmed = query.trim();
+    const terms = trimmed.split(/\s+/);
+    if (trimmed.length > 120 || !/^[\p{L}\p{N} ]+$/u.test(trimmed) || terms.length < 3 || terms.length > 6) {
+      return { hits: [], total: 0 };
+    }
+    const rows = await this.rpc<CorpusSearchRow[]>('corpus_search_relaxed', {
+      q: trimmed,
+      lang_filter: options.lang ?? null,
+      survey_filter: options.survey ?? null,
+      year_min: options.yearMin ?? null,
+      year_max: options.yearMax ?? null,
+      require_codes: options.hasCodes ?? null,
+      subject_filter: options.subject ?? null,
+      role_filter: options.role === 'all' ? null : (options.role ?? null),
+      hide_process: options.hideProcess ?? false,
+      sort_mode: options.sort ?? 'relevance',
+      max_rows: options.limit ?? 50,
+      row_offset: options.offset ?? 0,
+    }, options.signal);
+    return {
+      hits: rows.map((row) => ({ entry: toRegistryEntry(row), score: row.rank, matched: [] })),
+      total: rows[0]?.total_count ?? 0,
+    };
+  }
+
   /** Deduplicated, field-aware results for LLM-suggested phrases. */
   async searchAi(terms: string[], options: CorpusSearchOptions = {}): Promise<CorpusSearchResult> {
     if (terms.length === 0) return { hits: [], total: 0 };
@@ -475,17 +572,17 @@ export class SupabaseCorpusSource {
     };
   }
 
-  /** Hydrate full variable records by record_id in one batched request. */
-  async fetchRecords(recordIds: string[], signal?: AbortSignal): Promise<SearchHit[]> {
-    if (recordIds.length === 0) return [];
+  /** Hydrate candidates without losing the vector service's relevance order or scores. */
+  async fetchRecords(candidates: ReadonlyArray<{ recordId: string; score: number }>, signal?: AbortSignal): Promise<SearchHit[]> {
+    if (candidates.length === 0) return [];
     const rows = await this.rpc<CorpusSearchRow[]>('corpus_get_variables', {
-      p_record_ids: recordIds,
+      p_record_ids: candidates.map((candidate) => candidate.recordId),
     }, signal);
-    return rows.map((row) => ({
-      entry: toRegistryEntry(row),
-      score: row.rank,
-      matched: [],
-    }));
+    const byId = new Map(rows.map((row) => [row.record_id, row]));
+    return candidates.flatMap(({ recordId, score }) => {
+      const row = byId.get(recordId);
+      return row ? [{ entry: toRegistryEntry(row), score, matched: [] }] : [];
+    });
   }
 
   /** Immediate verified inputs for the visible results page; empty pages make no request. */
@@ -1044,7 +1141,7 @@ export class SupabaseCorpusSource {
   /**
    * The most recent variables for a given subject.
    * Finds the surveys assigned to this subject with the latest year_max,
-   * then fetches the top variables from those cycles.
+   * excludes boilerplate harmonized sociodemographics, and targets domain-relevant variables.
    */
   async recentBySubject(subject: string, limit = 5, signal?: AbortSignal): Promise<SearchHit[]> {
     if (!subject) return [];
@@ -1070,7 +1167,49 @@ export class SupabaseCorpusSource {
 
       const topGroups = counts.map((c) => c.survey_group).slice(0, 4);
 
-      const varsUrl = `${this.url}/rest/v1/corpus_variable?survey_group=in.(${topGroups.join(',')})&order=year.desc.nullslast,position.asc&limit=${limit * 5}`;
+      // Domain keywords for common subjects to target substantive variables
+      const subjectTerms = subject
+        .toLowerCase()
+        .replace(/[^a-z0-9\s]/g, ' ')
+        .split(/\s+/)
+        .filter((w) => w.length >= 4 && !['and', 'the', 'for', 'with'].includes(w));
+
+      if (/agriculture/i.test(subject)) subjectTerms.push('food', 'agri', 'farm', 'crop', 'diet', 'nutrition', 'fruit', 'vegetable', 'fsc', 'nourriture', 'aliment');
+      if (/crime|justice/i.test(subject)) subjectTerms.push('crime', 'victim', 'police', 'court', 'law', 'offence', 'assault', 'theft', 'safety');
+      if (/digital/i.test(subject)) subjectTerms.push('cyber', 'internet', 'tech', 'online', 'digital', 'software', 'computer');
+      if (/environment/i.test(subject)) subjectTerms.push('water', 'climat', 'energy', 'pollut', 'waste', 'environ', 'recycl');
+      if (/housing/i.test(subject)) subjectTerms.push('hous', 'dwell', 'rent', 'tenant', 'mortgag', 'shelter', 'logement');
+      if (/transport/i.test(subject)) subjectTerms.push('transit', 'transport', 'vehic', 'car', 'commute', 'road');
+
+      // First attempt: search for domain-targeted variables within these surveys
+      let domainVars: CorpusSearchRow[] = [];
+      if (subjectTerms.length > 0) {
+        const orCond = subjectTerms.slice(0, 8).map((k) => `concept.ilike.*${k}*,question_text.ilike.*${k}*,name.ilike.*${k}*`).join(',');
+        const targetedUrl = `${this.url}/rest/v1/corpus_variable?survey_group=in.(${topGroups.join(',')})&or=(${orCond})&order=year.desc.nullslast&limit=${limit * 3}`;
+        const targetedRes = await this.fetchImpl(targetedUrl, {
+          headers: { apikey: this.anonKey, Authorization: `Bearer ${this.anonKey}` },
+          ...(signal ? { signal } : {}),
+        });
+        if (targetedRes.ok) {
+          domainVars = ((await targetedRes.json()) as CorpusSearchRow[]).filter((v) => {
+            const nm = v.name.toUpperCase();
+            if (nm.endsWith('ID') || nm === 'VERDATE' || nm === 'PUMFID' || nm === 'SEQID' || nm === 'RECID' || nm.startsWith('DO')) return false;
+            if (isHarmonizedContent(v)) return false;
+            return true;
+          });
+        }
+      }
+
+      if (domainVars.length >= limit) {
+        return domainVars.slice(0, limit).map((row) => ({
+          entry: toRegistryEntry(row),
+          score: 1.0,
+          matched: [],
+        }));
+      }
+
+      // Fallback: general variables from top surveys, excluding harmonized sociodemographics
+      const varsUrl = `${this.url}/rest/v1/corpus_variable?survey_group=in.(${topGroups.join(',')})&order=year.desc.nullslast,position.asc&limit=${limit * 20}`;
       const varsRes = await this.fetchImpl(varsUrl, {
         headers: { apikey: this.anonKey, Authorization: `Bearer ${this.anonKey}` },
         ...(signal ? { signal } : {}),
@@ -1080,12 +1219,15 @@ export class SupabaseCorpusSource {
 
       const filtered = vars.filter((v) => {
         const nm = v.name.toUpperCase();
-        if (nm.endsWith('ID') || nm === 'VERDATE' || nm === 'PUMFID' || nm === 'SEQID' || nm === 'RECID') return false;
+        if (nm.endsWith('ID') || nm === 'VERDATE' || nm === 'PUMFID' || nm === 'SEQID' || nm === 'RECID' || nm.startsWith('DO')) return false;
         if (v.tcode === 'T15.2' && !v.concept && !v.question_text) return false;
+        if (isHarmonizedContent(v)) return false;
         return true;
-      }).slice(0, limit);
+      });
 
-      return filtered.map((row) => ({
+      const selected = domainVars.concat(filtered.filter((f) => !domainVars.some((d) => d.record_id === f.record_id))).slice(0, limit);
+
+      return selected.map((row) => ({
         entry: toRegistryEntry(row),
         score: 1.0,
         matched: [],

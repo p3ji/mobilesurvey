@@ -21,6 +21,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   CORPUS_ATTRIBUTION,
+  isHarmonizedContent,
   type CorpusCode,
   type CorpusDirectInput,
   type CorpusLineageTarget,
@@ -167,6 +168,11 @@ function CorpusHit({
   const isSelectAll = /\b(select\s+all|mark\s+all|cochez\s+toutes|sélectionnez\s+toutes)\b/i.test(
     `${meta.note ?? ''} ${question ?? ''} ${label ?? ''}`
   );
+  const isHarmonized = isHarmonizedContent({
+    name: meta.variableName,
+    concept: label,
+    question_text: question,
+  });
 
   return (
     <article className="cs-hit">
@@ -195,6 +201,14 @@ function CorpusHit({
             title="Multi-select item: part of a 'Select all that apply' question battery"
           >
             Select all
+          </span>
+        )}
+        {isHarmonized && (
+          <span
+            className="cs-hit__badge--harmonized"
+            title="StatCan Harmonized Content: core sociodemographic question standard across household surveys"
+          >
+            Harmonized
           </span>
         )}
         <span className="cs-hit__survey">
@@ -301,6 +315,7 @@ export function CorpusSearch({
   const [sortBy, setSortBy] = useState<'relevance' | 'recent'>('relevance');
   const [roleFilter, setRoleFilter] = useState<'all' | 'collected' | 'derived' | 'administrative'>('all');
   const [hideProcess, setHideProcess] = useState(true);
+  const [hideHarmonized, setHideHarmonized] = useState(false);
   const [codesOnly, setCodesOnly] = useState(false);
   const [subject, setSubject] = useState<string | null>(null);
   const [page, setPage] = useState(0);
@@ -309,6 +324,7 @@ export function CorpusSearch({
   );
 
   const [hits, setHits] = useState<SearchHit[]>([]);
+  const [relaxed, setRelaxed] = useState(false);
   const [aiEnabled, setAiEnabled] = useState(false);
   const [aiHits, setAiHits] = useState<SearchHit[]>([]);
   const [aiTotal, setAiTotal] = useState(0);
@@ -390,6 +406,7 @@ export function CorpusSearch({
     setSubject(null);
     setRoleFilter('all');
     setHideProcess(false);
+    setHideHarmonized(false);
     setPage(0);
   };
 
@@ -418,7 +435,7 @@ export function CorpusSearch({
     }
   }, [initialSurvey]);
 
-  useEffect(() => setPage(0), [lang, survey, codesOnly, subject, roleFilter, hideProcess, sortBy]);
+  useEffect(() => setPage(0), [lang, survey, codesOnly, subject, roleFilter, hideProcess, hideHarmonized, sortBy]);
 
   useEffect(() => {
     aiController.current?.abort();
@@ -466,18 +483,42 @@ export function CorpusSearch({
     return () => controller.abort();
   }, [source, aiEnabled, aiQuery, aiTerms, debounced, lang, survey, codesOnly, subject, sortBy, aiPage, roleFilter, hideProcess]);
 
-  // Results are filtered and paginated on the server before LIMIT and OFFSET, preserving full page slots and counts.
-  const displayedHits = hits;
+  const isDemographicQuery = useMemo(() => {
+    return /\b(age|birth|dob|sex|gender|marital|province|mother\s+tongue|household)\b/i.test(debounced);
+  }, [debounced]);
+
+  const filterHarmonized = useCallback(
+    (list: SearchHit[]) => {
+      if (!hideHarmonized || isDemographicQuery) return list;
+      return list.filter((h) => {
+        const meta = h.entry.corpus;
+        if (!meta) return true;
+        return !isHarmonizedContent({
+          name: meta.variableName,
+          concept:
+            (h.entry.ddi.label as Record<string, string> | undefined)?.[
+              meta.lang === 'fr' ? 'fr' : 'en'
+            ] ?? meta.variableName,
+          question_text: (h.entry.ddi.description as Record<string, string> | undefined)?.[
+            meta.lang === 'fr' ? 'fr' : 'en'
+          ],
+        });
+      });
+    },
+    [hideHarmonized, isDemographicQuery],
+  );
+
+  const displayedHits = useMemo(() => filterHarmonized(hits), [filterHarmonized, hits]);
   const groupedHits = useMemo(() => groupCorpusHits(displayedHits), [displayedHits]);
   const aiDisplayedHits = useMemo(() => {
     const keywordIds = new Set(hits.map((hit) => hit.entry.entryId));
-    return aiHits.filter((hit) => !keywordIds.has(hit.entry.entryId));
-  }, [aiHits, hits]);
+    return filterHarmonized(aiHits.filter((hit) => !keywordIds.has(hit.entry.entryId)));
+  }, [filterHarmonized, aiHits, hits]);
   const aiGroupedHits = useMemo(() => groupCorpusHits(aiDisplayedHits), [aiDisplayedHits]);
   const semanticDisplayedHits = useMemo(() => {
     const lexicalIds = new Set(displayedHits.map((hit) => hit.entry.entryId));
-    return semanticHits.filter((hit) => !lexicalIds.has(hit.entry.entryId));
-  }, [semanticHits, displayedHits]);
+    return filterHarmonized(semanticHits.filter((hit) => !lexicalIds.has(hit.entry.entryId)));
+  }, [filterHarmonized, semanticHits, displayedHits]);
   const semanticGroupedHits = useMemo(() => groupCorpusHits(semanticDisplayedHits), [semanticDisplayedHits]);
   const sortedSurveys = useMemo(() => [...surveys].sort((a, b) => {
     const nameA = a.surveyAcronym ?? a.surveyGroup;
@@ -520,6 +561,7 @@ export function CorpusSearch({
     if (debounced.trim() === '') {
       setHits([]);
       setTotal(0);
+      setRelaxed(false);
       return;
     }
     const controller = new AbortController();
@@ -560,14 +602,30 @@ export function CorpusSearch({
               setHits(retry.hits);
               setTotal(retry.total);
               setCorrected({ from: debounced, to: best.term });
+              setRelaxed(false);
               setError(null);
               return;
             }
           }
         }
 
-        setHits(result.hits);
-        setTotal(result.total);
+        const fallback = result.total === 0
+          ? await source.searchRelaxed(debounced, {
+            sort: sortBy,
+            ...(lang === 'all' ? {} : { lang }),
+            ...(survey === 'all' ? {} : { survey }),
+            ...(codesOnly ? { hasCodes: true } : {}),
+            ...(subject === null ? {} : { subject }),
+            role: roleFilter,
+            hideProcess,
+            limit: PAGE_SIZE,
+            offset: page * PAGE_SIZE,
+            signal: controller.signal,
+          })
+          : null;
+        setHits(fallback?.hits ?? result.hits);
+        setTotal(fallback?.total ?? result.total);
+        setRelaxed((fallback?.total ?? 0) > 0);
         setCorrected(null);
         setError(null);
       } catch (err) {
@@ -575,6 +633,7 @@ export function CorpusSearch({
           setHits([]);
           setTotal(0);
           setCorrected(null);
+          setRelaxed(false);
           setError(describe(err));
         }
       } finally {
@@ -615,14 +674,14 @@ export function CorpusSearch({
           return;
         }
         const lexicalIds = new Set(hits.map((h) => h.entry.entryId));
-        const candidateIds = points
-          .map((p) => p.record_id)
-          .filter((id) => !lexicalIds.has(id));
-        if (candidateIds.length === 0) {
+        const candidates = points
+          .filter((point) => !lexicalIds.has(point.record_id))
+          .map((point) => ({ recordId: point.record_id, score: point.score }));
+        if (candidates.length === 0) {
           setSemanticHits([]);
           return;
         }
-        const hydrated = await source.fetchRecords(candidateIds, controller.signal);
+        const hydrated = await source.fetchRecords(candidates, controller.signal);
         if (!controller.signal.aborted) {
           setSemanticHits(hydrated);
         }
@@ -872,6 +931,18 @@ export function CorpusSearch({
           <span>Hide paradata / weights</span>
         </label>
 
+        <label
+          className="cs-filter cs-filter--check"
+          title="Exclude standard sociodemographics present across all household surveys (age, birth date, sex at birth, gender, marital status, province, mother tongue, basic student/activity screening, household size)"
+        >
+          <input
+            type="checkbox"
+            checked={hideHarmonized}
+            onChange={(e) => setHideHarmonized(e.target.checked)}
+          />
+          <span>Hide harmonized content</span>
+        </label>
+
         <label className="cs-filter cs-filter--check">
           <input type="checkbox" checked={codesOnly} onChange={(e) => setCodesOnly(e.target.checked)} />
           <span>Has response categories</span>
@@ -947,7 +1018,7 @@ export function CorpusSearch({
                 ? `No results for "${debounced}".`
                 : `${formatInt(total)} variable record${total === 1 ? '' : 's'} for "${
                     corrected?.to ?? debounced
-                  }"` + (hideProcess || roleFilter !== 'all' ? ' before GSIM Role / Paradata filtering' : '') + (pages > 1 ? ` · page ${page + 1} of ${formatInt(pages)}` : '')}
+                  }"` + (pages > 1 ? ` · page ${page + 1} of ${formatInt(pages)}` : '')}
             {/* A correction the reader can neither see nor refuse is how this pattern goes wrong,
                 so it says what it did and offers the original back. */}
             {!busy && corrected !== null && (
@@ -968,6 +1039,8 @@ export function CorpusSearch({
             )}
           </p>
 
+          {!busy && relaxed && <p className="cs-suggest">No results matched every word. Showing records matching at least two search terms.</p>}
+
           {!busy && total === 0 && (lang !== 'all' || survey !== 'all' || codesOnly || subject !== null) && (
             <p className="cs-suggest">
               The current filters may exclude matching records.{' '}
@@ -978,7 +1051,7 @@ export function CorpusSearch({
 
           {displayedHits.length === 0 && hits.length > 0 && (
             <p className="cs-suggest">
-              All {hits.length} matches on this page were hidden by the current GSIM Role / Paradata filter.{' '}
+              All {hits.length} matches on this page were hidden by active filters (GSIM Role, Paradata, or Harmonized Content).{' '}
               <button type="button" className="cs-link" onClick={clearFilters}>Clear filters</button>
             </p>
           )}

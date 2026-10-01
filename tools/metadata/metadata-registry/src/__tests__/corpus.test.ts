@@ -8,6 +8,7 @@ import {
   CORPUS_ATTRIBUTION,
   CORPUS_LICENSE,
   corpusCitation,
+  isHarmonizedContent,
   SupabaseCorpusSource,
   toRegistryEntry,
   type CorpusSearchRow,
@@ -119,6 +120,41 @@ function stubFetch(payload: unknown, status = 200) {
 }
 
 describe('SupabaseCorpusSource', () => {
+  it('preserves semantic candidate order and scores after unordered hydration', async () => {
+    const first = row({ record_id: '11111111-1111-5111-8111-111111111111', name: 'BEST' });
+    const second = row({ record_id: '22222222-2222-5222-8222-222222222222', name: 'NEXT' });
+    const fetchImpl = stubFetch([second, first]);
+    const source = new SupabaseCorpusSource({ url: 'https://p.supabase.co', anonKey: 'a', fetchImpl });
+    const hits = await source.fetchRecords([
+      { recordId: first.record_id, score: 0.83 },
+      { recordId: second.record_id, score: 0.71 },
+      { recordId: '33333333-3333-5333-8333-333333333333', score: 0.6 },
+    ]);
+    expect(hits.map((hit) => [hit.entry.corpus?.variableName, hit.score])).toEqual([
+      ['BEST', 0.83], ['NEXT', 0.71],
+    ]);
+    const [url, init] = (fetchImpl as unknown as ReturnType<typeof vi.fn>).mock.calls[0] as [string, RequestInit];
+    expect(url).toBe('https://p.supabase.co/rest/v1/rpc/corpus_get_variables');
+    expect(JSON.parse(init.body as string).p_record_ids).toEqual([
+      first.record_id, second.record_id, '33333333-3333-5333-8333-333333333333',
+    ]);
+  });
+
+  it('uses the two-term fallback only for plain multiword zero-hit queries', async () => {
+    const fetchImpl = stubFetch([row({ name: 'HRLYEARN', concept: 'Usual hourly earnings', total_count: 12 })]);
+    const source = new SupabaseCorpusSource({ url: 'https://p.supabase.co', anonKey: 'a', fetchImpl });
+    const result = await source.searchRelaxed('hourly wage usual earnings', { role: 'collected', limit: 25 });
+    expect(result.hits[0]?.entry.corpus?.variableName).toBe('HRLYEARN');
+    expect(result.total).toBe(12);
+    const [url, init] = (fetchImpl as unknown as ReturnType<typeof vi.fn>).mock.calls[0] as [string, RequestInit];
+    expect(url).toBe('https://p.supabase.co/rest/v1/rpc/corpus_search_relaxed');
+    expect(JSON.parse(init.body as string)).toMatchObject({
+      q: 'hourly wage usual earnings', role_filter: 'collected', max_rows: 25,
+    });
+    expect(await source.searchRelaxed('GEO_PRV')).toEqual({ hits: [], total: 0 });
+    expect(fetchImpl).toHaveBeenCalledTimes(1);
+  });
+
   it('keeps AI phrase results in one deduplicated, pageable subject-aware search', async () => {
     const fetchImpl = stubFetch([row({ total_count: 3, name: 'DSH_10F', concept: 'Harassment - Online' })]);
     const source = new SupabaseCorpusSource({ url: 'https://p.supabase.co', anonKey: 'a', fetchImpl });
@@ -449,5 +485,37 @@ describe('subject facet', () => {
       totalVariables: 194507,
       totalSurveys: 186,
     });
+  });
+});
+
+describe('isHarmonizedContent', () => {
+  it('detects age and date of birth variables', () => {
+    expect(isHarmonizedContent({ name: 'AGE_01C', concept: 'Day of birth' })).toBe(true);
+    expect(isHarmonizedContent({ name: 'DHHGAGE', concept: 'Age of respondent' })).toBe(true);
+    expect(isHarmonizedContent({ name: 'DOB_Y', concept: 'Year of birth' })).toBe(true);
+    expect(isHarmonizedContent({ name: 'AGE', concept: 'Age' })).toBe(true);
+  });
+
+  it('detects sex and gender variables', () => {
+    expect(isHarmonizedContent({ name: 'SEX', concept: 'Sex at birth' })).toBe(true);
+    expect(isHarmonizedContent({ name: 'DHH_SEX', concept: 'Sex of respondent' })).toBe(true);
+    expect(isHarmonizedContent({ name: 'GENDER_1', concept: 'Gender' })).toBe(true);
+  });
+
+  it('detects marital status variables', () => {
+    expect(isHarmonizedContent({ name: 'MS_01', concept: 'Marital status' })).toBe(true);
+    expect(isHarmonizedContent({ name: 'MARSTAT', concept: 'Legal marital status' })).toBe(true);
+  });
+
+  it('detects geography and language variables', () => {
+    expect(isHarmonizedContent({ name: 'GEO_PRV', concept: 'Province of residence' })).toBe(true);
+    expect(isHarmonizedContent({ name: 'LAN_01', concept: 'Mother tongue' })).toBe(true);
+  });
+
+  it('does not classify substantive domain variables as harmonized content', () => {
+    expect(isHarmonizedContent({ name: 'FSC_15', concept: 'Food security - worried food would run out' })).toBe(false);
+    expect(isHarmonizedContent({ name: 'SMK_01', concept: 'Smoked cigarettes in past 30 days' })).toBe(false);
+    expect(isHarmonizedContent({ name: 'ONL_SHOP', concept: 'Online shopping frequency' })).toBe(false);
+    expect(isHarmonizedContent({ name: 'AGR_01', concept: 'Gross farm revenue' })).toBe(false);
   });
 });

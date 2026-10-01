@@ -1,6 +1,7 @@
 import { existsSync, readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { pipeline } from '@xenova/transformers';
+import { fetchVectorRoles } from './roles.js';
 
 // 1. Environment discovery
 const candidatePaths = [
@@ -45,31 +46,6 @@ if (!supabaseUrl || !supabaseAnonKey) {
 if (!qdrantUrl || !qdrantApiKey) {
   console.error('Error: Qdrant credentials not found in environment.');
   process.exit(1);
-}
-
-// 2. Role Classifier (mirrors corpus_variable_role in SQL)
-function classifyRole(name: string, concept: string | null, _note: string | null): string {
-  const normName = name.toUpperCase();
-  const normConcept = (concept ?? '').toLowerCase();
-
-  // Process / weight check
-  if (
-    /^(WTS?_|WTM_|WT_|WGHT|BOOT|BSW|FWT|REPWT|FWEIGHT|HWEIGHT|WT[0-9]+|WTBS|WTPS|WVCBS|SPFWT|BWT|SAMPLEID|PERSONID|MASTERID|HHID|RECID|VERDATE|REFPER|RECORDID|CASEID|USERID|FORMID|PUMFID|BATCHID|STRAT|FRAME|SEQNUM|IDENT|DO[A-Z]{3}|ADM_|SAM_|INT_|COL_|MET_|SURV|DOF|FLG_)/.test(normName) ||
-    /_F$/.test(normName) ||
-    /(sampling weight|sample weight|bootstrap|poids echantillon|share weight|master weight|survey weight|final weight|replicate weights?)/.test(normConcept)
-  ) {
-    return 'process';
-  }
-
-  // Derived check
-  if (
-    /^(DHH|DV_|DER_|REC_|FLAG_|CAT_|GRP_|INDEX_|SCORE_|TOTAL_|SUM_|NUM_|AVG_|MED_|COUNT_|PCT_|PROP_|RATIO_|D_)/.test(normName) ||
-    /(derived|d\u00e9riv\u00e9|grouped|recoded|calculated|computed|aggregated|composite)/.test(normConcept)
-  ) {
-    return 'derived';
-  }
-
-  return 'collected';
 }
 
 interface RawVariableRow {
@@ -198,12 +174,12 @@ async function main() {
 
     lastRecordId = rows[rows.length - 1]!.record_id;
     totalScanned += rows.length;
+    const eligible = rows.filter((row) =>
+      (row.concept?.trim().length ?? 0) >= 5 || (row.question_text?.trim().length ?? 0) >= 5,
+    );
+    const roles = await fetchVectorRoles(supabaseUrl!, supabaseAnonKey!, eligible.map((row) => row.record_id));
 
-    for (const row of rows) {
-      const cLen = row.concept?.trim().length ?? 0;
-      const qLen = row.question_text?.trim().length ?? 0;
-      if (cLen < 5 && qLen < 5) continue; // skip un-annotated records
-
+    for (const row of eligible) {
       totalEligible++;
       const text = prepareSemanticText(row);
       if (!text || text.length < 5) continue;
@@ -215,7 +191,7 @@ async function main() {
         embeddingCache.set(text, vec);
       }
 
-      const role = classifyRole(row.name, row.concept, row.note);
+      const role = roles.get(row.record_id)!;
       const subjects = subjectMap.get(row.survey_group) ?? [];
 
       pointsBuffer.push({

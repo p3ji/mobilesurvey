@@ -184,6 +184,20 @@ describe('sql/search-sort.sql', () => {
   });
 });
 
+describe('semantic sidecar SQL', () => {
+  it('parses the relaxed-search and SQL-role RPCs, including their function bodies', () => {
+    for (const file of ['search-relaxed.sql', 'vector-roles.sql']) {
+      const sql = readFileSync(path.resolve(path.dirname(SCHEMA_PATH), file), 'utf8');
+      const statements = pg.parse(sql);
+      expect(statements.error == null ? undefined : `${file}: ${statements.error.message} — ${locate(sql, statements.error.cursorpos)}`).toBeUndefined();
+      const body = sql.match(/as \$\$([\s\S]*?)\$\$;/)?.[1];
+      expect(body).toBeDefined();
+      const parsedBody = pg.parse(body!);
+      expect(parsedBody.error == null ? undefined : `${file}: ${parsedBody.error.message} — ${locate(body!, parsedBody.error.cursorpos)}`).toBeUndefined();
+    }
+  });
+});
+
 describe('sql/about-progress.sql', () => {
   it('parses the public progress RPC and its SQL body', () => {
     const sql = readFileSync(path.resolve(path.dirname(SCHEMA_PATH), 'about-progress.sql'), 'utf8');

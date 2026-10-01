@@ -10,6 +10,7 @@ export {
   SupabaseCorpusSource,
   toRegistryEntry as corpusRowToEntry,
   corpusCitation,
+  isHarmonizedContent,
   CORPUS_LICENSE,
   CORPUS_ATTRIBUTION,
   type CorpusMeta,
