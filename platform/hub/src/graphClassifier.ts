@@ -17,8 +17,8 @@ export interface ClassifiedHit {
   derivedInputs: string[];
 }
 
-const WEIGHT_NAME_REGEX = /^(WTS?_|WTM_|WT_|WGHT|BOOT|BSW|FWT|REPWT|FWEIGHT|HWEIGHT|WT[0-9]+)/i;
-const WEIGHT_CONCEPT_REGEX = /\b(sampling weight|sample weight|bootstrap|poids [eé]chantillon|share weight|master weight|survey weight|final weight|replicate weight)\b/i;
+const WEIGHT_NAME_REGEX = /^(WTS?_|WTM_|WT_|WGHT|BOOT|BSW|FWT|REPWT|FWEIGHT|HWEIGHT|WT[0-9]+|WTBS|WTPS|WVCBS|SPFWT|BWT|SAMPLEID|PERSONID|MASTERID|HHID|RECID|VERDATE|REFPER|RECORDID|CASEID|USERID|FORMID|PUMFID|BATCHID|STRAT|FRAME|SEQNUM|IDENT|DO[A-Z]{3}|ADM_|SAM_|INT_|COL_|MET_|SURV|DOF|FLG_|FLAG_|IF_|IMP_|QFLG_|I[0-9]{4,})/i;
+const WEIGHT_CONCEPT_REGEX = /(?:[-–—]\s*\(F\)$|\(F\)$|\b(?:sampling weight|sample weight|bootstrap|poids [eé]chantillon|share weight|master weight|survey weight|final weight|replicate weights?|poids r[eé]plique|inclusion flag|imputation flag|imputation|allocation flag|quality flag|data quality flag|status flag|edit flag|indicateur d[''’]imputation|drapeau d[''’]imputation|indicateur)\b|^imputation\b)/i;
 const SYSTEM_ID_REGEX = /^(SAMPLEID|PERSONID|MASTERID|HHID|RECID|VERDATE|REFPER|RECORDID|CASEID|USERID|FORMID|PUMFID|BATCHID|STRAT|FRAME|SEQNUM|IDENT)/i;
 const CCHS_INCLUSION_FLAG_REGEX = /^DO[A-Z]{3}$/i;
 const DERIVED_CONCEPT_REGEX = /(\s*-\s*\(D\)$|\(D\)$|\s*-\s*D$|\(derived\)$|\bderived variable\b|\bvariable d[eé]riv[eé]e\b)/i;
@@ -77,6 +77,9 @@ export function classifyHit(meta: CorpusMeta, label?: string): ClassifiedHit {
     WEIGHT_NAME_REGEX.test(name) ||
     WEIGHT_CONCEPT_REGEX.test(concept) ||
     CCHS_INCLUSION_FLAG_REGEX.test(name) ||
+    name.endsWith('_F') ||
+    name.endsWith('_FLG') ||
+    /\b(imputation flag|indicateur d[''’]imputation)\b/i.test(note) ||
     isIdentifier
   ) {
     origin = 'process';

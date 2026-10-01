@@ -11,6 +11,7 @@ export {
   toRegistryEntry as corpusRowToEntry,
   corpusCitation,
   isHarmonizedContent,
+  isProcessVariable,
   CORPUS_LICENSE,
   CORPUS_ATTRIBUTION,
   type CorpusMeta,

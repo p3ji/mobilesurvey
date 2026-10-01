@@ -9,6 +9,7 @@ import {
   CORPUS_LICENSE,
   corpusCitation,
   isHarmonizedContent,
+  isProcessVariable,
   SupabaseCorpusSource,
   toRegistryEntry,
   type CorpusSearchRow,
@@ -517,5 +518,35 @@ describe('isHarmonizedContent', () => {
     expect(isHarmonizedContent({ name: 'SMK_01', concept: 'Smoked cigarettes in past 30 days' })).toBe(false);
     expect(isHarmonizedContent({ name: 'ONL_SHOP', concept: 'Online shopping frequency' })).toBe(false);
     expect(isHarmonizedContent({ name: 'AGR_01', concept: 'Gross farm revenue' })).toBe(false);
+  });
+});
+
+describe('isProcessVariable', () => {
+  it('detects imputation flags by name and concept', () => {
+    expect(isProcessVariable({ name: 'I150004', concept: 'Imputation flag' })).toBe(true);
+    expect(isProcessVariable({ name: 'I010001', concept: 'Imputation flag' })).toBe(true);
+    expect(isProcessVariable({ name: 'I200901', concept: null })).toBe(true);
+    expect(isProcessVariable({ name: 'FLAG_IMP', concept: 'Imputation' })).toBe(true);
+    expect(isProcessVariable({ name: 'C01_F', concept: 'Flag' })).toBe(true);
+    expect(isProcessVariable({ name: 'VAL_01', concept: "Indicateur d'imputation" })).toBe(true);
+  });
+
+  it('detects sampling and bootstrap weights', () => {
+    expect(isProcessVariable({ name: 'WTS_M', concept: 'Sampling weight' })).toBe(true);
+    expect(isProcessVariable({ name: 'BSW_001', concept: 'Bootstrap replicate weight' })).toBe(true);
+    expect(isProcessVariable({ name: 'WTBS_01', concept: 'Poids réplique' })).toBe(true);
+  });
+
+  it('detects identifiers and collection paradata', () => {
+    expect(isProcessVariable({ name: 'SAMPLEID', concept: 'Sample identifier' })).toBe(true);
+    expect(isProcessVariable({ name: 'ADM_STATUS', concept: 'Interview status' })).toBe(true);
+    expect(isProcessVariable({ name: 'DOHWT', concept: 'Inclusion flag' })).toBe(true);
+  });
+
+  it('does not classify substantive survey questions as process variables', () => {
+    expect(isProcessVariable({ name: 'C500104', concept: 'Q50' })).toBe(false);
+    expect(isProcessVariable({ name: 'C010005', concept: 'Q1' })).toBe(false);
+    expect(isProcessVariable({ name: 'ONL_SHOP', concept: 'Online shopping' })).toBe(false);
+    expect(isProcessVariable({ name: 'FSC_15', concept: 'Food security' })).toBe(false);
   });
 });

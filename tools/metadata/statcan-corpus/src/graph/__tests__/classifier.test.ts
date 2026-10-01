@@ -134,6 +134,26 @@ describe('Variable Role Classifier (2D GSIM)', () => {
     expect(result.rule).toBe('inclusion_or_flow_flag');
   });
 
+  it('classifies imputation flags and operational editing flags as process', () => {
+    const v1 = mockVar({
+      name: 'I150004',
+      concept: 'Imputation flag',
+    });
+    expect(classifyVariableRole(v1).role).toBe('process');
+
+    const v2 = mockVar({
+      name: 'I010001',
+      concept: "Indicateur d'imputation",
+    });
+    expect(classifyVariableRole(v2).role).toBe('process');
+
+    const v3 = mockVar({
+      name: 'FLAG_IMP',
+      concept: 'Status of imputed data',
+    });
+    expect(classifyVariableRole(v3).role).toBe('process');
+  });
+
   it('does NOT default continuous quantitative measures to process when codes and question text are absent', () => {
     const v = mockVar({
       name: 'TOTALINC',

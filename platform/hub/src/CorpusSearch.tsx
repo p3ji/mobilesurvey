@@ -22,6 +22,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   CORPUS_ATTRIBUTION,
   isHarmonizedContent,
+  isProcessVariable,
   type CorpusCode,
   type CorpusDirectInput,
   type CorpusLineageTarget,
@@ -393,8 +394,6 @@ export function CorpusSearch({
     return () => controller.abort();
   }, [source, subject]);
 
-  const recentSubjectGroups = useMemo(() => groupCorpusHits(recentSubjectHits), [recentSubjectHits]);
-
   useEffect(() => {
     onSearchStateChange?.(query, survey);
   }, [query, survey, onSearchStateChange]);
@@ -487,10 +486,25 @@ export function CorpusSearch({
     return /\b(age|birth|dob|sex|gender|marital|province|mother\s+tongue|household)\b/i.test(debounced);
   }, [debounced]);
 
-  const filterHarmonized = useCallback(
+  const filterHits = useCallback(
     (list: SearchHit[]) => {
-      if (!hideHarmonized || isDemographicQuery) return list;
-      return list.filter((h) => {
+      let filtered = list;
+      if (hideProcess) {
+        filtered = filtered.filter((h) => {
+          const meta = h.entry.corpus;
+          if (!meta) return true;
+          const label =
+            (h.entry.ddi.label as Record<string, string> | undefined)?.[
+              meta.lang === 'fr' ? 'fr' : 'en'
+            ] ?? meta.variableName;
+          const classification = classifyHit(meta, label);
+          if (classification.role === 'process') return false;
+          if (isProcessVariable({ name: meta.variableName, concept: label, note: meta.note })) return false;
+          return true;
+        });
+      }
+      if (!hideHarmonized || isDemographicQuery) return filtered;
+      return filtered.filter((h) => {
         const meta = h.entry.corpus;
         if (!meta) return true;
         return !isHarmonizedContent({
@@ -505,21 +519,22 @@ export function CorpusSearch({
         });
       });
     },
-    [hideHarmonized, isDemographicQuery],
+    [hideHarmonized, hideProcess, isDemographicQuery],
   );
 
-  const displayedHits = useMemo(() => filterHarmonized(hits), [filterHarmonized, hits]);
+  const displayedHits = useMemo(() => filterHits(hits), [filterHits, hits]);
   const groupedHits = useMemo(() => groupCorpusHits(displayedHits), [displayedHits]);
   const aiDisplayedHits = useMemo(() => {
     const keywordIds = new Set(hits.map((hit) => hit.entry.entryId));
-    return filterHarmonized(aiHits.filter((hit) => !keywordIds.has(hit.entry.entryId)));
-  }, [filterHarmonized, aiHits, hits]);
+    return filterHits(aiHits.filter((hit) => !keywordIds.has(hit.entry.entryId)));
+  }, [filterHits, aiHits, hits]);
   const aiGroupedHits = useMemo(() => groupCorpusHits(aiDisplayedHits), [aiDisplayedHits]);
   const semanticDisplayedHits = useMemo(() => {
     const lexicalIds = new Set(displayedHits.map((hit) => hit.entry.entryId));
-    return filterHarmonized(semanticHits.filter((hit) => !lexicalIds.has(hit.entry.entryId)));
-  }, [filterHarmonized, semanticHits, displayedHits]);
+    return filterHits(semanticHits.filter((hit) => !lexicalIds.has(hit.entry.entryId)));
+  }, [filterHits, semanticHits, displayedHits]);
   const semanticGroupedHits = useMemo(() => groupCorpusHits(semanticDisplayedHits), [semanticDisplayedHits]);
+  const recentSubjectGroups = useMemo(() => groupCorpusHits(filterHits(recentSubjectHits)), [filterHits, recentSubjectHits]);
   const sortedSurveys = useMemo(() => [...surveys].sort((a, b) => {
     const nameA = a.surveyAcronym ?? a.surveyGroup;
     const nameB = b.surveyAcronym ?? b.surveyGroup;

@@ -25,7 +25,7 @@ export function isBootstrapWeight(name: string, concept?: string): boolean {
 }
 const SYSTEM_ID_REGEX = /^(SAMPLEID|PERSONID|MASTERID|HHID|RECID|VERDATE|REFPER|RECORDID|CASEID|USERID|FORMID|PUMFID|BATCHID|STRAT|FRAME|SEQNUM|IDENT)/i;
 const PARADATA_NAME_REGEX = /^(ADM_|SAM_|INT_|COL_|MET_|SURV)/i;
-const FLAG_CONCEPT_REGEX = /(\s*-\s*\(F\)$|\(F\)$|\binclusion flag\b|\bindicateur\b)/i;
+const FLAG_CONCEPT_REGEX = /(?:[-–—]\s*\(F\)$|\(F\)$|\b(?:inclusion flag|imputation flag|imputation|allocation flag|quality flag|data quality flag|status flag|edit flag|indicateur d[''’]imputation|drapeau d[''’]imputation|indicateur)\b|^imputation\b)/i;
 const CCHS_INCLUSION_FLAG_REGEX = /^DO[A-Z]{3}$/i; // e.g. DOHWT, DOCAC, DODHH
 const DERIVED_CONCEPT_REGEX = /(\s*-\s*\(D\)$|\(D\)$|\s*-\s*D$|\(derived\)$|\bderived variable\b|\bvariable d[eé]riv[eé]e\b)/i;
 /**
@@ -101,12 +101,19 @@ export function classifyVariableRole(v: CorpusVariable): RoleEvidence {
     CCHS_INCLUSION_FLAG_REGEX.test(name) ||
     name.startsWith('DOF') ||
     name.startsWith('FLG_') ||
-    name.endsWith('_F')
+    name.startsWith('FLAG_') ||
+    name.startsWith('IF_') ||
+    name.startsWith('IMP_') ||
+    name.startsWith('QFLG_') ||
+    /^I[0-9]{4,}$/.test(name) ||
+    name.endsWith('_F') ||
+    name.endsWith('_FLG') ||
+    /\b(imputation flag|indicateur d[''’]imputation)\b/i.test(note)
   ) {
     origin = 'process';
     confidence = 0.95;
     originRule = 'inclusion_or_flow_flag';
-    originDetails = `Inclusion/flow operational flag: '${concept || name}'`;
+    originDetails = `Inclusion/flow/imputation operational flag: '${concept || name}'`;
   }
 
   // 2. Administrative Linkage

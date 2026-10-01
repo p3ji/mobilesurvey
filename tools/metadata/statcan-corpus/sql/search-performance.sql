@@ -54,10 +54,13 @@ immutable
 parallel safe
 as $$
   select case
-    -- 1. Origin: process / paradata / weights / system identifiers
-    when p_name ~* '^(WTS?_|WTM_|WT_|WGHT|BOOT|BSW|FWT|REPWT|FWEIGHT|HWEIGHT|WT[0-9]+|WTBS|WTPS|WVCBS|SPFWT|BWT|SAMPLEID|PERSONID|MASTERID|HHID|RECID|VERDATE|REFPER|RECORDID|CASEID|USERID|FORMID|PUMFID|BATCHID|STRAT|FRAME|SEQNUM|IDENT|DO[A-Z]{3}|ADM_|SAM_|INT_|COL_|MET_|SURV|DOF|FLG_)'
-      or p_name ~* '_F$'
-      or coalesce(p_concept, '') ~* '(^|\y)(sampling weight|sample weight|bootstrap|poids [eé]chantillon|share weight|master weight|survey weight|final weight|replicate weights?|poids r[eé]plique|inclusion flag|indicateur)(\y|$)|[-–—]\s*\(F\)|\(F\)$'
+    -- 1. Origin: process / paradata / weights / system identifiers / imputation flags
+    when p_name ~* '^(WTS?_|WTM_|WT_|WGHT|BOOT|BSW|FWT|REPWT|FWEIGHT|HWEIGHT|WT[0-9]+|WTBS|WTPS|WVCBS|SPFWT|BWT|SAMPLEID|PERSONID|MASTERID|HHID|RECID|VERDATE|REFPER|RECORDID|CASEID|USERID|FORMID|PUMFID|BATCHID|STRAT|FRAME|SEQNUM|IDENT|DO[A-Z]{3}|ADM_|SAM_|INT_|COL_|MET_|SURV|DOF|FLG_|FLAG_|IF_|IMP_|QFLG_)'
+      or p_name ~* '^I[0-9]{4,}$'
+      or p_name ~* '(_F|_FLG)$'
+      or coalesce(p_concept, '') ~* '(^|\y)(sampling weight|sample weight|bootstrap|poids [eé]chantillon|share weight|master weight|survey weight|final weight|replicate weights?|poids r[eé]plique|inclusion flag|imputation flag|imputation|allocation flag|quality flag|data quality flag|status flag|edit flag|indicateur d[\''’]imputation|drapeau d[\''’]imputation|indicateur)(\y|$)|[-–—]\s*\(F\)|\(F\)$'
+      or coalesce(p_concept, '') ~* '^imputation\b'
+      or coalesce(p_note, '') ~* '\b(imputation flag|indicateur d[\''’]imputation)\b'
       then 'process'
 
     -- 2. Derivation: derived / recoded / PUMF grouped

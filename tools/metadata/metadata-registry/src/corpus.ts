@@ -442,6 +442,37 @@ export function isHarmonizedContent(variable: {
   return false;
 }
 
+/**
+ * Detects whether a variable is operational paradata, a sampling/bootstrap weight,
+ * a system identifier, or an imputation/editing/quality flag (GSIM Role: process).
+ */
+export function isProcessVariable(variable: {
+  name: string;
+  concept?: string | null;
+  note?: string | null;
+}): boolean {
+  const name = variable.name.trim().toUpperCase();
+  const concept = (variable.concept ?? '').toLowerCase().trim();
+  const note = (variable.note ?? '').toLowerCase().trim();
+
+  // 1. Name patterns: weights, IDs, flags, imputation variables
+  if (
+    /^(WTS?_|WTM_|WT_|WGHT|BOOT|BSW|FWT|REPWT|FWEIGHT|HWEIGHT|WT[0-9]+|WTBS|WTPS|WVCBS|SPFWT|BWT|SAMPLEID|PERSONID|MASTERID|HHID|RECID|VERDATE|REFPER|RECORDID|CASEID|USERID|FORMID|PUMFID|BATCHID|STRAT|FRAME|SEQNUM|IDENT|DO[A-Z]{3}|ADM_|SAM_|INT_|COL_|MET_|SURV|DOF|FLG_|FLAG_|IF_|IMP_|QFLG_)/i.test(name) ||
+    /^I[0-9]{4,}$/i.test(name) ||
+    /(_F|_FLG)$/i.test(name)
+  ) return true;
+
+  // 2. Concept / Note patterns: weights, imputation flags, quality flags
+  if (
+    /\b(sampling weight|sample weight|bootstrap|poids [eé]chantillon|share weight|master weight|survey weight|final weight|replicate weights?|poids r[eé]plique|inclusion flag|imputation flag|imputation|allocation flag|quality flag|data quality flag|status flag|edit flag|indicateur d[''’]imputation|drapeau d[''’]imputation|indicateur)\b/i.test(concept) ||
+    /^imputation\b/i.test(concept) ||
+    /[-–—]\s*\(F\)|\(F\)$/i.test(concept) ||
+    /\b(imputation flag|indicateur d[''’]imputation)\b/i.test(note)
+  ) return true;
+
+  return false;
+}
+
 export class SupabaseCorpusSource {
   readonly id = 'statcan-corpus';
   readonly license = CORPUS_LICENSE;
@@ -1177,6 +1208,7 @@ export class SupabaseCorpusSource {
       if (/agriculture/i.test(subject)) subjectTerms.push('food', 'agri', 'farm', 'crop', 'diet', 'nutrition', 'fruit', 'vegetable', 'fsc', 'nourriture', 'aliment');
       if (/crime|justice/i.test(subject)) subjectTerms.push('crime', 'victim', 'police', 'court', 'law', 'offence', 'assault', 'theft', 'safety');
       if (/digital/i.test(subject)) subjectTerms.push('cyber', 'internet', 'tech', 'online', 'digital', 'software', 'computer');
+      if (/science|techno/i.test(subject)) subjectTerms.push('cyber', 'tech', 'online', 'software', 'innovat', 'secur', 'comput', 'r&d', 'patent', 'digital', 'cloud', 'recherche');
       if (/environment/i.test(subject)) subjectTerms.push('water', 'climat', 'energy', 'pollut', 'waste', 'environ', 'recycl');
       if (/housing/i.test(subject)) subjectTerms.push('hous', 'dwell', 'rent', 'tenant', 'mortgag', 'shelter', 'logement');
       if (/transport/i.test(subject)) subjectTerms.push('transit', 'transport', 'vehic', 'car', 'commute', 'road');
@@ -1194,6 +1226,7 @@ export class SupabaseCorpusSource {
           domainVars = ((await targetedRes.json()) as CorpusSearchRow[]).filter((v) => {
             const nm = v.name.toUpperCase();
             if (nm.endsWith('ID') || nm === 'VERDATE' || nm === 'PUMFID' || nm === 'SEQID' || nm === 'RECID' || nm.startsWith('DO')) return false;
+            if (isProcessVariable(v)) return false;
             if (isHarmonizedContent(v)) return false;
             return true;
           });
@@ -1208,7 +1241,7 @@ export class SupabaseCorpusSource {
         }));
       }
 
-      // Fallback: general variables from top surveys, excluding harmonized sociodemographics
+      // Fallback: general variables from top surveys, excluding process/weights and harmonized sociodemographics
       const varsUrl = `${this.url}/rest/v1/corpus_variable?survey_group=in.(${topGroups.join(',')})&order=year.desc.nullslast,position.asc&limit=${limit * 20}`;
       const varsRes = await this.fetchImpl(varsUrl, {
         headers: { apikey: this.anonKey, Authorization: `Bearer ${this.anonKey}` },
@@ -1221,8 +1254,19 @@ export class SupabaseCorpusSource {
         const nm = v.name.toUpperCase();
         if (nm.endsWith('ID') || nm === 'VERDATE' || nm === 'PUMFID' || nm === 'SEQID' || nm === 'RECID' || nm.startsWith('DO')) return false;
         if (v.tcode === 'T15.2' && !v.concept && !v.question_text) return false;
+        if (isProcessVariable(v)) return false;
         if (isHarmonizedContent(v)) return false;
         return true;
+      });
+
+      filtered.sort((a, b) => {
+        const aHasQ = a.question_text ? 1 : 0;
+        const bHasQ = b.question_text ? 1 : 0;
+        if (aHasQ !== bHasQ) return bHasQ - aHasQ;
+        const aPos = parseInt(a.position ?? '', 10);
+        const bPos = parseInt(b.position ?? '', 10);
+        if (!isNaN(aPos) && !isNaN(bPos)) return aPos - bPos;
+        return (a.position ?? '').localeCompare(b.position ?? '', undefined, { numeric: true });
       });
 
       const selected = domainVars.concat(filtered.filter((f) => !domainVars.some((d) => d.record_id === f.record_id))).slice(0, limit);
