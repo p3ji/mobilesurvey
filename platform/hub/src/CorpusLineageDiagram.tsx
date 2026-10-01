@@ -115,6 +115,7 @@ export function CorpusLineageDiagram({ target, edges, highlightRecordId }: { tar
     return directIndex < 0 ? 0 : Math.floor(directIndex / DIRECT_INPUTS_PER_VIEW);
   });
   const [showAll, setShowAll] = useState(false);
+  const [showLegendInfo, setShowLegendInfo] = useState(false);
   const viewport = useRef<HTMLDivElement>(null);
   const graph = useMemo(() => visibleGraph(edges, page, showAll), [edges, page, showAll]);
   const diagram = useMemo(() => layout(target, graph.edges), [target, graph.edges]);
@@ -262,7 +263,99 @@ export function CorpusLineageDiagram({ target, edges, highlightRecordId }: { tar
         <span className="kg-flow__legend-item" title="Inferred link: mapped from questionnaire question or note wording">
           <span className="kg-flow__legend-line kg-flow__legend-line--inferred" /> Short dash: Inferred
         </span>
+        <button
+          type="button"
+          className={`kg-flow__legend-help-btn ${showLegendInfo ? 'kg-flow__legend-help-btn--active' : ''}`}
+          aria-expanded={showLegendInfo}
+          aria-label="What do these 4 connection types mean?"
+          title="Explain the 4 derivation types and real-world examples"
+          onClick={() => setShowLegendInfo(!showLegendInfo)}
+        >
+          ?
+        </button>
       </div>
+      {showLegendInfo && (
+        <div className="kg-flow__legend-guide">
+          <div className="kg-flow__legend-guide-header">
+            <strong>Derivation Connection Types & Real-World Examples</strong>
+            <button
+              type="button"
+              className="kg-flow__legend-guide-close"
+              aria-label="Close guide"
+              onClick={() => setShowLegendInfo(false)}
+            >
+              ✕
+            </button>
+          </div>
+          <table className="kg-flow__legend-table">
+            <thead>
+              <tr>
+                <th style={{ width: '135px' }}>Type & Pattern</th>
+                <th>What It Means</th>
+                <th>Real-World Example</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+                  <span className="kg-flow__legend-item">
+                    <span className="kg-flow__legend-line kg-flow__legend-line--solid" />
+                    <strong>Note-derived</strong>
+                  </span>
+                </td>
+                <td>
+                  <strong>Direct formula citation:</strong> The official StatCan documentation note explicitly cites the exact input variable name(s) verbatim.
+                </td>
+                <td>
+                  <code>ONL_SHOP</code> states <code>Derived from ANY (SHOP_DGS=1 OR SHOP_PG=1...)</code>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <span className="kg-flow__legend-item">
+                    <span className="kg-flow__legend-line kg-flow__legend-line--counterpart" />
+                    <strong>Counterpart</strong>
+                  </span>
+                </td>
+                <td>
+                  <strong>PUMF ↔ Master bridge:</strong> Connects an aggregated/coarsened public microdata variable to its detailed, unmasked counterpart in the confidential Master file.
+                </td>
+                <td>
+                  <code>INCM</code> in PUMF linked to continuous master variable in RDC codebook
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <span className="kg-flow__legend-item">
+                    <span className="kg-flow__legend-line kg-flow__legend-line--collapse" />
+                    <strong>G-collapse</strong>
+                  </span>
+                </td>
+                <td>
+                  <strong>Grouped-recode reduction:</strong> A continuous or multi-category variable collapsed into binned ranges within the same survey file (StatCan appends <code>G</code>).
+                </td>
+                <td>
+                  <code>AGEG</code> (5-year age groups) collapsed from <code>AGE</code> (single years of age)
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <span className="kg-flow__legend-item">
+                    <span className="kg-flow__legend-line kg-flow__legend-line--inferred" />
+                    <strong>Inferred</strong>
+                  </span>
+                </td>
+                <td>
+                  <strong>Mapped / Question alias:</strong> The note cites an interview question identifier (e.g. <code>ALC_Q45</code>) or wording mapped by the reviewer agent to the published column.
+                </td>
+                <td>
+                  Questionnaire item <code>ALC_Q45</code> mapped to published microdata column <code>ALC_45</code>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      )}
     </div>
   );
 }

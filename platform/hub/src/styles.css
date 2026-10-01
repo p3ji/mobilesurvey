@@ -2395,6 +2395,97 @@ code { font-family: var(--mono); font-size: 0.88em; }
 .kg-flow__legend-line--inferred {
   border-top: 2px dashed #94a3b8;
 }
+.kg-flow__legend-help-btn {
+  margin-left: auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 1px solid #cbd5e1;
+  background: #ffffff;
+  color: #475569;
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+  line-height: 1;
+  padding: 0;
+  transition: all 0.15s ease;
+}
+.kg-flow__legend-help-btn:hover,
+.kg-flow__legend-help-btn:focus-visible {
+  background: #e2e8f0;
+  border-color: #94a3b8;
+  color: #0f172a;
+}
+.kg-flow__legend-help-btn--active {
+  background: var(--brand, #1e40af);
+  border-color: var(--brand, #1e40af);
+  color: #ffffff !important;
+}
+.kg-flow__legend-guide {
+  background: #f8fafc;
+  border-top: 1px solid #e2e8f0;
+  padding: 12px 14px 14px;
+  font-size: 12px;
+}
+.kg-flow__legend-guide-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 9px;
+}
+.kg-flow__legend-guide-header strong {
+  font-size: 12.5px;
+  color: #1e293b;
+}
+.kg-flow__legend-guide-close {
+  background: transparent;
+  border: none;
+  font-size: 14px;
+  line-height: 1;
+  color: #64748b;
+  cursor: pointer;
+  padding: 3px 6px;
+  border-radius: 3px;
+}
+.kg-flow__legend-guide-close:hover {
+  background: #e2e8f0;
+  color: #0f172a;
+}
+.kg-flow__legend-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 11.5px;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 4px;
+  overflow: hidden;
+}
+.kg-flow__legend-table th {
+  background: #f1f5f9;
+  color: #475569;
+  font-weight: 600;
+  padding: 7px 10px;
+  text-align: left;
+  border: 1px solid #e2e8f0;
+  font-size: 11px;
+}
+.kg-flow__legend-table td {
+  padding: 8px 10px;
+  border: 1px solid #e2e8f0;
+  vertical-align: top;
+  line-height: 1.45;
+  color: #334155;
+}
+.kg-flow__legend-table code {
+  font-size: 10.5px;
+  padding: 1px 4px;
+  background: #f1f5f9;
+  border-radius: 3px;
+  font-family: var(--mono);
+}
 .kg-dag-evidence {
   background: #f8fafc;
   border-left: 3px solid var(--brand);
