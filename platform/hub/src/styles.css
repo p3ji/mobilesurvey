@@ -2769,6 +2769,38 @@ code { font-family: var(--mono); font-size: 0.88em; }
 .researcher-use__footer { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; margin-top: 8px; padding-top: 6px; border-top: 1px solid #e2edf1; }
 .researcher-reset-btn { margin-top: 12px; padding: 7px 14px; border: 1px solid #cbd9e5; border-radius: 6px; background: #fff; color: #17648a; font: inherit; font-size: 12px; font-weight: 700; cursor: pointer; }
 .researcher-reset-btn:hover { background: #f8fafc; border-color: #94a3b8; }
+.researcher-survey-stats { margin-top: 18px; padding: 16px 20px; border: 1px solid #dce6ef; border-radius: 14px; background: #f8fafc; box-shadow: 0 2px 8px #0f274408; }
+.researcher-survey-stats__header { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; padding-bottom: 12px; border-bottom: 1px solid #e2e8f0; }
+.researcher-survey-stats__titles h4 { margin: 2px 0 0; font-size: 15px; font-weight: 800; color: #164668; }
+.researcher-survey-stats__kicker { font-size: 10px; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; color: #15839c; }
+.researcher-survey-stats__badges { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.researcher-stat-badge { display: inline-flex; align-items: center; gap: 4px; padding: 3px 9px; border-radius: 999px; background: #e2edf6; color: #244660; font-size: 11px; font-weight: 700; }
+.researcher-stat-badge b { color: #102a42; }
+.researcher-clear-cycle-btn { display: inline-flex; align-items: center; gap: 4px; padding: 3px 9px; border: 1px solid #0284c7; border-radius: 999px; background: #e0f2fe; color: #0369a1; font: inherit; font-size: 11px; font-weight: 800; cursor: pointer; transition: all 0.15s ease; }
+.researcher-clear-cycle-btn:hover { background: #bae6fd; }
+.researcher-survey-stats__grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 14px; margin-top: 14px; }
+.researcher-timeline-card { padding: 12px 14px; border: 1px solid #e2edf4; border-radius: 10px; background: #ffffff; }
+.researcher-timeline-card__header { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 8px; }
+.researcher-timeline-card__title { font-size: 11px; font-weight: 800; color: #334155; text-transform: uppercase; letter-spacing: 0.05em; }
+.researcher-timeline-card__sub { font-size: 10px; color: #64748b; font-weight: 600; }
+.researcher-timeline-chart { display: flex; align-items: flex-end; gap: 5px; overflow-x: auto; padding: 8px 2px 2px; scrollbar-width: thin; }
+.researcher-timeline-item { display: flex; flex-direction: column; align-items: center; gap: 3px; min-width: 30px; flex: 0 0 auto; padding: 3px 2px; border: 1px solid transparent; border-radius: 6px; background: transparent; cursor: pointer; transition: all 0.15s ease; }
+.researcher-timeline-item:hover { background: #f1f5f9; border-color: #cbd5e1; }
+.researcher-timeline-item.is-active { background: #e0f2fe; border-color: #0284c7; }
+.researcher-timeline-item__count { font-size: 10px; font-weight: 800; color: #475569; }
+.researcher-timeline-item.is-active .researcher-timeline-item__count { color: #0369a1; }
+.researcher-timeline-item__track { width: 14px; height: 48px; border-radius: 4px; background: #edf2f7; display: flex; align-items: flex-end; overflow: hidden; }
+.researcher-timeline-item.is-active .researcher-timeline-item__track { background: #bae6fd; }
+.researcher-timeline-item__bar { width: 100%; border-radius: 3px 3px 0 0; background: #15839c; transition: height 0.2s ease, background-color 0.15s ease; }
+.researcher-timeline-item__bar--pub { background: #3b82f6; }
+.researcher-timeline-item:hover .researcher-timeline-item__bar { background: #0e6579; }
+.researcher-timeline-item:hover .researcher-timeline-item__bar--pub { background: #1d4ed8; }
+.researcher-timeline-item.is-active .researcher-timeline-item__bar { background: #0284c7; }
+.researcher-timeline-item__label { font-size: 10px; font-weight: 700; color: #64748b; margin-top: 2px; }
+.researcher-timeline-item.is-active .researcher-timeline-item__label { color: #0369a1; font-weight: 800; }
+.researcher-active-filter-badge { display: inline-flex; align-items: center; gap: 5px; margin-left: 8px; padding: 1px 7px; border-radius: 999px; background: #e0f2fe; color: #0369a1; font-size: 11px; font-weight: 800; }
+.researcher-active-filter-badge button { border: none; background: transparent; color: #0369a1; font-weight: 800; cursor: pointer; padding: 0; line-height: 1; }
+.researcher-timeline-empty { padding: 18px 0; text-align: center; color: #94a3b8; font-size: 11px; font-style: italic; }
 @media (max-width: 760px) {
   .researcher-hero { grid-template-columns: 1fr; padding: 34px 28px; }
   .researcher-hero__summary { display: none; }

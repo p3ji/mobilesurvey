@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { ArrowLeft, ArrowRight, BookOpen, ExternalLink, RotateCcw, Search } from 'lucide-react';
+import { ArrowLeft, ArrowRight, BarChart3, BookOpen, Calendar, ExternalLink, RotateCcw, Search, X } from 'lucide-react';
 import logo from './assets/logo.png';
 import pilotRecords from './researcherPilot.json';
 
@@ -55,12 +55,18 @@ export function ResearcherPage({ onHome }: { onHome: () => void; onSearcher?: ()
   const [selectedPrecision, setSelectedPrecision] = useState<string>('all');
   const [selectedYearWindow, setSelectedYearWindow] = useState<'all' | 'recent' | 'historical'>('all');
   const [selectedType, setSelectedType] = useState<string>('all');
+  const [selectedCycle, setSelectedCycle] = useState<string | null>(null);
+  const [selectedPubYear, setSelectedPubYear] = useState<number | null>(null);
   const [sortOption, setSortOption] = useState<'year_desc' | 'year_asc' | 'title_asc'>('year_desc');
   const [query, setQuery] = useState('');
   const [displayLimit, setDisplayLimit] = useState(30);
 
   useEffect(() => {
-    const syncSurveys = () => setSelectedSurveys(initialSurveys());
+    const syncSurveys = () => {
+      setSelectedSurveys(initialSurveys());
+      setSelectedCycle(null);
+      setSelectedPubYear(null);
+    };
     window.addEventListener('hashchange', syncSurveys);
     window.addEventListener('popstate', syncSurveys);
     return () => {
@@ -71,6 +77,66 @@ export function ResearcherPage({ onHome }: { onHome: () => void; onSearcher?: ()
 
   const programs = useMemo(() => [...new Set(works.flatMap(work => work.uses.map(use => use.program)))].sort(), []);
   const availableThemes = useMemo(() => [...new Set(works.map(work => work.theme).filter(Boolean) as string[])].sort(), []);
+
+  const surveyWorks = useMemo(() => {
+    if (selectedSurveys.length === 0) return [];
+    return works.filter(w => w.uses.some(u => selectedSurveys.includes(u.program)));
+  }, [selectedSurveys]);
+
+  const cycleStats = useMemo(() => {
+    if (selectedSurveys.length === 0) return [];
+    const map = new Map<string, number>();
+    for (const work of surveyWorks) {
+      const workCycles = new Set<string>();
+      for (const use of work.uses) {
+        if (selectedSurveys.includes(use.program)) {
+          for (const c of use.cycles) workCycles.add(c);
+        }
+      }
+      for (const c of workCycles) {
+        map.set(c, (map.get(c) ?? 0) + 1);
+      }
+    }
+    const entries = Array.from(map.entries()).sort((a, b) => {
+      const numA = parseInt(a[0], 10);
+      const numB = parseInt(b[0], 10);
+      if (!isNaN(numA) && !isNaN(numB)) return numA - numB;
+      return a[0].localeCompare(b[0]);
+    });
+    const maxCount = entries.reduce((max, [, count]) => Math.max(max, count), 0);
+    return entries.map(([cycle, count]) => ({
+      cycle,
+      count,
+      heightPct: maxCount > 0 ? Math.max(16, Math.round((count / maxCount) * 100)) : 16,
+    }));
+  }, [selectedSurveys, surveyWorks]);
+
+  const pubYearStats = useMemo(() => {
+    if (selectedSurveys.length === 0) return [];
+    const map = new Map<number, number>();
+    for (const work of surveyWorks) {
+      if (work.year) {
+        map.set(work.year, (map.get(work.year) ?? 0) + 1);
+      }
+    }
+    const entries = Array.from(map.entries()).sort((a, b) => a[0] - b[0]);
+    const maxCount = entries.reduce((max, [, count]) => Math.max(max, count), 0);
+    return entries.map(([year, count]) => ({
+      year,
+      count,
+      heightPct: maxCount > 0 ? Math.max(16, Math.round((count / maxCount) * 100)) : 16,
+    }));
+  }, [selectedSurveys, surveyWorks]);
+
+  const peakCycle = useMemo(() => {
+    if (cycleStats.length === 0) return null;
+    return [...cycleStats].sort((a, b) => b.count - a.count)[0];
+  }, [cycleStats]);
+
+  const surveyLabel = useMemo(() => {
+    if (selectedSurveys.length === 0) return '';
+    return selectedSurveys.map(p => `${p} — ${programNames[p] ?? p}`).join(', ');
+  }, [selectedSurveys]);
 
   const shown = useMemo(() => {
     const term = query.trim().toLowerCase();
@@ -88,6 +154,16 @@ export function ResearcherPage({ onHome }: { onHome: () => void; onSearcher?: ()
       if (selectedType === 'report' && work.workType !== 'report') return false;
       if (selectedType === 'article' && work.workType !== 'article' && work.workType !== 'journal article') return false;
       if (selectedType === 'preprint' && work.workType !== 'preprint') return false;
+      // Cycle year filter
+      if (selectedCycle) {
+        const hasCycle = work.uses.some(u =>
+          selectedSurveys.includes(u.program) &&
+          (u.cycles.includes(selectedCycle) || u.cycleText.includes(selectedCycle))
+        );
+        if (!hasCycle) return false;
+      }
+      // Publication year filter
+      if (selectedPubYear && work.year !== selectedPubYear) return false;
       // Query search
       if (term) {
         const hay = [
@@ -107,7 +183,7 @@ export function ResearcherPage({ onHome }: { onHome: () => void; onSearcher?: ()
       if (sortOption === 'year_asc') return (a.year ?? 0) - (b.year ?? 0);
       return a.title.localeCompare(b.title);
     });
-  }, [query, selectedSurveys, selectedTheme, selectedPrecision, selectedYearWindow, selectedType, sortOption]);
+  }, [query, selectedSurveys, selectedTheme, selectedPrecision, selectedYearWindow, selectedType, selectedCycle, selectedPubYear, sortOption]);
 
   const recentCount = useMemo(() => works.filter(w => (w.year ?? 0) >= 2025).length, []);
   const reportsCount = useMemo(() => works.filter(w => w.workType === 'report').length, []);
@@ -121,6 +197,8 @@ export function ResearcherPage({ onHome }: { onHome: () => void; onSearcher?: ()
       ? selectedSurveys.filter(value => value !== program)
       : [...selectedSurveys, program];
     setSelectedSurveys(next);
+    setSelectedCycle(null);
+    setSelectedPubYear(null);
     const suffix = next.length ? `?surveys=${encodeURIComponent(next.join(','))}` : '';
     window.history.replaceState(null, '', `${window.location.pathname}${window.location.search}#researcher${suffix}`);
   }
@@ -131,6 +209,8 @@ export function ResearcherPage({ onHome }: { onHome: () => void; onSearcher?: ()
     setSelectedPrecision('all');
     setSelectedYearWindow('all');
     setSelectedType('all');
+    setSelectedCycle(null);
+    setSelectedPubYear(null);
     setQuery('');
     setSortOption('year_desc');
     setDisplayLimit(30);
@@ -337,9 +417,121 @@ export function ResearcherPage({ onHome }: { onHome: () => void; onSearcher?: ()
             </div>
           </div>
 
+          {/* Survey Quick Stats: Cycles and Timeline */}
+          {selectedSurveys.length > 0 && (
+            <section className="researcher-survey-stats" aria-label={`Statistics for ${surveyLabel}`}>
+              <div className="researcher-survey-stats__header">
+                <div className="researcher-survey-stats__titles">
+                  <span className="researcher-survey-stats__kicker">Survey Analysis Overview</span>
+                  <h4>{surveyLabel}</h4>
+                </div>
+                <div className="researcher-survey-stats__badges">
+                  <span className="researcher-stat-badge"><b>{surveyWorks.length}</b> publications</span>
+                  <span className="researcher-stat-badge"><b>{cycleStats.length}</b> cycles identified</span>
+                  {peakCycle && (
+                    <span className="researcher-stat-badge">Peak cycle: <b>{peakCycle.cycle}</b> ({peakCycle.count} {peakCycle.count === 1 ? 'pub' : 'pubs'})</span>
+                  )}
+                  {(selectedCycle || selectedPubYear) && (
+                    <button
+                      type="button"
+                      className="researcher-clear-cycle-btn"
+                      onClick={() => { setSelectedCycle(null); setSelectedPubYear(null); }}
+                    >
+                      Clear year filter ({selectedCycle ? `Cycle ${selectedCycle}` : `Year ${selectedPubYear}`}) <X size={12} aria-hidden="true" />
+                    </button>
+                  )}
+                </div>
+              </div>
+
+              <div className="researcher-survey-stats__grid">
+                <div className="researcher-timeline-card">
+                  <div className="researcher-timeline-card__header">
+                    <span className="researcher-timeline-card__title">
+                      <BarChart3 size={13} aria-hidden="true" style={{ verticalAlign: -1, marginRight: 5 }} />
+                      Publications by Survey Cycle
+                    </span>
+                    <span className="researcher-timeline-card__sub">Click cycle year to filter</span>
+                  </div>
+                  {cycleStats.length > 0 ? (
+                    <div className="researcher-timeline-chart" role="group" aria-label="Survey cycle distribution">
+                      {cycleStats.map(({ cycle, count, heightPct }) => (
+                        <button
+                          key={cycle}
+                          type="button"
+                          className={`researcher-timeline-item ${selectedCycle === cycle ? 'is-active' : ''}`}
+                          onClick={() => {
+                            setSelectedCycle(selectedCycle === cycle ? null : cycle);
+                            setDisplayLimit(30);
+                          }}
+                          title={`Cycle ${cycle}: ${count} publication${count === 1 ? '' : 's'}. Click to filter.`}
+                          aria-pressed={selectedCycle === cycle}
+                        >
+                          <span className="researcher-timeline-item__count">{count}</span>
+                          <div className="researcher-timeline-item__track">
+                            <div className="researcher-timeline-item__bar" style={{ height: `${heightPct}%` }} />
+                          </div>
+                          <span className="researcher-timeline-item__label">{cycle}</span>
+                        </button>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="researcher-timeline-empty">No exact cycles established in reviewed passages</div>
+                  )}
+                </div>
+
+                <div className="researcher-timeline-card">
+                  <div className="researcher-timeline-card__header">
+                    <span className="researcher-timeline-card__title">
+                      <Calendar size={13} aria-hidden="true" style={{ verticalAlign: -1, marginRight: 5 }} />
+                      Publications by Release Year
+                    </span>
+                    <span className="researcher-timeline-card__sub">Click release year to filter</span>
+                  </div>
+                  {pubYearStats.length > 0 ? (
+                    <div className="researcher-timeline-chart" role="group" aria-label="Publication year distribution">
+                      {pubYearStats.map(({ year, count, heightPct }) => (
+                        <button
+                          key={year}
+                          type="button"
+                          className={`researcher-timeline-item ${selectedPubYear === year ? 'is-active' : ''}`}
+                          onClick={() => {
+                            setSelectedPubYear(selectedPubYear === year ? null : year);
+                            setDisplayLimit(30);
+                          }}
+                          title={`Published in ${year}: ${count} publication${count === 1 ? '' : 's'}. Click to filter.`}
+                          aria-pressed={selectedPubYear === year}
+                        >
+                          <span className="researcher-timeline-item__count">{count}</span>
+                          <div className="researcher-timeline-item__track">
+                            <div className="researcher-timeline-item__bar researcher-timeline-item__bar--pub" style={{ height: `${heightPct}%` }} />
+                          </div>
+                          <span className="researcher-timeline-item__label">{year}</span>
+                        </button>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="researcher-timeline-empty">No publication years recorded</div>
+                  )}
+                </div>
+              </div>
+            </section>
+          )}
+
           <p className="researcher-count" aria-live="polite">
             Showing {Math.min(shown.length, displayLimit)} of {shown.length} matched works ({works.length} total reviewed)
-            {(selectedSurveys.length > 0 || selectedTheme !== 'all' || selectedPrecision !== 'all' || selectedYearWindow !== 'all' || selectedType !== 'all' || query.trim()) && (
+            {selectedCycle && (
+              <span className="researcher-active-filter-badge">
+                Cycle {selectedCycle}
+                <button type="button" onClick={() => setSelectedCycle(null)} aria-label="Remove cycle filter">×</button>
+              </span>
+            )}
+            {selectedPubYear && (
+              <span className="researcher-active-filter-badge">
+                Published {selectedPubYear}
+                <button type="button" onClick={() => setSelectedPubYear(null)} aria-label="Remove publication year filter">×</button>
+              </span>
+            )}
+            {(selectedSurveys.length > 0 || selectedTheme !== 'all' || selectedPrecision !== 'all' || selectedYearWindow !== 'all' || selectedType !== 'all' || selectedCycle !== null || selectedPubYear !== null || query.trim()) && (
               <button type="button" onClick={resetFilters} style={{ marginLeft: '12px', background: 'none', border: 'none', color: '#0284c7', cursor: 'pointer', fontSize: '11px', fontWeight: 700 }}>
                 Reset all filters
               </button>
