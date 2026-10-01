@@ -107,6 +107,33 @@ Neon is another Postgres option with a [500 MB Free database per project and an 
 
 **Revised recommendation:** pilot **D1 + Worker** for reviewed Researcher records, with local SQLite only for Hermes's queue and unpublished candidates. Keep the GitHub Pages Hub, and join to Searcher's Supabase graph through stable program/cycle/variable IDs at the application layer. Compare a separate Supabase Free project before provisioning if a slot is available; choose Supabase Pro on the existing project if a single database and lower integration effort justify $25/month. Keep Oracle off the near-term path. Do not migrate `corpus_variable` or Searcher lineage to D1. The final host follows measured storage, indexed query cost, restore/export, and API latency in the pilot.
 
+### Storage scaling and 10,000-record sizing (measured 2026-10-01)
+
+Forensic breakdown of the live Researcher pipeline and preview snapshot (167 reviewed works, 380 verified survey claims, 27 policy/NGO reports):
+
+| Layer | Measured at 167 Works | Projected at 10,000 Works | Architecture & Storage Characteristics |
+|---|---|---|---|
+| **Public Frontend JSON (`researcherPilot.json`)** | 111 KB raw (665 B/work)<br>**16.5 KB gzipped (98 B/work)** | ~6.5 MB raw<br>**~980 KB gzipped (<1 MB)** | Static JSON bundle in Vite client build. At <1 MB gzipped, easily served over HTTP. At >3,000 records, client pagination or on-demand fetch is recommended to prevent DOM overhead. |
+| **Reviewed Lineage Export (`reviewed.jsonl`)** | 181 KB (1.08 KB/work) | **~10.8 MB flat file** | Clean, portable, versionable JSONL with full attribution and verbatim quotes. |
+| **Pipeline Database (`researcher.db`)** | ~1.5 MB clean (core tables)<br>10 MB with raw HTTP cache | **~15–20 MB clean DB**<br>~350–500 MB with raw API cache | Local `node:sqlite` WAL database. Raw OpenAlex/Crossref API payloads are cached in `adapter_checkpoint` for 100% offline rebuildability. |
+| **Relational Backend (Supabase / Postgres)** | N/A | **~20–25 MB incl. indexes** | Negligible footprint against Supabase Free (500 MB) or Pro (8 GB). |
+| **Vector Database (Qdrant Cloud)** | N/A | **~4–8 MB RAM / ~15 MB disk** | 384-dimensional dense vectors with scalar `int8` quantization (~5.6% of the 177,379 variable collection). |
+
+### Qdrant vector sidecar: dedicated `researcher_publications` collection
+
+As the catalogue expands from pilot scale toward 10,000 records, Qdrant Cloud provides a high-capacity, low-latency sidecar for semantic research literature search without consuming relational database limits:
+
+1. **Why a separate collection (`researcher_publications`):**
+   - **Isolation from survey microdata:** Keeps microdata variables (`modularsurvey` collection: 177,379 vectors of variable names, questions, category codes) completely separate from outside literature (`researcher_publications` collection: papers, reports, authors, methods quotes).
+   - **Distinct query semantics:** Prevents search query dilution. A researcher querying *"youth mental health during covid lockdowns"* matches relevant CCHS/GSS research papers directly without mixing with individual survey question items.
+2. **Payload-first architecture:**
+   - In Qdrant, points store complete JSON payloads. Because publication records are concise (~665 bytes each), **the entire publication record lives directly in the Qdrant point payload** (title, URL, publication year, document type, issuing organization, research themes, verified survey programs, exact cycles, and methods quotes).
+   - **Zero secondary database hydration required** for search results; search queries return fully populated result cards in a single network round-trip.
+3. **Hybrid semantic retrieval + hard metadata faceting:**
+   - Qdrant executes vector similarity search combined with hard payload filters in one pass (e.g. matching *"child benefits and poverty reduction"* filtered strictly to `program: CIS`, `work_type: report`, `year >= 2024`).
+4. **Integration topology:**
+   - Reuses the existing Edge Function proxy architecture (`POST /functions/v1/corpus-semantic-search` → `POST /functions/v1/researcher-search`) to protect Qdrant cluster credentials from browser exposure while serving GitHub Pages client apps.
+
 ### Boundary with the rest of Modular Survey Tools
 
 The D1 recommendation applies **only to the new Researcher catalogue**. Searcher already depends on PostgreSQL `tsvector`/GIN search, trigram matching, multiple graph/search RPCs, RLS, and Supabase Storage for source documents. D1 could represent its records and links, and supports FTS5, but moving Searcher would require rewriting its SQL/search behavior, API adapter, access policies, and document delivery, then rechecking relevance and every graph count. D1 Free's 500 MB *per database* limit also gives no assured capacity gain over Supabase Free until a representative SQLite import is measured. Keep Searcher in Supabase under the [existing audit decision](searcher-vector-audit.md).
