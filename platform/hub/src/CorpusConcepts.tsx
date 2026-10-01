@@ -153,6 +153,17 @@ function Timeline({
               <div className="cc-entry__body">
                 <div className="cc-entry__head">
                   <code className="cs-hit__name">{e.name}</code>
+                  {e.questionText !== null &&
+                    /\b(select\s+all|mark\s+all|cochez\s+toutes|sélectionnez\s+toutes)\b/i.test(
+                      e.questionText,
+                    ) && (
+                      <span
+                        className="cs-hit__badge--select-all"
+                        title="Multi-select item: part of a 'Select all that apply' question battery"
+                      >
+                        Select all
+                      </span>
+                    )}
                   {changeAt.has(e.recordId) && (
                     <span className="cc-changed">coding changed here</span>
                   )}

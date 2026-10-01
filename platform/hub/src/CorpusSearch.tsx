@@ -164,6 +164,9 @@ function CorpusHit({
   const question = (hit.entry.ddi.description as Record<string, string> | undefined)?.[
     meta.lang === 'fr' ? 'fr' : 'en'
   ];
+  const isSelectAll = /\b(select\s+all|mark\s+all|cochez\s+toutes|sélectionnez\s+toutes)\b/i.test(
+    `${meta.note ?? ''} ${question ?? ''} ${label ?? ''}`
+  );
 
   return (
     <article className="cs-hit">
@@ -184,6 +187,14 @@ function CorpusHit({
         {classification.isGrouped && (
           <span className="cs-hit__badge--grouped" title="PUMF Grouped Recode">
             PUMF (G)
+          </span>
+        )}
+        {isSelectAll && (
+          <span
+            className="cs-hit__badge--select-all"
+            title="Multi-select item: part of a 'Select all that apply' question battery"
+          >
+            Select all
           </span>
         )}
         <span className="cs-hit__survey">
