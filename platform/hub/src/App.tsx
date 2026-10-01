@@ -1264,9 +1264,8 @@ function DemoSurveyPicker() {
       <div className="demo-picker__head">
         <h2 className="demo-picker__title">Try a demo survey</h2>
         <p className="demo-picker__sub">
-          Load a bundled survey into the designer to explore its features.
-          Only the <strong>Feature Demo Survey</strong> is connected to live data collection — responses are saved to the Collector dashboard.
-          The Household &amp; Employment and FSEP surveys are for designer exploration only.
+          Choose an example to explore in the Designer. Only the <strong>Feature Demo Survey</strong> saves responses to Collector;
+          the other examples are for exploration.
         </p>
       </div>
       <div className="demo-picker__options">
@@ -3024,6 +3023,33 @@ function ValidatorView({ onBack }: { onBack: () => void }) {
 
 // ── Home page ─────────────────────────────────────────────────────────────────
 
+const HOME_GROUPS = [
+  {
+    id: 'discover',
+    title: 'Discover & learn',
+    summary: 'Find survey metadata, follow research, and learn the platform.',
+    moduleIds: ['searcher', 'researcher', 'trainer'],
+  },
+  {
+    id: 'design',
+    title: 'Build a survey',
+    summary: 'Start from scratch, import a questionnaire, or explore an example.',
+    moduleIds: ['designer-easy', 'designer-pro', 'designer-business', 'migrator'],
+  },
+  {
+    id: 'collect',
+    title: 'Collect responses',
+    summary: 'Publish a survey, share its link, and follow collection.',
+    moduleIds: ['collector', 'sensor'],
+  },
+  {
+    id: 'review',
+    title: 'Review & improve data',
+    summary: 'Explore results and resolve data quality issues.',
+    moduleIds: ['analyzer', 'validator'],
+  },
+];
+
 function HomePage({ onNavigate }: { onNavigate: (v: HubView) => void }) {
   const modules = useMemo((): ModuleDef[] => [
     {
@@ -3180,18 +3206,48 @@ function HomePage({ onNavigate }: { onNavigate: (v: HubView) => void }) {
       <main className="hub__main hub__main--home">
         <div className="hub__intro">
           <h1>Design, collect, and analyze surveys — end to end.</h1>
-          <p>Pick a tool to get started, or try a demo survey below.</p>
+          <p>Choose what you want to do, or open an example survey to get started.</p>
         </div>
+
+        <nav className="tool-paths" aria-label="Browse tools by task">
+          {HOME_GROUPS.map((group, index) => (
+            <a className="tool-paths__link" href={`#${group.id}`} key={group.id}>
+              <span className="tool-paths__number">0{index + 1}</span>
+              <span className="tool-paths__title">{group.title}</span>
+              <span className="tool-paths__count">{group.moduleIds.length} tools</span>
+              <span className="tool-paths__arrow" aria-hidden="true">↗</span>
+            </a>
+          ))}
+        </nav>
 
         <DemoSurveyPicker />
 
-        <div className="module-grid">
-          {modules.filter(m => m.status === 'live').map((m) => <ModuleTile key={m.id} mod={m} />)}
+        <div className="tool-sections">
+          {HOME_GROUPS.map((group, index) => (
+            <section className="tool-section" id={group.id} key={group.id} aria-labelledby={`${group.id}-title`}>
+              <div className="tool-section__heading">
+                <span className="tool-section__number">0{index + 1}</span>
+                <div>
+                  <h2 id={`${group.id}-title`}>{group.title}</h2>
+                  <p>{group.summary}</p>
+                </div>
+              </div>
+              <div className={`module-grid${group.id === 'discover' ? '' : ' module-grid--paired'}`}>
+                {group.moduleIds.map((id) => {
+                  const mod = modules.find((item) => item.id === id);
+                  return mod ? <ModuleTile key={mod.id} mod={mod} /> : null;
+                })}
+              </div>
+            </section>
+          ))}
         </div>
-        <p className="module-section-label">On the roadmap</p>
-        <div className="module-grid module-grid--roadmap">
-          {modules.filter(m => m.status === 'coming-soon').map((m) => <ModuleTile key={m.id} mod={m} />)}
-        </div>
+
+        <details className="roadmap">
+          <summary>On the roadmap <span>{modules.filter(m => m.status === 'coming-soon').length} planned tools</span></summary>
+          <div className="module-grid module-grid--roadmap">
+            {modules.filter(m => m.status === 'coming-soon').map((m) => <ModuleTile key={m.id} mod={m} />)}
+          </div>
+        </details>
       </main>
     </div>
   );

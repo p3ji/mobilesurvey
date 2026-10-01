@@ -275,7 +275,7 @@ code { font-family: var(--mono); font-size: 0.88em; }
 
 /* ── Hub sections (Collector view) ───────────────────────────────────────── */
 .hub__main--home { max-width: 1200px; padding: 32px 24px; }
-.hub__intro { margin-bottom: 28px; }
+.hub__intro { margin-bottom: 24px; }
 .hub__intro h1 { margin: 0 0 4px; font-size: 28px; }
 .hub__section { margin-bottom: 36px; }
 .hub__section-title {
@@ -335,21 +335,96 @@ code { font-family: var(--mono); font-size: 0.88em; }
 .demo-picker__actions { display: flex; gap: 10px; flex-wrap: wrap; }
 
 /* ── Module grid (Home view) ──────────────────────────────────────────────── */
+.tool-paths {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+  margin-bottom: 24px;
+}
+.tool-paths__link {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 5px 8px;
+  align-content: start;
+  min-height: 108px;
+  padding: 16px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--panel);
+  color: var(--ink);
+  text-decoration: none;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+.tool-paths__link:hover {
+  border-color: var(--brand);
+  box-shadow: 0 2px 12px rgba(29, 78, 216, 0.1);
+}
+.tool-paths__number {
+  grid-column: 1;
+  font: 700 11px var(--mono);
+  color: var(--brand);
+}
+.tool-paths__title { grid-column: 1; font-size: 16px; font-weight: 700; }
+.tool-paths__count { grid-column: 1; font-size: 12px; color: var(--ink-soft); }
+.tool-paths__arrow { grid-column: 2; grid-row: 1 / 4; align-self: center; color: var(--brand); font-size: 19px; }
+
+.tool-sections { display: grid; gap: 36px; }
+.tool-section { scroll-margin-top: 20px; }
+.tool-section__heading {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+.tool-section__number {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  flex: none;
+  border-radius: 8px;
+  background: var(--selected);
+  color: var(--brand);
+  font: 700 12px var(--mono);
+}
+.tool-section__heading h2 { margin: 0; font-size: 19px; line-height: 1.25; }
+.tool-section__heading p { margin: 3px 0 0; color: var(--ink-soft); font-size: 13px; }
 .module-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
   gap: 16px;
-  margin-bottom: 8px;
 }
+.module-grid--paired { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 .module-grid--roadmap { margin-bottom: 0; }
 
-.module-section-label {
-  margin: 20px 0 10px;
-  font-size: 11px;
+.roadmap { margin-top: 36px; border-top: 1px solid var(--line); padding-top: 18px; }
+.roadmap summary {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  width: fit-content;
+  cursor: pointer;
+  font-size: 14px;
   font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--ink-soft);
+  color: var(--ink);
+}
+.roadmap summary::before { content: '▸'; color: var(--brand); font-size: 17px; }
+.roadmap[open] summary::before { content: '▾'; }
+.roadmap summary span { font-size: 12px; font-weight: 400; color: var(--ink-soft); }
+.roadmap .module-grid { margin-top: 16px; }
+
+@media (max-width: 800px) {
+  .tool-paths { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 700px) {
+  .module-grid--paired { grid-template-columns: 1fr; }
+}
+@media (max-width: 520px) {
+  .hub__main--home { padding: 24px 16px; }
+  .tool-paths { gap: 8px; }
+  .tool-paths__link { min-height: 100px; padding: 12px; }
+  .tool-paths__title { font-size: 14px; }
+  .module-grid, .module-grid--paired { grid-template-columns: 1fr; }
 }
 
 .module-tile {
