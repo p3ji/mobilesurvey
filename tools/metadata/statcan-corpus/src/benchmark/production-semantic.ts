@@ -94,20 +94,65 @@ async function evaluate(query: BenchmarkQuery): Promise<Result> {
 }
 
 async function main(): Promise<void> {
+  const out = resolve(import.meta.dirname, '../../out/search-production-semantic.json');
   const all = JSON.parse(readFileSync(resolve(import.meta.dirname, 'queries.json'), 'utf8')) as BenchmarkQuery[];
   const ids = new Set(process.argv.slice(2).filter((arg) => !arg.startsWith('--')));
   const selected = process.argv.includes('--all') ? all : all.filter((query) => ids.has(query.id));
-  if (selected.length === 0) throw new Error('Pass query IDs (e.g. lab-02 fra-01) or --all.');
-  const results: Result[] = [];
-  for (const [index, query] of selected.entries()) {
-    const result = await evaluate(query);
-    results.push(result);
-    console.log(`${index + 1}/${selected.length} ${result.id}: lexical=${result.lexicalTotal} semantic=${result.candidates.length}${result.semanticError ? ` error=${result.semanticError}` : ''}`);
+  const fromFile = process.argv.includes('--from-file');
+  if (!fromFile && selected.length === 0) throw new Error('Pass query IDs (e.g. lab-02 fra-01), --all, or --from-file.');
+  let results: Result[];
+  let timestamp: string;
+  if (fromFile) {
+    const saved = JSON.parse(readFileSync(out, 'utf8')) as { timestamp: string; results: Result[] };
+    results = saved.results;
+    timestamp = saved.timestamp;
+  } else {
+    results = [];
+    for (const [index, query] of selected.entries()) {
+      const result = await evaluate(query);
+      results.push(result);
+      console.log(`${index + 1}/${selected.length} ${result.id}: lexical=${result.lexicalTotal} semantic=${result.candidates.length}${result.semanticError ? ` error=${result.semanticError}` : ''}`);
+    }
+    timestamp = new Date().toISOString();
+    mkdirSync(resolve(import.meta.dirname, '../../out'), { recursive: true });
+    writeFileSync(out, JSON.stringify({ timestamp, threshold: 0.55, results }, null, 2));
   }
-  const out = resolve(import.meta.dirname, '../../out/search-production-semantic.json');
-  mkdirSync(resolve(import.meta.dirname, '../../out'), { recursive: true });
-  writeFileSync(out, JSON.stringify({ timestamp: new Date().toISOString(), threshold: 0.55, results }, null, 2));
+  const judgments = JSON.parse(readFileSync(resolve(import.meta.dirname, 'provisional-judgments.json'), 'utf8')) as {
+    reviewer: string; scale: string; grades: Record<string, Record<string, number>>;
+  };
+  const reportPath = resolve(import.meta.dirname, '../../../../../docs/search-production-evaluation.md');
+  let report = '# Production semantic search check\n\n';
+  report += `**Run:** ${timestamp} · **Endpoint:** \`corpus-semantic-search\` · **Score threshold:** 0.55 · **Queries:** ${results.length}\n\n`;
+  report += `Grades are **${judgments.reviewer}**. ${judgments.scale}. A returned point is not automatically a relevant result. This sample is too small and lacks human sign-off, so it cannot support a claim that semantic search improves overall ranking.\n\n`;
+  report += '| Query | Strict lexical total | Semantic candidates | Best score | Provisional direct grades | Verdict |\n';
+  report += '| --- | ---: | ---: | ---: | ---: | --- |\n';
+  for (const result of results) {
+    const grades = judgments.grades[result.id] ?? {};
+    const complete = result.candidates.length > 0 && result.candidates.every((candidate) => grades[candidate.recordId] !== undefined);
+    const direct = complete ? result.candidates.filter((candidate) => grades[candidate.recordId] === 2).length : null;
+    const verdict = result.semanticError
+      ? `Endpoint error: ${result.semanticError}`
+      : result.candidates.length === 0
+        ? 'No semantic hit at the production threshold'
+        : complete
+          ? `${direct}/${result.candidates.length} directly relevant in provisional review`
+          : 'Candidates need relevance grading';
+    report += `| \`${result.query.replaceAll('|', '\\|')}\` | ${result.lexicalTotal} | ${result.candidates.length} | ${result.candidates[0]?.score.toFixed(3) ?? '—'} | ${direct === null ? '—' : `${direct}/${result.candidates.length}`} | ${verdict.replaceAll('|', '\\|')} |\n`;
+  }
+  report += '\n## Candidate details\n\n';
+  for (const result of results) {
+    if (result.candidates.length === 0) continue;
+    report += `### ${result.id}: ${result.query}\n\n`;
+    report += '| Rank | Variable | Concept | Similarity | Provisional grade |\n| ---: | --- | --- | ---: | ---: |\n';
+    for (const [index, candidate] of result.candidates.entries()) {
+      const grade = judgments.grades[result.id]?.[candidate.recordId];
+      report += `| ${index + 1} | \`${candidate.name}\` | ${(candidate.concept ?? '').replaceAll('|', '\\|')} | ${candidate.score.toFixed(3)} | ${grade ?? '—'} |\n`;
+    }
+    report += '\n';
+  }
+  writeFileSync(reportPath, report.trimEnd() + '\n');
   console.log(`Saved ${out}`);
+  console.log(`Saved ${reportPath}`);
 }
 
 main().catch((error) => { console.error(error); process.exitCode = 1; });

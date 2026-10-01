@@ -1,0 +1,37 @@
+{
+  "scale": "0 = unrelated; 1 = related context but not a direct answer; 2 = directly relevant variable",
+  "reviewer": "assistant provisional review; human researcher sign-off pending",
+  "grades": {
+    "hlt-03": {
+      "7bd9a27a-8ea4-5b60-8c0b-638606232a09": 2,
+      "95a8588e-5b44-5bb8-b9b8-ca0fbdd7b830": 2,
+      "13d5acf9-9ae5-5263-8604-057cf795aa4e": 1,
+      "34ec8275-f23a-5d9b-bb36-39e86dc9575b": 1,
+      "2d65b2c6-2578-5e75-b0f5-8d4bd90d074c": 1,
+      "2f81cac1-662c-50c3-a342-9e7a9ca08322": 1
+    },
+    "lab-02": {
+      "bba2ba21-c72f-5a4d-8926-aec83b1abde3": 2,
+      "9b82233a-0485-5817-87ff-6b935d50c616": 2,
+      "c327eb5e-a2e0-5bfe-9570-e4903ee3ea1c": 2,
+      "48d18313-09e0-55ec-a4f5-62d5f443ec3c": 2,
+      "ba8faf82-13e9-5464-a086-de96ba1ee129": 2
+    },
+    "inc-01": {
+      "9f6b3d12-9f58-502a-bebe-e51a3d3845d7": 2,
+      "31239f43-47b3-53eb-8588-e76c8c4cbab9": 2,
+      "c02719fd-f0eb-5954-ab72-9088030b5f1e": 2,
+      "be4e6076-0406-5e2b-a574-2df64db114af": 2,
+      "b4f22b25-9855-5f16-a562-c3e70e7326e0": 2,
+      "6a111702-c6dc-537a-93ad-221327f2c25f": 2
+    },
+    "dig-02": {
+      "b318fb20-57ae-55dc-bbd6-310c28aabaf5": 1,
+      "f13f0825-734c-5854-9230-2ad70eb41f6d": 1,
+      "eaa4d273-63d3-5456-8eda-34cc7718a443": 1,
+      "9d7e2b66-22a6-5f6d-9c58-f2edabc6a8e8": 1,
+      "b6dec2ba-bacf-5bfc-aee3-09bf86e3b606": 1,
+      "f6cc2d14-6680-584e-ae46-2b9a5e40240a": 1
+    }
+  }
+}

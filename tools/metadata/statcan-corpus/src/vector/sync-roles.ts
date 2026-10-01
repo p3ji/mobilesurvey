@@ -37,6 +37,17 @@ async function qdrantRequest(path: string, body: unknown): Promise<any> {
 }
 
 async function main(): Promise<void> {
+  const checkId = process.argv.find((arg) => arg.startsWith('--check-id='))?.slice('--check-id='.length);
+  if (checkId) {
+    const expected = (await fetchVectorRoles(supabaseUrl!, supabaseKey!, [checkId])).get(checkId);
+    const response = await qdrantRequest(`/collections/${collection}/points`, {
+      ids: [checkId], with_payload: ['role'], with_vector: false,
+    }) as { result?: Array<{ payload?: { role?: string } }> };
+    const actual = response.result?.[0]?.payload?.role;
+    if (!actual || actual !== expected) throw new Error(`Role mismatch for ${checkId}: SQL=${expected}, Qdrant=${actual ?? 'missing'}`);
+    console.log(`Verified ${checkId}: ${actual}`);
+    return;
+  }
   let offset: string | number | null = null;
   let scanned = 0;
   let changed = 0;

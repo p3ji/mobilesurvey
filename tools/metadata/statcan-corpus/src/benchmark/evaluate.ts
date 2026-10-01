@@ -530,7 +530,7 @@ async function main() {
   console.log(`  Lexical Latency: ${avgLat} ms (p95: ${p95Lat} ms)`);
   if (hasQdrant && report.summary['Qdrant Vector']) {
     console.log(`  Vector Latency: ${report.summary['Qdrant Vector'].avgLatencyMs} ms (p95: ${report.summary['Qdrant Vector'].p95LatencyMs} ms)`);
-    console.log(`  Vector Precision @ 5: ${report.summary['Qdrant Vector'].avgPrecisionAt5}%`);
+    console.log(`  Vector term-overlap proxy @ 5: ${report.summary['Qdrant Vector'].avgPrecisionAt5}% (ungraded)`);
   }
   console.log(`  Report saved to: docs/search-benchmark-report.md`);
   console.log(`======================================================\n`);
@@ -544,13 +544,14 @@ function generateMarkdownReport(
 ): string {
   const std = rep.summary['Lexical (Standard)'];
   const vec = rep.summary['Qdrant Vector'];
-  let md = `# Search Relevance Benchmark Evaluation Report\n\n`;
+  let md = `# Historical ungraded search retrieval diagnostic\n\n`;
   md += `**Date:** ${new Date().toLocaleDateString('en-CA')} · **Queries Tested:** ${rep.totalQueries}\n\n`;
-  md += `## 1. Executive Summary: Lexical vs. Qdrant Vector vs. AI Expansion\n\n`;
+  md += `**Historical diagnostic only.** The vector path below queried Qdrant directly without Searcher's 0.55 score threshold. Its term-overlap proxy is not a human relevance grade; a nonempty vector response is not a successful bridge. Use the production-endpoint evaluation before drawing relevance conclusions.\n\n`;
+  md += `## 1. Retrieval diagnostics: Lexical vs. direct Qdrant vs. AI Expansion\n\n`;
   md += `| Metric | Lexical (Standard) | Qdrant Vector (Pilot) | Target Threshold |\n`;
   md += `| :--- | :---: | :---: | :---: |\n`;
   md += `| **Exact Mnemonic Accuracy** | **${std?.exactMnemonicAccuracy}%** | **${vec?.exactMnemonicAccuracy ?? '-'}%** | 100% (Lexical preserves this) |\n`;
-  md += `| **Avg Precision @ Top 5** | **${std?.avgPrecisionAt5}%** | **${vec?.avgPrecisionAt5 ?? '-'}%** | > 70% |\n`;
+  md += `| **Unreviewed term overlap @ Top 5** | **${std?.avgPrecisionAt5}%** | **${vec?.avgPrecisionAt5 ?? '-'}%** | Human grading required |\n`;
   md += `| **Average Latency** | **${std?.avgLatencyMs} ms** | **${vec?.avgLatencyMs ?? '-'} ms** | < 400 ms |\n`;
   md += `| **p95 Latency** | **${std?.p95LatencyMs} ms** | **${vec?.p95LatencyMs ?? '-'} ms** | < 1200 ms |\n`;
   md += `| **Zero-Result Rate (non-controls)** | **${std?.zeroResultCount} / 100** | **${vec?.zeroResultCount ?? '-'} / 100** | Minimized |\n\n`;
@@ -575,7 +576,7 @@ function generateMarkdownReport(
     } else if (d.category === 'control') {
       status = (s?.totalHits ?? 0) === 0 ? '✅ Clean' : '⚠️ False Positive';
     } else if ((s?.totalHits ?? 0) === 0 && (v?.totalHits ?? 0) > 0) {
-      status = `🚀 Vector Bridged (${v?.topHits[0]?.name})`;
+      status = `Vector candidate (ungraded: ${v?.topHits[0]?.name})`;
     } else if ((s?.totalHits ?? 0) === 0) {
       status = '⚠️ 0 Hits';
     }

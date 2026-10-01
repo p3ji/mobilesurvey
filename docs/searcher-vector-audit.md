@@ -1,6 +1,6 @@
 # Searcher relevance and vector capacity audit
 
-**2026-09-30 · Recommendation, not a deployed change.** This audit used read-only queries against the live `mobilesurvey` Supabase project, the current Searcher code, and provider documentation. No database or hosting changes were made.
+**2026-09-30 audit; implementation updated 2026-10-01.** The original measurements and rollout recommendation below predate the deployed vector pilot. The pilot now contains 177,379 English occurrences, but the first direct-Qdrant benchmark did not use the production 0.55 threshold or human relevance grades. See [the production-endpoint sample](search-production-evaluation.md) before interpreting relevance claims.
 
 ## Decision
 
