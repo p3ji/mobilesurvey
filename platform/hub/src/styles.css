@@ -2767,8 +2767,6 @@ code { font-family: var(--mono); font-size: 0.88em; }
 .researcher-badge--source { background: #e0f2fe; color: #0369a1; }
 .researcher-badge--org { background: #f1f5f9; color: #475569; border: 1px solid #e2e8f0; }
 .researcher-use__footer { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; margin-top: 8px; padding-top: 6px; border-top: 1px solid #e2edf1; }
-.researcher-searcher-btn { display: inline-flex; align-items: center; gap: 4px; color: #0284c7; font-size: 11px; font-weight: 700; text-decoration: none; cursor: pointer; background: transparent; border: 0; padding: 0; }
-.researcher-searcher-btn:hover { text-decoration: underline; color: #0369a1; }
 .researcher-reset-btn { margin-top: 12px; padding: 7px 14px; border: 1px solid #cbd9e5; border-radius: 6px; background: #fff; color: #17648a; font: inherit; font-size: 12px; font-weight: 700; cursor: pointer; }
 .researcher-reset-btn:hover { background: #f8fafc; border-color: #94a3b8; }
 @media (max-width: 760px) {

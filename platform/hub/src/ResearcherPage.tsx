@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { ArrowLeft, ArrowRight, BookOpen, ExternalLink, RotateCcw, Search, Sparkles } from 'lucide-react';
+import { ArrowLeft, ArrowRight, BookOpen, ExternalLink, RotateCcw, Search } from 'lucide-react';
 import logo from './assets/logo.png';
 import pilotRecords from './researcherPilot.json';
 
@@ -47,7 +47,7 @@ function cycleLabel(use: PilotUse): string {
   return 'Cycle not established by reviewed passage';
 }
 
-export function ResearcherPage({ onHome, onSearcher }: { onHome: () => void; onSearcher: () => void }) {
+export function ResearcherPage({ onHome }: { onHome: () => void; onSearcher?: () => void }) {
   const [selectedSurveys, setSelectedSurveys] = useState<string[]>(initialSurveys);
   const [selectedTheme, setSelectedTheme] = useState<string>('all');
   const [selectedPrecision, setSelectedPrecision] = useState<string>('all');
@@ -125,11 +125,6 @@ export function ResearcherPage({ onHome, onSearcher }: { onHome: () => void; onS
     setSortOption('year_desc');
     setDisplayLimit(30);
     window.history.replaceState(null, '', `${window.location.pathname}${window.location.search}#researcher`);
-  }
-
-  function openSurveyInSearcher(program: string) {
-    window.location.hash = `#searcher?survey=${encodeURIComponent(program)}`;
-    onSearcher();
   }
 
   return (
@@ -363,14 +358,6 @@ export function ResearcherPage({ onHome, onSearcher }: { onHome: () => void; onS
                             <a href={work.url} target="_blank" rel="noopener noreferrer">
                               Evidence: {use.evidenceLocation} <ExternalLink size={12} aria-hidden="true" />
                             </a>
-                            <button
-                              type="button"
-                              className="researcher-searcher-btn"
-                              onClick={() => openSurveyInSearcher(use.program)}
-                              title={`Inspect ${use.program} variables in Searcher`}
-                            >
-                              <Sparkles size={12} aria-hidden="true" /> View in Searcher
-                            </button>
                           </div>
                         </div>
                       ))}
