@@ -19,9 +19,11 @@ function number(value: number): string {
 export function SearcherAbout({
   source,
   onExplore,
+  onResearcher,
 }: {
   source: SupabaseCorpusSource | null;
   onExplore: () => void;
+  onResearcher: () => void;
 }) {
   const [progress, setProgress] = useState<CorpusAboutProgress | null>(null);
   const [searchStats, setSearchStats] = useState<CorpusStats | null>(null);
@@ -83,8 +85,8 @@ export function SearcherAbout({
     {
       id: 'next',
       title: '04 · Next',
-      cardTitle: 'Keep opening up the picture',
-      cardDetailedText: 'Review more links, improve search, and make it easier to explore survey questions across years and languages.',
+      cardTitle: 'Follow published data use',
+      cardDetailedText: 'Researcher is in construction. It will connect published works to the surveys and cycles they analyze, beginning with academic research.',
     },
   ], [linkedPrograms, progress, searchStats]);
 
@@ -176,9 +178,13 @@ export function SearcherAbout({
         <section className="about-next" aria-labelledby="about-next-title">
           <div className="about-next__icon"><Check size={23} aria-hidden="true" /></div>
           <div>
-            <h2 id="about-next-title">Where this is going</h2>
-            <p>We want anyone exploring a survey measure to understand its meaning, find its source,
-              and follow its connections across years. More reviewed links and better discovery are next.</p>
+            <h2 id="about-next-title">Next: Researcher</h2>
+            <p>We are building a way to find published work that uses Statistics Canada surveys,
+              see the cycles and themes it covers, and follow observed publication trends. It will
+              begin with CRDCN and other academic sources. The catalogue and metrics are still in construction.</p>
+            <button type="button" className="about-next__link" onClick={onResearcher}>
+              See the Researcher page <ArrowRight size={17} aria-hidden="true" />
+            </button>
           </div>
         </section>
         <p className="about-attribution">{CORPUS_ATTRIBUTION}</p>

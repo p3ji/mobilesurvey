@@ -12,6 +12,7 @@ import {
   LayoutDashboard,
   Layers,
   Library,
+  BookOpen,
   PenLine,
   ShieldCheck,
   Smartphone,
@@ -37,6 +38,7 @@ import { draftRulesFromAnnotation, explainFlag, llmConfigured } from './validato
 import { CorpusSearch } from './CorpusSearch.js';
 import { CorpusGraphExplorer } from './CorpusGraphExplorer.js';
 import { SearcherAbout } from './SearcherAbout.js';
+import { ResearcherPage } from './ResearcherPage.js';
 import type { CorpusGraphFocus } from './CorpusLineage.js';
 import {
   corpusSource,
@@ -139,12 +141,13 @@ const DEMO_SURVEYS: SurveySummary[] = [
 
 // ── Module definitions ────────────────────────────────────────────────────────
 
-type HubView = 'home' | 'collector' | 'searcher' | 'trainer' | 'migrator' | 'analyzer' | 'interviewer' | 'supervisor' | 'validator';
+type HubView = 'home' | 'collector' | 'searcher' | 'researcher' | 'trainer' | 'migrator' | 'analyzer' | 'interviewer' | 'supervisor' | 'validator';
 
 const VALID_HUB_VIEWS = new Set<HubView>([
   'home',
   'collector',
   'searcher',
+  'researcher',
   'trainer',
   'migrator',
   'analyzer',
@@ -1112,7 +1115,7 @@ function parseSearcherParams(): {
   return { scope, query, survey, conceptId, initialGraphTab };
 }
 
-function SearcherView({ onBack }: { onBack: () => void }) {
+function SearcherView({ onBack, onResearcher }: { onBack: () => void; onResearcher: () => void }) {
   const corpus = useMemo(() => corpusSource(), []);
   const initialParams = useMemo(() => parseSearcherParams(), []);
   const [scope, setScope] = useState<SearchScope>(initialParams.scope);
@@ -1202,7 +1205,7 @@ function SearcherView({ onBack }: { onBack: () => void }) {
 
         <div id="searcher-panel" role="tabpanel" aria-labelledby={`searcher-${scope}-tab`}>
           {scope === 'about' ? (
-            <SearcherAbout source={corpus} onExplore={() => setScope('search')} />
+            <SearcherAbout source={corpus} onExplore={() => setScope('search')} onResearcher={onResearcher} />
           ) : corpus === null ? (
             <div className="cs-error">
               <strong>Statistics Canada metadata search is unavailable in this deployment.</strong>
@@ -3064,6 +3067,17 @@ function HomePage({ onNavigate }: { onNavigate: (v: HubView) => void }) {
       action: () => onNavigate('searcher'),
     },
     {
+      id: 'researcher',
+      icon: <BookOpen size={22} />,
+      name: 'Researcher',
+      tag: 'In construction',
+      tagline: 'Trace published uses of survey data',
+      description: 'A planned catalogue of articles, surveys, cycles, themes, and observed publication trends. Open the project page to see what is coming.',
+      status: 'live',
+      href: '#researcher',
+      action: () => onNavigate('researcher'),
+    },
+    {
       id: 'migrator',
       icon: <FileInput size={22} />,
       name: 'Migrator',
@@ -3567,7 +3581,8 @@ export function App() {
   }, []);
 
   if (view === 'collector') return <CollectorView onBack={() => setView('home')} />;
-  if (view === 'searcher') return <SearcherView onBack={() => setView('home')} />;
+  if (view === 'searcher') return <SearcherView onBack={() => setView('home')} onResearcher={() => setView('researcher')} />;
+  if (view === 'researcher') return <ResearcherPage onHome={() => setView('home')} onSearcher={() => setView('searcher')} />;
   if (view === 'trainer') return <TrainingView onBack={() => setView('home')} />;
   if (view === 'migrator') return <MigratorView onBack={() => setView('home')} />;
   if (view === 'analyzer') return <AnalyzerView onBack={() => setView('home')} />;
