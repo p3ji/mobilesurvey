@@ -233,7 +233,18 @@ function collectLabelledFields(rows: readonly string[]): Map<string, string> {
 
   const result = new Map<string, string>();
   for (const [k, v] of fields) {
-    const joined = v.join(' ').trim();
+    let text = '';
+    for (let i = 0; i < v.length; i++) {
+      const line = v[i]!.trim();
+      if (i === 0) {
+        text = line;
+      } else if (/[A-Za-zÀ-ÿ]-$/.test(text)) {
+        text += line;
+      } else {
+        text += ' ' + line;
+      }
+    }
+    const joined = text.trim();
     if (joined !== '') result.set(k, joined);
   }
   return result;
