@@ -4,15 +4,15 @@
 
 **Brain note (goals, requirements, decisions, full phase/bug history):** `/Users/pushp/Brain2/Projects/mobilesurvey.md`
 **GitHub:** https://github.com/p3ji/mobilesurvey.git
-**Live site:** https://p3ji.github.io/mobilesurvey/ — push `main` to run `.github/workflows/deploy.yml`.
+**Live site:** https://msurvey.peji.ca/ (custom domain on GitHub Pages via Cloudflare DNS) — push `main` to run `.github/workflows/deploy.yml`.
 **Stack:** pnpm monorepo · TypeScript (strict) · React 18 + Vite · XState v5 · Zod · Zustand+Immer · Vitest · **Supabase** (prod persistence; Hono `platform/api` is a local-dev fallback). Current module map: `ARCHITECTURE.md`.
 
 ## Run / build / test
 - `pnpm install` — install workspace deps (needs pnpm; `npm i -g pnpm@9` if missing; corepack fails on this machine).
-- **`pnpm --filter @mobilesurvey/hub dev` — survey hub (landing page) at http://localhost:5175** → `/mobilesurvey/` in production.
+- **`pnpm --filter @mobilesurvey/hub dev` — survey hub (landing page) at http://localhost:5175** → `/` on `msurvey.peji.ca` in production.
 - `pnpm --filter @mobilesurvey/api dev` — local Hono API at http://localhost:8787. **Local-dev fallback only** — production reads/writes go directly to Supabase (used only when `VITE_SUPABASE_URL`/`VITE_SUPABASE_ANON_KEY` are unset).
-- `pnpm --filter @mobilesurvey/designer dev` — authoring tool at http://localhost:5173 → `/mobilesurvey/designer/` in prod.
-- `pnpm --filter @mobilesurvey/runtime dev` — respondent app at http://localhost:5174 → `/mobilesurvey/respondent/` in prod.
+- `pnpm --filter @mobilesurvey/designer dev` — authoring tool at http://localhost:5173 → `/designer/` in prod.
+- `pnpm --filter @mobilesurvey/runtime dev` — respondent app at http://localhost:5174 → `/respondent/` in prod.
 - `pnpm test` — all package test suites (Vitest); `pnpm typecheck` — all packages.
 - `pnpm build` — production builds for GitHub Pages (hub at root, designer and runtime in subdirs).
 
@@ -46,14 +46,14 @@
 - **Concept continuity (2026-09-29):** `sql/concept_continuity.sql` keeps AI-suggested cross-cycle connections separate from exact DDI cascade membership. The first live suggestion connects CIUS `ONL_SHOP` 2020→2022, with its universe change and source fields exposed; 2018 shares the 2020 group. The Concepts timeline displays a light grey dashed connection and explicit AI/review status after the Hub is deployed. See `DEPLOYMENT.md` §9h.
 - **AI Searcher retrieval (2026-09-30):** `sql/ai-search-results.sql` replaces separate top-slice phrase searches with one deduplicated, pageable RPC. An expanded phrase must match metadata or one category label, preventing long CIP/NAICS/NOC lists from matching words scattered across unrelated categories. The UI preserves AI phrases across subject changes and shows unique counts; subject tags are survey-level and overlap. See `docs/search-evaluation.md`.
 - **Searcher About tab (2026-09-30):** `#searcher?scope=about` gives a short public explanation of the corpus and a responsive React Chrono timeline. The old `#about` link opens that tab. It uses the source inventory (113 programs, 438,931 variable entries, 260 cycles) plus live verified-link progress. `sql/about-progress.sql` provides the read-only RPC; the browser has a paged edge-table fallback for older deployments.
-- **Researcher pilot (2026-09-30):** Hub and Searcher About link to an in-construction Researcher page; no public catalogue or metrics are live. `tools/research/researcher` has a local JSONL intake, bounded SQLite WAL/Hermes extraction queue, evidence and human-review gates, and reviewed JSONL export. The run prompt is `tools/research/researcher/HERMES_RUN_PROMPT.md`. Prioritize published-work → survey/cycle usage before IMDB questionnaire → variable matching. Automated CRDCN/OpenAlex/Crossref discovery, rights audit, gold set, D1/Worker storage pilot and public UI remain. Keep Researcher storage separate from Searcher's Supabase corpus; hosting choice follows measured pilot. Design and gates: `docs/researcher-plan.md`; deferred questionnaire track: `docs/metadata-questionnaire-and-usage-plan.md`.
+- **Researcher pilot (2026-10-01):** `tools/research/researcher` has local JSONL intake, SQLite WAL/Hermes extraction, per-claim evidence checks, human review, and reviewed export. A six-passage/four-work local pilot passed source review; the Hub has a three-work outside-StatCan static preview from a rights-safe generated snapshot (not yet deployed or backed by a durable catalogue). Statistics Canada-issued works are out of Researcher scope; shared survey/cycle/theme keys can join to structured StatCan publications later. Results and repairs: `docs/researcher-pilot-2026-10-01.md`. The run prompt is `tools/research/researcher/HERMES_RUN_PROMPT.md`. Automated CRDCN/OpenAlex/Crossref discovery, larger gold set, D1/Worker storage pilot, and public coverage metrics remain. Keep Researcher storage separate from Searcher's Supabase corpus; hosting choice follows measured pilot. Design and gates: `docs/researcher-plan.md`; deferred questionnaire track: `docs/metadata-questionnaire-and-usage-plan.md`.
 
 ## Conventions & gotchas
 - Cross-package imports use workspace deps (`@mobilesurvey/*`). In source, import `.ts` files with `.js` suffix, `.tsx` with `.jsx` (esbuild resolution).
 - Keep new tool-specific packages under `tools/<capability>/`; put only contracts consumed by multiple capabilities under `packages/`. Connect tools through package exports and the `Instrument` contract, not source-relative imports across tool folders. The Hub owns suite integration; do not move a tool's reusable rules into Hub UI code.
 - Expression engine must stay eval-free; extend via `packages/expression-engine/src/evaluator.ts` function whitelist.
 - Expressions use `==`/`!=` only — the lexer has no `===`/`!==` tokens; generators must emit the two-char forms (multi-select membership: `contains($var, 'code')`).
-- Dev base paths are `/` (Vite dev serves at root); production uses `/mobilesurvey/` (hub), `/mobilesurvey/designer/`, `/mobilesurvey/respondent/` for GitHub Pages.
+- Dev base paths are `/` (Vite dev serves at root); production uses `/` (hub), `/designer/`, `/respondent/` for `msurvey.peji.ca` on GitHub Pages.
 - Anonymous respondents use stable localStorage-based ID (`anon-<timestamp>`) to resume on the same device.
 - **Prod backend = browser→Supabase REST** with a public *publishable* key baked into the client bundle (`VITE_SUPABASE_*`, injected by `deploy.yml`). No server authz layer — security rests entirely on **Supabase RLS**. Demo is public-by-design (non-sensitive data). Never put a `service_role`/`sb_secret_` key in a `VITE_*` var or CI. (Rationale + RLS hardening plan: Brain note → Architecture Notes.)
 - **New Supabase tables need explicit `GRANT select/insert/update ... TO anon`** in addition to RLS policies (older tables inherited default privileges that new tables don't get) — see DEPLOYMENT.md §§9b/9c.

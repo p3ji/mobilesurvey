@@ -60,6 +60,9 @@ jobs:
           cp -r tools/authoring/designer/dist/* deploy/designer/
           cp -r tools/collection/respondent/dist/* deploy/respondent/
 
+          # 5. Set custom domain
+          echo "msurvey.peji.ca" > deploy/CNAME
+
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:

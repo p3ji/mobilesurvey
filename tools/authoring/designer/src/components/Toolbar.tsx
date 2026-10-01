@@ -12,13 +12,13 @@ import { exportHtml } from '../lib/htmlExport.js';
 const HELP_URL =
   'https://github.com/p3ji/mobilesurvey/blob/main/docs/manuals/authoring-tool.md';
 
-/** Hub home page. In dev (localhost), uses port 5175; in prod (GH Pages), uses /mobilesurvey/. */
+/** Hub home page. In dev (localhost), uses port 5175; in prod, uses /. */
 function getHubUrl(): string {
   const envUrl = import.meta.env.VITE_HUB_URL as string | undefined;
   if (envUrl) return envUrl;
-  if (typeof window === 'undefined') return '/mobilesurvey/';
+  if (typeof window === 'undefined') return '/';
   const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-  return isLocalhost ? 'http://localhost:5175' : '/mobilesurvey/';
+  return isLocalhost ? 'http://localhost:5175' : '/';
 }
 
 function download(content: string, filename: string, type: string) {

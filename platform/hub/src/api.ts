@@ -30,11 +30,11 @@ function isLocalhost(): boolean {
 
 export const DESIGNER_URL =
   (import.meta.env.VITE_DESIGNER_URL as string | undefined) ??
-  (isLocalhost() ? 'http://localhost:5173' : '/mobilesurvey/designer');
+  (isLocalhost() ? 'http://localhost:5173' : '/designer');
 
 export const RUNTIME_URL =
   (import.meta.env.VITE_RUNTIME_URL as string | undefined) ??
-  (isLocalhost() ? 'http://localhost:5174' : '/mobilesurvey/respondent');
+  (isLocalhost() ? 'http://localhost:5174' : '/respondent');
 
 export const designerLink = (id: string) => `${DESIGNER_URL}/?survey=${encodeURIComponent(id)}`;
 
