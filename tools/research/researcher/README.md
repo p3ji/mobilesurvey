@@ -19,17 +19,35 @@ Use `issuingOrganization` to record the publisher or issuing body separately fro
 From the repository root, after `pnpm install`:
 
 ```sh
+# 1. Source Discovery & Acquisition
+pnpm --filter @mobilesurvey/researcher researcher discover-openalex "Canadian Internet Use Survey" --limit=50 --out=out/openalex-cius.jsonl
+pnpm --filter @mobilesurvey/researcher researcher enrich-crossref out/openalex-cius.jsonl --out=out/crossref-enriched.jsonl
+pnpm --filter @mobilesurvey/researcher researcher parse-crdcn out/crdcn-sample.html --out=out/crdcn-candidates.jsonl
+
+# 2. Candidate Assembly & Deduplication (excludes StatCan-issued works, pairs survey candidates, normalizes DOIs)
+pnpm --filter @mobilesurvey/researcher researcher assemble out/openalex-cius.jsonl out/crossref-enriched.jsonl --surveys=CIUS,CCHS --out=out/sources.jsonl
+
+# 3. Queue Seeding & Local LLM Extraction
 pnpm --filter @mobilesurvey/researcher researcher seed out/sources.jsonl
 LOCAL_LLM_URL=http://127.0.0.1:1234/v1 LOCAL_LLM_MODEL=qwen3.8-27b pnpm --filter @mobilesurvey/researcher researcher run 25
+
+# 4. Status, Audit, and Gate 5 Reporting
 pnpm --filter @mobilesurvey/researcher researcher status
+pnpm --filter @mobilesurvey/researcher researcher report
 pnpm --filter @mobilesurvey/researcher researcher audit
+pnpm --filter @mobilesurvey/researcher researcher reset-failed
+
+# 5. Review & Human Gating
 pnpm --filter @mobilesurvey/researcher researcher review 50
 pnpm --filter @mobilesurvey/researcher researcher approve CLAIM_ID
 pnpm --filter @mobilesurvey/researcher researcher reject CLAIM_ID
+
+# 6. Gold Set Evaluation (measures program, role, cycle precision & recall)
+pnpm --filter @mobilesurvey/researcher researcher evaluate out/gold-set.jsonl
+
+# 7. Export & Public Pilot Snapshot
 pnpm --filter @mobilesurvey/researcher researcher export out/reviewed.jsonl
 pnpm --filter @mobilesurvey/researcher researcher preview ../../../platform/hub/src/researcherPilot.json
 ```
 
-`pnpm --filter` runs commands in this package directory, so relative input and output paths are package-relative. `RESEARCHER_DB` overrides the default ignored `out/researcher.db`. Jobs have stable IDs from work identity, passage hash, extraction stage, prompt version, model, and chunk. Re-seeding is safe. A single worker leases one chunk at a time; transient failures retry up to three times with backoff. Configuration failures stop immediately; after correcting one, `researcher reset-failed` resets failed jobs for an explicit rerun. The model endpoint must be loopback. The tested LM Studio server requires `json_schema` response format; `qwen3.8-27b` needed a 6,000-token output budget to finish the mention-only case. Every claim remains pending for human review; quote, alias, cycle, and variable checks can block approval. `audit` refreshes evidence issues for completed jobs and scopes them per claim. `export` writes a local reviewed JSONL for a future durable catalogue import. `preview` writes a rights-safe static snapshot of approved facts for the Hub; it omits evidence quotes and abstracts.
-
-Current source intake is a supplied JSONL. Automated CRDCN/OpenAlex/Crossref adapters, rights audit, gold set, and D1/Worker pilot remain separate follow-on gates in `docs/researcher-plan.md`.
+`pnpm --filter` runs commands in this package directory, so relative input and output paths are package-relative. `RESEARCHER_DB` overrides the default ignored `out/researcher.db`. Jobs have stable IDs from work identity, passage hash, extraction stage, prompt version, model, and chunk. Re-seeding is safe and idempotent. A single worker leases one chunk at a time; transient failures retry up to three times with backoff. Adapter HTTP responses are checkpointed in SQLite `adapter_checkpoint` to prevent repeated upstream queries. The model endpoint must be loopback. Every claim remains pending for human review; quote, alias, cycle, and variable checks can block approval. `audit` refreshes evidence issues for completed jobs and scopes them per claim. `export` writes a local reviewed JSONL for a future durable catalogue import. `preview` writes a rights-safe static snapshot of approved facts for the Hub; it omits evidence quotes and abstracts.

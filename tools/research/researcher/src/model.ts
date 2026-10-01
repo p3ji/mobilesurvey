@@ -42,17 +42,136 @@ export interface Extraction {
   variables: Array<{ text: string; quote: string; location: string }>;
 }
 
+export interface CandidateWork {
+  title: string;
+  doi?: string;
+  url: string;
+  source: string;
+  sourceId?: string;
+  year?: number;
+  workType?: string;
+  issuingOrganization?: string;
+  abstract?: string;
+  abstractRights: 'permitted' | 'restricted' | 'unknown';
+  openAccessUrl?: string;
+  topics?: string[];
+  suggestedPrograms?: string[];
+}
+
+export interface SurveyCandidateSpec {
+  program: string;
+  name: string;
+  aliases: string[];
+}
+
+export const CANONICAL_SURVEYS: Record<string, SurveyCandidateSpec> = {
+  CIUS: {
+    program: 'CIUS',
+    name: 'Canadian Internet Use Survey',
+    aliases: ['Canadian Internet Use Survey', 'CIUS', "Enquête canadienne sur l'utilisation d'Internet", 'ECUI'],
+  },
+  CCHS: {
+    program: 'CCHS',
+    name: 'Canadian Community Health Survey',
+    aliases: ['Canadian Community Health Survey', 'Canadian Community Health Survey - Annual Component', 'CCHS', "Enquête sur la santé dans les collectivités canadiennes", 'ESCC'],
+  },
+  CHMS: {
+    program: 'CHMS',
+    name: 'Canadian Health Measures Survey',
+    aliases: ['Canadian Health Measures Survey', 'CHMS', "Enquête canadienne sur les mesures de la santé", 'ECMS'],
+  },
+  GSS: {
+    program: 'GSS',
+    name: 'General Social Survey',
+    aliases: ['General Social Survey', 'GSS', "Enquête sociale générale", 'ESG'],
+  },
+  LFS: {
+    program: 'LFS',
+    name: 'Labour Force Survey',
+    aliases: ['Labour Force Survey', 'LFS', "Enquête sur la population active", 'EPA'],
+  },
+};
+
+export function getSurveyCandidates(programs: string[]): Array<{ program: string; aliases: string[] }> {
+  return programs.map(p => {
+    const spec = CANONICAL_SURVEYS[p.toUpperCase()];
+    if (!spec) return { program: p, aliases: [p] };
+    return { program: spec.program, aliases: spec.aliases };
+  });
+}
+
 export const hash = (value: string): string => createHash('sha256').update(value).digest('hex');
 
-export function canonicalDoi(value?: string): string | null {
+export function canonicalDoi(value?: string | null): string | null {
   if (!value) return null;
   const doi = decodeURIComponent(value.trim()).replace(/^https?:\/\/(?:dx\.)?doi\.org\//i, '').replace(/^doi:\s*/i, '').toLowerCase();
   return /^10\.\d{4,9}\/[\w.()/:;+-]+$/i.test(doi) ? doi : null;
 }
 
-export function workId(work: SourceWork): string {
+export function workId(work: { doi?: string; url: string }): string {
   const doi = canonicalDoi(work.doi);
   return doi ? `doi:${doi}` : `url:${hash(new URL(work.url).toString().replace(/\/$/, ''))}`;
+}
+
+export function isStatisticsCanadaPublication(work: {
+  url?: string | null;
+  doi?: string | null;
+  issuingOrganization?: string | null;
+}): boolean {
+  if (work.doi) {
+    const cDoi = canonicalDoi(work.doi);
+    if (cDoi?.startsWith('10.25318/')) return true;
+  }
+  if (work.url) {
+    try {
+      const hostname = new URL(work.url).hostname.toLowerCase();
+      if (hostname === 'statcan.gc.ca' || hostname.endsWith('.statcan.gc.ca')) return true;
+    } catch {
+      // not a valid absolute URL
+    }
+  }
+  const org = (work.issuingOrganization ?? '').trim().toLowerCase();
+  return /^(statistics canada|statistique canada|statcan|government of canada - statistics canada)$/i.test(org);
+}
+
+export function reconstructAbstract(invertedIndex?: Record<string, number[]> | null): string | null {
+  if (!invertedIndex || typeof invertedIndex !== 'object') return null;
+  const entries = Object.entries(invertedIndex);
+  if (entries.length === 0) return null;
+  const words: Array<[number, string]> = [];
+  for (const [word, positions] of entries) {
+    if (!Array.isArray(positions)) continue;
+    for (const pos of positions) {
+      if (typeof pos === 'number' && Number.isInteger(pos) && pos >= 0) {
+        words.push([pos, word]);
+      }
+    }
+  }
+  if (words.length === 0) return null;
+  words.sort((a, b) => a[0] - b[0]);
+  const lastWord = words[words.length - 1];
+  if (!lastWord) return null;
+  const maxPos = lastWord[0];
+  if (maxPos > 10000) return null;
+  const array: string[] = new Array(maxPos + 1).fill('');
+  for (const [pos, word] of words) {
+    array[pos] = word;
+  }
+  return array.filter(w => w.length > 0).join(' ').trim() || null;
+}
+
+export function stripXml(text?: string | null): string | null {
+  if (!text) return null;
+  const cleaned = text
+    .replace(/<[^>]+>/g, ' ')
+    .replace(/&amp;/g, '&')
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g, "'")
+    .replace(/\s+/g, ' ')
+    .trim();
+  return cleaned || null;
 }
 
 export function validateSource(value: unknown): SourceWork {

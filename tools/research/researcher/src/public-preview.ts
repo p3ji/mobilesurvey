@@ -1,3 +1,5 @@
+import { isStatisticsCanadaPublication } from './model.js';
+
 interface ReviewedClaim {
   program: string;
   role: 'analyzed' | 'comparison' | 'background_mention';
@@ -39,12 +41,6 @@ export interface PublicPilotWork {
     evidenceLocation: string;
   }>;
   mentions: Array<{ program: string; evidenceLocation: string }>;
-}
-
-function isStatisticsCanadaPublication(work: ReviewedWork): boolean {
-  const hostname = new URL(work.url).hostname.toLowerCase();
-  return hostname === 'statcan.gc.ca' || hostname.endsWith('.statcan.gc.ca') ||
-    /^(statistics canada|statistique canada)$/i.test(work.issuingOrganization?.trim() ?? '');
 }
 
 /** A deliberately small, rights-safe browser snapshot of human-approved facts. */

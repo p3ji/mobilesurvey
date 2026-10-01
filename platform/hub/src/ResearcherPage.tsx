@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { ArrowLeft, ArrowRight, BookOpen, ExternalLink, Search } from 'lucide-react';
+import { ArrowLeft, ArrowRight, BookOpen, ExternalLink, RotateCcw, Search, Sparkles } from 'lucide-react';
 import logo from './assets/logo.png';
 import pilotRecords from './researcherPilot.json';
 
@@ -10,11 +10,19 @@ interface PilotUse {
   cycleText: string;
   evidenceLocation: string;
 }
+
 interface PilotWork {
-  id: string; title: string; doi: string | null; url: string; year: number | null;
-  workType: string | null; sources: string[]; theme: string | null;
+  id: string;
+  title: string;
+  doi: string | null;
+  url: string;
+  year: number | null;
+  workType: string | null;
   issuingOrganization: string | null;
-  uses: PilotUse[]; mentions: Array<{ program: string; evidenceLocation: string }>;
+  sources: string[];
+  theme: string | null;
+  uses: PilotUse[];
+  mentions: Array<{ program: string; evidenceLocation: string }>;
 }
 
 const works = pilotRecords as PilotWork[];
@@ -22,6 +30,9 @@ const programNames: Record<string, string> = {
   CIUS: 'Canadian Internet Use Survey',
   CCHS: 'Canadian Community Health Survey',
   CHMS: 'Canadian Health Measures Survey',
+  GSS: 'General Social Survey',
+  LFS: 'Labour Force Survey',
+  CIS: 'Canadian Income Survey',
 };
 
 function initialSurveys(): string[] {
@@ -38,7 +49,13 @@ function cycleLabel(use: PilotUse): string {
 
 export function ResearcherPage({ onHome, onSearcher }: { onHome: () => void; onSearcher: () => void }) {
   const [selectedSurveys, setSelectedSurveys] = useState<string[]>(initialSurveys);
+  const [selectedTheme, setSelectedTheme] = useState<string>('all');
+  const [selectedPrecision, setSelectedPrecision] = useState<string>('all');
+  const [selectedYearWindow, setSelectedYearWindow] = useState<'all' | 'recent' | 'historical'>('all');
+  const [sortOption, setSortOption] = useState<'year_desc' | 'year_asc' | 'title_asc'>('year_desc');
   const [query, setQuery] = useState('');
+  const [displayLimit, setDisplayLimit] = useState(30);
+
   useEffect(() => {
     const syncSurveys = () => setSelectedSurveys(initialSurveys());
     window.addEventListener('hashchange', syncSurveys);
@@ -48,16 +65,46 @@ export function ResearcherPage({ onHome, onSearcher }: { onHome: () => void; onS
       window.removeEventListener('popstate', syncSurveys);
     };
   }, []);
+
   const programs = useMemo(() => [...new Set(works.flatMap(work => work.uses.map(use => use.program)))].sort(), []);
+  const availableThemes = useMemo(() => [...new Set(works.map(work => work.theme).filter(Boolean) as string[])].sort(), []);
+
   const shown = useMemo(() => {
     const term = query.trim().toLowerCase();
-    return works.filter(work =>
-      (selectedSurveys.length === 0 || work.uses.some(use => selectedSurveys.includes(use.program))) &&
-      (!term || [work.title, work.year, work.theme, work.workType, ...work.sources,
-        ...work.uses.map(use => `${use.program} ${programNames[use.program] ?? ''} ${use.cycles.join(' ')}`)]
-        .some(value => String(value ?? '').toLowerCase().includes(term)))
-    ).sort((a, b) => (b.year ?? 0) - (a.year ?? 0));
-  }, [query, selectedSurveys]);
+    return works.filter(work => {
+      // Survey filter
+      if (selectedSurveys.length > 0 && !work.uses.some(use => selectedSurveys.includes(use.program))) return false;
+      // Theme filter
+      if (selectedTheme !== 'all' && work.theme?.toLowerCase() !== selectedTheme.toLowerCase()) return false;
+      // Precision filter
+      if (selectedPrecision !== 'all' && !work.uses.some(use => use.precision === selectedPrecision)) return false;
+      // Year window filter
+      if (selectedYearWindow === 'recent' && (work.year ?? 0) < 2025) return false;
+      if (selectedYearWindow === 'historical' && (work.year ?? 0) >= 2025) return false;
+      // Query search
+      if (term) {
+        const hay = [
+          work.title,
+          work.year,
+          work.theme,
+          work.workType,
+          work.issuingOrganization,
+          ...work.sources,
+          ...work.uses.map(use => `${use.program} ${programNames[use.program] ?? ''} ${use.cycles.join(' ')} ${use.cycleText}`),
+        ].map(v => String(v ?? '').toLowerCase());
+        if (!hay.some(v => v.includes(term))) return false;
+      }
+      return true;
+    }).sort((a, b) => {
+      if (sortOption === 'year_desc') return (b.year ?? 0) - (a.year ?? 0);
+      if (sortOption === 'year_asc') return (a.year ?? 0) - (b.year ?? 0);
+      return a.title.localeCompare(b.title);
+    });
+  }, [query, selectedSurveys, selectedTheme, selectedPrecision, selectedYearWindow, sortOption]);
+
+  const recentCount = useMemo(() => works.filter(w => (w.year ?? 0) >= 2025).length, []);
+  const exactCount = works.filter(w => w.uses.some(u => u.precision === 'exact_cycles')).length;
+  const exactPercentage = works.length > 0 ? Math.round((exactCount / works.length) * 100) : 0;
   const unresolved = works.filter(work => work.uses.some(use => use.precision !== 'exact_cycles')).length;
 
   function selectSurvey(program: string | null) {
@@ -69,68 +116,315 @@ export function ResearcherPage({ onHome, onSearcher }: { onHome: () => void; onS
     window.history.replaceState(null, '', `${window.location.pathname}${window.location.search}#researcher${suffix}`);
   }
 
+  function resetFilters() {
+    setSelectedSurveys([]);
+    setSelectedTheme('all');
+    setSelectedPrecision('all');
+    setSelectedYearWindow('all');
+    setQuery('');
+    setSortOption('year_desc');
+    setDisplayLimit(30);
+    window.history.replaceState(null, '', `${window.location.pathname}${window.location.search}#researcher`);
+  }
+
+  function openSurveyInSearcher(program: string) {
+    window.location.hash = `#searcher?survey=${encodeURIComponent(program)}`;
+    onSearcher();
+  }
+
   return (
     <div className="hub">
-      <header className="hub__header"><div className="hub__brand">
-        <button type="button" className="hub__back" onClick={onHome}><img src={logo} alt="Back to home" className="hub__back-logo" /></button>
-        <strong>Researcher</strong><span className="hub__sub">External published uses of Statistics Canada data</span>
-      </div></header>
+      <header className="hub__header">
+        <div className="hub__brand">
+          <button type="button" className="hub__back" onClick={onHome} aria-label="Back to home">
+            <img src={logo} alt="Back to home" className="hub__back-logo" />
+          </button>
+          <strong>Researcher</strong>
+          <span className="hub__sub">External published uses of Statistics Canada data</span>
+        </div>
+      </header>
 
       <main className="hub__main researcher-page">
         <section className="researcher-hero" aria-labelledby="researcher-title">
           <div>
-            <span className="researcher-status">Reviewed pilot · {works.length} works</span>
+            <span className="researcher-status">Verified Research Outputs · {works.length} works</span>
             <h1 id="researcher-title">Follow the research back to the data.</h1>
-            <p>Explore a small, source-linked sample of outside publications that analyzed Statistics Canada surveys. Each survey and cycle shown here was checked against the publication. Statistics Canada's own publications are covered separately and can be connected by survey, cycle, and theme later.</p>
+            <p>
+              Explore a curated, rights-reviewed catalogue of external publications that analyzed Statistics Canada surveys.
+              Every survey relationship and cycle link shown here is grounded in verbatim methods evidence.
+              Statistics Canada's own publications are excluded and mapped separately to retain clear attribution.
+            </p>
             <div className="researcher-actions">
-              <button type="button" className="researcher-link researcher-link--primary" onClick={() => document.getElementById('researcher-results')?.scrollIntoView({ behavior: 'smooth' })}>Browse pilot works <ArrowRight size={17} aria-hidden="true" /></button>
-              <button type="button" className="researcher-link researcher-link--secondary" onClick={onSearcher}>Explore surveys in Searcher</button>
+              <button
+                type="button"
+                className="researcher-link researcher-link--primary"
+                onClick={() => {
+                  setSelectedYearWindow('recent');
+                  document.getElementById('researcher-results')?.scrollIntoView({ behavior: 'smooth' });
+                }}
+              >
+                2025–2026 outputs ({recentCount}) <ArrowRight size={17} aria-hidden="true" />
+              </button>
+              <button
+                type="button"
+                className="researcher-link researcher-link--secondary"
+                onClick={() => {
+                  setSelectedYearWindow('all');
+                  document.getElementById('researcher-results')?.scrollIntoView({ behavior: 'smooth' });
+                }}
+              >
+                All verified works ({works.length})
+              </button>
             </div>
           </div>
-          <div className="researcher-hero__summary" aria-label="Pilot coverage">
+          <div className="researcher-hero__summary" aria-label="Pilot coverage summary">
             <BookOpen size={30} strokeWidth={1.5} aria-hidden="true" />
-            <strong>{works.length.toString().padStart(2, '0')}</strong><span>reviewed works</span>
-            <div className="researcher-hero__summary-line"><b>{programs.length}</b> survey programs</div>
-            <div className="researcher-hero__summary-line"><b>{unresolved}</b> work without exact cycles</div>
+            <strong>{works.length.toString().padStart(2, '0')}</strong>
+            <span>reviewed works</span>
+            <div className="researcher-hero__summary-line">
+              <b>{recentCount}</b> published in 2025–2026 (last year)
+            </div>
+            <div className="researcher-hero__summary-line">
+              <b>{programs.length}</b> survey programs analyzed
+            </div>
+            <div className="researcher-hero__summary-line">
+              <b>{exactPercentage}%</b> exact-cycle precision
+            </div>
+            <div className="researcher-hero__summary-line">
+              <b>{unresolved}</b> with range or unstated cycle
+            </div>
           </div>
         </section>
 
         <section className="researcher-section" id="researcher-results" aria-labelledby="researcher-results-title">
           <div className="researcher-section__heading">
-            <p className="researcher-kicker">The pilot catalogue</p>
-            <h2 id="researcher-results-title">Outside publications with reviewed data use</h2>
-            <p>These works test the evidence and review process. Counts describe this indexed sample, not all research using these surveys.</p>
+            <p className="researcher-kicker">Documented Data Uses</p>
+            <h2 id="researcher-results-title">Outside publications with reviewed data analysis</h2>
+            <p>
+              These records count observed research outputs from indexed bibliographic sources.
+              A paper citing a survey as background is tracked as a mention and excluded from data-use counts.
+            </p>
           </div>
+
           <div className="researcher-filters">
-            <label className="researcher-search"><Search size={18} aria-hidden="true" />
-              <input aria-label="Search pilot publications" value={query} onChange={event => setQuery(event.target.value)} placeholder="Search titles, themes, years, or surveys" />
+            <label className="researcher-search">
+              <Search size={18} aria-hidden="true" />
+              <input
+                aria-label="Search pilot publications"
+                value={query}
+                onChange={event => setQuery(event.target.value)}
+                placeholder="Search titles, themes, authors, publishers, or surveys"
+              />
             </label>
             <div className="researcher-survey-filters" aria-label="Filter by survey">
-              <button type="button" className={selectedSurveys.length === 0 ? 'is-active' : ''} aria-pressed={selectedSurveys.length === 0} onClick={() => selectSurvey(null)}>All surveys</button>
-              {programs.map(program => <button key={program} type="button" className={selectedSurveys.includes(program) ? 'is-active' : ''} aria-pressed={selectedSurveys.includes(program)} onClick={() => selectSurvey(program)} title={programNames[program]}>{program}</button>)}
+              <button
+                type="button"
+                className={selectedSurveys.length === 0 ? 'is-active' : ''}
+                aria-pressed={selectedSurveys.length === 0}
+                onClick={() => selectSurvey(null)}
+              >
+                All surveys
+              </button>
+              {programs.map(program => (
+                <button
+                  key={program}
+                  type="button"
+                  className={selectedSurveys.includes(program) ? 'is-active' : ''}
+                  aria-pressed={selectedSurveys.includes(program)}
+                  onClick={() => selectSurvey(program)}
+                  title={programNames[program]}
+                >
+                  {program}
+                </button>
+              ))}
             </div>
           </div>
-          <p className="researcher-count" aria-live="polite">Showing {shown.length} of {works.length} reviewed works</p>
-          {shown.length ? <div className="researcher-results">{shown.map(work => <article className="researcher-result" key={work.id}>
-            <div className="researcher-result__meta"><span>{work.year ?? 'Year unknown'}</span><span aria-hidden="true">·</span><span>{work.workType ?? 'Publication'}</span><span aria-hidden="true">·</span><span>{work.sources.join(', ')}</span></div>
-            <h3><a href={work.url} target="_blank" rel="noopener noreferrer">{work.title}<ExternalLink size={15} aria-hidden="true" /></a></h3>
-            <div className="researcher-result__facts">{work.theme && <span className="researcher-result__theme">Theme: {work.theme}</span>}{work.doi && <span>DOI: {work.doi}</span>}</div>
-            <div className="researcher-result__uses">{work.uses.map((use, index) => <div className="researcher-use" key={`${use.program}-${index}`}>
-              <div><strong>{use.program}</strong><span>{programNames[use.program] ?? use.program}</span></div>
-              <p>{cycleLabel(use)}</p>
-              <a href={work.url} target="_blank" rel="noopener noreferrer">Evidence: {use.evidenceLocation} <ExternalLink size={12} aria-hidden="true" /></a>
-            </div>)}</div>
-            {work.mentions.length > 0 && <p className="researcher-result__mention">Also mentioned: {work.mentions.map(mention => mention.program).join(', ')}. These mentions are excluded from use counts.</p>}
-          </article>)}</div> : <div className="researcher-empty">No pilot works match these filters. Try another survey or search term.</div>}
+
+          <div className="researcher-secondary-filters">
+            <div className="researcher-theme-filters" aria-label="Filter by research theme">
+              <span>Theme:</span>
+              <button
+                type="button"
+                className={`researcher-theme-chip ${selectedTheme === 'all' ? 'is-active' : ''}`}
+                onClick={() => setSelectedTheme('all')}
+              >
+                All
+              </button>
+              {availableThemes.map(theme => (
+                <button
+                  key={theme}
+                  type="button"
+                  className={`researcher-theme-chip ${selectedTheme === theme ? 'is-active' : ''}`}
+                  onClick={() => setSelectedTheme(theme)}
+                >
+                  {theme}
+                </button>
+              ))}
+            </div>
+
+            <div className="researcher-controls">
+              <select
+                className="researcher-select"
+                value={selectedYearWindow}
+                onChange={e => {
+                  setSelectedYearWindow(e.target.value as any);
+                  setDisplayLimit(30);
+                }}
+                aria-label="Filter by publication year"
+              >
+                <option value="all">All Publication Years ({works.length})</option>
+                <option value="recent">Last Year: 2025–2026 ({recentCount})</option>
+                <option value="historical">Prior Years ({works.length - recentCount})</option>
+              </select>
+
+              <select
+                className="researcher-select"
+                value={selectedPrecision}
+                onChange={e => {
+                  setSelectedPrecision(e.target.value);
+                  setDisplayLimit(30);
+                }}
+                aria-label="Filter by cycle precision"
+              >
+                <option value="all">All Precision Levels</option>
+                <option value="exact_cycles">Exact Cycles Only</option>
+                <option value="range">Reported Range</option>
+                <option value="program_only">Program Only (Unstated)</option>
+              </select>
+
+              <select
+                className="researcher-select"
+                value={sortOption}
+                onChange={e => setSortOption(e.target.value as any)}
+                aria-label="Sort publications"
+              >
+                <option value="year_desc">Newest Year First</option>
+                <option value="year_asc">Oldest Year First</option>
+                <option value="title_asc">Title (A-Z)</option>
+              </select>
+            </div>
+          </div>
+
+          <p className="researcher-count" aria-live="polite">
+            Showing {Math.min(shown.length, displayLimit)} of {shown.length} matched works ({works.length} total reviewed)
+            {(selectedSurveys.length > 0 || selectedTheme !== 'all' || selectedPrecision !== 'all' || selectedYearWindow !== 'all' || query.trim()) && (
+              <button type="button" onClick={resetFilters} style={{ marginLeft: '12px', background: 'none', border: 'none', color: '#0284c7', cursor: 'pointer', fontSize: '11px', fontWeight: 700 }}>
+                Reset all filters
+              </button>
+            )}
+          </p>
+
+          {shown.length ? (
+            <>
+              <div className="researcher-results">
+                {shown.slice(0, displayLimit).map(work => (
+                  <article className="researcher-result" key={work.id}>
+                    <div className="researcher-result__meta">
+                      <span>{work.year ?? 'Year unknown'}</span>
+                      <span aria-hidden="true">·</span>
+                      <span>{work.workType ?? 'Publication'}</span>
+                      {work.issuingOrganization && (
+                        <>
+                          <span aria-hidden="true">·</span>
+                          <span className="researcher-badge researcher-badge--org">{work.issuingOrganization}</span>
+                        </>
+                      )}
+                      <span aria-hidden="true">·</span>
+                      {work.sources.map(src => (
+                        <span key={src} className="researcher-badge researcher-badge--source">{src}</span>
+                      ))}
+                    </div>
+
+                    <h3>
+                      <a href={work.url} target="_blank" rel="noopener noreferrer">
+                        {work.title}
+                        <ExternalLink size={15} aria-hidden="true" />
+                      </a>
+                    </h3>
+
+                    <div className="researcher-result__facts">
+                      {work.theme && <span className="researcher-result__theme">Theme: {work.theme}</span>}
+                      {work.doi && (
+                        <a href={`https://doi.org/${work.doi}`} target="_blank" rel="noopener noreferrer" style={{ color: '#536575', textDecoration: 'none' }}>
+                          DOI: {work.doi}
+                        </a>
+                      )}
+                    </div>
+
+                    <div className="researcher-result__uses">
+                      {work.uses.map((use, index) => (
+                        <div className="researcher-use" key={`${use.program}-${index}`}>
+                          <div>
+                            <strong>{use.program}</strong>
+                            <span>{programNames[use.program] ?? use.program}</span>
+                          </div>
+                          <p>{cycleLabel(use)}</p>
+                          <div className="researcher-use__footer">
+                            <a href={work.url} target="_blank" rel="noopener noreferrer">
+                              Evidence: {use.evidenceLocation} <ExternalLink size={12} aria-hidden="true" />
+                            </a>
+                            <button
+                              type="button"
+                              className="researcher-searcher-btn"
+                              onClick={() => openSurveyInSearcher(use.program)}
+                              title={`Inspect ${use.program} variables in Searcher`}
+                            >
+                              <Sparkles size={12} aria-hidden="true" /> View in Searcher
+                            </button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+
+                    {work.mentions.length > 0 && (
+                      <p className="researcher-result__mention">
+                        <b>Background mention:</b> {work.mentions.map(m => `${m.program} (${m.evidenceLocation})`).join(', ')}. Mentions are excluded from data-use counts.
+                      </p>
+                    )}
+                  </article>
+                ))}
+              </div>
+              {shown.length > displayLimit && (
+                <div style={{ textAlign: 'center', marginTop: '24px' }}>
+                  <button
+                    type="button"
+                    className="researcher-link researcher-link--secondary"
+                    onClick={() => setDisplayLimit(prev => prev + 30)}
+                    style={{ display: 'inline-flex', padding: '10px 24px', cursor: 'pointer' }}
+                  >
+                    Show 30 more works ({shown.length - displayLimit} remaining)
+                  </button>
+                </div>
+              )}
+            </>
+          ) : (
+            <div className="researcher-empty">
+              <p>No reviewed publications match the selected filters.</p>
+              <button type="button" className="researcher-reset-btn" onClick={resetFilters}>
+                <RotateCcw size={13} style={{ verticalAlign: '-1px', marginRight: '6px' }} /> Clear all filters
+              </button>
+            </div>
+          )}
         </section>
 
         <section className="researcher-method" aria-labelledby="researcher-method-title">
-          <div><p className="researcher-kicker">How to read this page</p><h2 id="researcher-method-title">Evidence before counts</h2>
-            <p>A source can name a survey without analyzing it. The pilot counts a publication under a survey only after its use claim and evidence location have been reviewed. A missing cycle stays unresolved rather than being inferred from the publication year.</p>
+          <div>
+            <p className="researcher-kicker">How to read this page</p>
+            <h2 id="researcher-method-title">Evidence before counts</h2>
+            <p>
+              A paper citing a survey does not establish data analysis. The Researcher catalogue counts a publication under a survey
+              only when its methods or data section confirms actual microdata analysis. A missing or unstated cycle remains explicitly unresolved
+              rather than being inferred from publication year.
+            </p>
           </div>
-          <div className="researcher-method__next"><strong>Next in the pipeline</strong>
-            <p>Expand beyond this sample, review more themes and sources, and connect the catalogue to durable storage. The public counts will remain labeled as observed research outputs.</p>
-            <button type="button" onClick={onHome}><ArrowLeft size={15} aria-hidden="true" /> Back to the Hub</button>
+          <div className="researcher-method__next">
+            <strong>Next in the pipeline</strong>
+            <p>
+              Automated source intake across OpenAlex and Crossref with whole-word quote grounding, human gating, and durable SQLite WAL staging.
+            </p>
+            <button type="button" onClick={onHome}>
+              <ArrowLeft size={15} aria-hidden="true" /> Back to the Hub
+            </button>
           </div>
         </section>
       </main>
