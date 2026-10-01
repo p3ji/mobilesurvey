@@ -41,9 +41,55 @@ insert into corpus_search_alias (query, expansion) values
   ('e-cigarettes', 'vaping')
 on conflict (query) do update set expansion = excluded.expansion;
 
--- The original 9-argument RPC remains the client contract. Exact wording outranks a synonym.
+-- -- 1. Classifier helper function for GSIM roles and process/weight detection
+create or replace function corpus_variable_role(
+  p_name text,
+  p_concept text,
+  p_note text,
+  p_survey_group text
+)
+returns text
+language sql
+immutable
+parallel safe
+as $$
+  select case
+    -- 1. Origin: process / paradata / weights / system identifiers
+    when p_name ~* '^(WTS?_|WTM_|WT_|WGHT|BOOT|BSW|FWT|REPWT|FWEIGHT|HWEIGHT|WT[0-9]+|WTBS|WTPS|WVCBS|SPFWT|BWT|SAMPLEID|PERSONID|MASTERID|HHID|RECID|VERDATE|REFPER|RECORDID|CASEID|USERID|FORMID|PUMFID|BATCHID|STRAT|FRAME|SEQNUM|IDENT|DO[A-Z]{3}|ADM_|SAM_|INT_|COL_|MET_|SURV|DOF|FLG_)'
+      or p_name ~* '_F$'
+      or coalesce(p_concept, '') ~* '(^|\y)(sampling weight|sample weight|bootstrap|poids [eé]chantillon|share weight|master weight|survey weight|final weight|replicate weights?|poids r[eé]plique|inclusion flag|indicateur)(\y|$)|[-–—]\s*\(F\)|\(F\)$'
+      then 'process'
+
+    -- 2. Derivation: derived / recoded / PUMF grouped
+    when coalesce(p_concept, '') ~* '(^|\y)(DV\s*[-–—:]|derived variable|\(D\)|\(G\)|grouped|group[eé]e?s?)|[-–—]\s*(derived|\(D\)|\(G\)|grouped|group[eé]e?s?)|\(D\)$'
+      or p_name ~* '^[A-Z]{2,4}G[A-Z0-9]+$'
+      or p_name ~* 'DV'
+      or p_name ~* '^[A-Z]{2,4}D[A-Z0-9]{2,}$'
+      or coalesce(p_note, '') ~* '^(based on|derived from|calcul[eé]|selon|compos[eé])|see documentation on derived variables'
+      then 'derived'
+
+    -- 3. Origin: administrative
+    when coalesce(p_concept, '') ~* '\b(T1FF|CRA|IMDB|vital statistics|health administrative|hospital discharge|tax data|administrative file|donn[eé]es fiscales|registre)\b'
+      or coalesce(p_note, '') ~* '\b(T1FF|CRA|IMDB|vital statistics|health administrative|hospital discharge|tax data|administrative file|donn[eé]es fiscales|registre)\b'
+      or coalesce(p_survey_group, '') ~* '(VITAL|TAX|T1FF)'
+      or p_name ~* '^GEO'
+      or coalesce(p_concept, '') ~* '\b(province|postal code)\b'
+      then 'administrative'
+
+    -- 4. Default: collected
+    else 'collected'
+  end;
+$$;
+grant execute on function corpus_variable_role(text, text, text, text) to anon;
+
+-- The original RPC remains the client contract. Exact wording outranks a synonym.
 -- Cap whole-record FTS rank so long code lists cannot dominate. A name, concept, or question
 -- match gets a field bonus; category-only matches remain findable via the existing GIN index.
+-- Role filtering and paradata suppression apply before count, rank, and pagination.
+drop function if exists corpus_search(text, text, text, integer, integer, boolean, integer, integer);
+drop function if exists corpus_search(text, text, text, integer, integer, boolean, integer, integer, text);
+drop function if exists corpus_search(text, text, text, integer, integer, boolean, integer, integer, text, text, boolean);
+
 create or replace function corpus_search(
   q               text,
   lang_filter     text    default null,
@@ -53,7 +99,9 @@ create or replace function corpus_search(
   require_codes   boolean default null,
   max_rows        integer default 50,
   row_offset      integer default 0,
-  subject_filter  text    default null
+  subject_filter  text    default null,
+  role_filter     text    default null,
+  hide_process    boolean default false
 )
 returns table (
   record_id       uuid,
@@ -136,6 +184,15 @@ as $$
                           and s.subject = subject_filter
                      )
                 )
+            and (
+                  case
+                    when role_filter is not null and role_filter <> 'all'
+                      then corpus_variable_role(v.name, v.concept, v.note, v.survey_group) = role_filter
+                    when coalesce(hide_process, false)
+                      then corpus_variable_role(v.name, v.concept, v.note, v.survey_group) <> 'process'
+                    else true
+                  end
+                )
        ),
        counted as (select count(*) as n from matched)
   select m.record_id, m.name, m.position, m.length, m.concept, m.question_text, m.universe,
@@ -148,7 +205,7 @@ as $$
   offset greatest(0, coalesce(row_offset, 0));
 $$;
 
-grant execute on function corpus_search(text, text, text, integer, integer, boolean, integer, integer, text) to anon;
+grant execute on function corpus_search(text, text, text, integer, integer, boolean, integer, integer, text, text, boolean) to anon;
 
 -- One small row per survey, refreshed after corpus loads. A reader never scans the corpus
 -- just to paint a sidebar. Refresh is atomic in one transaction and service-role-only.

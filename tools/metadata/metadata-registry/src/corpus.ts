@@ -202,6 +202,10 @@ export interface CorpusFilters {
   hasCodes?: boolean;
   /** One of Statistics Canada's subjects. Matches surveys assigned to it. */
   subject?: string;
+  /** GSIM variable role filter ('collected' | 'derived' | 'process' | 'administrative' | 'all'). */
+  role?: 'all' | 'collected' | 'derived' | 'process' | 'administrative';
+  /** When true, excludes operational paradata, system identifiers, and sampling/bootstrap weights. */
+  hideProcess?: boolean;
 }
 
 export interface CorpusSearchOptions extends CorpusFilters {
@@ -408,6 +412,9 @@ export class SupabaseCorpusSource {
     const trimmed = query.trim();
     if (trimmed === '') return { hits: [], total: 0 };
 
+    const roleFilter = options.role === 'all' ? null : (options.role ?? null);
+    const hideProcess = options.hideProcess ?? false;
+
     const rows = await this.rpc<CorpusSearchRow[]>(
       options.sort === 'recent' ? 'corpus_search_sorted' : 'corpus_search',
       {
@@ -418,6 +425,8 @@ export class SupabaseCorpusSource {
         year_max: options.yearMax ?? null,
         require_codes: options.hasCodes ?? null,
         subject_filter: options.subject ?? null,
+        role_filter: roleFilter,
+        hide_process: hideProcess,
         ...(options.sort === 'recent' ? { sort_mode: 'recent' } : {}),
         max_rows: options.limit ?? 50,
         row_offset: options.offset ?? 0,
@@ -440,6 +449,8 @@ export class SupabaseCorpusSource {
   /** Deduplicated, field-aware results for LLM-suggested phrases. */
   async searchAi(terms: string[], options: CorpusSearchOptions = {}): Promise<CorpusSearchResult> {
     if (terms.length === 0) return { hits: [], total: 0 };
+    const roleFilter = options.role === 'all' ? null : (options.role ?? null);
+    const hideProcess = options.hideProcess ?? false;
     const rows = await this.rpc<CorpusSearchRow[]>('corpus_search_ai', {
       search_terms: terms.slice(0, 3),
       lang_filter: options.lang ?? null,
@@ -451,6 +462,8 @@ export class SupabaseCorpusSource {
       sort_mode: options.sort ?? 'relevance',
       max_rows: options.limit ?? 25,
       row_offset: options.offset ?? 0,
+      role_filter: roleFilter,
+      hide_process: hideProcess,
     }, options.signal);
     return {
       hits: rows.map((row) => ({
@@ -460,6 +473,19 @@ export class SupabaseCorpusSource {
       })),
       total: rows[0]?.total_count ?? 0,
     };
+  }
+
+  /** Hydrate full variable records by record_id in one batched request. */
+  async fetchRecords(recordIds: string[], signal?: AbortSignal): Promise<SearchHit[]> {
+    if (recordIds.length === 0) return [];
+    const rows = await this.rpc<CorpusSearchRow[]>('corpus_get_variables', {
+      p_record_ids: recordIds,
+    }, signal);
+    return rows.map((row) => ({
+      entry: toRegistryEntry(row),
+      score: row.rank,
+      matched: [],
+    }));
   }
 
   /** Immediate verified inputs for the visible results page; empty pages make no request. */

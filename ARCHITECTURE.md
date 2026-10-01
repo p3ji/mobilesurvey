@@ -8,6 +8,7 @@ This repository follows the survey process. A **tool** owns one capability; a **
 | Data collection | `tools/collection/respondent`, `runtime-engine`, `respondent-view` | Respondent app; shared rendering in Designer | `Instrument` + answers → response and paradata |
 | Data validation | `tools/validation/validation-engine` | Validator screen in Hub | `Instrument` + response data → findings, scores, corrections |
 | Metadata discovery | `tools/metadata/metadata-registry`, `statcan-corpus` | Searcher and graph screens in Hub; corpus CLI | Instruments or corpus documents → searchable metadata |
+| Published research use | `tools/research/researcher` | Researcher construction screen in Hub; local CLI | Source passages → reviewed publication-use candidates |
 | Questionnaire testing | `tools/testing/questionnaire-bot` | CLI and HTML report | `Instrument` + respondent URL → paths, assertions, report |
 
 `platform/hub` combines these tools with survey management, response monitoring, analysis, and CATI views. `platform/api` is the local SQLite fallback. Production persistence goes from browser apps to Supabase. The Hub currently owns the Validator, Searcher, Migrator, and Analyzer screens and their persistence adapters; those UIs have **not** been separated into standalone apps.

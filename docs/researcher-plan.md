@@ -1,6 +1,6 @@
 # Researcher: published use of Statistics Canada data
 
-**Direction agreed for planning, 2026-09-30:** pursue published-work → survey/cycle links before IMDB questionnaire → variable links. The Hub and Searcher About page now link to an **in-construction** Researcher page; the catalogue, ingestion pipeline, and metrics are still planned. For storage, compare Cloudflare D1 with Supabase first. Oracle is deferred because its operational setup is disproportionate to this catalogue.
+**Direction agreed for planning, 2026-09-30:** pursue published-work → survey/cycle links before IMDB questionnaire → variable links. The Hub and Searcher About page link to an **in-construction** Researcher page. A local JSONL → SQLite queue → Hermes extraction → human review → reviewed JSONL pilot now lives in `tools/research/researcher`; source adapters, gold set, hosted catalogue, public metrics, and UI integration remain planned. For storage, compare Cloudflare D1 with Supabase first. Oracle is deferred because its operational setup is disproportionate to this catalogue.
 
 ## Product goal and scope
 

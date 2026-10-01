@@ -1,4 +1,7 @@
 -- Global result ordering. Keep relevance scoring aligned with search-performance.sql.
+drop function if exists corpus_search_sorted(text, text, text, integer, integer, boolean, integer, integer, text, text);
+drop function if exists corpus_search_sorted(text, text, text, integer, integer, boolean, integer, integer, text, text, text, boolean);
+
 create or replace function corpus_search_sorted(
   q               text,
   lang_filter     text    default null,
@@ -9,7 +12,9 @@ create or replace function corpus_search_sorted(
   max_rows        integer default 50,
   row_offset      integer default 0,
   subject_filter  text    default null,
-  sort_mode       text    default 'relevance'
+  sort_mode       text    default 'relevance',
+  role_filter     text    default null,
+  hide_process    boolean default false
 )
 returns table (
   record_id       uuid,
@@ -92,6 +97,15 @@ as $$
                           and s.subject = subject_filter
                      )
                 )
+            and (
+                  case
+                    when role_filter is not null and role_filter <> 'all'
+                      then corpus_variable_role(v.name, v.concept, v.note, v.survey_group) = role_filter
+                    when coalesce(hide_process, false)
+                      then corpus_variable_role(v.name, v.concept, v.note, v.survey_group) <> 'process'
+                    else true
+                  end
+                )
        ),
        counted as (select count(*) as n from matched)
   select m.record_id, m.name, m.position, m.length, m.concept, m.question_text, m.universe,
@@ -105,5 +119,5 @@ as $$
   offset greatest(0, coalesce(row_offset, 0));
 $$;
 
-revoke execute on function corpus_search_sorted(text, text, text, integer, integer, boolean, integer, integer, text, text) from public, authenticated;
-grant execute on function corpus_search_sorted(text, text, text, integer, integer, boolean, integer, integer, text, text) to anon;
+revoke execute on function corpus_search_sorted(text, text, text, integer, integer, boolean, integer, integer, text, text, text, boolean) from public, authenticated;
+grant execute on function corpus_search_sorted(text, text, text, integer, integer, boolean, integer, integer, text, text, text, boolean) to anon;

@@ -38,6 +38,7 @@ ddi-c_*/
 # the payload never is. (*.zip above already covers the source, listed here for intent.)
 docs/metadatarepo/
 tools/metadata/statcan-corpus/out/
+tools/research/researcher/out/
 supabase/.temp/
 .temp/
 tools/metadata/statcan-corpus/cache/

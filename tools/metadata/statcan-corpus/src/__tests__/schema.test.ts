@@ -165,7 +165,7 @@ describe('sql/search-performance.sql', () => {
     const statements = pg.parse(sql);
     expect(statements.error == null ? undefined : `${statements.error.message} — ${locate(sql, statements.error.cursorpos)}`).toBeUndefined();
     const bodies = [...sql.matchAll(/create or replace function\s+(\w+)[\s\S]*?as \$\$([\s\S]*?)\$\$;/g)];
-    expect(bodies.length).toBe(6);
+    expect(bodies.length).toBe(7);
     for (const [, name, body] of bodies) {
       if (name === 'corpus_refresh_facets') continue; // PL/pgSQL body; the SQL parser checks the enclosing CREATE.
       const result = pg.parse(body!);

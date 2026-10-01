@@ -2,6 +2,9 @@
 -- The LLM supplies alternative phrases only. This RPC retrieves and counts distinct variable
 -- records, requiring each phrase to match a short metadata field or ONE response-category label.
 -- Words scattered across hundreds of unrelated classification categories cannot form a match.
+drop function if exists corpus_search_ai(text[], text, text, integer, integer, boolean, text, text, integer, integer);
+drop function if exists corpus_search_ai(text[], text, text, integer, integer, boolean, text, text, integer, integer, text, boolean);
+
 create or replace function corpus_search_ai(
   search_terms   text[],
   lang_filter    text default null,
@@ -12,7 +15,9 @@ create or replace function corpus_search_ai(
   subject_filter text default null,
   sort_mode      text default 'relevance',
   max_rows       integer default 25,
-  row_offset     integer default 0
+  row_offset     integer default 0,
+  role_filter    text default null,
+  hide_process   boolean default false
 )
 returns table (
   record_id uuid, name text, "position" text, "length" text,
@@ -60,6 +65,15 @@ as $$
          select 1 from corpus_survey_subject s
           where s.survey_group = v.survey_group and s.subject = subject_filter
        ))
+       and (
+         case
+           when role_filter is not null and role_filter <> 'all'
+             then corpus_variable_role(v.name, v.concept, v.note, v.survey_group) = role_filter
+           when coalesce(hide_process, false)
+             then corpus_variable_role(v.name, v.concept, v.note, v.survey_group) <> 'process'
+           else true
+         end
+       )
   ), best as (
     select c.record_id, max(c.score) as score from candidates c group by c.record_id
   ), counted as (select count(*) as n from best)
@@ -73,4 +87,4 @@ as $$
    limit greatest(1, least(coalesce(max_rows, 25), 100))
   offset greatest(0, coalesce(row_offset, 0));
 $$;
-grant execute on function corpus_search_ai(text[], text, text, integer, integer, boolean, text, text, integer, integer) to anon;
+grant execute on function corpus_search_ai(text[], text, text, integer, integer, boolean, text, text, integer, integer, text, boolean) to anon;

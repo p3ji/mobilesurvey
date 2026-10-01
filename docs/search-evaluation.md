@@ -70,3 +70,25 @@ slots. `AI` and `remote work` retain their prior totals of 221 and 69. A broad `
 took 2.95 seconds in PostgreSQL after the change. That latency, role/paradata filtering after
 pagination, and page-local question grouping still need a judged-query evaluation before any
 larger ranking or vector rollout.
+
+## Server-side role and paradata filtering (2026-10-01)
+
+The vector capacity audit identified post-pagination client filtering as a core relevance defect:
+when `hideProcess` or `roleFilter` ran in React *after* SQL ranked and paginated 25 rows, hidden
+weights or non-matching roles left vacant slots on the page (e.g. 15 or 3 items visible instead of 25)
+and displayed an unfiltered total.
+
+The SQL functions `corpus_search`, `corpus_search_sorted`, and `corpus_search_ai` now accept `role_filter`
+and `hide_process` and filter candidate variables before `COUNT`, `ORDER BY`, `LIMIT`, and `OFFSET`:
+- A fast, immutable helper `corpus_variable_role(name, concept, note, survey_group)` classifies variables
+  into the four GSIM roles (`collected`, `derived`, `administrative`, `process`).
+- Queries run against the GIN index candidate set with negligible overhead: `explain analyze` on
+  `mental health` with `hide_process = true` measured **217 ms** total execution time, removing 25
+  process rows prior to pagination.
+- For `sample weight`, total count drops from 52 to 8 when `hide_process = true`, eliminating all 44
+  bootstrap/sampling weights from results.
+- For `mental health` with `role_filter = 'derived'`, the database returns 182 derived variables with
+  full 25-item pages; with `role_filter = 'collected'`, 1,216 questions are returned.
+- In `CorpusSearch.tsx`, results now render all 25 page slots without client drop-outs, and the Language
+  filter clarifies that the live index contains 194k English records while French source documents
+  remain unindexed in the live Supabase project.

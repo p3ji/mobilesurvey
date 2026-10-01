@@ -1,0 +1,16 @@
+{
+  "name": "@mobilesurvey/researcher",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "researcher": "tsx src/cli.ts"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.2",
+    "typescript": "^5.6.3",
+    "vitest": "^3.2.6"
+  }
+}

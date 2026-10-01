@@ -1,0 +1,972 @@
+[
+  {
+    "id": "hlt-01",
+    "query": "self-rated general health",
+    "category": "theme_content",
+    "theme": "Health",
+    "description": "Standard self-perceived general health question",
+    "expectedMinHits": 5,
+    "expectedTopTerms": ["health", "perceived", "general"]
+  },
+  {
+    "id": "hlt-02",
+    "query": "chronic condition diagnosis",
+    "category": "theme_content",
+    "theme": "Health",
+    "description": "Long-term health conditions or chronic illness",
+    "expectedMinHits": 5,
+    "expectedTopTerms": ["chronic", "condition", "diagnos", "health"]
+  },
+  {
+    "id": "hlt-03",
+    "query": "mental health depression anxiety",
+    "category": "theme_content",
+    "theme": "Health",
+    "description": "Mental health, depressive symptoms, anxiety disorders",
+    "expectedMinHits": 5,
+    "expectedTopTerms": ["mental", "depress", "anxiety", "health"]
+  },
+  {
+    "id": "hlt-04",
+    "query": "physical activity frequency",
+    "category": "theme_content",
+    "theme": "Health",
+    "description": "Exercise, sports, and active living frequency",
+    "expectedMinHits": 5,
+    "expectedTopTerms": ["physical", "activity", "exercise", "frequency"]
+  },
+  {
+    "id": "hlt-05",
+    "query": "alcohol consumption binge drinking",
+    "category": "theme_content",
+    "theme": "Health",
+    "description": "Drinking frequency, volume, and heavy drinking occasions",
+    "expectedMinHits": 5,
+    "expectedTopTerms": ["alcohol", "drink", "consumption"]
+  },
+  {
+    "id": "hlt-06",
+    "query": "unmet healthcare needs wait times",
+    "category": "theme_content",
+    "theme": "Health",
+    "description": "Barriers to health services and waiting times for care",
+    "expectedMinHits": 5,
+    "expectedTopTerms": ["unmet", "care", "wait", "health"]
+  },
+  {
+    "id": "lab-01",
+    "query": "telework remote work",
+    "category": "theme_content",
+    "theme": "Labour",
+    "description": "Working remotely from home or outside the primary office",
+    "expectedMinHits": 5,
+    "expectedTopTerms": ["telework", "remote", "home"]
+  },
+  {
+    "id": "lab-02",
+    "query": "hourly wage usual earnings",
+    "category": "theme_content",
+    "theme": "Labour",
+    "description": "Wage rate and typical labor earnings",
+    "expectedMinHits": 5,
+    "expectedTopTerms": ["wage", "earnings", "hourly", "rate"]
+  },
+  {
+    "id": "lab-03",
+    "query": "union status collective agreement",
+    "category": "theme_content",
+    "theme": "Labour",
+    "description": "Union membership and collective bargaining coverage",
+    "expectedMinHits": 5,
+    "expectedTopTerms": ["union", "collective", "agreement"]
+  },
+  {
+    "id": "lab-04",
+    "query": "unemployment duration looking for work",
+    "category": "theme_content",
+    "theme": "Labour",
+    "description": "Weeks unemployed and active job search activities",
+    "expectedMinHits": 5,
+    "expectedTopTerms": ["unemploy", "duration", "search", "job", "work"]
+  },
+  {
+    "id": "lab-05",
+    "query": "shift work night schedule",
+    "category": "theme_content",
+    "theme": "Labour",
+    "description": "Irregular, rotating, or evening/night work schedules",
+    "expectedMinHits": 3,
+    "expectedTopTerms": ["shift", "night", "schedule", "work"]
+  },
+  {
+    "id": "lab-06",
+    "query": "involuntary part-time employment",
+    "category": "theme_content",
+    "theme": "Labour",
+    "description": "Working part-time because full-time work was not available",
+    "expectedMinHits": 3,
+    "expectedTopTerms": ["part-time", "part time", "hours", "involuntary", "reason"]
+  },
+  {
+    "id": "inc-01",
+    "query": "household total income",
+    "category": "theme_content",
+    "theme": "Income, pensions, spending and wealth",
+    "description": "Total household income across all sources",
+    "expectedMinHits": 5,
+    "expectedTopTerms": ["income", "household", "total"]
+  },
+  {
+    "id": "inc-02",
+    "query": "food security hunger",
+    "category": "theme_content",
+    "theme": "Income, pensions, spending and wealth",
+    "description": "Household food insecurity and skipping meals due to money",
+    "expectedMinHits": 5,
+    "expectedTopTerms": ["food", "secur", "hunger", "meal"]
+  },
+  {
+    "id": "inc-03",
+    "query": "guaranteed income supplement pension",
+    "category": "theme_content",
+    "theme": "Income, pensions, spending and wealth",
+    "description": "GIS, OAS, and senior income support programs",
+    "expectedMinHits": 5,
+    "expectedTopTerms": ["guaranteed", "gis", "pension", "oas", "income"]
+  },
+  {
+    "id": "inc-04",
+    "query": "registered retirement savings plan",
+    "category": "theme_content",
+    "theme": "Income, pensions, spending and wealth",
+    "description": "RRSP contributions and accumulated balances",
+    "expectedMinHits": 5,
+    "expectedTopTerms": ["rrsp", "retirement", "savings", "plan"]
+  },
+  {
+    "id": "inc-05",
+    "query": "out-of-pocket prescription medication cost",
+    "category": "theme_content",
+    "theme": "Income, pensions, spending and wealth",
+    "description": "Direct health expenditures not covered by insurance",
+    "expectedMinHits": 3,
+    "expectedTopTerms": ["prescription", "cost", "medication", "expense", "drug"]
+  },
+  {
+    "id": "inc-06",
+    "query": "low-income measure poverty",
+    "category": "theme_content",
+    "theme": "Income, pensions, spending and wealth",
+    "description": "LIM, LICO, and poverty threshold indicators",
+    "expectedMinHits": 5,
+    "expectedTopTerms": ["low", "income", "lim", "lico", "cutoff"]
+  },
+  {
+    "id": "dig-01",
+    "query": "online shopping e-commerce",
+    "category": "theme_content",
+    "theme": "Digital economy and society",
+    "description": "Purchasing goods or services over the internet",
+    "expectedMinHits": 5,
+    "expectedTopTerms": ["shop", "online", "internet", "order", "purchase"]
+  },
+  {
+    "id": "dig-02",
+    "query": "artificial intelligence adoption business",
+    "category": "theme_content",
+    "theme": "Digital economy and society",
+    "description": "Business adoption and use of AI systems",
+    "expectedMinHits": 5,
+    "expectedTopTerms": ["artificial", "intelligence", "ai", "technology"]
+  },
+  {
+    "id": "dig-03",
+    "query": "cyberbullying online harassment",
+    "category": "theme_content",
+    "theme": "Digital economy and society",
+    "description": "Harassment, unwanted contact, or bullying online",
+    "expectedMinHits": 3,
+    "expectedTopTerms": ["harass", "bullying", "online", "cyber", "threat"]
+  },
+  {
+    "id": "dig-04",
+    "query": "home high-speed internet access",
+    "category": "theme_content",
+    "theme": "Digital economy and society",
+    "description": "Residential broadband and internet connection types",
+    "expectedMinHits": 5,
+    "expectedTopTerms": ["internet", "access", "home", "speed", "broadband"]
+  },
+  {
+    "id": "dig-05",
+    "query": "smartphone mobile banking",
+    "category": "theme_content",
+    "theme": "Digital economy and society",
+    "description": "Smartphone application usage for financial services",
+    "expectedMinHits": 3,
+    "expectedTopTerms": ["bank", "smartphone", "mobile", "financial"]
+  },
+  {
+    "id": "hou-01",
+    "query": "core housing need affordability",
+    "category": "theme_content",
+    "theme": "Housing",
+    "description": "Adequate, suitable, and affordable housing criteria",
+    "expectedMinHits": 5,
+    "expectedTopTerms": ["housing", "core", "need", "afford", "shelter"]
+  },
+  {
+    "id": "hou-02",
+    "query": "monthly rent tenant shelter cost",
+    "category": "theme_content",
+    "theme": "Housing",
+    "description": "Gross monthly rent and tenant utility expenses",
+    "expectedMinHits": 5,
+    "expectedTopTerms": ["rent", "tenant", "shelter", "cost", "monthly"]
+  },
+  {
+    "id": "hou-03",
+    "query": "homeownership mortgage payment",
+    "category": "theme_content",
+    "theme": "Housing",
+    "description": "Dwelling tenure, mortgage existence, and payment amount",
+    "expectedMinHits": 5,
+    "expectedTopTerms": ["mortgage", "owner", "tenure", "payment"]
+  },
+  {
+    "id": "hou-04",
+    "query": "dwelling type single detached apartment",
+    "category": "theme_content",
+    "theme": "Housing",
+    "description": "Structural type of dwelling",
+    "expectedMinHits": 5,
+    "expectedTopTerms": ["dwelling", "type", "detached", "apartment", "structure"]
+  },
+  {
+    "id": "hou-05",
+    "query": "number of bedrooms overcrowding",
+    "category": "theme_content",
+    "theme": "Housing",
+    "description": "Room count and bedroom suitability standards",
+    "expectedMinHits": 5,
+    "expectedTopTerms": ["bedroom", "room", "number", "crowd", "suitab"]
+  },
+  {
+    "id": "edu-01",
+    "query": "highest level of educational attainment",
+    "category": "theme_content",
+    "theme": "Education, training and learning",
+    "description": "Highest certificate, diploma, or degree obtained",
+    "expectedMinHits": 5,
+    "expectedTopTerms": ["education", "degree", "diploma", "highest", "level"]
+  },
+  {
+    "id": "edu-02",
+    "query": "major field of study classification",
+    "category": "theme_content",
+    "theme": "Education, training and learning",
+    "description": "Discipline or subject area of postsecondary credential",
+    "expectedMinHits": 5,
+    "expectedTopTerms": ["field", "study", "cip", "major"]
+  },
+  {
+    "id": "edu-03",
+    "query": "student debt loans government",
+    "category": "theme_content",
+    "theme": "Education, training and learning",
+    "description": "Government or financial institution debt accumulated for studies",
+    "expectedMinHits": 3,
+    "expectedTopTerms": ["student", "loan", "debt", "repay"]
+  },
+  {
+    "id": "edu-04",
+    "query": "adult job-related training courses",
+    "category": "theme_content",
+    "theme": "Education, training and learning",
+    "description": "Formal and informal workplace skills training",
+    "expectedMinHits": 3,
+    "expectedTopTerms": ["training", "course", "job", "adult", "skills"]
+  },
+  {
+    "id": "edu-05",
+    "query": "apprenticeship trade certification",
+    "category": "theme_content",
+    "theme": "Education, training and learning",
+    "description": "Registered apprenticeship and trades qualification",
+    "expectedMinHits": 3,
+    "expectedTopTerms": ["apprentice", "trade", "certificat", "red seal"]
+  },
+  {
+    "id": "crm-01",
+    "query": "victim of violent crime assault",
+    "category": "theme_content",
+    "theme": "Crime and justice",
+    "description": "Physical assault, sexual assault, and robbery incidents",
+    "expectedMinHits": 5,
+    "expectedTopTerms": ["victim", "assault", "crime", "violent"]
+  },
+  {
+    "id": "crm-02",
+    "query": "perception of neighborhood safety night",
+    "category": "theme_content",
+    "theme": "Crime and justice",
+    "description": "Feeling safe walking alone in neighborhood after dark",
+    "expectedMinHits": 5,
+    "expectedTopTerms": ["safe", "walk", "dark", "night", "neighborhood"]
+  },
+  {
+    "id": "crm-03",
+    "query": "incident reported to police",
+    "category": "theme_content",
+    "theme": "Crime and justice",
+    "description": "Whether crime was reported to law enforcement authorities",
+    "expectedMinHits": 5,
+    "expectedTopTerms": ["police", "report", "incident"]
+  },
+  {
+    "id": "crm-04",
+    "query": "spousal violence intimate partner",
+    "category": "theme_content",
+    "theme": "Crime and justice",
+    "description": "Emotional, financial, or physical partner abuse",
+    "expectedMinHits": 3,
+    "expectedTopTerms": ["partner", "spous", "abuse", "violence"]
+  },
+  {
+    "id": "imm-01",
+    "query": "landed immigrant year of arrival",
+    "category": "theme_content",
+    "theme": "Immigration and ethnocultural diversity",
+    "description": "Immigration status and year landed in Canada",
+    "expectedMinHits": 5,
+    "expectedTopTerms": ["immigrant", "landed", "year", "arrival"]
+  },
+  {
+    "id": "imm-02",
+    "query": "visible minority population group",
+    "category": "theme_content",
+    "theme": "Immigration and ethnocultural diversity",
+    "description": "Visible minority designation under Employment Equity",
+    "expectedMinHits": 5,
+    "expectedTopTerms": ["visible", "minority", "population", "group"]
+  },
+  {
+    "id": "imm-03",
+    "query": "mother tongue first language",
+    "category": "theme_content",
+    "theme": "Languages",
+    "description": "First language learned at home in childhood and still understood",
+    "expectedMinHits": 5,
+    "expectedTopTerms": ["mother", "tongue", "language", "first"]
+  },
+  {
+    "id": "imm-04",
+    "query": "knowledge of official languages English French",
+    "category": "theme_content",
+    "theme": "Languages",
+    "description": "Ability to conduct conversation in English or French",
+    "expectedMinHits": 5,
+    "expectedTopTerms": ["official", "language", "english", "french", "conversation"]
+  },
+  {
+    "id": "imm-05",
+    "query": "experience of discrimination",
+    "category": "theme_content",
+    "theme": "Immigration and ethnocultural diversity",
+    "description": "Unfair treatment based on race, ethnicity, or religion",
+    "expectedMinHits": 5,
+    "expectedTopTerms": ["discriminat", "unfair", "treat", "race"]
+  },
+  {
+    "id": "ind-01",
+    "query": "First Nations Status Indian",
+    "category": "theme_content",
+    "theme": "Indigenous peoples",
+    "description": "Registered or Treaty Indian status under the Indian Act",
+    "expectedMinHits": 5,
+    "expectedTopTerms": ["first nations", "indian", "status", "treaty"]
+  },
+  {
+    "id": "ind-02",
+    "query": "Metis identity membership",
+    "category": "theme_content",
+    "theme": "Indigenous peoples",
+    "description": "Self-identification as Métis citizen",
+    "expectedMinHits": 5,
+    "expectedTopTerms": ["metis", "m\u00e9tis", "identity"]
+  },
+  {
+    "id": "ind-03",
+    "query": "Inuit Inuk identity Nunangat",
+    "category": "theme_content",
+    "theme": "Indigenous peoples",
+    "description": "Inuit identity and land claims agreement membership",
+    "expectedMinHits": 5,
+    "expectedTopTerms": ["inuit", "inuk", "nunangat", "identity"]
+  },
+  {
+    "id": "ind-04",
+    "query": "Indigenous language spoken at home",
+    "category": "theme_content",
+    "theme": "Indigenous peoples",
+    "description": "Aboriginal / Indigenous language knowledge and home use",
+    "expectedMinHits": 5,
+    "expectedTopTerms": ["indigenous", "aboriginal", "language", "home"]
+  },
+  {
+    "id": "fam-01",
+    "query": "child care arrangement day care",
+    "category": "theme_content",
+    "theme": "Children and youth",
+    "description": "Type of child care used for children under age 6 or 12",
+    "expectedMinHits": 5,
+    "expectedTopTerms": ["child", "care", "day", "arrangement"]
+  },
+  {
+    "id": "fam-02",
+    "query": "parental leave maternity benefits",
+    "category": "theme_content",
+    "theme": "Families, households and marital status",
+    "description": "EI maternity and parental leave uptake and duration",
+    "expectedMinHits": 3,
+    "expectedTopTerms": ["parental", "maternity", "leave", "benefits"]
+  },
+  {
+    "id": "fam-03",
+    "query": "lone-parent family single mother",
+    "category": "theme_content",
+    "theme": "Families, households and marital status",
+    "description": "Solo-parent household structure",
+    "expectedMinHits": 5,
+    "expectedTopTerms": ["lone", "parent", "single", "family"]
+  },
+  {
+    "id": "fam-04",
+    "query": "legal marital status common-law",
+    "category": "theme_content",
+    "theme": "Families, households and marital status",
+    "description": "Married, common-law, divorced, separated, or never married",
+    "expectedMinHits": 5,
+    "expectedTopTerms": ["marital", "status", "married", "common-law"]
+  },
+  {
+    "id": "age-01",
+    "query": "retirement age plans",
+    "category": "theme_content",
+    "theme": "Older adults and population aging",
+    "description": "Expected or actual age at retirement and reasons",
+    "expectedMinHits": 5,
+    "expectedTopTerms": ["retire", "age", "plans"]
+  },
+  {
+    "id": "age-02",
+    "query": "informal caregiving for senior",
+    "category": "theme_content",
+    "theme": "Older adults and population aging",
+    "description": "Unpaid care and assistance provided to elderly family members",
+    "expectedMinHits": 5,
+    "expectedTopTerms": ["care", "giver", "senior", "elderly", "aging"]
+  },
+  {
+    "id": "age-03",
+    "query": "cognitive decline memory loss",
+    "category": "theme_content",
+    "theme": "Older adults and population aging",
+    "description": "Self-reported cognitive difficulties and memory problems",
+    "expectedMinHits": 3,
+    "expectedTopTerms": ["memory", "cognitive", "dementia", "decline"]
+  },
+  {
+    "id": "age-04",
+    "query": "mobility limitations walking climbing stairs",
+    "category": "theme_content",
+    "theme": "Older adults and population aging",
+    "description": "Difficulties walking on flat ground or navigating stairs",
+    "expectedMinHits": 5,
+    "expectedTopTerms": ["mobility", "walk", "stairs", "limit"]
+  },
+  {
+    "id": "trn-01",
+    "query": "commute to work public transit",
+    "category": "theme_content",
+    "theme": "Transportation",
+    "description": "Main mode of transportation to commute to work",
+    "expectedMinHits": 5,
+    "expectedTopTerms": ["commute", "transit", "bus", "transport", "travel"]
+  },
+  {
+    "id": "trn-02",
+    "query": "commuting travel time minutes",
+    "category": "theme_content",
+    "theme": "Transportation",
+    "description": "One-way duration in minutes to travel to workplace",
+    "expectedMinHits": 5,
+    "expectedTopTerms": ["time", "minute", "commute", "travel"]
+  },
+  {
+    "id": "trn-03",
+    "query": "passenger vehicle ownership",
+    "category": "theme_content",
+    "theme": "Transportation",
+    "description": "Number of motor vehicles owned or leased by household",
+    "expectedMinHits": 3,
+    "expectedTopTerms": ["vehicle", "car", "ownership", "motor"]
+  },
+  {
+    "id": "env-01",
+    "query": "household energy conservation heat pump",
+    "category": "theme_content",
+    "theme": "Environment",
+    "description": "Heating equipment type and energy-saving measures",
+    "expectedMinHits": 3,
+    "expectedTopTerms": ["energy", "heat", "pump", "conserv"]
+  },
+  {
+    "id": "env-02",
+    "query": "extreme weather wildfire smoke evacuation",
+    "category": "theme_content",
+    "theme": "Environment",
+    "description": "Exposure and displacement caused by climate/weather hazards",
+    "expectedMinHits": 2,
+    "expectedTopTerms": ["wildfire", "smoke", "evacuat", "weather", "environment"]
+  },
+  {
+    "id": "env-03",
+    "query": "drinking water quality boil water advisory",
+    "category": "theme_content",
+    "theme": "Environment",
+    "description": "Tap water safety and municipal boil-water advisories",
+    "expectedMinHits": 3,
+    "expectedTopTerms": ["water", "drink", "boil", "advisory", "quality"]
+  },
+  {
+    "id": "bus-01",
+    "query": "business research development expenditures",
+    "category": "theme_content",
+    "theme": "Science and technology",
+    "description": "In-house and outsourced R&D spending by enterprises",
+    "expectedMinHits": 5,
+    "expectedTopTerms": ["research", "development", "r&d", "expenditure"]
+  },
+  {
+    "id": "bus-02",
+    "query": "supply chain disruption delays",
+    "category": "theme_content",
+    "theme": "Business performance and ownership",
+    "description": "Input procurement bottlenecks and delivery delays",
+    "expectedMinHits": 3,
+    "expectedTopTerms": ["supply", "chain", "disrupt", "delay"]
+  },
+  {
+    "id": "bus-03",
+    "query": "international export sales destination",
+    "category": "theme_content",
+    "theme": "International trade",
+    "description": "Goods or services exported to foreign markets",
+    "expectedMinHits": 5,
+    "expectedTopTerms": ["export", "sales", "trade", "international"]
+  },
+  {
+    "id": "agr-01",
+    "query": "total farm operating revenue",
+    "category": "theme_content",
+    "theme": "Agriculture and food",
+    "description": "Gross receipts and agricultural commodity sales",
+    "expectedMinHits": 5,
+    "expectedTopTerms": ["farm", "operating", "revenue", "agriculture"]
+  },
+  {
+    "id": "agr-02",
+    "query": "crop livestock production acreage",
+    "category": "theme_content",
+    "theme": "Agriculture and food",
+    "description": "Land in crops, seeded acres, and livestock inventory",
+    "expectedMinHits": 5,
+    "expectedTopTerms": ["crop", "livestock", "acre", "land", "seed"]
+  },
+  {
+    "id": "soc-01",
+    "query": "sense of belonging local community",
+    "category": "theme_content",
+    "theme": "Society and community",
+    "description": "Subjective closeness to neighborhood, town, or province",
+    "expectedMinHits": 5,
+    "expectedTopTerms": ["belong", "community", "local", "sense"]
+  },
+  {
+    "id": "soc-02",
+    "query": "volunteer work unpaid activities",
+    "category": "theme_content",
+    "theme": "Society and community",
+    "description": "Unpaid charitable and civic volunteer engagement",
+    "expectedMinHits": 5,
+    "expectedTopTerms": ["volunteer", "unpaid", "charity", "organization"]
+  },
+  {
+    "id": "soc-03",
+    "query": "trust in institutions police courts",
+    "category": "theme_content",
+    "theme": "Society and community",
+    "description": "Confidence in the justice system, parliament, and media",
+    "expectedMinHits": 5,
+    "expectedTopTerms": ["trust", "institution", "police", "court", "confidence"]
+  },
+
+  {
+    "id": "mnem-01",
+    "query": "DHH_AGE",
+    "category": "exact_mnemonic",
+    "description": "Standard CCHS derived age variable",
+    "expectedExactName": "DHH_AGE",
+    "notes": "Must appear at Rank 1 in search results"
+  },
+  {
+    "id": "mnem-02",
+    "query": "LFS_STAT",
+    "category": "exact_mnemonic",
+    "description": "Labour force status standard variable",
+    "expectedExactName": "LFS_STAT",
+    "notes": "Must appear at Rank 1"
+  },
+  {
+    "id": "mnem-03",
+    "query": "WTS_M",
+    "category": "exact_mnemonic",
+    "description": "Survey master sampling weight",
+    "expectedExactName": "WTS_M",
+    "notes": "Must appear at Rank 1"
+  },
+  {
+    "id": "mnem-04",
+    "query": "VERDATE",
+    "category": "exact_mnemonic",
+    "description": "Version date of data file",
+    "expectedExactName": "VERDATE",
+    "notes": "Must appear at Rank 1"
+  },
+  {
+    "id": "mnem-05",
+    "query": "GEN_01",
+    "category": "exact_mnemonic",
+    "description": "General self-rated health question variable",
+    "expectedExactName": "GEN_01",
+    "notes": "Must appear at Rank 1"
+  },
+  {
+    "id": "mnem-06",
+    "query": "MARSTAT",
+    "category": "exact_mnemonic",
+    "description": "Marital status variable",
+    "expectedExactName": "MARSTAT",
+    "notes": "Must appear at Rank 1"
+  },
+  {
+    "id": "mnem-07",
+    "query": "PR",
+    "category": "exact_mnemonic",
+    "description": "Province of residence standard code",
+    "expectedExactName": "PR",
+    "notes": "Must appear at Rank 1"
+  },
+  {
+    "id": "mnem-08",
+    "query": "GEO_PRV",
+    "category": "exact_mnemonic",
+    "description": "Province geographic code",
+    "expectedExactName": "GEO_PRV",
+    "notes": "Must appear at Rank 1"
+  },
+  {
+    "id": "mnem-09",
+    "query": "C13A",
+    "category": "exact_mnemonic",
+    "description": "Specific question column code",
+    "expectedExactName": "C13A",
+    "notes": "Must appear at Rank 1"
+  },
+  {
+    "id": "mnem-10",
+    "query": "REGISTID",
+    "category": "exact_mnemonic",
+    "description": "Record registration identifier",
+    "expectedExactName": "REGISTID",
+    "notes": "Must appear at Rank 1"
+  },
+
+  {
+    "id": "hist-01",
+    "query": "aboriginal",
+    "category": "historical_term",
+    "description": "Historical terminology for Indigenous peoples",
+    "expectedMinHits": 50,
+    "expectedTopTerms": ["aboriginal", "indigenous", "peoples"]
+  },
+  {
+    "id": "hist-02",
+    "query": "indigenous",
+    "category": "historical_term",
+    "description": "Contemporary terminology for Indigenous peoples",
+    "expectedMinHits": 50,
+    "expectedTopTerms": ["indigenous", "aboriginal", "peoples"]
+  },
+  {
+    "id": "hist-03",
+    "query": "marijuana",
+    "category": "historical_term",
+    "description": "Pre-legalization term for cannabis",
+    "expectedMinHits": 20,
+    "expectedTopTerms": ["marijuana", "cannabis"]
+  },
+  {
+    "id": "hist-04",
+    "query": "cannabis",
+    "category": "historical_term",
+    "description": "Official post-legalization term for cannabis",
+    "expectedMinHits": 50,
+    "expectedTopTerms": ["cannabis", "marijuana"]
+  },
+  {
+    "id": "hist-05",
+    "query": "elderly",
+    "category": "historical_term",
+    "description": "Older demographic wording",
+    "expectedMinHits": 50,
+    "expectedTopTerms": ["elderly", "senior", "age"]
+  },
+  {
+    "id": "hist-06",
+    "query": "wfh",
+    "category": "historical_term",
+    "description": "Acronym for work from home",
+    "expectedMinHits": 10,
+    "expectedTopTerms": ["telework", "home", "remote"]
+  },
+  {
+    "id": "hist-07",
+    "query": "vaping",
+    "category": "historical_term",
+    "description": "Modern term for electronic cigarettes",
+    "expectedMinHits": 20,
+    "expectedTopTerms": ["vaping", "e-cigarette", "electronic"]
+  },
+  {
+    "id": "hist-08",
+    "query": "coronavirus",
+    "category": "historical_term",
+    "description": "Pandemic term aliased to COVID",
+    "expectedMinHits": 50,
+    "expectedTopTerms": ["covid", "pandemic", "coronavirus"]
+  },
+
+  {
+    "id": "col-01",
+    "query": "feeling sad or down",
+    "category": "colloquial",
+    "description": "Colloquial description of depressive affect",
+    "expectedMinHits": 3,
+    "expectedTopTerms": ["sad", "depress", "blue", "affect"]
+  },
+  {
+    "id": "col-02",
+    "query": "working from home",
+    "category": "colloquial",
+    "description": "Natural language query for telework",
+    "expectedMinHits": 10,
+    "expectedTopTerms": ["home", "telework", "remote"]
+  },
+  {
+    "id": "col-03",
+    "query": "pay stub earnings",
+    "category": "colloquial",
+    "description": "Colloquial query for gross/net pay",
+    "expectedMinHits": 5,
+    "expectedTopTerms": ["pay", "wage", "earnings", "gross"]
+  },
+  {
+    "id": "col-04",
+    "query": "living alone",
+    "category": "colloquial",
+    "description": "Single-person household phrasing",
+    "expectedMinHits": 5,
+    "expectedTopTerms": ["alone", "single", "one-person", "household"]
+  },
+  {
+    "id": "col-05",
+    "query": "getting laid off",
+    "category": "colloquial",
+    "description": "Colloquial phrase for job loss or dismissal",
+    "expectedMinHits": 3,
+    "expectedTopTerms": ["layoff", "laid off", "job loss", "lost job", "reason"]
+  },
+  {
+    "id": "col-06",
+    "query": "buying groceries food budget",
+    "category": "colloquial",
+    "description": "Everyday phrasing for food expenditure",
+    "expectedMinHits": 3,
+    "expectedTopTerms": ["food", "expenditure", "grocery", "spending"]
+  },
+  {
+    "id": "col-07",
+    "query": "taking care of elderly parents",
+    "category": "colloquial",
+    "description": "Informal family caregiving phrasing",
+    "expectedMinHits": 3,
+    "expectedTopTerms": ["care", "giver", "elderly", "parent", "assistance"]
+  },
+  {
+    "id": "col-08",
+    "query": "working night shifts",
+    "category": "colloquial",
+    "description": "Colloquial phrasing for non-standard work hours",
+    "expectedMinHits": 3,
+    "expectedTopTerms": ["night", "shift", "hours", "schedule"]
+  },
+
+  {
+    "id": "haz-01",
+    "query": "supervisor",
+    "category": "noise_hazard",
+    "description": "Prone to matching hundreds of NOC job code lines",
+    "expectedMinHits": 10,
+    "noiseTermsToAvoid": ["NOC", "CIP", "unit group", "occupation code"]
+  },
+  {
+    "id": "haz-02",
+    "query": "safety",
+    "category": "noise_hazard",
+    "description": "Word common in code lists (digital safety, occupational safety)",
+    "expectedMinHits": 10,
+    "noiseTermsToAvoid": ["CIP", "field of study"]
+  },
+  {
+    "id": "haz-03",
+    "query": "director",
+    "category": "noise_hazard",
+    "description": "Matches executive classifications in huge occupation tables",
+    "expectedMinHits": 10,
+    "noiseTermsToAvoid": ["NOC", "NAICS"]
+  },
+  {
+    "id": "haz-04",
+    "query": "repair",
+    "category": "noise_hazard",
+    "description": "Overrepresented in maintenance/trade industry code tables",
+    "expectedMinHits": 10,
+    "noiseTermsToAvoid": ["NAICS", "industry"]
+  },
+  {
+    "id": "haz-05",
+    "query": "assistant",
+    "category": "noise_hazard",
+    "description": "Pervasive in clerical NOC code categories",
+    "expectedMinHits": 10,
+    "noiseTermsToAvoid": ["NOC", "clerical"]
+  },
+  {
+    "id": "haz-06",
+    "query": "retail sales",
+    "category": "noise_hazard",
+    "description": "High frequency in industrial and commercial tables",
+    "expectedMinHits": 10,
+    "noiseTermsToAvoid": ["NAICS", "subsector"]
+  },
+
+  {
+    "id": "fra-01",
+    "query": "sant\u00e9 mentale",
+    "category": "cross_lingual",
+    "description": "French query for mental health",
+    "expectedMinHits": 0,
+    "notes": "Tests cross-lingual retrieval against English corpus"
+  },
+  {
+    "id": "fra-02",
+    "query": "revenu du m\u00e9nage",
+    "category": "cross_lingual",
+    "description": "French query for household income",
+    "expectedMinHits": 0,
+    "notes": "Tests cross-lingual retrieval"
+  },
+  {
+    "id": "fra-03",
+    "query": "t\u00e9l\u00e9travail",
+    "category": "cross_lingual",
+    "description": "French query for telework/remote work",
+    "expectedMinHits": 0,
+    "notes": "Tests cross-lingual retrieval"
+  },
+  {
+    "id": "fra-04",
+    "query": "garde d'enfants",
+    "category": "cross_lingual",
+    "description": "French query for child care",
+    "expectedMinHits": 0,
+    "notes": "Tests cross-lingual retrieval"
+  },
+  {
+    "id": "fra-05",
+    "query": "logement abordable",
+    "category": "cross_lingual",
+    "description": "French query for affordable housing",
+    "expectedMinHits": 0,
+    "notes": "Tests cross-lingual retrieval"
+  },
+  {
+    "id": "fra-06",
+    "query": "premi\u00e8res nations",
+    "category": "cross_lingual",
+    "description": "French query for First Nations",
+    "expectedMinHits": 0,
+    "notes": "Tests cross-lingual retrieval"
+  },
+  {
+    "id": "fra-07",
+    "query": "consommation d'alcool",
+    "category": "cross_lingual",
+    "description": "French query for alcohol consumption",
+    "expectedMinHits": 0,
+    "notes": "Tests cross-lingual retrieval"
+  },
+  {
+    "id": "fra-08",
+    "query": "situation d'emploi",
+    "category": "cross_lingual",
+    "description": "French query for employment status",
+    "expectedMinHits": 0,
+    "notes": "Tests cross-lingual retrieval"
+  },
+
+  {
+    "id": "ctrl-01",
+    "query": "quantum blockchain surgery",
+    "category": "control",
+    "description": "Absurd out-of-scope query",
+    "expectedMinHits": 0,
+    "notes": "Should return 0 hits; test for hallucinated vector nearest neighbors"
+  },
+  {
+    "id": "ctrl-02",
+    "query": "extraterrestrial contact",
+    "category": "control",
+    "description": "Sci-fi out-of-scope query",
+    "expectedMinHits": 0,
+    "notes": "Should return 0 hits"
+  },
+  {
+    "id": "ctrl-03",
+    "query": "asdfghjkl123",
+    "category": "control",
+    "description": "Gibberish string control",
+    "expectedMinHits": 0,
+    "notes": "Must return 0 hits"
+  },
+  {
+    "id": "ctrl-04",
+    "query": "intergalactic warp drive propulsion",
+    "category": "control",
+    "description": "Fictional physics control",
+    "expectedMinHits": 0,
+    "notes": "Must return 0 hits"
+  }
+]

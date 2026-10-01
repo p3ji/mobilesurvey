@@ -264,6 +264,31 @@ describe('SupabaseCorpusSource', () => {
       max_rows: 10,
       row_offset: 0,
       subject_filter: null,
+      role_filter: null,
+      hide_process: false,
+    });
+  });
+
+  it('passes role and hideProcess filters to RPC before pagination', async () => {
+    const fetchImpl = stubFetch([]);
+    const source = new SupabaseCorpusSource({
+      url: 'https://p.supabase.co/',
+      anonKey: 'anon',
+      fetchImpl,
+    });
+
+    await source.search('mental health', { role: 'derived', hideProcess: true, limit: 25 });
+
+    const [url, init] = (fetchImpl as unknown as ReturnType<typeof vi.fn>).mock.calls[0] as [
+      string,
+      RequestInit,
+    ];
+    expect(url).toBe('https://p.supabase.co/rest/v1/rpc/corpus_search');
+    expect(JSON.parse(init.body as string)).toMatchObject({
+      q: 'mental health',
+      role_filter: 'derived',
+      hide_process: true,
+      max_rows: 25,
     });
   });
 

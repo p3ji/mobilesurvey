@@ -34,6 +34,7 @@ import {
 import { CorpusDocumentReader } from './CorpusDocument.js';
 import { CorpusSubjects } from './CorpusSubjects.js';
 import { expandCorpusQuery } from './corpusAiSearch.js';
+import { searchCorpusSemantic } from './corpusSemanticSearch.js';
 import { classifyHit } from './graphClassifier.js';
 import { groupCorpusHits, type CorpusHitGroup } from './groupCorpusHits.js';
 import type { CorpusGraphFocus } from './CorpusLineage.js';
@@ -306,6 +307,8 @@ export function CorpusSearch({
   const [aiBusy, setAiBusy] = useState(false);
   const [aiError, setAiError] = useState<string | null>(null);
   const aiController = useRef<AbortController | null>(null);
+  const [semanticHits, setSemanticHits] = useState<SearchHit[]>([]);
+  const [semanticBusy, setSemanticBusy] = useState(false);
   const [directInputs, setDirectInputs] = useState<CorpusDirectInput[]>([]);
   const [graphTargets, setGraphTargets] = useState<Map<string, CorpusLineageTarget[]>>(new Map());
   const [graphError, setGraphError] = useState(false);
@@ -419,7 +422,7 @@ export function CorpusSearch({
 
   // Keep the same LLM phrases while filters change. Only the corpus retrieval is repeated,
   // so "All subjects" and one subject are slices of the same candidate set.
-  useEffect(() => setAiPage(0), [lang, survey, codesOnly, subject, sortBy]);
+  useEffect(() => setAiPage(0), [lang, survey, codesOnly, subject, sortBy, roleFilter, hideProcess]);
 
   useEffect(() => {
     if (!aiEnabled || aiQuery !== debounced.replace(/\s+/g, ' ').trim() || aiTerms.length === 0) return;
@@ -432,6 +435,8 @@ export function CorpusSearch({
       ...(survey === 'all' ? {} : { survey }),
       ...(codesOnly ? { hasCodes: true } : {}),
       ...(subject === null ? {} : { subject }),
+      role: roleFilter,
+      hideProcess,
       limit: PAGE_SIZE,
       offset: aiPage * PAGE_SIZE,
       signal: controller.signal,
@@ -448,25 +453,21 @@ export function CorpusSearch({
       if (!controller.signal.aborted) setAiBusy(false);
     });
     return () => controller.abort();
-  }, [source, aiEnabled, aiQuery, aiTerms, debounced, lang, survey, codesOnly, subject, sortBy, aiPage]);
+  }, [source, aiEnabled, aiQuery, aiTerms, debounced, lang, survey, codesOnly, subject, sortBy, aiPage, roleFilter, hideProcess]);
 
-  const showHit = (hit: SearchHit) => {
-    const meta = hit.entry.corpus as CorpusMeta | undefined;
-    if (!meta) return true;
-    const classification = classifyHit(meta);
-    return !(hideProcess && classification.role === 'process') &&
-      (roleFilter === 'all' || classification.role === roleFilter);
-  };
-
-  const displayedHits = useMemo(() => {
-    return hits.filter(showHit);
-  }, [hits, hideProcess, roleFilter]);
+  // Results are filtered and paginated on the server before LIMIT and OFFSET, preserving full page slots and counts.
+  const displayedHits = hits;
   const groupedHits = useMemo(() => groupCorpusHits(displayedHits), [displayedHits]);
   const aiDisplayedHits = useMemo(() => {
     const keywordIds = new Set(hits.map((hit) => hit.entry.entryId));
-    return aiHits.filter((hit) => !keywordIds.has(hit.entry.entryId) && showHit(hit));
-  }, [aiHits, hits, hideProcess, roleFilter]);
+    return aiHits.filter((hit) => !keywordIds.has(hit.entry.entryId));
+  }, [aiHits, hits]);
   const aiGroupedHits = useMemo(() => groupCorpusHits(aiDisplayedHits), [aiDisplayedHits]);
+  const semanticDisplayedHits = useMemo(() => {
+    const lexicalIds = new Set(displayedHits.map((hit) => hit.entry.entryId));
+    return semanticHits.filter((hit) => !lexicalIds.has(hit.entry.entryId));
+  }, [semanticHits, displayedHits]);
+  const semanticGroupedHits = useMemo(() => groupCorpusHits(semanticDisplayedHits), [semanticDisplayedHits]);
   const sortedSurveys = useMemo(() => [...surveys].sort((a, b) => {
     const nameA = a.surveyAcronym ?? a.surveyGroup;
     const nameB = b.surveyAcronym ?? b.surveyGroup;
@@ -520,6 +521,8 @@ export function CorpusSearch({
           ...(survey === 'all' ? {} : { survey }),
           ...(codesOnly ? { hasCodes: true } : {}),
           ...(subject === null ? {} : { subject }),
+          role: roleFilter,
+          hideProcess,
           limit: PAGE_SIZE,
           offset: page * PAGE_SIZE,
           signal: controller.signal,
@@ -536,6 +539,8 @@ export function CorpusSearch({
               ...(survey === 'all' ? {} : { survey }),
               ...(codesOnly ? { hasCodes: true } : {}),
               ...(subject === null ? {} : { subject }),
+              role: roleFilter,
+              hideProcess,
               limit: PAGE_SIZE,
               offset: 0,
               signal: controller.signal,
@@ -566,10 +571,62 @@ export function CorpusSearch({
       }
     })();
     return () => controller.abort();
-  }, [source, debounced, lang, survey, codesOnly, subject, page, literal, sortBy]);
+  }, [source, debounced, lang, survey, codesOnly, subject, page, literal, sortBy, roleFilter, hideProcess]);
 
   useEffect(() => {
-    const recordIds = [...hits, ...aiHits, ...recentSubjectHits].map((hit) => hit.entry.entryId);
+    if (debounced.trim().length < 2) {
+      setSemanticHits([]);
+      setSemanticBusy(false);
+      return;
+    }
+    const controller = new AbortController();
+    setSemanticBusy(true);
+    searchCorpusSemantic(
+      debounced,
+      {
+        limit: 5,
+        score_threshold: 0.55,
+        filters: {
+          survey_group: survey === 'all' ? undefined : survey,
+          subject: subject ?? undefined,
+          role: roleFilter === 'all' ? undefined : roleFilter,
+          hide_process: hideProcess,
+          require_codes: codesOnly ? true : undefined,
+          lang: lang === 'all' ? undefined : lang,
+        },
+      },
+      controller.signal,
+    )
+      .then(async (points) => {
+        if (controller.signal.aborted) return;
+        if (points.length === 0) {
+          setSemanticHits([]);
+          return;
+        }
+        const lexicalIds = new Set(hits.map((h) => h.entry.entryId));
+        const candidateIds = points
+          .map((p) => p.record_id)
+          .filter((id) => !lexicalIds.has(id));
+        if (candidateIds.length === 0) {
+          setSemanticHits([]);
+          return;
+        }
+        const hydrated = await source.fetchRecords(candidateIds, controller.signal);
+        if (!controller.signal.aborted) {
+          setSemanticHits(hydrated);
+        }
+      })
+      .catch(() => {
+        if (!controller.signal.aborted) setSemanticHits([]);
+      })
+      .finally(() => {
+        if (!controller.signal.aborted) setSemanticBusy(false);
+      });
+    return () => controller.abort();
+  }, [source, debounced, lang, survey, codesOnly, subject, roleFilter, hideProcess, hits]);
+
+  useEffect(() => {
+    const recordIds = [...hits, ...aiHits, ...recentSubjectHits, ...semanticHits].map((hit) => hit.entry.entryId);
     setDirectInputs([]);
     setLineageError(false);
     if (recordIds.length === 0) return;
@@ -578,10 +635,10 @@ export function CorpusSearch({
       .then((inputs) => { if (!controller.signal.aborted) setDirectInputs(inputs); })
       .catch(() => { if (!controller.signal.aborted) setLineageError(true); });
     return () => controller.abort();
-  }, [source, hits, aiHits, recentSubjectHits]);
+  }, [source, hits, aiHits, recentSubjectHits, semanticHits]);
 
   useEffect(() => {
-    const recordIds = [...hits, ...aiHits, ...recentSubjectHits].map((hit) => hit.entry.entryId);
+    const recordIds = [...hits, ...aiHits, ...recentSubjectHits, ...semanticHits].map((hit) => hit.entry.entryId);
     setGraphTargets(new Map());
     setGraphError(false);
     if (recordIds.length === 0) return;
@@ -590,10 +647,10 @@ export function CorpusSearch({
       .then((targets) => { if (!controller.signal.aborted) setGraphTargets(targets); })
       .catch(() => { if (!controller.signal.aborted) setGraphError(true); });
     return () => controller.abort();
-  }, [source, hits, aiHits, recentSubjectHits]);
+  }, [source, hits, aiHits, recentSubjectHits, semanticHits]);
 
   useEffect(() => {
-    const recordIds = [...hits, ...aiHits, ...recentSubjectHits].map((hit) => hit.entry.entryId);
+    const recordIds = [...hits, ...aiHits, ...recentSubjectHits, ...semanticHits].map((hit) => hit.entry.entryId);
     setClusters(new Map());
     if (recordIds.length === 0) return;
     const controller = new AbortController();
@@ -601,7 +658,7 @@ export function CorpusSearch({
       .then((memberships) => { if (!controller.signal.aborted) setClusters(memberships); })
       .catch(() => { /* Search remains usable if concept metadata is unavailable. */ });
     return () => controller.abort();
-  }, [source, hits, aiHits, recentSubjectHits]);
+  }, [source, hits, aiHits, recentSubjectHits, semanticHits]);
 
   const pages = Math.ceil(total / PAGE_SIZE);
   const summary = useMemo(() => {
@@ -763,9 +820,9 @@ export function CorpusSearch({
         <label className="cs-filter">
           <span className="cs-filter__label">Language</span>
           <select value={lang} onChange={(e) => setLang(e.target.value as LangFilter)}>
-            <option value="all">Both</option>
-            <option value="en">English</option>
-            <option value="fr">French</option>
+            <option value="all">Both (English live)</option>
+            <option value="en">English (194k variables)</option>
+            <option value="fr" disabled title="French documents are in source corpus, not yet indexed in Supabase">French (unindexed)</option>
           </select>
         </label>
 
@@ -906,7 +963,7 @@ export function CorpusSearch({
               <button type="button" className="cs-link" onClick={clearFilters}>Clear filters</button>
             </p>
           )}
-          {!busy && total === 0 && aiDisplayedHits.length === 0 && <Suggestions source={source} query={debounced} onPick={onExample} />}
+          {!busy && total === 0 && aiDisplayedHits.length === 0 && semanticDisplayedHits.length === 0 && <Suggestions source={source} query={debounced} onPick={onExample} />}
 
           {displayedHits.length === 0 && hits.length > 0 && (
             <p className="cs-suggest">
@@ -953,6 +1010,25 @@ export function CorpusSearch({
           <div className="sr-results">
             {groupedHits.map(renderGroup)}
           </div>
+
+          {semanticGroupedHits.length > 0 && (
+            <section className="cs-ai-results cs-semantic-results" aria-label="Related by meaning" style={{ marginTop: '24px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
+                <h3 style={{ margin: 0, display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
+                  Related by meaning
+                  <span style={{ fontSize: '0.75rem', fontWeight: 'normal', color: 'var(--color-text-muted, #666)', background: 'var(--color-bg-subtle, #f0f0f0)', padding: '2px 8px', borderRadius: '4px' }}>
+                    Vector Semantic
+                  </span>
+                </h3>
+                <span className="cs-search-help" style={{ margin: 0 }}>
+                  {semanticBusy
+                    ? 'Searching concepts…'
+                    : `${semanticGroupedHits.length} variable${semanticGroupedHits.length === 1 ? '' : 's'} matched concept & question embeddings`}
+                </span>
+              </div>
+              <div className="sr-results">{semanticGroupedHits.map(renderGroup)}</div>
+            </section>
+          )}
 
           {pages > 1 && (
             <div className="cs-pager">
