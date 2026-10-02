@@ -211,7 +211,10 @@ function collectLabelledFields(rows: readonly string[]): Map<string, string> {
         currentKey = undefined;
         continue;
       }
-      if (readCodeRow(row) !== undefined || readTwoColumnCodeRow(row) !== undefined) {
+      if (
+        !labelMatches(LABELS.note, currentKey) &&
+        (readCodeRow(row) !== undefined || readTwoColumnCodeRow(row) !== undefined)
+      ) {
         currentKey = undefined;
         continue;
       }
@@ -239,6 +242,10 @@ function collectLabelledFields(rows: readonly string[]): Map<string, string> {
       ) {
         // Question text should not accumulate endless lines (allow up to 25 continuation lines for statutory preambles and batteries)
         if (labelMatches(LABELS.questionText, currentKey) && fields.get(currentKey)!.length >= 25) {
+          currentKey = undefined;
+          continue;
+        }
+        if (labelMatches(LABELS.note, currentKey) && fields.get(currentKey)!.length >= 40) {
           currentKey = undefined;
           continue;
         }
@@ -281,6 +288,12 @@ function fieldFromMap(map: Map<string, string>, label: RegExp): string | undefin
  * E.g. `Yes 1` or `1 Yes`, common in dictionaries that omit frequency distributions.
  */
 function readTwoColumnCodeRow(row: string): CodeEntry | undefined {
+  // Numeric scale rows without letters, e.g. "1 01" or "2 02" between "0 - Not at all 00" and "10 - Completely 10"
+  const mNum = /^\s*(\d{1,9})\s+(\d{1,9})\s*$/.exec(row);
+  if (mNum !== null) {
+    return { label: mNum[1]!, code: mNum[2]! };
+  }
+
   // Format A: Label Code (e.g. "Yes 1", "Not stated 9")
   const mA = /^\s*(.{1,120}?)\s+(\d{1,9}(?:\s*[-–]\s*\d{1,9})?|[A-Z]\d?)$/.exec(row);
   if (mA !== null) {
@@ -318,40 +331,70 @@ function readTwoColumnCodeRow(row: string): CodeEntry | undefined {
  * Extracts category codes from a labelled variable block.
  * Tries standard count-bearing rows first; falls back to 2-column (label+code) rows under the table header.
  */
-function parseLabelledCodes(rows: readonly string[]): CodeEntry[] {
-  const standardCodes = rows.map(readCodeRow).filter((c): c is CodeEntry => c !== undefined);
-  if (standardCodes.length > 0) return standardCodes;
-
+function parseLabelledCodes(rows: readonly string[], note?: string): CodeEntry[] {
   const tableHeaderIndex = rows.findIndex((r) =>
     /^(?:Answer Categories|Cat[ée]gories de r[ée]ponse)/i.test(r.trim()),
   );
-  if (tableHeaderIndex === -1) return [];
 
-  const codes: CodeEntry[] = [];
-  let lastCode: CodeEntry | undefined;
-  for (let i = tableHeaderIndex + 1; i < rows.length; i++) {
-    const row = rows[i]!.trim();
-    if (row === '') continue;
-    if (/^Page\s+\d+/i.test(row) || /^Totals?\s+may\s+not/i.test(row) || /-\s*Data Dictionary/i.test(row)) {
-      lastCode = undefined;
-      continue;
-    }
-    if (/^Total(?:\s+[\d.,\s]+)?$/i.test(row)) continue;
-    if (ANY_LABEL.test(row) || splitLabelledRow(row).length > 0) break;
-    const entry = readTwoColumnCodeRow(row);
-    if (entry !== undefined) {
-      codes.push(entry);
-      lastCode = entry;
-    } else if (lastCode !== undefined && /^[a-zà-ÿ]/.test(row) && !CELL.test(row)) {
-      // Two-column dictionaries can wrap a label below its code (OCHS SMK_01:
-      // "Yes, I tried/smoked cigarettes/cigars in the   1" / "past six months").
-      // A lowercase, single-cell row immediately after a code is a continuation;
-      // page headers and field labels are not.
-      lastCode.label += ` ${row}`;
-    } else {
-      lastCode = undefined;
+  const isExplicitTwoColumn =
+    tableHeaderIndex !== -1 &&
+    !/(?:frequency|fr[ée]quence|weighted|pond[ée]r)/i.test(rows[tableHeaderIndex]!.trim());
+
+  let codes: CodeEntry[] = [];
+  if (!isExplicitTwoColumn) {
+    codes = rows.map(readCodeRow).filter((c): c is CodeEntry => c !== undefined);
+  }
+
+  if (codes.length === 0 && tableHeaderIndex !== -1) {
+    let lastCode: CodeEntry | undefined;
+    for (let i = tableHeaderIndex + 1; i < rows.length; i++) {
+      const row = rows[i]!.trim();
+      if (row === '') continue;
+      if (/^Page\s+\d+/i.test(row) || /^Totals?\s+may\s+not/i.test(row) || /-\s*Data Dictionary/i.test(row)) {
+        lastCode = undefined;
+        continue;
+      }
+      if (/^Total(?:\s+[\d.,\s]+)?$/i.test(row)) continue;
+      if (ANY_LABEL.test(row) || splitLabelledRow(row).length > 0) break;
+      const entry = readTwoColumnCodeRow(row);
+      if (entry !== undefined) {
+        codes.push(entry);
+        lastCode = entry;
+      } else if (
+        lastCode !== undefined &&
+        /[A-Za-zÀ-ÿ]/.test(row) &&
+        !CELL.test(row) &&
+        !isCodeToken(row) &&
+        !NOT_A_CATEGORY.test(row) &&
+        !VARIABLE_LISTING_ROW.test(row)
+      ) {
+        // Two-column dictionaries can wrap a label below its code (OCHS SMK_01, SIMT FRQ_02, CSS CMA).
+        // Any continuation row that is not a table footer, label, or new code is appended.
+        lastCode.label += ` ${row}`;
+      } else {
+        lastCode = undefined;
+      }
     }
   }
+
+  // If the variable's Note contains full response categories for abbreviated options, harvest and patch them.
+  if (note && /(?:full text is as follows|le texte complet est le suivant)/i.test(note)) {
+    const match = /(?:Full text is as follows|le texte complet est le suivant)\s*:\s*([\s\S]+?)(?:Source:|$)/i.exec(note);
+    if (match) {
+      const snippet = match[1]!.trim();
+      const pattern = /(?:^|\s+)(\d{1,3}|[A-Z]\d?)\s+([A-Za-zÀ-ÿ][^]*?)(?=(?:\s+\d{1,3}\s+[A-Za-zÀ-ÿ]|\s+[A-Z]\d?\s+[A-Za-zÀ-ÿ]|$))/g;
+      const fullMap = new Map<string, string>();
+      let m: RegExpExecArray | null;
+      while ((m = pattern.exec(snippet)) !== null) {
+        fullMap.set(m[1]!, m[2]!.trim());
+      }
+      codes = codes.map((c) => {
+        const full = fullMap.get(c.code) || fullMap.get(String(Number(c.code)));
+        return full ? { ...c, label: full } : c;
+      });
+    }
+  }
+
   return codes;
 }
 
@@ -598,8 +641,9 @@ function parseLabelled(doc: ExtractedDoc): Array<Omit<CorpusVariable, 'recordId'
       // next label, so it reads as `REFPER` even though `Longueur : 13.0` follows on the same row.
       const name = fieldByLabel([block.rows[0]!], LABELS.variableName)?.split(/\s+/)[0];
       if (name === undefined || !VAR_NAME.test(name)) return undefined;
-      const codes = parseLabelledCodes(block.rows);
       const fields = collectLabelledFields(block.rows);
+      const note = fieldFromMap(fields, LABELS.note);
+      const codes = parseLabelledCodes(block.rows, note);
       return makeVariable(doc.file, block.page, {
         name,
         position: fieldFromMap(fields, LABELS.position) ?? fieldByLabel(block.rows, LABELS.position),
@@ -607,7 +651,7 @@ function parseLabelled(doc: ExtractedDoc): Array<Omit<CorpusVariable, 'recordId'
         concept: fieldFromMap(fields, LABELS.concept) ?? fieldByLabel(block.rows, LABELS.concept),
         questionText: fieldFromMap(fields, LABELS.questionText),
         universe: fieldFromMap(fields, LABELS.universe),
-        note: fieldFromMap(fields, LABELS.note),
+        note,
         codes,
       });
     })

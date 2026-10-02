@@ -329,6 +329,71 @@ describe('parseDictionary — labelled layout', () => {
       { code: '9', label: 'Not stated' },
     ]);
   });
+
+  it('joins multi-line wrapped labels in 2-column tables including uppercase acronyms and symbols', () => {
+    const rows = [
+      'Variable Name: CMA Length: 3.0 Position: 85',
+      'Concept: Census metropolitan area (collection)',
+      'Answer Categories Code',
+      'CMA not applicable (not in any CMA or   000',
+      'CA)',
+      'St. John’s 001',
+      'Grand Falls-Windsor 010',
+    ];
+    const { variables } = parseDictionary(doc(rows), mint);
+    expect(variables[0]?.codes).toEqual([
+      { code: '000', label: 'CMA not applicable (not in any CMA or CA)' },
+      { code: '001', label: 'St. John’s' },
+      { code: '010', label: 'Grand Falls-Windsor' },
+    ]);
+  });
+
+  it('correctly parses 2-column tables with numeric and year ranges without frequency column confusion', () => {
+    const rows = [
+      'Variable Name: DC_030 Length: 2.0 Position: 21',
+      'Concept: Year of construction of the dwelling',
+      'Answer Categories Code',
+      'Before 1946 01',
+      '1946 to 1960 02',
+      '1961 to 1977 03',
+      '1978 to 1983 04',
+      '1984 to 1995 05',
+    ];
+    const { variables } = parseDictionary(doc(rows), mint);
+    expect(variables[0]?.codes).toEqual([
+      { code: '01', label: 'Before 1946' },
+      { code: '02', label: '1946 to 1960' },
+      { code: '03', label: '1961 to 1977' },
+      { code: '04', label: '1978 to 1983' },
+      { code: '05', label: '1984 to 1995' },
+    ]);
+  });
+
+  it('repairs space-restricted abbreviated categories using verbatim text from Note', () => {
+    const rows = [
+      'Variable Name: SH_10 Length: 2.0 Position: 26',
+      'Concept: Planning to replace primary space heating equipment',
+      'Note: Some response categories were abbreviated due to space restrictions.',
+      'Full text is as follows:',
+      '03 Yes, to increase market value of the dwelling prior to selling',
+      '04 Yes, it will be installed in the new home that my household will be moving to',
+      'Source:',
+      'Answer Categories Code',
+      'Yes, because the equipment is getting old and inefficient 01',
+      'Yes, because the equipment is starting to have many problems 02',
+      'Yes, to increase market value of the dwelling prior to selli 03',
+      'Yes, it will be installed in the new home that my household 04',
+      'No 12',
+    ];
+    const { variables } = parseDictionary(doc(rows), mint);
+    expect(variables[0]?.codes).toEqual([
+      { code: '01', label: 'Yes, because the equipment is getting old and inefficient' },
+      { code: '02', label: 'Yes, because the equipment is starting to have many problems' },
+      { code: '03', label: 'Yes, to increase market value of the dwelling prior to selling' },
+      { code: '04', label: 'Yes, it will be installed in the new home that my household will be moving to' },
+      { code: '12', label: 'No' },
+    ]);
+  });
 });
 
 describe('parseDictionary — collection layout', () => {
