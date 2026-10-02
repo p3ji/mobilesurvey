@@ -327,10 +327,11 @@ export function CorpusSearch({
   const [lang, setLang] = useState<LangFilter>('all');
   const [survey, setSurvey] = useState<string>(initialSurvey);
   const [sortBy, setSortBy] = useState<'relevance' | 'recent'>('relevance');
-  const [roleFilter, setRoleFilter] = useState<'all' | 'collected' | 'derived' | 'administrative'>('all');
+  const [roleFilter, setRoleFilter] = useState<'all' | 'collected' | 'derived' | 'administrative' | 'process'>('all');
   const [hideProcess, setHideProcess] = useState(true);
-  const [hideHarmonized, setHideHarmonized] = useState(false);
+  const [hideHarmonized, setHideHarmonized] = useState(true);
   const [codesOnly, setCodesOnly] = useState(false);
+  const [moreFiltersOpen, setMoreFiltersOpen] = useState(false);
   const [subject, setSubject] = useState<string | null>(null);
   const [page, setPage] = useState(0);
   const [reading, setReading] = useState<{ bundle: string; path: string; page: number } | null>(
@@ -417,10 +418,37 @@ export function CorpusSearch({
     setCodesOnly(false);
     setSubject(null);
     setRoleFilter('all');
-    setHideProcess(false);
-    setHideHarmonized(false);
+    setHideProcess(true);
+    setHideHarmonized(true);
+    setSortBy('relevance');
     setPage(0);
   };
+
+  const handleRoleChange = (newRole: 'all' | 'collected' | 'derived' | 'administrative' | 'process') => {
+    setRoleFilter(newRole);
+    if (newRole === 'process') {
+      // If user asks for process/paradata, automatically uncheck hideProcess so results aren't empty
+      setHideProcess(false);
+    }
+  };
+
+  const handleHideProcessChange = (checked: boolean) => {
+    setHideProcess(checked);
+    if (checked && roleFilter === 'process') {
+      // If user re-enables hideProcess, reset role to 'all' to avoid contradictory empty set
+      setRoleFilter('all');
+    }
+  };
+
+  const activeFiltersCount = useMemo(() => {
+    let count = 0;
+    if (lang !== 'all') count++;
+    if (roleFilter !== 'all') count++;
+    if (!hideProcess) count++; // default is true, so false is a custom choice
+    if (!hideHarmonized) count++; // default is true, so false is a custom choice
+    if (codesOnly) count++;
+    return count;
+  }, [lang, roleFilter, hideProcess, hideHarmonized, codesOnly]);
 
   // Debounce the query; every filter change resets to the first page, because page 3 of the old
   // result set is a meaningless position in the new one.
@@ -446,6 +474,41 @@ export function CorpusSearch({
     return nameA.localeCompare(nameB, 'en-CA', { numeric: true }) ||
       a.surveyGroup.localeCompare(b.surveyGroup, 'en-CA', { numeric: true });
   }), [surveys]);
+
+  const groupedSurveys = useMemo(() => {
+    const groups = new Map<string, {
+      acronym: string;
+      totalVariables: number;
+      cycles: CorpusSurvey[];
+    }>();
+
+    for (const s of surveys) {
+      const acronym = s.surveyAcronym || s.surveyGroup.split('_')[0]!;
+      const existing = groups.get(acronym) ?? {
+        acronym,
+        totalVariables: 0,
+        cycles: [],
+      };
+      existing.totalVariables += s.variables;
+      existing.cycles.push(s);
+      groups.set(acronym, existing);
+    }
+
+    for (const g of groups.values()) {
+      g.cycles.sort((a, b) => (b.yearMax ?? 0) - (a.yearMax ?? 0) || a.surveyGroup.localeCompare(b.surveyGroup));
+    }
+
+    return Array.from(groups.values()).sort((a, b) => a.acronym.localeCompare(b.acronym, 'en-CA'));
+  }, [surveys]);
+
+  const selectedSurveyGroups = useMemo(() => {
+    if (survey === 'all') return undefined;
+    const prog = groupedSurveys.find((g) => g.acronym === survey);
+    if (prog) {
+      return prog.cycles.map((c) => c.surveyGroup);
+    }
+    return [survey];
+  }, [survey, groupedSurveys]);
 
   useEffect(() => {
     if (initialSurvey !== undefined && initialSurvey !== survey) {
@@ -693,10 +756,11 @@ export function CorpusSearch({
     searchCorpusSemantic(
       debounced,
       {
-        limit: 5,
+        limit: 10,
         score_threshold: 0.55,
         filters: {
-          survey_group: survey === 'all' ? undefined : survey,
+          survey_group: selectedSurveyGroups && selectedSurveyGroups.length === 1 ? selectedSurveyGroups[0] : undefined,
+          survey_groups: selectedSurveyGroups && selectedSurveyGroups.length > 1 ? selectedSurveyGroups : undefined,
           subject: subject ?? undefined,
           role: roleFilter === 'all' ? undefined : roleFilter,
           hide_process: hideProcess,
@@ -926,43 +990,30 @@ export function CorpusSearch({
       </div>
       {aiError && <p className="cs-error" role="alert">{aiError} Standard search still works.</p>}
 
-      <div className="cs-filters">
-        <label className="cs-filter">
-          <span className="cs-filter__label">Language</span>
-          <select value={lang} onChange={(e) => setLang(e.target.value as LangFilter)}>
-            <option value="all">Both (English live)</option>
-            <option value="en">English (194k variables)</option>
-            <option value="fr" disabled title="French documents are in source corpus, not yet indexed in Supabase">French (unindexed)</option>
-          </select>
-        </label>
-
+      <div className="cs-primary-filters">
         <label className="cs-filter">
           <span className="cs-filter__label">Survey</span>
           <select value={survey} onChange={(e) => setSurvey(e.target.value)}>
-            <option value="all">All surveys</option>
-            {sortedSurveys.map((s) => (
-              <option key={s.surveyGroup} value={s.surveyGroup}>
-                {s.surveyAcronym && s.surveyAcronym !== s.surveyGroup
-                  ? `${s.surveyAcronym} — ${s.surveyGroup}`
-                  : s.surveyGroup}
-                {s.yearMin !== null
-                  ? ` · ${s.yearMin}${s.yearMax !== null && s.yearMax !== s.yearMin ? `–${s.yearMax}` : ''}`
-                  : ''}
-                {` · ${formatInt(s.variables)} variables`}
-              </option>
+            <option value="all">All surveys (113 programs · 260 cycles)</option>
+            {groupedSurveys.map((g) => (
+              <optgroup
+                key={g.acronym}
+                label={`${g.acronym} (${g.cycles.length} cycle${g.cycles.length === 1 ? '' : 's'} · ${formatInt(g.totalVariables)} vars)`}
+              >
+                <option value={g.acronym}>All {g.acronym} cycles</option>
+                {g.cycles.map((s) => (
+                  <option key={s.surveyGroup} value={s.surveyGroup}>
+                    {s.surveyGroup}
+                    {s.yearMin !== null
+                      ? ` · ${s.yearMin}${s.yearMax !== null && s.yearMax !== s.yearMin ? `–${s.yearMax}` : ''}`
+                      : ''}
+                    {` · ${formatInt(s.variables)} vars`}
+                  </option>
+                ))}
+              </optgroup>
             ))}
           </select>
         </label>
-
-        <label className="cs-filter">
-          <span className="cs-filter__label">GSIM Role</span>
-          <select value={roleFilter} onChange={(e) => setRoleFilter(e.target.value as any)}>
-            <option value="all">All Roles</option>
-            <option value="collected">Questions Only</option>
-            <option value="derived">Derived (DV) Only</option>
-            <option value="administrative">Administrative Links</option>
-          </select>
-          </label>
 
         <label className="cs-filter">
           <span className="cs-filter__label">Sort results</span>
@@ -972,27 +1023,58 @@ export function CorpusSearch({
           </select>
         </label>
 
-        <label className="cs-filter cs-filter--check" title="Exclude replicate bootstrap weights (BSW*), flags, and operational paradata">
-          <input type="checkbox" checked={hideProcess} onChange={(e) => setHideProcess(e.target.checked)} />
-          <span>Hide paradata / weights</span>
-        </label>
-
-        <label
-          className="cs-filter cs-filter--check"
-          title="Exclude standard sociodemographics present across all household surveys (age, birth date, sex at birth, gender, marital status, province, mother tongue, basic student/activity screening, household size)"
+        <details
+          className="cs-more-filters"
+          open={moreFiltersOpen}
+          onToggle={(e) => setMoreFiltersOpen((e.target as HTMLDetailsElement).open)}
         >
-          <input
-            type="checkbox"
-            checked={hideHarmonized}
-            onChange={(e) => setHideHarmonized(e.target.checked)}
-          />
-          <span>Hide harmonized content</span>
-        </label>
+          <summary className="cs-more-filters__summary" aria-label="Toggle additional search filters">
+            <span>⚙ More filters</span>
+            {activeFiltersCount > 0 && <span className="cs-filter-badge">{activeFiltersCount}</span>}
+          </summary>
+          <div className="cs-more-filters__drawer">
+            <label className="cs-filter">
+              <span className="cs-filter__label">Language</span>
+              <select value={lang} onChange={(e) => setLang(e.target.value as LangFilter)}>
+                <option value="all">Both (English live)</option>
+                <option value="en">English (194k variables)</option>
+                <option value="fr" disabled title="French documents are in source corpus, not yet indexed in Supabase">French (unindexed)</option>
+              </select>
+            </label>
 
-        <label className="cs-filter cs-filter--check">
-          <input type="checkbox" checked={codesOnly} onChange={(e) => setCodesOnly(e.target.checked)} />
-          <span>Has response categories</span>
-        </label>
+            <label className="cs-filter">
+              <span className="cs-filter__label">GSIM Role</span>
+              <select value={roleFilter} onChange={(e) => handleRoleChange(e.target.value as any)}>
+                <option value="all">All Roles</option>
+                <option value="collected">Questions Only</option>
+                <option value="derived">Derived (DV) Only</option>
+                <option value="administrative">Administrative Links</option>
+                <option value="process">Paradata & Weights Only</option>
+              </select>
+            </label>
+
+            <label className="cs-filter cs-filter--check" title="Exclude replicate bootstrap weights (BSW*), flags, and operational paradata">
+              <input type="checkbox" checked={hideProcess} onChange={(e) => handleHideProcessChange(e.target.checked)} />
+              <span>Hide paradata / weights</span>
+            </label>
+
+            <label
+              className="cs-filter cs-filter--check"
+              title="Exclude standard sociodemographics present across all household surveys (age, birth date, sex at birth, gender, marital status, province, mother tongue, basic student/activity screening, household size)"
+            >
+              <input
+                type="checkbox"
+                checked={hideHarmonized}
+                onChange={(e) => setHideHarmonized(e.target.checked)}
+              />
+              <span>Hide harmonized content</span>
+            </label>
+
+            <button type="button" className="cs-filter-reset" onClick={clearFilters}>
+              Reset filters
+            </button>
+          </div>
+        </details>
 
         {summary !== null && <span className="cs-summary">{summary}</span>}
         {metaError !== null && (

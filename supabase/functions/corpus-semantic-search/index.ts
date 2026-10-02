@@ -114,6 +114,8 @@ Deno.serve(async (request: Request) => {
   if (filters) {
     if (filters.survey_group) {
       must.push({ key: 'survey_group', match: { value: filters.survey_group } });
+    } else if (Array.isArray(filters.survey_groups) && filters.survey_groups.length > 0) {
+      must.push({ key: 'survey_group', match: { any: filters.survey_groups } });
     }
     if (filters.subject) {
       must.push({ key: 'subject', match: { value: filters.subject } });

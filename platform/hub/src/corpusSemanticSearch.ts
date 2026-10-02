@@ -24,6 +24,7 @@ export interface SemanticSearchOptions {
   score_threshold?: number;
   filters?: {
     survey_group?: string;
+    survey_groups?: string[];
     year_min?: number;
     year_max?: number;
     subject?: string;

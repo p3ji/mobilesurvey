@@ -53,7 +53,7 @@ async function main(): Promise<void> {
   let changed = 0;
   do {
     const page = await qdrantRequest(`/collections/${collection}/points/scroll`, {
-      limit: 256,
+      limit: 500,
       with_payload: ['role'],
       with_vector: false,
       ...(offset === null ? {} : { offset }),
@@ -70,9 +70,9 @@ async function main(): Promise<void> {
       updates.set(expected, ids);
       changed++;
     }
-    if (apply) {
+    if (apply && updates.size > 0) {
       for (const [role, ids] of updates) {
-        await qdrantRequest(`/collections/${collection}/points/payload?wait=true`, {
+        await qdrantRequest(`/collections/${collection}/points/payload?wait=false`, {
           payload: { role }, points: ids,
         });
       }
@@ -80,6 +80,8 @@ async function main(): Promise<void> {
     scanned += points.length;
     if (scanned % 10_000 < points.length) console.log(`Scanned ${scanned}; ${apply ? 'fixed' : 'mismatched'} ${changed}`);
     offset = page.result?.next_page_offset ?? null;
+    // Gentle pacing to keep pod CPU under limits
+    await new Promise((r) => setTimeout(r, 25));
   } while (offset !== null);
   console.log(`Scanned ${scanned} Qdrant points; ${apply ? 'fixed' : 'found'} ${changed} role mismatches.`);
 }

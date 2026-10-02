@@ -1410,6 +1410,65 @@ code { font-family: var(--mono); font-size: 0.88em; }
   align-items: center;
   margin-bottom: 16px;
 }
+.cs-primary-filters {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+  align-items: center;
+  margin-bottom: 14px;
+}
+.cs-more-filters {
+  position: relative;
+}
+.cs-more-filters__summary {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--ink);
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  cursor: pointer;
+  user-select: none;
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+.cs-more-filters__summary:hover {
+  background: var(--bg-soft, #f8fafc);
+  border-color: var(--ink-soft);
+}
+.cs-filter-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1;
+  color: #fff;
+  background: var(--brand);
+  border-radius: 9px;
+}
+.cs-more-filters__drawer {
+  margin-top: 10px;
+  padding: 14px 16px;
+  background: var(--bg-soft, #f8fafc);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  align-items: center;
+  animation: csFadeIn 0.15s ease;
+}
+@keyframes csFadeIn {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
 .cs-filter {
   display: flex;
   align-items: center;
@@ -1425,10 +1484,21 @@ code { font-family: var(--mono); font-size: 0.88em; }
   border-radius: 6px;
   background: var(--panel);
   color: var(--ink);
-  max-width: 260px;
+  max-width: 320px;
 }
 .cs-filter__label { font-weight: 600; }
 .cs-filter--check { cursor: pointer; }
+.cs-filter-reset {
+  margin-left: auto;
+  font-size: 12px;
+  color: var(--brand);
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-decoration: underline;
+  padding: 0;
+}
+.cs-filter-reset:hover { color: var(--brand-dark, #004488); }
 .cs-summary { margin-left: auto; font-size: 12px; color: var(--ink-soft); }
 
 .cs-intro { color: var(--ink-soft); line-height: 1.65; max-width: 62ch; }
