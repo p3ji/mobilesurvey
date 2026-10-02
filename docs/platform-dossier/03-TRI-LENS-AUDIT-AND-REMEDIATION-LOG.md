@@ -134,3 +134,11 @@ Following live deployment to GitHub Pages and Supabase, an autonomous 4-lens spe
 * **Automatic FTS Re-Indexing:** Simultaneously updated `search_text = replace(search_text, old_concept, new_concept)`, automatically regenerating PostgreSQL's stored `fts` tsvector index.
 * **Verification:** Confirmed 0 truncated records remaining (`count = 0`). Tested `corpus_search_sorted` for `"separation prior to divorce"`: `FPM1QSPD` and `FPM2QSPD` now rank at the top with complete, untruncated metadata cards.
 
+### 7.3 Full-Corpus Tier 1 Source Reconstruction
+* **Corpus Scale:** Expanded extraction to all **393 variables** where the original StatCan data dictionary PDF contained explicit unabbreviated text in the `Note:` field (`The concept was abbreviated due to space restrictions. Full text is as follows: ...`).
+* **Source-Grounded CSD & APS Repairs:**
+  - **CSD (Canadian Survey on Disability 2017 & 2022):** Restored 40+ assistive device barriers ending in `can’t be adapt` $\rightarrow$ `can’t be adapted` (`ADM_115D`, `AADH_50D`, `AADV_20D`, `AADV_30D`, `ADM_075D`, `ADM_090D`, `ADM_100D`, etc.) and `Expected income less than curr` $\rightarrow$ `Expected income less than current income` (`NDE_70A`).
+  - **APS (Aboriginal Peoples Survey 2017):** Restored traditional hunting and gathering activity reasons ending in `Share with commun.` $\rightarrow$ `Share with community` (`OLA_15D`).
+  - **CHSCY (Canadian Health Survey on Children and Youth 2019 & 2023):** Restored youth physical activity duration ending in `time spent-7 d` $\rightarrow$ `time spent-7 days` (`OSCDVSWC`).
+* **Deployment:** Deployed [`patch-2026-10-02-source-concept-reconstruction.sql`](file:///Users/pushp/Documents/Projects/mobilesurvey/tools/metadata/statcan-corpus/sql/patch-2026-10-02-source-concept-reconstruction.sql) live to Supabase. All modified rows refreshed their `search_text` and PostgreSQL `fts` index with 0 data loss and zero unverified assumptions.
+
