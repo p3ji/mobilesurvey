@@ -215,6 +215,11 @@ function collectLabelledFields(rows: readonly string[]): Map<string, string> {
         currentKey = undefined;
         continue;
       }
+      // Technical layout metadata should never be treated as question text or accumulate into prose
+      if (/^(?:Format\b|Weight\s*variable\b|Variable\s*de\s*pond[ée]ration\b)/i.test(text)) {
+        currentKey = undefined;
+        continue;
+      }
       // If unlabelled prose appears immediately after the header row (e.g. GSS Cycle 16)
       // before any table header or code rows, treat it as question text.
       if (

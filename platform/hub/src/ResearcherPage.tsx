@@ -355,6 +355,7 @@ export function ResearcherPage({ onHome, onSearcher }: { onHome: () => void; onS
                 type="button"
                 className={`researcher-theme-chip ${selectedTheme === 'all' ? 'is-active' : ''}`}
                 onClick={() => setSelectedTheme('all')}
+                aria-pressed={selectedTheme === 'all'}
               >
                 All
               </button>
@@ -364,6 +365,7 @@ export function ResearcherPage({ onHome, onSearcher }: { onHome: () => void; onS
                   type="button"
                   className={`researcher-theme-chip ${selectedTheme === theme ? 'is-active' : ''}`}
                   onClick={() => setSelectedTheme(theme)}
+                  aria-pressed={selectedTheme === theme}
                 >
                   {theme}
                 </button>

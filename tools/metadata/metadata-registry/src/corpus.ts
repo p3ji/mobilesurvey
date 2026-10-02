@@ -469,26 +469,29 @@ export function isProcessVariable(variable: {
 
   // 1. Name patterns: weights, IDs, flags, imputation variables
   const isNameProcess =
-    /^(WTPM|WTMP|WTHM|FINALWT|WGT|WEIGHT)$/i.test(name) ||
-    /^(WTS?_|WTM_|WT_|WGHT|BOOT|BSW|FWT|REPWT|FWEIGHT|HWEIGHT|WT[0-9]+|WTBS|WTPS|WVCBS|SPFWT|BWT|SAMPLEID|PERSONID|MASTERID|HHID|RECID|VERDATE|REFPER|RECORDID|CASEID|USERID|FORMID|PUMFID|BATCHID|STRAT|FRAME|SEQNUM|IDENT|DO[A-Z]{3}|SAM_|INT_|COL_|SURV|DOF|FLG|FLAG|IF_|QFLG_)/i.test(name) ||
+    /^(WTPM|WTMP|WTHM|FINALWT|WGT|WEIGHT|WEIGHTH|SWEIGHT|SWEIGHT1|SWEIGHTR|CWEIGHT)$/i.test(name) ||
+    /^(WTS?_|WT_|WGHT|BOOT|BSW|FWT|REPWT|FWEIGHT|HWEIGHT|WT[0-9]+|WTBS|WTPS|WVCBS|SPFWT|BWT|WGT_|FWGT_|SAMPLEID|PERSONID|MASTERID|HHID|RECID|VERDATE|REFPER|RECORDID|CASEID|USERID|FORMID|PUMFID|BATCHID|STRAT|FRAME|SEQNUM|IDENT|DO[A-Z]{3}|SAM_|INT_|COL_|SURV|DOF|FLG|FLAG|IF_|QFLG_)/i.test(name) ||
     /^ADM_[A-Z]/i.test(name) ||
     (/^ADM_/i.test(name) && surveyGroup.startsWith('CCHS')) ||
-    /^I[0-9]+$/i.test(name) ||
-    /^IMP[0-9]+/i.test(name) ||
+    (/^I[0-9]{3,}$/i.test(name) && !/immigra|citizen|born/.test(concept)) ||
+    (/^IMP[0-9]+/i.test(name) && !/immigra|citizen|born|came to canada/.test(concept)) ||
     /(_F|_FLG|_FLAG|FL[0-9]*)$/i.test(name) ||
-    /^(STATUS|SNAICS|INSTANCE|CONTACT)$/i.test(name);
+    /^(STATUS|SNAICS|INSTANCE|CONTACT|COLDATE|FSTATUS)$/i.test(name);
 
   if (isNameProcess) {
-    // Protect immigration questions like IMP_01B, IMP_10 from accidental match
-    if (/^IMP_/i.test(name) && /immigra|citizen|born/.test(concept)) return false;
     return true;
   }
 
+  // Guard: clinical screener flags and substance use indicators carrying (F)
+  const isSubstantiveFlag =
+    /^(based on|derived from|calcul[eé]|selon|compos[eé])/i.test(note) ||
+    /\b(screener|suicide|bipolar|substance|cannabis|cocaine|heroin)\b/i.test(concept);
+
   // 2. Concept / Note / QuestionText patterns: weights, imputation flags, quality flags
   if (
-    /\b(sampling weight|sample weight|bootstrap|poids [eé]chantillon|share weight|master weight|survey weight|final weight|replicate weights?|poids r[eé]plique|inclusion flag|imputation flag|imputation|allocation flag|quality flag|data quality flag|status flag|edit flag|indicateur d[''’]imputation|drapeau d[''’]imputation|indicateur)\b/i.test(concept) ||
+    /\b(sampling weight|sample weight|bootstrap|poids [eé]chantillon|share weight|master weight|survey weights?|final weight|replicate weights?|poids r[eé]plique|inclusion flag|imputation flag|imputation|allocation flag|quality flag|data quality flag|status flag|edit flag|indicateur d[''’]imputation|drapeau d[''’]imputation|indicateur)\b/i.test(concept) ||
     /^imputation\b/i.test(concept) ||
-    /[-–—]\s*\(F\)|\(F\)$/i.test(concept) ||
+    (!isSubstantiveFlag && /[-–—]\s*\(F\)$|\(F\)$/i.test(concept)) ||
     /\b(imputation flag|indicateur d[''’]imputation)\b/i.test(note) ||
     /\b(imputation flag|indicateur d[''’]imputation|is imputed|sont imput[eé]e?s?)\b/i.test(questionText) ||
     /^imputation\b/i.test(questionText)
@@ -541,7 +544,7 @@ export class SupabaseCorpusSource {
     const hideProcess = options.hideProcess ?? false;
 
     const rows = await this.rpc<CorpusSearchRow[]>(
-      options.sort === 'recent' ? 'corpus_search_sorted' : 'corpus_search',
+      'corpus_search_sorted',
       {
         q: trimmed,
         lang_filter: options.lang ?? null,
@@ -552,7 +555,7 @@ export class SupabaseCorpusSource {
         subject_filter: options.subject ?? null,
         role_filter: roleFilter,
         hide_process: hideProcess,
-        ...(options.sort === 'recent' ? { sort_mode: 'recent' } : {}),
+        sort_mode: options.sort ?? 'relevance',
         max_rows: options.limit ?? 50,
         row_offset: options.offset ?? 0,
       },

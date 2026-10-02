@@ -39,7 +39,7 @@ import { expandCorpusQuery } from './corpusAiSearch.js';
 import { searchCorpusSemantic } from './corpusSemanticSearch.js';
 import { classifyHit } from './graphClassifier.js';
 import { groupCorpusHits, type CorpusHitGroup } from './groupCorpusHits.js';
-import { renderHitQuestion } from './renderHitQuestion.js';
+import { isPlaceholderConcept, renderHitQuestion } from './renderHitQuestion.js';
 import type { CorpusGraphFocus } from './CorpusLineage.js';
 
 const DEBOUNCE_MS = 250;
@@ -62,7 +62,7 @@ function CodeList({ codes }: { codes: CorpusCode[] }) {
   const [expanded, setExpanded] = useState(false);
   if (codes.length === 0) return null;
   const shown = expanded ? codes : codes.slice(0, CODES_SHOWN);
-  const hidden = codes.length - shown.length;
+  const hidden = codes.length - CODES_SHOWN;
 
   return (
     <div className="cs-codes">
@@ -71,9 +71,14 @@ function CodeList({ codes }: { codes: CorpusCode[] }) {
           <strong>{code.c}</strong> {codeLabel(code)}
         </span>
       ))}
-      {hidden > 0 && (
-        <button type="button" className="cs-code cs-code--more" onClick={() => setExpanded(true)}>
-          +{hidden} more
+      {codes.length > CODES_SHOWN && (
+        <button
+          type="button"
+          className="cs-code cs-code--more"
+          onClick={() => setExpanded((v) => !v)}
+          aria-expanded={expanded}
+        >
+          {expanded ? 'Show fewer' : `+${hidden} more`}
         </button>
       )}
     </div>
@@ -184,7 +189,9 @@ function CorpusHit({
   return (
     <article className="cs-hit">
       <div className="cs-hit__head">
-        <code className="cs-hit__name">{meta.variableName}</code>
+        <h3 className="cs-hit__title" style={{ margin: 0, font: 'inherit', display: 'inline' }}>
+          <code className="cs-hit__name">{meta.variableName}</code>
+        </h3>
         <span
           className={`cs-hit__kind cs-hit__kind--${classification.role}`}
           title={`GSIM: ${classification.origin} origin, ${classification.derivation} status`}
@@ -225,8 +232,8 @@ function CorpusHit({
         <span className="cs-hit__lang">{meta.lang === 'fr' ? 'FR' : 'EN'}</span>
       </div>
 
-      <p className="cs-hit__label">{label}</p>
-      {renderedQuestion !== undefined && <p className="cs-hit__question">{renderedQuestion}</p>}
+      <p className="cs-hit__label">{isPlaceholderConcept(label) ? (renderedQuestion ?? meta.variableName) : label}</p>
+      {renderedQuestion !== undefined && !isPlaceholderConcept(label) && <p className="cs-hit__question">{renderedQuestion}</p>}
 
       {inputs.length > 0 && (
         <div className="cs-hit__lineage">
@@ -433,12 +440,21 @@ export function CorpusSearch({
     }
   }, [initialQuery]);
 
+  const sortedSurveys = useMemo(() => [...surveys].sort((a, b) => {
+    const nameA = a.surveyAcronym ?? a.surveyGroup;
+    const nameB = b.surveyAcronym ?? b.surveyGroup;
+    return nameA.localeCompare(nameB, 'en-CA', { numeric: true }) ||
+      a.surveyGroup.localeCompare(b.surveyGroup, 'en-CA', { numeric: true });
+  }), [surveys]);
+
   useEffect(() => {
     if (initialSurvey !== undefined && initialSurvey !== survey) {
-      setSurvey(initialSurvey);
+      const direct = sortedSurveys.find((s) => s.surveyGroup === initialSurvey);
+      const byAcronym = !direct ? sortedSurveys.find((s) => s.surveyAcronym === initialSurvey) : undefined;
+      setSurvey(direct ? direct.surveyGroup : (byAcronym ? byAcronym.surveyGroup : initialSurvey));
       setPage(0);
     }
-  }, [initialSurvey]);
+  }, [initialSurvey, sortedSurveys]);
 
   useEffect(() => setPage(0), [lang, survey, codesOnly, subject, roleFilter, hideProcess, hideHarmonized, sortBy]);
 
@@ -550,12 +566,6 @@ export function CorpusSearch({
   }, [filterHits, semanticHits, displayedHits]);
   const semanticGroupedHits = useMemo(() => groupCorpusHits(semanticDisplayedHits), [semanticDisplayedHits]);
   const recentSubjectGroups = useMemo(() => groupCorpusHits(filterHits(recentSubjectHits)), [filterHits, recentSubjectHits]);
-  const sortedSurveys = useMemo(() => [...surveys].sort((a, b) => {
-    const nameA = a.surveyAcronym ?? a.surveyGroup;
-    const nameB = b.surveyAcronym ?? b.surveyGroup;
-    return nameA.localeCompare(nameB, 'en-CA', { numeric: true }) ||
-      a.surveyGroup.localeCompare(b.surveyGroup, 'en-CA', { numeric: true });
-  }), [surveys]);
   const inputsByTarget = useMemo(() => {
     const byTarget = new Map<string, CorpusDirectInput[]>();
     for (const input of directInputs) {
@@ -583,7 +593,6 @@ export function CorpusSearch({
         if (!controller.signal.aborted) setMetaError(describe(err));
       }
     })();
-    inputRef.current?.focus();
     return () => controller.abort();
   }, [source, metaAttempt]);
 
@@ -879,6 +888,7 @@ export function CorpusSearch({
           ref={inputRef}
           className="sr-search__input"
           type="search"
+          aria-label="Search Statistics Canada variables by concept, question, or variable name"
           // No sample mnemonic here on purpose: which ones exist depends on what has been
           // loaded, and a placeholder promising `DHHGAGE` when the corpus has no such variable
           // teaches the reader that search is broken.
@@ -1047,7 +1057,7 @@ export function CorpusSearch({
 
       {debounced.trim() !== '' && error === null && (
         <>
-          <p className="sr-count">
+          <p className="sr-count" aria-live="polite" role="status">
             {busy
               ? 'Searching…'
               : total === 0
@@ -1127,7 +1137,7 @@ export function CorpusSearch({
             </section>
           )}
 
-          <div className="sr-results">
+          <div className={`sr-results${busy ? ' sr-results--busy' : ''}`}>
             {groupedHits.map(renderGroup)}
           </div>
 

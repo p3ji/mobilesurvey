@@ -499,6 +499,8 @@ code { font-family: var(--mono); font-size: 0.88em; }
   transition: border-color 0.15s;
 }
 .sr-search__input:focus { border-color: var(--brand); outline: none; }
+.sr-search__input:focus-visible { border-color: var(--brand); outline: 3px solid var(--brand); outline-offset: 1px; }
+.sr-results--busy { opacity: 0.55; pointer-events: none; transition: opacity 0.15s ease-out; }
 
 .sr-filters {
   display: flex;
@@ -1828,7 +1830,7 @@ code { font-family: var(--mono); font-size: 0.88em; }
 .cs-hit__kind--collected { background: #e6f0fb; color: var(--brand); }
 .cs-hit__kind--derived { background: #eff6ff; color: #1d4ed8; border: 1px solid #bfdbfe; }
 .cs-hit__kind--administrative { background: #fef3c7; color: #92400e; border: 1px solid #fde68a; }
-.cs-hit__kind--process { background: #f1f5f9; color: #64748b; border: 1px solid #cbd5e1; }
+.cs-hit__kind--process { background: #f1f5f9; color: #475569; border: 1px solid #cbd5e1; }
 
 /* ── Knowledge Graph Explorer View ────────── */
 .kg-explorer {
@@ -2799,8 +2801,38 @@ code { font-family: var(--mono); font-size: 0.88em; }
 .researcher-timeline-item__label { font-size: 10px; font-weight: 700; color: #64748b; margin-top: 2px; }
 .researcher-timeline-item.is-active .researcher-timeline-item__label { color: #0369a1; font-weight: 800; }
 .researcher-active-filter-badge { display: inline-flex; align-items: center; gap: 5px; margin-left: 8px; padding: 1px 7px; border-radius: 999px; background: #e0f2fe; color: #0369a1; font-size: 11px; font-weight: 800; }
-.researcher-active-filter-badge button { border: none; background: transparent; color: #0369a1; font-weight: 800; cursor: pointer; padding: 0; line-height: 1; }
-.researcher-timeline-empty { padding: 18px 0; text-align: center; color: #94a3b8; font-size: 11px; font-style: italic; }
+.researcher-active-filter-badge button { border: none; background: transparent; color: #0369a1; font-weight: 800; cursor: pointer; padding: 4px; line-height: 1; }
+.researcher-timeline-empty { padding: 18px 0; text-align: center; color: #536575; font-size: 12px; font-style: italic; }
+.researcher-deeplink {
+  background: #e0f2fe;
+  border: 1px solid #bae6fd;
+  border-radius: 6px;
+  color: #0369a1;
+  cursor: pointer;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 5px 10px;
+  min-height: 28px;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  margin-left: auto;
+  text-decoration: none;
+  transition: all 0.15s ease;
+}
+.researcher-deeplink:hover,
+.researcher-deeplink:focus-visible {
+  background: #bae6fd;
+  color: #024e77;
+  border-color: #7dd3fc;
+}
+@media (max-width: 640px) {
+  .researcher-select {
+    font-size: 16px;
+    height: 38px;
+  }
+}
 @media (max-width: 760px) {
   .researcher-hero { grid-template-columns: 1fr; padding: 34px 28px; }
   .researcher-hero__summary { display: none; }

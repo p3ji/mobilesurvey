@@ -290,7 +290,7 @@ describe('SupabaseCorpusSource', () => {
       string,
       RequestInit,
     ];
-    expect(url).toBe('https://p.supabase.co/rest/v1/rpc/corpus_search');
+    expect(url).toBe('https://p.supabase.co/rest/v1/rpc/corpus_search_sorted');
     expect(JSON.parse(init.body as string)).toEqual({
       q: 'smoking',
       lang_filter: 'fr',
@@ -303,6 +303,7 @@ describe('SupabaseCorpusSource', () => {
       subject_filter: null,
       role_filter: null,
       hide_process: false,
+      sort_mode: 'relevance',
     });
   });
 
@@ -320,11 +321,12 @@ describe('SupabaseCorpusSource', () => {
       string,
       RequestInit,
     ];
-    expect(url).toBe('https://p.supabase.co/rest/v1/rpc/corpus_search');
+    expect(url).toBe('https://p.supabase.co/rest/v1/rpc/corpus_search_sorted');
     expect(JSON.parse(init.body as string)).toMatchObject({
       q: 'mental health',
       role_filter: 'derived',
       hide_process: true,
+      sort_mode: 'relevance',
       max_rows: 25,
     });
   });
