@@ -308,60 +308,6 @@ export function CorpusGraphExplorer({
             )}
           </div>
 
-          <details className="kg-harmonized-accordion">
-            <summary className="kg-harmonized-summary">
-              <strong>Harmonized Sociodemographic Domains (10 Core Dimensions)</strong>
-              <span className="kg-harmonized-sub">Standardized concept clusters across household, health, and social surveys — click to expand</span>
-            </summary>
-            <div className="kg-table-wrap" style={{ marginTop: 12 }}>
-              <table className="kg-table kg-table--matrix">
-                <thead>
-                  <tr>
-                    <th>Harmonized Concept Domain</th>
-                    <th style={{ textAlign: 'right' }}>Total Variables</th>
-                    <th>Top Survey Programs & Variable Counts</th>
-                    <th style={{ textAlign: 'center' }}>Action</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {summaryData.harmonizedConcepts.map((item) => (
-                    <tr key={item.key}>
-                      <td>
-                        <strong className="kg-concept-title">{item.label}</strong>
-                      </td>
-                      <td style={{ textAlign: 'right', fontWeight: 600 }}>{item.totalMatches.toLocaleString()}</td>
-                      <td>
-                        <div className="kg-survey-pills">
-                          {item.topSurveys.map((ts) => (
-                            <button
-                              key={ts.survey}
-                              type="button"
-                              className="kg-survey-cell-btn"
-                              onClick={() => onSelectSearch?.(item.label.split(' ')[0]!, ts.survey)}
-                              title={`Search ${item.label} in ${ts.survey} (${ts.count} matches)`}
-                            >
-                              <strong>{ts.survey}</strong>: {ts.count.toLocaleString()}
-                            </button>
-                          ))}
-                        </div>
-                      </td>
-                      <td style={{ textAlign: 'center' }}>
-                        {onSelectSearch && (
-                          <button
-                            type="button"
-                            className="kg-btn kg-btn--sm kg-btn--primary"
-                            onClick={() => onSelectSearch(item.label.split(' ')[0]!)}
-                          >
-                            Search in Search ↗
-                          </button>
-                        )}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </details>
 
           <div style={{ marginTop: 14 }}>
             <CorpusConcepts source={source} initialConceptId={initialConceptId ?? null} />
