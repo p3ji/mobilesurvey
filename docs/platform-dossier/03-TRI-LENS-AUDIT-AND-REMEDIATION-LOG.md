@@ -81,3 +81,19 @@ flowchart LR
 * **Commit `3ce5c75`**: `feat(vector): strip survey boilerplate and filter placeholder concepts for dense retrieval`
 * **Commit `2d288e5`**: `docs: record audit remediations, vector boilerplate strip, and researcher protocol`
 * **Commit `390b4da`**: `feat(searcher): add acronym guardrail, recover unlabelled prose in parser, and stage AI concepts pipeline`
+* **Commit `8c4d25c`**: `fix(searcher): apply round 2 multi-lens testing remediations across a11y, regex, and relevance`
+
+---
+
+## 5. Round 2 Multi-Lens Testing Audit & Scorecard (Post-Deployment)
+
+Following live deployment to GitHub Pages and Supabase, an autonomous 4-lens specialist evaluation panel was re-convened:
+
+### 5.1 Specialist Scorecard Summary
+
+| Specialist Lens | Round 2 Score | Key Evaluation & Verification | Critical Findings & Remediations |
+| :--- | :---: | :--- | :--- |
+| **UX & Accessibility Auditor** | **B- $\rightarrow$ A-** | WCAG 2.1 AA audit of Searcher & Researcher; tested screen-reader landmarks, color contrast, touch targets, and mobile form sizing. | **Fixed:** Darkened `.researcher-timeline-empty` (#94a3b8 $\rightarrow$ #536575, 6.02:1) and `.cs-hit__kind--process` (#64748b $\rightarrow$ #475569, 6.92:1); added `aria-label` to search input; added `aria-live="polite"` and `role="status"` to hit count; added `<h3>` heading landmarks to hit cards; enforced 16px mobile font on `.researcher-select` to prevent iOS Safari auto-zoom. |
+| **Metadata Standards Expert** | **B+ $\rightarrow$ A** | Verified CCHS Wait Times unsuppressed (257 collected, 18 derived, 41 weights); Indigenous family items `I01`–`I27` (100% collected); mental health screeners (118 derived); weights (100% suppressed when `hide_process = true`). | **Critical Discovery:** Discovered PostgreSQL POSIX regex `\b` inside string literals matched ASCII Backspace (`0x08`) instead of word boundary (`\y`), causing 1,991 process variables to leak into `collected`. **Fixed:** Deployed [`patch-2026-10-02-posix-regex-word-boundary.sql`](file:///Users/pushp/Documents/Projects/mobilesurvey/tools/metadata/statcan-corpus/sql/patch-2026-10-02-posix-regex-word-boundary.sql); verified leaking count dropped from 1,991 to **0**. Full Qdrant role synchronization executed. |
+| **External Empirical Researcher** | **B+ $\rightarrow$ A** | Verified `K10`, `K6`, `CES-D`, `PHQ-9` acronym guardrails (100% of top 10 are genuine scale variables, `DDISTK10` #1 at 7.04); evaluated 326 outside research publications. | **Critical Client Fix:** Caught client `corpus.ts` routing default searches to legacy `corpus_search` instead of `corpus_search_sorted`. **Fixed:** Updated `corpus.ts` to always route through `corpus_search_sorted` with `sort_mode`. **Added:** Reciprocal `food insecurity` $\rightarrow$ `food security` alias (rank jumped from 0.50 to 2.12, top 5 hits all canonical variables). Added acronym mapping for survey deep-links. |
+| **Content SME Auditor** | **C+ $\rightarrow$ B+** | Audited multi-item battery stitching, string truncation, placeholder leakage, and GSS-16 prose recovery. | **Fixed:** In `CorpusSearch.tsx`, shielded card labels from uninformative placeholders (`Question 30`, `Yes/No`), surfacing substantive question text instead; expanded `renderHitQuestion.ts` to stitch introductory stems ending in `?` or `:` even without `isSelectAll`; cleaned double dashes; in `parse.ts`, prevented `Format:` and `Weight variable:` rows from bleeding into unlabelled question prose. |
