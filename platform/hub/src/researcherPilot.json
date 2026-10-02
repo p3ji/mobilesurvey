@@ -888,7 +888,7 @@
     "sources": [
       "OpenAlex"
     ],
-    "theme": "housing",
+    "theme": "digital society",
     "uses": [
       {
         "program": "CHMS",
@@ -1363,68 +1363,6 @@
         "precision": "program_only",
         "cycles": [],
         "cycleText": "",
-        "evidenceLocation": "Abstract"
-      }
-    ],
-    "mentions": []
-  },
-  {
-    "id": "doi:10.1080/00343400601120205",
-    "title": "Forecasting Regional Employment with Shift–Share and ARIMA Modelling",
-    "doi": "10.1080/00343400601120205",
-    "url": "https://doi.org/10.1080/00343400601120205",
-    "year": 2007,
-    "workType": "article",
-    "issuingOrganization": "Routledge",
-    "sources": [
-      "OpenAlex"
-    ],
-    "theme": "other",
-    "uses": [
-      {
-        "program": "LFS",
-        "precision": "program_only",
-        "cycles": [],
-        "cycleText": "",
-        "evidenceLocation": "Abstract"
-      },
-      {
-        "program": "LFS",
-        "precision": "program_only",
-        "cycles": [],
-        "cycleText": "",
-        "evidenceLocation": "Abstract"
-      },
-      {
-        "program": "LFS",
-        "precision": "program_only",
-        "cycles": [],
-        "cycleText": "",
-        "evidenceLocation": "Abstract"
-      }
-    ],
-    "mentions": []
-  },
-  {
-    "id": "doi:10.1080/00343409512331349103",
-    "title": "Male Joblessness and Job Search: Regional Perspectives in the UK, 1981–1993",
-    "doi": "10.1080/00343409512331349103",
-    "url": "https://doi.org/10.1080/00343409512331349103",
-    "year": 1995,
-    "workType": "article",
-    "issuingOrganization": "Routledge",
-    "sources": [
-      "OpenAlex"
-    ],
-    "theme": "education",
-    "uses": [
-      {
-        "program": "LFS",
-        "precision": "exact_cycles",
-        "cycles": [
-          "1993"
-        ],
-        "cycleText": "1993",
         "evidenceLocation": "Abstract"
       }
     ],
@@ -2631,7 +2569,7 @@
     "sources": [
       "OpenAlex"
     ],
-    "theme": "education",
+    "theme": "families",
     "uses": [
       {
         "program": "CIS",
@@ -2996,8 +2934,15 @@
     "sources": [
       "PLOS ONE"
     ],
-    "theme": "health",
+    "theme": "other",
     "uses": [
+      {
+        "program": "CCHS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Conclusion"
+      },
       {
         "program": "CHMS",
         "precision": "range",
@@ -3006,12 +2951,7 @@
         "evidenceLocation": "Abstract > Data and methods"
       }
     ],
-    "mentions": [
-      {
-        "program": "CCHS",
-        "evidenceLocation": "Conclusion"
-      }
-    ]
+    "mentions": []
   },
   {
     "id": "doi:10.1371/journal.pone.0260160",
@@ -4233,52 +4173,6 @@
     "mentions": []
   },
   {
-    "id": "doi:10.3917/esp.148.0017",
-    "title": "Le logement, facteur de sécurisation pour des classes moyennes fragilisées ?",
-    "doi": "10.3917/esp.148.0017",
-    "url": "https://doi.org/10.3917/esp.148.0017",
-    "year": 2012,
-    "workType": "article",
-    "issuingOrganization": "Éditions Érès",
-    "sources": [
-      "OpenAlex"
-    ],
-    "theme": "digital society",
-    "uses": [
-      {
-        "program": "LFS",
-        "precision": "program_only",
-        "cycles": [],
-        "cycleText": "",
-        "evidenceLocation": "Abstract"
-      }
-    ],
-    "mentions": []
-  },
-  {
-    "id": "doi:10.3917/machr1.073.0078",
-    "title": "Morphologie sociale de la banlieue-est de Beyrouth",
-    "doi": "10.3917/machr1.073.0078",
-    "url": "https://doi.org/10.3917/machr1.073.0078",
-    "year": 1976,
-    "workType": "article",
-    "issuingOrganization": "Maghreb - Machrek",
-    "sources": [
-      "OpenAlex"
-    ],
-    "theme": "education",
-    "uses": [
-      {
-        "program": "LFS",
-        "precision": "program_only",
-        "cycles": [],
-        "cycleText": "",
-        "evidenceLocation": "Abstract"
-      }
-    ],
-    "mentions": []
-  },
-  {
     "id": "doi:10.3934/publichealth.2014.2.84",
     "title": "Mental Health Service Utilization among Students and Staff in 18 Months Following Dawson College Shooting",
     "doi": "10.3934/publichealth.2014.2.84",
@@ -4298,29 +4192,6 @@
           "2002"
         ],
         "cycleText": "2002",
-        "evidenceLocation": "Abstract"
-      }
-    ],
-    "mentions": []
-  },
-  {
-    "id": "doi:10.4000/12k6s",
-    "title": "Atlas sur les migrations internationales",
-    "doi": "10.4000/12k6s",
-    "url": "https://doi.org/10.4000/12k6s",
-    "year": 2009,
-    "workType": "article",
-    "issuingOrganization": "e-Migrinter",
-    "sources": [
-      "OpenAlex"
-    ],
-    "theme": "digital society",
-    "uses": [
-      {
-        "program": "CIS",
-        "precision": "program_only",
-        "cycles": [],
-        "cycleText": "",
         "evidenceLocation": "Abstract"
       }
     ],
@@ -4371,29 +4242,6 @@
           "2020"
         ],
         "cycleText": "2020",
-        "evidenceLocation": "Abstract"
-      }
-    ],
-    "mentions": []
-  },
-  {
-    "id": "doi:10.48550/arxiv.2607.17226",
-    "title": "Bayesian Seasonal Adjustment for Survey Time Series",
-    "doi": "10.48550/arxiv.2607.17226",
-    "url": "https://arxiv.org/abs/2607.17226",
-    "year": 2026,
-    "workType": "preprint",
-    "issuingOrganization": "Cornell University",
-    "sources": [
-      "OpenAlex"
-    ],
-    "theme": "digital society",
-    "uses": [
-      {
-        "program": "LFS",
-        "precision": "program_only",
-        "cycles": [],
-        "cycleText": "",
         "evidenceLocation": "Abstract"
       }
     ],
@@ -4712,29 +4560,6 @@
     "mentions": []
   },
   {
-    "id": "doi:10.5683/sp4/9eq3cw",
-    "title": "Survey of Household Spending, 2023 [Canada]",
-    "doi": "10.5683/sp4/9eq3cw",
-    "url": "https://doi.org/10.5683/sp4/9eq3cw",
-    "year": 2026,
-    "workType": "dataset",
-    "issuingOrganization": "Borealis",
-    "sources": [
-      "OpenAlex"
-    ],
-    "theme": "digital society",
-    "uses": [
-      {
-        "program": "SHS",
-        "precision": "program_only",
-        "cycles": [],
-        "cycleText": "",
-        "evidenceLocation": "Abstract"
-      }
-    ],
-    "mentions": []
-  },
-  {
     "id": "doi:10.5683/sp4/amucjl",
     "title": "Enquête sur la population active, juillet 2026 [Canada]",
     "doi": "10.5683/sp4/amucjl",
@@ -4913,7 +4738,7 @@
     "sources": [
       "OpenAlex"
     ],
-    "theme": "other",
+    "theme": "health",
     "uses": [
       {
         "program": "CHMS",

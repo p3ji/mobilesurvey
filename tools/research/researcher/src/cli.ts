@@ -50,6 +50,9 @@ async function main() {
         jobs += q.seed(source, model); works++;
       }
       console.log(JSON.stringify({ worksRead: works, jobsAdded: jobs }));
+    } else if (command === 'reprocess-deterministic' || (command === 'run-deterministic' && (args.includes('--all') || args.includes('--reprocess')))) {
+      const res = q.reprocessDeterministic();
+      console.log(JSON.stringify({ status: 'completed', reprocessed: res.reprocessed, claimsUpdated: res.claimsUpdated }));
     } else if (command === 'run' || command === 'run-deterministic') {
       const isDeterministic = command === 'run-deterministic' || args.includes('--deterministic');
       const numArg = args.find(a => !a.startsWith('--'));

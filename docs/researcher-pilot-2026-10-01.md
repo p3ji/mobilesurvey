@@ -37,5 +37,13 @@ The pilot was expanded from 4 initial works to a production cohort of **257 outs
 - `researcherPilot.json`: 172 KB raw (669 bytes/record), **24.8 KB gzipped (96 bytes/record)**.
 - `reviewed.jsonl`: 279 KB (1.08 KB/record).
 - SQLite DB (`researcher.db`): ~2.5 MB clean core relational data; 16 MB with full raw HTTP response cache for offline replay.
-- **10,000-record projection**: ~980 KB gzipped client bundle; ~15–20 MB clean SQLite database; ~20–25 MB in Supabase; ~4–8 MB RAM in Qdrant Cloud.
-- **Qdrant sidecar decision**: A dedicated `researcher_publications` collection in Qdrant Cloud (~5.6% of existing 177k variable collection) is documented in `docs/researcher-plan.md` for dual semantic topic retrieval and hard metadata faceting at scale.
+### Foreign survey disambiguation and geographic precision guardrails
+
+A user audit discovered a citation to the *Australian Bureau of Statistics Labour Force Survey* (`doi:10.48550/arxiv.2607.17226`) mistakenly classified under Statistics Canada's LFS program. A systematic investigation identified 7 foreign false positives arising from generic international survey names (*Labour Force Survey*, *General Social Survey*, *Survey of Household Spending*, and the Spanish/French acronym *EPA*), non-Unicode word boundaries (French `précisément` splitting on accented `é` to match `cis`), and biological acronym collisions.
+
+To guarantee epistemic precision:
+1. **Positive Canadian Grounding**: For generic survey names (`LFS`, `GSS`, `SHS`, and non-explicit acronyms), the work's title, passage, or quote must match positive Canadian terms (`canada`, `canadian`, `statistics canada`, provinces, territories, CMAs, CRDCN, CIHR).
+2. **Foreign Disqualification**: Explicit foreign statistical agencies (`Australian Bureau of Statistics`, `Office for National Statistics`, `INSEE`, `INE`, `BLS`, `NORC`) or jurisdictions (`Australia`, `UK`, `France`, `Spain`, `Korea`, `Beirut`) disqualify the claim unless overridden by explicit Canadian grounding in the claim quote itself. Canadian place names like *British Columbia* are protected against UK regexes.
+3. **Unicode Word Boundaries (`\p{L}`) & Case Sensitivity**: Short acronyms (`length <= 4`) require uppercase matching and surrounding statistical/survey context keywords (`survey`, `data`, `microdata`, `sample`, `cycle`, `pumf`, `rdc`, `enquête`, `données`, `échantillon`), preventing common words like `cis` from matching inside French text.
+4. **Catalogue Recalibration**: 7 foreign false positives were purged. The current verified outside cohort stands at **250 verified works** across 8 canonical programs (CCHS: 92, CHMS: 36, LFS: 28, SHS: 27, CSD: 25, CIS: 21, GSS: 18, CIUS: 16) with 0 evidence issues.
+

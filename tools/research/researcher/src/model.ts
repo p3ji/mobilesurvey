@@ -218,9 +218,39 @@ export function chunks(text: string, size = 2400, overlap = 250): string[] {
   return result;
 }
 
+export const CANADIAN_PATTERNS: RegExp[] = [
+  /\b(?:canada|canadian|canadians|canadien|canadienne|canadiens|canadiennes)\b/iu,
+  /\b(?:statistics\s+canada|statistique\s+canada|statcan|stat\s+can)\b/iu,
+  /\b(?:alberta|british\s+columbia|colombie-britannique|manitoba|new\s+brunswick|nouveau-brunswick)\b/iu,
+  /\b(?:newfoundland|terre-neuve|labrador|nova\s+scotia|nouvelle-écosse|ontario)\b/iu,
+  /\b(?:prince\s+edward\s+island|île-du-prince-édouard|quebec|québec|saskatchewan)\b/iu,
+  /\b(?:northwest\s+territories|territoires\s+du\s+nord-ouest|nunavut|yukon)\b/iu,
+  /\b(?:toronto|montreal|montréal|vancouver|calgary|edmonton|ottawa|winnipeg|quebec\s+city|ville\s+de\s+québec|halifax|victoria)\b/iu,
+  /\b(?:crdcn|rdrdc|cihr|irsc|sshrc|crsh|cmaj)\b/iu,
+];
+
+export function isCanadianGrounded(text: string): boolean {
+  return CANADIAN_PATTERNS.some(p => p.test(text));
+}
+
+export const FOREIGN_DISQUALIFIER_PATTERNS: RegExp[] = [
+  /\b(?:australian\s+bureau\s+of\s+statistics|abs\s+(?:labour|survey)|in\s+australia|australian\s+labour|australia|australian)\b/iu,
+  /\b(?:office\s+for\s+national\s+statistics|ons\s+(?:labour|survey)|in\s+the\s+uk|in\s+the\s+united\s+kingdom|au\s+royaume-uni|great\s+britain|united\s+kingdom)\b/iu,
+  /\b(?:british\s+labour\s+force|british\s+household)\b/iu,
+  /\b(?:insee|en\s+france|française?\s+(?:de\s+statistique|sur\s+l'emploi)|de\s+l'insee|france\s+métropolitaine)\b/iu,
+  /\b(?:bureau\s+of\s+labor\s+statistics|bls\s+(?:survey|data)|norc\s+(?:at\s+the\s+university|general)|u\.?s\.?\s+general\s+social\s+survey|united\s+states\s+general\s+social)\b/iu,
+  /\b(?:encuesta\s+de\s+población\s+activa|en\s+espagne|instituto\s+nacional\s+de\s+estadística|spain|spanish)\b/iu,
+  /\b(?:korean?\s+(?:household|labour|survey)|en\s+corée|korea)\b/iu,
+  /\b(?:beyrouth|beirut|direction\s+centrale\s+de\s+la\s+statistique|lebanon|liban)\b/iu,
+];
+
+export function hasForeignDisqualifier(text: string): boolean {
+  return FOREIGN_DISQUALIFIER_PATTERNS.some(p => p.test(text));
+}
+
 const inPassage = (needle: string, passage: string) => needle.length > 0 && passage.includes(needle);
 
-export function validateExtraction(raw: unknown, passage: string, candidates: SourceWork['surveyCandidates']): { value: Extraction; issues: string[] } {
+export function validateExtraction(raw: unknown, passage: string, candidates: SourceWork['surveyCandidates'], title?: string): { value: Extraction; issues: string[] } {
   if (!raw || typeof raw !== 'object') throw new Error('Extraction must be an object');
   const value = raw as Extraction;
   if (!Array.isArray(value.claims) || !Array.isArray(value.variables) || !Array.isArray(value.additionalThemes) ||
@@ -237,6 +267,16 @@ export function validateExtraction(raw: unknown, passage: string, candidates: So
     if (!inPassage(claim.surveyText, passage)) issues.push(`claim ${i}: survey wording absent`);
     const candidate = candidates.find(c => c.program === claim.program);
     if (!candidate || ![candidate.program, ...candidate.aliases].some(a => a.toLowerCase() === claim.surveyText.toLowerCase())) issues.push(`claim ${i}: unresolved survey alias`);
+    const isExplicitlyCanadian = /canad|statcan|statistics\s+canada|statistique\s+canada/iu.test(claim.surveyText);
+    if (!isExplicitlyCanadian) {
+      if (hasForeignDisqualifier(claim.quote) && !isCanadianGrounded(claim.quote)) {
+        issues.push(`claim ${i}: foreign jurisdiction disqualifier in quote`);
+      }
+      const groundingText = (title ? `${title} ` : '') + passage + ' ' + claim.quote;
+      if (!isCanadianGrounded(groundingText)) {
+        issues.push(`claim ${i}: lacks positive Canadian grounding for generic survey`);
+      }
+    }
     if (claim.precision === 'exact_cycles' && (!claim.exactCycles.length || claim.exactCycles.some(c => !inPassage(c, claim.quote)))) issues.push(`claim ${i}: unsupported exact cycle`);
     if (claim.precision === 'range' && !inPassage(claim.cycleText, claim.quote)) issues.push(`claim ${i}: unsupported range`);
     if (claim.precision === 'program_only' && claim.exactCycles.length) issues.push(`claim ${i}: program-only contains cycles`);

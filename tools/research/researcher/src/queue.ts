@@ -2,6 +2,7 @@ import { DatabaseSync } from 'node:sqlite';
 import { mkdirSync } from 'node:fs';
 import path from 'node:path';
 import { chunks, hash, PROMPT_VERSION, validateExtraction, type Extraction, type SourceWork, workId } from './model.js';
+import { extractDeterministic } from './deterministic.js';
 
 function entryIssues(issues: string[], kind: 'survey'|'variable'|'theme', index: number): string[] {
   if (kind === 'theme') return issues.filter(issue => issue.startsWith('unknown primary theme') || issue.startsWith('unknown additional theme'));
@@ -140,7 +141,7 @@ export class ResearchQueue {
       const updateJob=this.db.prepare('UPDATE job SET issues=? WHERE id=?');
       for (const job of jobs) {
         const source=JSON.parse(job.source_json) as SourceWork;
-        const {value,issues}=validateExtraction(JSON.parse(job.response_json),job.chunk,source.surveyCandidates);
+        const {value,issues}=validateExtraction(JSON.parse(job.response_json),job.chunk,source.surveyCandidates,source.title);
         updateJob.run(JSON.stringify(issues),job.id);
         const entries: Array<['survey'|'variable'|'theme',unknown,number]>=[
           ...value.claims.map((claim,index)=>['survey',claim,index] as ['survey',unknown,number]),
@@ -179,6 +180,48 @@ export class ResearchQueue {
       }
       this.db.exec('COMMIT');
       return count;
+    } catch (e) {
+      this.db.exec('ROLLBACK');
+      throw e;
+    }
+  }
+
+  reprocessDeterministic(): { reprocessed: number; claimsUpdated: number } {
+    const jobs = this.db.prepare(`SELECT id, work_id, chunk, source_json FROM job`).all() as Array<{
+      id: string; work_id: string; chunk: string; source_json: string;
+    }>;
+    let claimsUpdated = 0;
+    this.db.exec('BEGIN IMMEDIATE');
+    try {
+      const updateJob = this.db.prepare(`UPDATE job SET status='completed', issues=?, response_json=?, lease_until=0, updated_at=? WHERE id=?`);
+      const deleteClaims = this.db.prepare(`DELETE FROM claim WHERE job_id=?`);
+      const insertClaim = this.db.prepare(`INSERT OR IGNORE INTO claim(id,job_id,work_id,kind,payload_json,issues,review_status,reviewed_at) VALUES(?,?,?,?,?,?,?,?)`);
+      const now = Date.now();
+
+      for (const job of jobs) {
+        const source = JSON.parse(job.source_json) as SourceWork;
+        const result = extractDeterministic(source, job.chunk);
+        updateJob.run(JSON.stringify(result.issues), JSON.stringify(result.value), now, job.id);
+        deleteClaims.run(job.id);
+
+        const entries: Array<['survey' | 'variable' | 'theme', unknown, number]> = [
+          ...result.value.claims.map((c, index) => ['survey', c, index] as ['survey', unknown, number]),
+          ...result.value.variables.map((v, index) => ['variable', v, index] as ['variable', unknown, number]),
+          ...((result.value.primaryTheme || result.value.additionalThemes.length)
+            ? [['theme', { primary: result.value.primaryTheme, additional: result.value.additionalThemes, rationale: result.value.themeRationale }, 0] as ['theme', unknown, number]]
+            : []),
+        ];
+
+        for (const [kind, payload, index] of entries) {
+          const body = JSON.stringify(payload);
+          const scoped = entryIssues(result.issues, kind, index);
+          const status = scoped.length === 0 ? 'approved' : 'needs_review';
+          insertClaim.run(hash(`${job.id}|${kind}|${body}`), job.id, job.work_id, kind, body, JSON.stringify(scoped), status, status === 'approved' ? now : null);
+          claimsUpdated++;
+        }
+      }
+      this.db.exec('COMMIT');
+      return { reprocessed: jobs.length, claimsUpdated };
     } catch (e) {
       this.db.exec('ROLLBACK');
       throw e;

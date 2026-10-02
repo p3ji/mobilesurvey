@@ -1,4 +1,14 @@
-import { THEMES, validateExtraction, type Extraction, type Claim, type SourceWork } from './model.js';
+import {
+  THEMES,
+  validateExtraction,
+  isCanadianGrounded,
+  hasForeignDisqualifier,
+  type Extraction,
+  type Claim,
+  type SourceWork,
+} from './model.js';
+
+const SURVEY_CONTEXT_PATTERN = /\b(?:survey|surveys|data|microdata|sample|respondents?|cycles?|waves?|panel|longitudinal|cross-sectional|coefficients?|regression|estimates?|weighted|variables?|tabulations?|pumf|rdc|cohort|questionnaire|enquête|enquêtes|données|échantillons?|vagues?|statistiques?|pondération|cohorte)\b/iu;
 
 const THEME_KEYWORDS: Record<string, string[]> = {
   health: [
@@ -94,9 +104,11 @@ export function extractDeterministic(
     const sortedAliases = [...candidate.aliases].sort((a, b) => b.length - a.length);
 
     for (const alias of sortedAliases) {
-      // Whole-word boundary search
+      // Whole-word boundary search using Unicode property escapes
       const escaped = alias.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-      const regex = new RegExp(`(^|[^a-zA-Z0-9_])(${escaped})([^a-zA-Z0-9_]|$)`, 'i');
+      const isShortAcronym = alias.length <= 4 && alias === alias.toUpperCase();
+      const flags = isShortAcronym ? 'u' : 'iu';
+      const regex = new RegExp(`(^|[^\\p{L}\\p{N}_])(${escaped})([^\\p{L}\\p{N}_]|$)`, flags);
       const match = regex.exec(passage);
       if (!match) continue;
 
@@ -106,6 +118,26 @@ export function extractDeterministic(
       const matchIndex = match.index + prefix.length;
       const quote = extractSentence(passage, matchIndex, matchedAlias.length);
       const quoteLower = quote.toLowerCase();
+
+      // For short acronyms, require survey/data context words in the quote
+      if (isShortAcronym && !SURVEY_CONTEXT_PATTERN.test(quote)) {
+        continue;
+      }
+
+      // Check Canadian grounding and foreign disqualifiers for generic aliases
+      const isExplicitlyCanadian = /canad|statcan|statistics\s+canada|statistique\s+canada/iu.test(alias);
+      if (!isExplicitlyCanadian) {
+        const fullGroundingText = `${source.title ?? ''} ${passage} ${quote}`;
+        if (!isCanadianGrounded(fullGroundingText)) {
+          continue;
+        }
+        if (hasForeignDisqualifier(quote) && !isCanadianGrounded(quote)) {
+          continue;
+        }
+        if (hasForeignDisqualifier(source.title ?? '') && !isCanadianGrounded(source.title ?? '')) {
+          continue;
+        }
+      }
 
       // Determine role
       let role: Claim['role'] = 'analyzed';
@@ -195,5 +227,5 @@ export function extractDeterministic(
     variables: [],
   };
 
-  return validateExtraction(extraction, passage, source.surveyCandidates);
+  return validateExtraction(extraction, passage, source.surveyCandidates, source.title);
 }

@@ -85,4 +85,79 @@ describe('Researcher pipeline',()=>{
     expect(publicPreview([{...reviewed,id:'official-mirror',url:'https://example.org/official',issuingOrganization:'Statistics Canada'}])).toEqual([]);
     expect(publicPreview([{...reviewed,id:'indexed-external',url:'https://example.org/external',sources:[{source:'Statistics Canada',url:'https://statcan.gc.ca/index'}],issuingOrganization:'University'}])).toHaveLength(1);
   });
+  it('disambiguates generic survey names and rejects foreign statistical agencies', async () => {
+    const { extractDeterministic } = await import('../deterministic.js');
+    const lfsCandidates = [{ program: 'LFS', aliases: ['Labour Force Survey', 'LFS', 'Enquête sur la population active', 'EPA'] }];
+    const cisCandidates = [{ program: 'CIS', aliases: ['Canadian Income Survey', 'CIS', 'Enquête canadienne sur le revenu', 'ECR'] }];
+
+    // Australian Bureau of Statistics LFS
+    const ausWork: SourceWork = {
+      title: 'Bayesian Seasonal Adjustment for Survey Time Series',
+      url: 'https://arxiv.org/abs/2607.17226',
+      source: 'arxiv',
+      passage: 'Applied to 120 months of Australian Bureau of Statistics Labour Force Survey data, once sampling variance is modelled...',
+      passageLocation: 'Abstract',
+      surveyCandidates: lfsCandidates,
+    };
+    expect(extractDeterministic(ausWork, ausWork.passage).value.claims).toHaveLength(0);
+
+    // French INSEE Enquête sur la population active
+    const frWork: SourceWork = {
+      title: 'Le logement, facteur de sécurisation pour des classes moyennes fragilisées ?',
+      url: 'https://example.org/fr',
+      source: 'cairn',
+      passage: 'À l’issue d’une vaste enquête sur la population active en France, cet article montre les décalages existant...',
+      passageLocation: 'Abstract',
+      surveyCandidates: lfsCandidates,
+    };
+    expect(extractDeterministic(frWork, frWork.passage).value.claims).toHaveLength(0);
+
+    // UK Labour Force Survey
+    const ukWork: SourceWork = {
+      title: 'Male Joblessness and Job Search: Regional Perspectives in the UK, 1981–1993',
+      url: 'https://example.org/uk',
+      source: 'tandf',
+      passage: 'Using United Kingdom Labour Force Survey data for the years 1981–93, this paper examines regional unemployment...',
+      passageLocation: 'Abstract',
+      surveyCandidates: lfsCandidates,
+    };
+    expect(extractDeterministic(ukWork, ukWork.passage).value.claims).toHaveLength(0);
+
+    // Accented French word boundary (précisément should not match CIS)
+    const accentWork: SourceWork = {
+      title: 'Atlas sur les migrations internationales',
+      url: 'https://example.org/atlas',
+      source: 'openedition',
+      passage: 'À notre grande surprise, nous avons pu identifier plus précisément une dizaine de cartes régionales...',
+      passageLocation: 'Abstract',
+      surveyCandidates: cisCandidates,
+    };
+    expect(extractDeterministic(accentWork, accentWork.passage).value.claims).toHaveLength(0);
+
+    // Short acronym without survey/data context (EPA = environmental agency)
+    const epaWork: SourceWork = {
+      title: 'Air Quality Standards and Industrial Emissions',
+      url: 'https://example.org/epa',
+      source: 'journal',
+      passage: 'The EPA issued new federal guidelines on industrial sulfur dioxide emissions yesterday in Ottawa, Canada.',
+      passageLocation: 'Abstract',
+      surveyCandidates: lfsCandidates,
+    };
+    expect(extractDeterministic(epaWork, epaWork.passage).value.claims).toHaveLength(0);
+
+    // Legitimate Canadian Labour Force Survey
+    const canLfsWork: SourceWork = {
+      title: "Nova Scotia's Labour Market: Assessing Job Quality and Precarity",
+      url: 'https://example.org/ns-labour',
+      source: 'ccpa',
+      passage: 'We analyze microdata from the 2024 Labour Force Survey conducted by Statistics Canada to construct an Employment Precarity Index.',
+      passageLocation: 'Methodology, p. 4',
+      surveyCandidates: lfsCandidates,
+    };
+    const canLfsResult = extractDeterministic(canLfsWork, canLfsWork.passage);
+    expect(canLfsResult.value.claims).toHaveLength(1);
+    expect(canLfsResult.value.claims[0]!.program).toBe('LFS');
+    expect(canLfsResult.value.claims[0]!.exactCycles).toEqual(['2024']);
+    expect(canLfsResult.issues).toEqual([]);
+  });
 });
