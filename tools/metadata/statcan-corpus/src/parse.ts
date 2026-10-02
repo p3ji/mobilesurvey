@@ -186,7 +186,8 @@ function collectLabelledFields(rows: readonly string[]): Map<string, string> {
       // Terminators: Index, Appendix, Table of contents, or dot-leader index rows mean the variable block has ended
       if (
         /^(?:(?:Topical|Alphabetical|Variable)?\s*Index|Index\s+(?:th[ée]matique|alphab[ée]tique)|Appendix|Annexe|Table\s+of\s+Contents|Section\s*:)\b/i.test(text) ||
-        /\.{4,}\s*\d+$/.test(text)
+        /\.{4,}\s*\d+$/.test(text) ||
+        /\.{5,}/.test(text)
       ) {
         currentKey = undefined;
         break;
@@ -221,8 +222,8 @@ function collectLabelledFields(rows: readonly string[]): Map<string, string> {
         labelMatches(LABELS.universe, currentKey) ||
         labelMatches(LABELS.coverage, currentKey)
       ) {
-        // Question text should not accumulate endless lines (max 4 continuation lines)
-        if (labelMatches(LABELS.questionText, currentKey) && fields.get(currentKey)!.length >= 5) {
+        // Question text should not accumulate endless lines (allow up to 25 continuation lines for statutory preambles and batteries)
+        if (labelMatches(LABELS.questionText, currentKey) && fields.get(currentKey)!.length >= 25) {
           currentKey = undefined;
           continue;
         }
@@ -239,7 +240,7 @@ function collectLabelledFields(rows: readonly string[]): Map<string, string> {
       if (i === 0) {
         text = line;
       } else if (/[A-Za-zÀ-ÿ]-$/.test(text)) {
-        text += line;
+        text = text.slice(0, -1) + line;
       } else {
         text += ' ' + line;
       }
@@ -617,12 +618,23 @@ function parseCollection(doc: ExtractedDoc): Array<Omit<CorpusVariable, 'recordI
         if (/^(?:FREQ|WTD|Response|R[ée]ponse)\b/i.test(text) || /^Page\s+\d+/i.test(text)) continue;
         prose.push(text);
       }
+      let proseText = '';
+      for (let i = 0; i < prose.length; i++) {
+        const line = prose[i]!.trim();
+        if (i === 0) {
+          proseText = line;
+        } else if (/[A-Za-zÀ-ÿ]-$/.test(proseText)) {
+          proseText = proseText.slice(0, -1) + line;
+        } else {
+          proseText += ' ' + line;
+        }
+      }
       return makeVariable(doc.file, block.page, {
         name,
         position: field([head], LABELS.position),
         length: field([head], LABELS.length),
         collectionName: field(block.rows, LABELS.collectionName),
-        questionText: prose.length > 0 ? prose.join(' ') : undefined,
+        questionText: proseText !== '' ? proseText : undefined,
         universe: field(block.rows, LABELS.coverage),
         note: field(block.rows, LABELS.note),
         codes,

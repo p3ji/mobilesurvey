@@ -450,24 +450,48 @@ export function isProcessVariable(variable: {
   name: string;
   concept?: string | null;
   note?: string | null;
+  question_text?: string | null;
+  survey_group?: string | null;
 }): boolean {
   const name = variable.name.trim().toUpperCase();
   const concept = (variable.concept ?? '').toLowerCase().trim();
   const note = (variable.note ?? '').toLowerCase().trim();
+  const questionText = (variable.question_text ?? '').toLowerCase().trim();
+  const surveyGroup = (variable.survey_group ?? '').toUpperCase().trim();
+
+  // Guard: Never mark methamphetamine as process
+  if (
+    /methamphetamine|m[eé]thamph[eé]tamine|amphetamine/.test(concept) ||
+    /methamphetamine|m[eé]thamph[eé]tamine|amphetamine/.test(questionText)
+  ) {
+    return false;
+  }
 
   // 1. Name patterns: weights, IDs, flags, imputation variables
-  if (
-    /^(WTS?_|WTM_|WT_|WGHT|BOOT|BSW|FWT|REPWT|FWEIGHT|HWEIGHT|WT[0-9]+|WTBS|WTPS|WVCBS|SPFWT|BWT|SAMPLEID|PERSONID|MASTERID|HHID|RECID|VERDATE|REFPER|RECORDID|CASEID|USERID|FORMID|PUMFID|BATCHID|STRAT|FRAME|SEQNUM|IDENT|DO[A-Z]{3}|ADM_|SAM_|INT_|COL_|MET_|SURV|DOF|FLG_|FLAG_|IF_|IMP_|QFLG_)/i.test(name) ||
-    /^I[0-9]{4,}$/i.test(name) ||
-    /(_F|_FLG)$/i.test(name)
-  ) return true;
+  const isNameProcess =
+    /^(WTPM|WTMP|WTHM|FINALWT|WGT|WEIGHT)$/i.test(name) ||
+    /^(WTS?_|WTM_|WT_|WGHT|BOOT|BSW|FWT|REPWT|FWEIGHT|HWEIGHT|WT[0-9]+|WTBS|WTPS|WVCBS|SPFWT|BWT|SAMPLEID|PERSONID|MASTERID|HHID|RECID|VERDATE|REFPER|RECORDID|CASEID|USERID|FORMID|PUMFID|BATCHID|STRAT|FRAME|SEQNUM|IDENT|DO[A-Z]{3}|SAM_|INT_|COL_|SURV|DOF|FLG|FLAG|IF_|QFLG_)/i.test(name) ||
+    /^ADM_[A-Z]/i.test(name) ||
+    (/^ADM_/i.test(name) && surveyGroup.startsWith('CCHS')) ||
+    /^I[0-9]+$/i.test(name) ||
+    /^IMP[0-9]+/i.test(name) ||
+    /(_F|_FLG|_FLAG|FL[0-9]*)$/i.test(name) ||
+    /^(STATUS|SNAICS|INSTANCE|CONTACT)$/i.test(name);
 
-  // 2. Concept / Note patterns: weights, imputation flags, quality flags
+  if (isNameProcess) {
+    // Protect immigration questions like IMP_01B, IMP_10 from accidental match
+    if (/^IMP_/i.test(name) && /immigra|citizen|born/.test(concept)) return false;
+    return true;
+  }
+
+  // 2. Concept / Note / QuestionText patterns: weights, imputation flags, quality flags
   if (
     /\b(sampling weight|sample weight|bootstrap|poids [eé]chantillon|share weight|master weight|survey weight|final weight|replicate weights?|poids r[eé]plique|inclusion flag|imputation flag|imputation|allocation flag|quality flag|data quality flag|status flag|edit flag|indicateur d[''’]imputation|drapeau d[''’]imputation|indicateur)\b/i.test(concept) ||
     /^imputation\b/i.test(concept) ||
     /[-–—]\s*\(F\)|\(F\)$/i.test(concept) ||
-    /\b(imputation flag|indicateur d[''’]imputation)\b/i.test(note)
+    /\b(imputation flag|indicateur d[''’]imputation)\b/i.test(note) ||
+    /\b(imputation flag|indicateur d[''’]imputation|is imputed|sont imput[eé]e?s?)\b/i.test(questionText) ||
+    /^imputation\b/i.test(questionText)
   ) return true;
 
   return false;

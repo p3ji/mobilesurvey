@@ -8,7 +8,7 @@ security invoker
 set search_path = public
 as $$
   select v.record_id,
-         corpus_variable_role(v.name, v.concept, v.note, v.survey_group) as role
+         corpus_variable_role(v.name, v.concept, v.note, v.survey_group, v.question_text) as role
     from corpus_variable v
    where v.record_id = any(p_record_ids);
 $$;

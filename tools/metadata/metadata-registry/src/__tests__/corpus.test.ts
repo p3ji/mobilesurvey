@@ -535,12 +535,19 @@ describe('isProcessVariable', () => {
     expect(isProcessVariable({ name: 'WTS_M', concept: 'Sampling weight' })).toBe(true);
     expect(isProcessVariable({ name: 'BSW_001', concept: 'Bootstrap replicate weight' })).toBe(true);
     expect(isProcessVariable({ name: 'WTBS_01', concept: 'Poids réplique' })).toBe(true);
+    expect(isProcessVariable({ name: 'WTPM', concept: null })).toBe(true);
+    expect(isProcessVariable({ name: 'FINALWT', concept: null })).toBe(true);
   });
 
   it('detects identifiers and collection paradata', () => {
     expect(isProcessVariable({ name: 'SAMPLEID', concept: 'Sample identifier' })).toBe(true);
     expect(isProcessVariable({ name: 'ADM_STATUS', concept: 'Interview status' })).toBe(true);
+    expect(isProcessVariable({ name: 'ADM_040', survey_group: 'CCHS_ESCC' })).toBe(true);
     expect(isProcessVariable({ name: 'DOHWT', concept: 'Inclusion flag' })).toBe(true);
+    expect(isProcessVariable({ name: 'FLAGRR', concept: 'Imputation flag for INC' })).toBe(true);
+    expect(isProcessVariable({ name: 'PVTI01', question_text: 'Imputation Flag - Standard Score for PPVT-R' })).toBe(true);
+    expect(isProcessVariable({ name: 'IMP100R', question_text: 'Flag indicating whether or not the value of SEX is imputed.' })).toBe(true);
+    expect(isProcessVariable({ name: 'I101', concept: null })).toBe(true);
   });
 
   it('does not classify substantive survey questions as process variables', () => {
@@ -548,5 +555,9 @@ describe('isProcessVariable', () => {
     expect(isProcessVariable({ name: 'C010005', concept: 'Q1' })).toBe(false);
     expect(isProcessVariable({ name: 'ONL_SHOP', concept: 'Online shopping' })).toBe(false);
     expect(isProcessVariable({ name: 'FSC_15', concept: 'Food security' })).toBe(false);
+    expect(isProcessVariable({ name: 'ADM_005A', concept: 'Physical aids - Use - Cane', survey_group: 'CSD_ECI_2017' })).toBe(false);
+    expect(isProcessVariable({ name: 'MET_05', concept: 'Used or tried amphetamines or methamphetamine - ever' })).toBe(false);
+    expect(isProcessVariable({ name: 'IMP_10', concept: 'In what year PMK first came to Canada to live' })).toBe(false);
+    expect(isProcessVariable({ name: 'IMP_01B', concept: 'Place of birth of person - In Canada' })).toBe(false);
   });
 });

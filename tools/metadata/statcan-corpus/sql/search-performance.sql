@@ -46,7 +46,8 @@ create or replace function corpus_variable_role(
   p_name text,
   p_concept text,
   p_note text,
-  p_survey_group text
+  p_survey_group text,
+  p_question_text text
 )
 returns text
 language sql
@@ -55,13 +56,22 @@ parallel safe
 as $$
   select case
     -- 1. Origin: process / paradata / weights / system identifiers / imputation flags
-    when p_name ~* '^(WTS?_|WTM_|WT_|WGHT|BOOT|BSW|FWT|REPWT|FWEIGHT|HWEIGHT|WT[0-9]+|WTBS|WTPS|WVCBS|SPFWT|BWT|SAMPLEID|PERSONID|MASTERID|HHID|RECID|VERDATE|REFPER|RECORDID|CASEID|USERID|FORMID|PUMFID|BATCHID|STRAT|FRAME|SEQNUM|IDENT|DO[A-Z]{3}|ADM_|SAM_|INT_|COL_|MET_|SURV|DOF|FLG_|FLAG_|IF_|IMP_|QFLG_)'
-      or p_name ~* '^I[0-9]{4,}$'
-      or p_name ~* '(_F|_FLG)$'
+    when (
+      p_name ~* '^(WTPM|WTMP|WTHM|FINALWT|WGT|WEIGHT)$'
+      or p_name ~* '^(WTS?_|WTM_|WT_|WGHT|BOOT|BSW|FWT|REPWT|FWEIGHT|HWEIGHT|WT[0-9]+|WTBS|WTPS|WVCBS|SPFWT|BWT|SAMPLEID|PERSONID|MASTERID|HHID|RECID|VERDATE|REFPER|RECORDID|CASEID|USERID|FORMID|PUMFID|BATCHID|STRAT|FRAME|SEQNUM|IDENT|DO[A-Z]{3}|SAM_|INT_|COL_|SURV|DOF|FLG|FLAG|IF_|QFLG_)'
+      or (p_name ~* '^ADM_' and coalesce(p_survey_group, '') ~* '^CCHS')
+      or p_name ~* '^I[0-9]+$'
+      or p_name ~* '^IMP[0-9]+'
+      or p_name ~* '(_F|_FLG|_FLAG|FL[0-9]*)$'
+      or p_name ~* '^(STATUS|SNAICS|INSTANCE|CONTACT)$'
       or coalesce(p_concept, '') ~* '(^|\y)(sampling weight|sample weight|bootstrap|poids [eé]chantillon|share weight|master weight|survey weight|final weight|replicate weights?|poids r[eé]plique|inclusion flag|imputation flag|imputation|allocation flag|quality flag|data quality flag|status flag|edit flag|indicateur d[\''’]imputation|drapeau d[\''’]imputation|indicateur)(\y|$)|[-–—]\s*\(F\)|\(F\)$'
       or coalesce(p_concept, '') ~* '^imputation\b'
       or coalesce(p_note, '') ~* '\b(imputation flag|indicateur d[\''’]imputation)\b'
-      then 'process'
+      or coalesce(p_question_text, '') ~* '\b(imputation flag|indicateur d[\''’]imputation|is imputed|sont imput[eé]e?s?)\b|^imputation\b'
+    )
+    and coalesce(p_concept, '') !~* '(methamphetamine|m[eé]thamph[eé]tamine|amphetamine|immigra|citizen|born)'
+    and coalesce(p_question_text, '') !~* '(methamphetamine|m[eé]thamph[eé]tamine|amphetamine)'
+    then 'process'
 
     -- 2. Derivation: derived / recoded / PUMF grouped
     when coalesce(p_concept, '') ~* '(^|\y)(DV\s*[-–—:]|derived variable|\(D\)|\(G\)|grouped|group[eé]e?s?)|[-–—]\s*(derived|\(D\)|\(G\)|grouped|group[eé]e?s?)|\(D\)$'
@@ -82,6 +92,21 @@ as $$
     -- 4. Default: collected
     else 'collected'
   end;
+$$;
+grant execute on function corpus_variable_role(text, text, text, text, text) to anon;
+
+create or replace function corpus_variable_role(
+  p_name text,
+  p_concept text,
+  p_note text,
+  p_survey_group text
+)
+returns text
+language sql
+immutable
+parallel safe
+as $$
+  select corpus_variable_role(p_name, p_concept, p_note, p_survey_group, null);
 $$;
 grant execute on function corpus_variable_role(text, text, text, text) to anon;
 
@@ -190,9 +215,9 @@ as $$
             and (
                   case
                     when role_filter is not null and role_filter <> 'all'
-                      then corpus_variable_role(v.name, v.concept, v.note, v.survey_group) = role_filter
+                      then corpus_variable_role(v.name, v.concept, v.note, v.survey_group, v.question_text) = role_filter
                     when coalesce(hide_process, false)
-                      then corpus_variable_role(v.name, v.concept, v.note, v.survey_group) <> 'process'
+                      then corpus_variable_role(v.name, v.concept, v.note, v.survey_group, v.question_text) <> 'process'
                     else true
                   end
                 )

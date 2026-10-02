@@ -76,9 +76,9 @@ as $$
        ))
        and (case
          when role_filter is not null and role_filter <> 'all'
-           then corpus_variable_role(v.name, v.concept, v.note, v.survey_group) = role_filter
+           then corpus_variable_role(v.name, v.concept, v.note, v.survey_group, v.question_text) = role_filter
          when coalesce(hide_process, false)
-           then corpus_variable_role(v.name, v.concept, v.note, v.survey_group) <> 'process'
+           then corpus_variable_role(v.name, v.concept, v.note, v.survey_group, v.question_text) <> 'process'
          else true end)
   ),
   ranked as (

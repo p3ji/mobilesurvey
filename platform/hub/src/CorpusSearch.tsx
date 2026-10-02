@@ -162,10 +162,10 @@ function CorpusHit({
   const label =
     (hit.entry.ddi.label as Record<string, string> | undefined)?.[meta.lang === 'fr' ? 'fr' : 'en'] ??
     meta.variableName;
-  const classification = classifyHit(meta, label);
   const question = (hit.entry.ddi.description as Record<string, string> | undefined)?.[
     meta.lang === 'fr' ? 'fr' : 'en'
   ];
+  const classification = classifyHit(meta, label, question);
   const isSelectAll = /\b(select\s+all|mark\s+all|cochez\s+toutes|sélectionnez\s+toutes)\b/i.test(
     `${meta.note ?? ''} ${question ?? ''} ${label ?? ''}`
   );
@@ -174,6 +174,15 @@ function CorpusHit({
     concept: label,
     question_text: question,
   });
+
+  const renderedQuestion = useMemo(() => {
+    if (!question || question === label) return undefined;
+    const trimmedQ = question.trim();
+    if (/[:\-\u2013\u2014]$/.test(trimmedQ) && label && !trimmedQ.toLowerCase().includes(label.toLowerCase())) {
+      return `${trimmedQ} — ${label}`;
+    }
+    return question;
+  }, [question, label]);
 
   return (
     <article className="cs-hit">
@@ -220,7 +229,7 @@ function CorpusHit({
       </div>
 
       <p className="cs-hit__label">{label}</p>
-      {question !== undefined && question !== label && <p className="cs-hit__question">{question}</p>}
+      {renderedQuestion !== undefined && <p className="cs-hit__question">{renderedQuestion}</p>}
 
       {inputs.length > 0 && (
         <div className="cs-hit__lineage">
@@ -497,9 +506,18 @@ export function CorpusSearch({
             (h.entry.ddi.label as Record<string, string> | undefined)?.[
               meta.lang === 'fr' ? 'fr' : 'en'
             ] ?? meta.variableName;
-          const classification = classifyHit(meta, label);
+          const question = (h.entry.ddi.description as Record<string, string> | undefined)?.[
+            meta.lang === 'fr' ? 'fr' : 'en'
+          ];
+          const classification = classifyHit(meta, label, question);
           if (classification.role === 'process') return false;
-          if (isProcessVariable({ name: meta.variableName, concept: label, note: meta.note })) return false;
+          if (isProcessVariable({
+            name: meta.variableName,
+            concept: label,
+            note: meta.note,
+            question_text: question,
+            survey_group: meta.surveyGroup,
+          })) return false;
           return true;
         });
       }
