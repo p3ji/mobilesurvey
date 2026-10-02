@@ -17,19 +17,19 @@ The reviewed JSONL remains in ignored `tools/research/researcher/out/reviewed.js
 
 ## Expansion: 2025–2026 full cohort, CSD/SHS intake, and grey literature database (2026-10-01)
 
-The pilot was expanded from 4 initial works to a production cohort of **257 outside verified works** analyzing Statistics Canada survey microdata:
-- **131 works published in the last year (2025–2026)** discovered via OpenAlex.
-- **27 Canadian policy and NGO reports** across municipal and provincial public health bodies (*Toronto Public Health, Public Health Ontario, BC Centre for Disease Control, Ottawa Public Health, INSPQ*) and policy non-profits (*PROOF, Food Banks Canada, CCPA, Wellesley Institute, Maytree, C.D. Howe Institute, Fraser Institute, CMHA, IRPP*).
+The pilot was expanded from 4 initial works to a production cohort of **326 outside verified works** analyzing Statistics Canada survey microdata:
+- **130 works published in the last year (2025–2026)** discovered via OpenAlex.
+- **34 Canadian policy and NGO reports** across municipal and provincial public health bodies (*Toronto Public Health, Public Health Ontario, BC Centre for Disease Control, Ottawa Public Health, INSPQ*) and policy non-profits (*Campaign 2000, Parkland Institute, Vanier Institute, IRIS, Canadian Women's Foundation, PROOF, Food Banks Canada, CCPA, Wellesley Institute, Maytree, C.D. Howe Institute, Fraser Institute, CMHA, IRPP*).
 - **8 Canonical Survey Programs Classified**:
-  - CCHS: 91 publications
+  - CCHS: 97 publications
+  - GSS: 58 publications
+  - LFS: 57 publications
   - CHMS: 36 publications
-  - LFS: 35 publications
-  - SHS: 28 publications
+  - SHS: 31 publications
   - CSD: 25 publications
-  - CIS: 22 publications
-  - GSS: 18 publications
+  - CIS: 23 publications
   - CIUS: 16 publications
-- **100% verified evidence grounding**: 456 survey claims audited with zero evidence issues.
+- **100% verified evidence grounding**: 584 jobs audited with zero evidence issues.
 - **Interactive UI**: `#researcher` screen augmented with document type filters (all / reports / articles / preprints), 2025–2026 year window toggle, and an interactive survey quick stats panel featuring clickable spark-histograms for analyzed survey cycles and publication release years.
 
 ### Measured storage and 10,000-record sizing

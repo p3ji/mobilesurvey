@@ -76,7 +76,7 @@ export function candidateToSourceWork(
 ): SourceWork | null {
   if (isStatisticsCanadaPublication(candidate)) return null;
 
-  const targetSurveys = options.targetSurveys ?? ['CIUS', 'CCHS', 'CHMS'];
+  const targetSurveys = options.targetSurveys ?? Object.keys(CANONICAL_SURVEYS);
   const passageText = (candidate.passage && candidate.passage.length >= 20)
     ? candidate.passage
     : (candidate.abstract && candidate.abstract.length >= 40)

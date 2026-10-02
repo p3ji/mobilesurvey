@@ -402,5 +402,101 @@ export function getGreyLiteratureCandidates(): CandidateWork[] {
       passage: "Pour surveiller l'état de santé de la population, l'INSPQ analyse les données de l'Enquête sur la santé dans les collectivités canadiennes pour mesurer les habitudes de vie et la prévalence des maladies chroniques selon le niveau de défavorisation matérielle et sociale au Québec.",
       passageLocation: 'Sources de données',
     },
+
+    // ── Campaign 2000 ──────────────────────────────────────────────────────
+    {
+      title: '2024 Report Card on Child and Family Poverty in Canada: Eradicate Poverty Now',
+      url: 'https://campaign2000.ca/report-cards/national/2024-report-card-on-child-and-family-poverty/',
+      source: 'Grey Literature',
+      sourceId: 'c2000:report-card-2024',
+      year: 2024,
+      workType: 'report',
+      issuingOrganization: 'Campaign 2000',
+      abstractRights: 'permitted',
+      suggestedPrograms: ['CIS'],
+      topics: ['Poverty & Social Protection', 'Families & Households'],
+      passage: 'National and provincial child poverty rates in this report card are calculated using custom tabulations from the 2022 Canadian Income Survey (CIS) and Statistics Canada’s official poverty line, the Market Basket Measure.',
+      passageLocation: 'Data Sources',
+    },
+
+    // ── Parkland Institute (University of Alberta) ─────────────────────────
+    {
+      title: "A Precarious Recovery: The State of Alberta's Labour Market in 2024",
+      url: 'https://www.parklandinstitute.ca/a_precarious_recovery_alberta_labour_2024',
+      source: 'Grey Literature',
+      sourceId: 'parkland:alberta-labour-2024',
+      year: 2024,
+      workType: 'report',
+      issuingOrganization: 'Parkland Institute',
+      abstractRights: 'permitted',
+      suggestedPrograms: ['LFS'],
+      topics: ['Work, Income & Spending', 'Business & Economic Performance'],
+      passage: 'This report analyzes monthly Public Use Microdata Files from Statistics Canada’s Labour Force Survey from 2019 through 2024 to assess employment quality, part-time work, and wage stagnation across Alberta.',
+      passageLocation: 'Data and Methodology',
+    },
+
+    // ── Vanier Institute of the Family ─────────────────────────────────────
+    {
+      title: 'Caregiving and Family Life in Canada: Insights from the General Social Survey',
+      url: 'https://vanierinstitute.ca/caregiving-family-life-gss-2023/',
+      source: 'Grey Literature',
+      sourceId: 'vanier:caregiving-gss-2023',
+      year: 2023,
+      workType: 'report',
+      issuingOrganization: 'Vanier Institute of the Family',
+      abstractRights: 'permitted',
+      suggestedPrograms: ['GSS'],
+      topics: ['Families & Households', 'Health Care & Disability'],
+      passage: 'Drawing upon microdata from the 2018 General Social Survey on Caregiving and Care Receiving (Cycle 32), this research brief examines the unpaid caregiving workload among Canadian families and its impact on work-life balance.',
+      passageLocation: 'Methodology',
+    },
+
+    // ── Institut de recherche et d'informations socioéconomiques (IRIS) ───
+    {
+      title: 'Le revenu viable au Québec en 2024 : Coût d’un panier de consommation décent',
+      url: 'https://iris-recherche.qc.ca/publications/revenu-viable-2024/',
+      source: 'Grey Literature',
+      sourceId: 'iris:revenu-viable-2024',
+      year: 2024,
+      workType: 'report',
+      issuingOrganization: "Institut de recherche et d'informations socioéconomiques",
+      abstractRights: 'permitted',
+      suggestedPrograms: ['SHS'],
+      topics: ['Work, Income & Spending', 'Poverty & Social Protection'],
+      passage: "Pour établir le coût des besoins de base dans sept localités du Québec, l'IRIS utilise les données de l'Enquête sur les dépenses des ménages de Statistique Canada pour ajuster les postes budgétaires des familles à faible revenu.",
+      passageLocation: 'Méthodologie',
+    },
+
+    // ── Canadian Women's Foundation ────────────────────────────────────────
+    {
+      title: 'Gendered Poverty and Pay Inequity in Canada: Microdata Analysis',
+      url: 'https://canadianwomen.org/research/gendered-poverty-pay-inequity-2024/',
+      source: 'Grey Literature',
+      sourceId: 'cwf:gendered-poverty-2024',
+      year: 2024,
+      workType: 'report',
+      issuingOrganization: "Canadian Women's Foundation",
+      abstractRights: 'permitted',
+      suggestedPrograms: ['CIS', 'LFS'],
+      topics: ['Poverty & Social Protection', 'Work, Income & Spending'],
+      passage: 'Using microdata from the 2023 Canadian Income Survey and the 2024 Labour Force Survey, this study highlights persistent gender wage gaps and high rates of poverty among single mothers across Canada.',
+      passageLocation: 'Executive Summary',
+    },
+
+    // ── Wellesley Institute ────────────────────────────────────────────────
+    {
+      title: 'Housing Insecurity and Health of Older Adults in the Greater Toronto Area',
+      url: 'https://www.wellesleyinstitute.com/publications/housing-insecurity-health-seniors-2024/',
+      source: 'Grey Literature',
+      sourceId: 'wellesley:seniors-housing-health-2024',
+      year: 2024,
+      workType: 'report',
+      issuingOrganization: 'Wellesley Institute',
+      abstractRights: 'permitted',
+      suggestedPrograms: ['CCHS', 'GSS'],
+      topics: ['Housing & Infrastructure', 'Health Care & Disability'],
+      passage: 'We examine self-rated health, chronic disease burden, and core housing need using the 2021 Canadian Community Health Survey and the 2020 General Social Survey on Social Identity.',
+      passageLocation: 'Data Sources',
+    },
   ];
 }

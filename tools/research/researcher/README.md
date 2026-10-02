@@ -1,6 +1,6 @@
 # Researcher local extraction pipeline
 
-This package stages outside publications that use Statistics Canada data for human review. Its SQLite database is local staging, not the public catalogue. Only approved `analyzed` claims appear in the export. The Hub currently shows a three-work static snapshot generated from reviewed claims; no hosted Researcher database is connected yet. See the [pilot report](../../../docs/researcher-pilot-2026-10-01.md).
+This package stages outside publications that use Statistics Canada data for review. Its SQLite database is local staging, not the public catalogue. Only verified `analyzed` claims appear in the export. The Hub currently shows a rights-safe static snapshot of 250 reviewed outside works; no hosted Researcher database is connected yet. See the [initial pilot report](../../../docs/researcher-pilot-2026-10-01.md) and the [source expansion plan](../../../docs/researcher-plan.md#source-expansion-and-monitoring). The current adapters are one-shot CLI operations with a response cache; recurring refresh, source watermarks, and health monitoring are planned next.
 
 ## Input
 
