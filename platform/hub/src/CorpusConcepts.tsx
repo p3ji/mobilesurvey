@@ -17,7 +17,7 @@
  * redefined mid-series is exactly the thing a researcher needs to notice before comparing across
  * cycles — and exactly the thing that is invisible in a list of search results.
  */
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   type CorpusCode,
   type CorpusConceptContinuity,
@@ -28,7 +28,6 @@ import {
 import { CorpusDocumentReader } from './CorpusDocument.js';
 import './concept-continuity.css';
 
-const DEBOUNCE_MS = 250;
 const PAGE_SIZE = 25;
 
 const formatInt = (n: number): string => n.toLocaleString('en-CA');
@@ -234,8 +233,6 @@ function Timeline({
 }
 
 export function CorpusConcepts({ source, initialConceptId }: { source: SupabaseCorpusSource; initialConceptId?: string | null }) {
-  const [query, setQuery] = useState('');
-  const [debounced, setDebounced] = useState('');
   const [changedOnly, setChangedOnly] = useState(false);
   const [minYears, setMinYears] = useState(2);
   const [page, setPage] = useState(0);
@@ -246,7 +243,6 @@ export function CorpusConcepts({ source, initialConceptId }: { source: SupabaseC
   const [error, setError] = useState<string | null>(null);
   const [open, setOpen] = useState<CorpusConceptualVariable | null>(null);
   const [reading, setReading] = useState<{ path: string; page: number } | null>(null);
-  const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (!initialConceptId) return;
@@ -264,14 +260,6 @@ export function CorpusConcepts({ source, initialConceptId }: { source: SupabaseC
     return () => controller.abort();
   }, [source, initialConceptId]);
 
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setDebounced(query);
-      setPage(0);
-    }, DEBOUNCE_MS);
-    return () => clearTimeout(timer);
-  }, [query]);
-
   useEffect(() => setPage(0), [changedOnly, minYears]);
 
   useEffect(() => {
@@ -279,7 +267,6 @@ export function CorpusConcepts({ source, initialConceptId }: { source: SupabaseC
     setBusy(true);
     source
       .concepts({
-        q: debounced,
         minYears,
         changedOnly,
         limit: PAGE_SIZE,
@@ -302,13 +289,9 @@ export function CorpusConcepts({ source, initialConceptId }: { source: SupabaseC
         if (!controller.signal.aborted) setBusy(false);
       });
     return () => controller.abort();
-  }, [source, debounced, changedOnly, minYears, page]);
+  }, [source, changedOnly, minYears, page]);
 
   const pages = Math.ceil(total / PAGE_SIZE);
-  const onExample = useCallback((term: string) => {
-    setQuery(term);
-    inputRef.current?.focus();
-  }, []);
 
   if (reading !== null) {
     return (
@@ -348,17 +331,6 @@ export function CorpusConcepts({ source, initialConceptId }: { source: SupabaseC
         number of <em>codings</em> indicates where a series is not directly comparable.
       </p>
 
-      <div className="sr-search">
-        <input
-          ref={inputRef}
-          className="sr-search__input"
-          type="search"
-          placeholder="Filter concepts — “smoking”, “income”, “tenure”… or leave blank to browse"
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-        />
-      </div>
-
       <div className="cs-filters">
         <label className="cs-filter">
           <span className="cs-filter__label">Spanning at least</span>
@@ -392,16 +364,7 @@ export function CorpusConcepts({ source, initialConceptId }: { source: SupabaseC
       {error === null && concepts.length === 0 && !busy && (
         <div className="cs-intro">
           <p>
-            No concepts match. Try{' '}
-            {['smoking', 'income', 'marital status'].map((t, i) => (
-              <span key={t}>
-                {i > 0 && ', '}
-                <button type="button" className="cs-link" onClick={() => onExample(t)}>
-                  {t}
-                </button>
-              </span>
-            ))}
-            , or lower the year threshold.
+            No concepts match the selected filters. Try lowering the year threshold or unchecking "Coding changed between cycles".
           </p>
         </div>
       )}
