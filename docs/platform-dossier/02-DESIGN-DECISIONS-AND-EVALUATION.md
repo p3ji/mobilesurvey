@@ -126,3 +126,26 @@ The following table contrasts search retrieval precision, hit counts, and rankin
 | **Psychological Distress** (Vector) | Semantic Token Dilution | Bi-encoder cosine similarity: **`0.2894`**. | Bi-encoder cosine similarity: **`0.5250`**. | **+23.6% Cosine Similarity Boost**. |
 | **Multi-Item Battery Stems** | Card Presentation & Option Drop | Cards rendered placeholder text: *"Question 30"*, *"Question 30"*, *"Question 30"* across 15 sub-items. | Rendered: *"In the past 12 months, which of the following online activities did you engage in for personal use? — Conducted online banking activities"*. | **100% semantic clarity** on search cards without destructive database alterations. |
 
+---
+
+## 8. Decision: Hierarchical Concept Reconstruction with Epistemic Provenance
+
+### Context & Problem
+Legacy Statistics Canada SAS codebook generators (`T15-2` dictionary) enforced fixed 70-character column limits (`format label $70.`), truncating concepts across 4,018 variables. Reconstructing clipped text by simply borrowing wording from adjacent survey cycles carries high methodological risk:
+1. **Reference Window Drift**: Sibling waves often shift temporal bounds (e.g. LISA Wave 3 asked *"since January 2014"*, whereas Wave 4 asked *"since January 2016"*).
+2. **Questionnaire Evolution**: Questions that share a 70-character prefix can diverge in sub-clauses or response universes across cycles.
+3. **Reproducibility Risk**: Unannotated borrowing masks the true evidentiary provenance of the metadata.
+
+### Architectural Decision: Ground Truth Hierarchy
+We establish a formal, two-tiered reconstruction protocol:
+
+1. **Tier 1 (Authoritative Primary Source — Source PDF First):**
+   - Extraction must first target the **original PDF data dictionary for that exact cycle**. In official StatCan dictionaries (e.g. `lisa_2016_f1_T15_2_v1.pdf`), SAS appended an explicit `Note:` block: *"The concept was abbreviated due to space restrictions. Full text is as follows: [unabbreviated string]"*.
+   - If missing from the data dictionary, extraction must target the **official interview questionnaire PDF** for that cycle to verify the verbatim question stem read to respondents.
+2. **Tier 2 (Cross-Cycle Concordance Fallback):**
+   - Borrowing from adjacent cycles is permitted **only** when the exact cycle's source PDFs omit the unabbreviated text and the universe/variable name establish 1:1 identity.
+3. **Mandatory Epistemic Provenance in the Record:**
+   - Whenever text is borrowed across cycles, the database row must explicitly record the provenance:
+     `note = coalesce(note || ' ', '') || '[Reconstructed via concordance from LISA_ELIA_2018.FPM1QSPD]'`
+   - This prevents silent data mutation, alerts methodologists to borrowed wording, and guarantees full scientific reproducibility.
+
