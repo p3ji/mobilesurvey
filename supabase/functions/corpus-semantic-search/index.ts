@@ -11,6 +11,7 @@ const DEFAULT_THRESHOLD = 0.55;
 function allowedOrigin(origin: string | null): boolean {
   return (
     origin === null ||
+    origin === 'https://msurvey.peji.ca' ||
     origin === 'https://p3ji.github.io' ||
     /^http:\/\/(localhost|127\.0\.0\.1):\d+$/.test(origin)
   );

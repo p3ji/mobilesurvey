@@ -917,7 +917,13 @@ export function CorpusSearch({
             <option value="all">All surveys</option>
             {sortedSurveys.map((s) => (
               <option key={s.surveyGroup} value={s.surveyGroup}>
-                {s.surveyAcronym ?? s.surveyGroup} ({formatInt(s.variables)})
+                {s.surveyAcronym && s.surveyAcronym !== s.surveyGroup
+                  ? `${s.surveyAcronym} — ${s.surveyGroup}`
+                  : s.surveyGroup}
+                {s.yearMin !== null
+                  ? ` · ${s.yearMin}${s.yearMax !== null && s.yearMax !== s.yearMin ? `–${s.yearMax}` : ''}`
+                  : ''}
+                {` · ${formatInt(s.variables)} variables`}
               </option>
             ))}
           </select>

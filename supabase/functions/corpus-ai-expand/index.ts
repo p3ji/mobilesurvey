@@ -3,7 +3,7 @@ const MODEL = Deno.env.get('GROQ_MODEL') ?? 'qwen/qwen3.8-27b';
 const DAILY_LIMIT = 200;
 
 function allowedOrigin(origin: string | null): boolean {
-  return origin === null || origin === 'https://p3ji.github.io' ||
+  return origin === null || origin === 'https://msurvey.peji.ca' || origin === 'https://p3ji.github.io' ||
     /^http:\/\/(localhost|127\.0\.0\.1):\d+$/.test(origin);
 }
 

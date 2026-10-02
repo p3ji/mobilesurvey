@@ -287,6 +287,32 @@ describe('parseDictionary — labelled layout', () => {
       { code: '9', label: 'Not stated' },
     ]);
   });
+
+  it('joins OCHS response labels that wrap below the code column', () => {
+    const rows = [
+      'Variable Name: SMK_01 Length: 1.0 Position: 1094',
+      'Concept: Trying to or smoking cigarettes',
+      'Answer Categories Code',
+      'Yes, I tried/smoked cigarettes/cigars in the   1',
+      'past six months',
+      'Yes, I tried/smoked cigarettes/cigars but   2',
+      'not in past six mo',
+      'No, I have never tried or smoked any   3',
+      'cigarettes or cigars.',
+      'Valid skip 6',
+      'Not stated 9',
+      'Page 304 - 739   2018-01-23',
+      'Master Child file',
+    ];
+    const { variables } = parseDictionary(doc(rows), mint);
+    expect(variables[0]?.codes).toEqual([
+      { code: '1', label: 'Yes, I tried/smoked cigarettes/cigars in the past six months' },
+      { code: '2', label: 'Yes, I tried/smoked cigarettes/cigars but not in past six mo' },
+      { code: '3', label: 'No, I have never tried or smoked any cigarettes or cigars.' },
+      { code: '6', label: 'Valid skip' },
+      { code: '9', label: 'Not stated' },
+    ]);
+  });
 });
 
 describe('parseDictionary — collection layout', () => {

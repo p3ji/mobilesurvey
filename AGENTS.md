@@ -59,6 +59,7 @@
 - **New Supabase tables need explicit `GRANT select/insert/update ... TO anon`** in addition to RLS policies (older tables inherited default privileges that new tables don't get) — see DEPLOYMENT.md §§9b/9c.
 - **Knowledge Graph counts describe different stages:** 12,210 detected note references in the local census are not published derivation edges. The public lineage browser reads only `verified` Supabase links; on 2026-09-29 that is 1,183 links across 340 targets in 10 survey groups. Do not present the larger extraction count as live DAG coverage.
 - **Qdrant roles are a copy of SQL classification.** After changing `corpus_variable_role` or reloading corpus records, rerun `pnpm --filter @mobilesurvey/statcan-corpus corpus:vector:sync-roles -- --apply` and verify a dry run reports zero mismatches. The importer now fetches roles from the SQL RPC rather than classifying locally.
+- **Searcher Edge Function CORS must include `https://msurvey.peji.ca`.** The public hub runs on that custom domain; an allowlist containing only `https://p3ji.github.io` causes browser `Failed to fetch` for AI expansion and silently blocks semantic results.
 - **Exploration-only bundled surveys** (currently `lfs`) must **never** persist to Supabase — they run on local mocks but stay launchable/editable as demos. Only `demo` collects data. Drive seeding/persistence from the `collectsData` flag in the `packages/instrument-schema` bundled-survey registry, not ad-hoc id checks.
 - **Bump `demoInstrument.version` on every content change** — hub seeding refreshes the stored Supabase row only when the shipped bundle is newer (or same-version content differs); without a bump the change never reaches production. Beware the dev loop: an open hub tab's HMR can re-run the seeding effect mid-edit and write a half-edited snapshot (the content-diff check self-heals it on the next full load).
 - **`CONSENT_GEOLOCATION`/`CONSENT_CAMERA` are reserved variable names** (runtime-written sensor consent, root-scoped keys `NAME@`); sensor questions require a matching declaration in `Instrument.sensors`, and a required sensor question needs a decline path (manual fallback / optional / visibleWhen on the consent var) or validation flags a consent trap.
@@ -83,7 +84,7 @@
 
 ## Open Bugs
 *(Log bugs here as discovered; when resolved, move to Brain note → Log with root cause + fix.)*
-- *(none currently — 13 resolved bugs rotated to the Brain note Log on 2026-07-09)*
+- Searcher GSIM card badges disagree with server-side role filtering: `DSMOYRS` returns eight records under “Derived (DV) Only,” but five are badged “Question” (notably APS 2012 “DV - Daily smokers…”). Reconcile the browser classifier in `platform/hub/src/graphClassifier.ts` with `corpus_variable_role` in `tools/metadata/statcan-corpus/sql/search-performance.sql`.
 
 ## Still-binding decisions
 - **(2026-06-26)** Hosting stays GitHub Pages; Vercel/Netlify migrations evaluated and deferred (Netlify would need a base-path env var + SPA redirects).

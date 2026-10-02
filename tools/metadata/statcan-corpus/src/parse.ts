@@ -309,14 +309,29 @@ function parseLabelledCodes(rows: readonly string[]): CodeEntry[] {
   if (tableHeaderIndex === -1) return [];
 
   const codes: CodeEntry[] = [];
+  let lastCode: CodeEntry | undefined;
   for (let i = tableHeaderIndex + 1; i < rows.length; i++) {
     const row = rows[i]!.trim();
     if (row === '') continue;
-    if (/^Page\s+\d+/i.test(row) || /^Totals?\s+may\s+not/i.test(row) || /-\s*Data Dictionary/i.test(row)) continue;
+    if (/^Page\s+\d+/i.test(row) || /^Totals?\s+may\s+not/i.test(row) || /-\s*Data Dictionary/i.test(row)) {
+      lastCode = undefined;
+      continue;
+    }
     if (/^Total(?:\s+[\d.,\s]+)?$/i.test(row)) continue;
     if (ANY_LABEL.test(row) || splitLabelledRow(row).length > 0) break;
     const entry = readTwoColumnCodeRow(row);
-    if (entry !== undefined) codes.push(entry);
+    if (entry !== undefined) {
+      codes.push(entry);
+      lastCode = entry;
+    } else if (lastCode !== undefined && /^[a-zà-ÿ]/.test(row) && !CELL.test(row)) {
+      // Two-column dictionaries can wrap a label below its code (OCHS SMK_01:
+      // "Yes, I tried/smoked cigarettes/cigars in the   1" / "past six months").
+      // A lowercase, single-cell row immediately after a code is a continuation;
+      // page headers and field labels are not.
+      lastCode.label += ` ${row}`;
+    } else {
+      lastCode = undefined;
+    }
   }
   return codes;
 }
