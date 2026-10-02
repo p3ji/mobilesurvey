@@ -2,6 +2,7 @@ import { existsSync, readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { pipeline } from '@xenova/transformers';
 import { fetchVectorRoles } from './roles.js';
+import { cleanSemanticQuestion } from './cleanSemanticQuestion.js';
 
 // 1. Environment discovery
 const candidatePaths = [
@@ -86,18 +87,21 @@ async function fetchSubjectMap(): Promise<Map<string, string[]>> {
   return map;
 }
 
-// Canonical text to embed
+// Canonical text to embed with boilerplate removal
 function prepareSemanticText(row: RawVariableRow): string {
   const parts: string[] = [];
 
   if (row.concept && row.concept.trim().length > 3) {
-    parts.push(row.concept.trim());
+    const trimmedConcept = row.concept.trim();
+    if (!/^(?:q\s*\d+|question\s*\d+|section\s*[a-z]|none|null|undefined)$/i.test(trimmedConcept)) {
+      parts.push(trimmedConcept);
+    }
   }
 
   if (row.question_text && row.question_text.trim().length > 3) {
-    const qText = row.question_text.trim();
-    if (!parts.some((p) => p.toLowerCase() === qText.toLowerCase())) {
-      parts.push(`Question: ${qText}`);
+    const cleanedQ = cleanSemanticQuestion(row.question_text.trim());
+    if (cleanedQ && !parts.some((p) => p.toLowerCase() === cleanedQ.toLowerCase())) {
+      parts.push(`Question: ${cleanedQ}`);
     }
   }
 
