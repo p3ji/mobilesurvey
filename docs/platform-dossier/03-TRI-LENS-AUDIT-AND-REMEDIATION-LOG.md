@@ -115,3 +115,22 @@ Following live deployment to GitHub Pages and Supabase, an autonomous 4-lens spe
 * **Dual-Search Synchronization:** Client translates program selection into multi-group array `survey_groups: string[]`, supported in `corpusSemanticSearch.ts` and Edge Function via Qdrant's `{ key: 'survey_group', match: { any: [...] } }`.
 * **Automated Benchmark Battery:** Created `filter-modernization-suite.ts` testing 12 hypothesis cases across program hierarchy, administrative linkage, harmonized de-cluttering, paradata isolation, and semantic sidecar recall. Achieved **12/12 passed (100%)**.
 
+---
+
+## 7. Legacy SAS Codebook Concept Truncation Repair (2026-10-02)
+
+### 7.1 Problem Diagnosis
+* **Symptom:** In Searcher, `FPM1QSPD` surfaced with a truncated concept: `"Marital status: If there was a separation prior to divorce, 2nd most r"`.
+* **Root Cause Analysis:** Statistics Canada's legacy SAS codebook generation script (`T15-2` data dictionary) enforced a strict 70-character column limit (`format label $70.`) on the SAS `LABEL` metadata attribute.
+* **Corpus Scope:** Identified 51 variables across the Longitudinal and International Study of Adults (LISA Waves 3 & 4: 2016, 2018, 2020) where concept strings were cut off at exactly character 70, ending mid-phrase in fragments such as `, 2nd most r`, `, 3rd most r`, `in refer`, `in re`, `in r`, `with co`, and `relationship in`.
+
+### 7.2 Remediations Implemented & Verified
+* **Targeted SQL Patch:** Created and executed [`patch-2026-10-02-lisa-marital-concept-repair.sql`](file:///Users/pushp/Documents/Projects/mobilesurvey/tools/metadata/statcan-corpus/sql/patch-2026-10-02-lisa-marital-concept-repair.sql):
+  1. **Marital History (`FPM` Series):** Repaired `FPM1QSPD`/`FPM2QSPD` (`... 2nd/3rd most recent relationship in reference period`), `FPM1DSPD`/`FPM2DSPD` (`Separation date ... in reference period`), `FPM1QEND`/`FPM2QEND` (`How marriage ended ... in reference period`), `FPM1DMST`/`FPM2DMST` (`Marriage start date ... in reference period`), `FPMCDCCS` (`Current common-law union, Date started to live with common-law partner`), and `FPMCMNUM` (`Number of other times legally married in reference period`).
+  2. **School Attendance (`EDSAD` Series):** Standardized `EDSAD20B` and `EDSAD20C` to `"School attendance: Second/Third highest level studied for during reference period"`, repairing both the 70-char truncation and legacy double-concatenation anomalies.
+  3. **Labour Market Training (`LMT` Series):** Restored payment options from question text (`LMTNQ80B` $\rightarrow$ `My own business`, `80C` $\rightarrow$ `Myself or my family`, `80D` $\rightarrow$ `Myself but reimbursed by employer`, `80F` $\rightarrow$ `A professional association`).
+  4. **Postsecondary Financial Planning (`CHFP` Series):** Expanded saving methods (`CHFPQ20A`–`E`) and reasons for no savings (`CHFPQ15A`–`H`) to full official labels (e.g. `Registered Education Savings Plans (RESPs)`, `Tax-Free Savings Accounts (TFSAs)`, `Child will pay and/or take out loans`, etc.).
+  5. **Disability Accommodation:** Restored `PTSTUDIS` to `"Part-Time Student is Considered Full-Time Due to the Individual’s Disability"`.
+* **Automatic FTS Re-Indexing:** Simultaneously updated `search_text = replace(search_text, old_concept, new_concept)`, automatically regenerating PostgreSQL's stored `fts` tsvector index.
+* **Verification:** Confirmed 0 truncated records remaining (`count = 0`). Tested `corpus_search_sorted` for `"separation prior to divorce"`: `FPM1QSPD` and `FPM2QSPD` now rank at the top with complete, untruncated metadata cards.
+
