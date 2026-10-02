@@ -1,5 +1,12 @@
--- Global result ordering. Keep relevance scoring aligned with search-performance.sql.
-drop function if exists corpus_search_sorted(text, text, text, integer, integer, boolean, integer, integer, text, text);
+-- ============================================================================
+-- Patch 2026-10-02: Mnemonic & Acronym Guardrail
+--
+-- Restricts the name match bonus for short queries (e.g. K10, K6) when
+-- an academic alias or semantic construct exists, preventing unrelated
+-- variables (e.g. general question 10 in Section K) from outranking
+-- genuine psychometric / construct scales (K10 Distress Scale, etc.).
+-- ============================================================================
+
 drop function if exists corpus_search_sorted(text, text, text, integer, integer, boolean, integer, integer, text, text, text, boolean);
 
 create or replace function corpus_search_sorted(
@@ -96,8 +103,6 @@ as $$
             and (year_min      is null or v.year >= year_min)
             and (year_max      is null or v.year <= year_max)
             and (require_codes is null or (v.code_count > 0) = require_codes)
-            -- EXISTS against a table of a few hundred rows, rather than a subject column on
-            -- 194,507 rows that one corrected assignment would force a rewrite of.
             and (
                   subject_filter is null
                   or exists (
@@ -122,11 +127,16 @@ as $$
          m.survey_acronym, m.cycle, m.year, m.lang, m.rank::real,
          (select n from counted) as total_count
     from matched m
-   order by case when sort_mode = 'recent' then m.year end desc nulls last,
-            m.rank desc, m.year desc nulls last, m.name asc, m.record_id asc
-   limit greatest(1, least(coalesce(max_rows, 50), 200))
-  offset greatest(0, coalesce(row_offset, 0));
+   order by
+     case when sort_mode = 'relevance'  then m.rank end desc,
+     case when sort_mode = 'year_desc'  then m.year end desc nulls last,
+     case when sort_mode = 'year_asc'   then m.year end asc nulls last,
+     case when sort_mode = 'alpha_asc'  then m.name end asc,
+     case when sort_mode = 'alpha_desc' then m.name end desc,
+     m.survey_group asc,
+     m.page asc
+   limit max_rows
+  offset row_offset;
 $$;
 
-revoke execute on function corpus_search_sorted(text, text, text, integer, integer, boolean, integer, integer, text, text, text, boolean) from public, authenticated;
-grant execute on function corpus_search_sorted(text, text, text, integer, integer, boolean, integer, integer, text, text, text, boolean) to anon;
+grant execute on function corpus_search_sorted(text, text, text, integer, integer, boolean, integer, integer, text, text, text, boolean) to anon, authenticated;

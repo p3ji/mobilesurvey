@@ -215,6 +215,16 @@ function collectLabelledFields(rows: readonly string[]): Map<string, string> {
         currentKey = undefined;
         continue;
       }
+      // If unlabelled prose appears immediately after the header row (e.g. GSS Cycle 16)
+      // before any table header or code rows, treat it as question text.
+      if (
+        labelMatches(LABELS.length, currentKey) ||
+        labelMatches(LABELS.position, currentKey) ||
+        labelMatches(LABELS.variableName, currentKey)
+      ) {
+        currentKey = 'question text';
+        if (!fields.has(currentKey)) fields.set(currentKey, []);
+      }
       // Only multi-line fields accumulate continuation rows
       if (
         labelMatches(LABELS.questionText, currentKey) ||
@@ -245,7 +255,10 @@ function collectLabelledFields(rows: readonly string[]): Map<string, string> {
         text += ' ' + line;
       }
     }
-    const joined = text.trim();
+    let joined = text.trim();
+    if (/[A-Za-zÀ-ÿ]-$/.test(joined)) {
+      joined = joined.slice(0, -1).trim();
+    }
     if (joined !== '') result.set(k, joined);
   }
   return result;

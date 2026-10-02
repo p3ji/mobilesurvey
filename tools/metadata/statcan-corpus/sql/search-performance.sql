@@ -169,24 +169,33 @@ as $$
                   ts_rank_cd(v.fts, websearch_to_tsquery('english', coalesce(q, ''))),
                   ts_rank_cd(v.fts, websearch_to_tsquery('french',  coalesce(q, '')))
                 ))
+                -- Substantive topical text match on question_text or concept
+                + case when corpus_tsv(v.lang, concat_ws(' ', v.concept, v.question_text))
+                     @@ case when v.lang = 'fr'
+                          then websearch_to_tsquery('french', coalesce(q, ''))
+                          else websearch_to_tsquery('english', coalesce(q, '')) end
+                    then 4 else 0 end
+                -- Combined field text match (fallback when concept/question_text is null)
                 + case when corpus_tsv(v.lang, concat_ws(' ', v.name, v.concept, v.question_text))
                      @@ case when v.lang = 'fr'
                           then websearch_to_tsquery('french', coalesce(q, ''))
                           else websearch_to_tsquery('english', coalesce(q, '')) end
-                    then 3 else 0 end
+                    then 1 else 0 end
                 + 0.25 * least(0.5, greatest(
                   ts_rank_cd(v.fts, websearch_to_tsquery('english', coalesce((select expansion from alias), ''))),
                   ts_rank_cd(v.fts, websearch_to_tsquery('french', coalesce((select expansion from alias), '')))
                 ))
-                + case when corpus_tsv(v.lang, concat_ws(' ', v.name, v.concept, v.question_text))
+                + case when corpus_tsv(v.lang, concat_ws(' ', v.concept, v.question_text))
                      @@ case when v.lang = 'fr'
                           then websearch_to_tsquery('french', coalesce((select expansion from alias), ''))
                           else websearch_to_tsquery('english', coalesce((select expansion from alias), '')) end
-                    then 0.75 else 0 end
+                    then 1.5 else 0 end
                 + case
                     when corpus_mnemonic(q) is null then 0
-                    when upper(v.name) = corpus_mnemonic(q) then 10
-                    when v.name ilike corpus_mnemonic(q) || '%' then 5
+                    when upper(v.name) = corpus_mnemonic(q) then
+                      case when (select expansion from alias) is not null then 1 else 10 end
+                    when v.name ilike corpus_mnemonic(q) || '%' then
+                      case when (select expansion from alias) is not null then 0.5 else 5 end
                     else 0
                   end as rank
            from corpus_variable v

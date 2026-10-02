@@ -262,6 +262,22 @@ describe('parseDictionary — labelled layout', () => {
     expect(v.note).toBe('This is a mark all that apply question.');
   });
 
+  it('recovers unlabelled descriptive prose following header row as question text (e.g. GSS Cycle 16)', () => {
+    const rows = [
+      'Variable Name: ACC_Q110 Length: 1.0 Position: 12',
+      'In the past 12 months, did you have an accident that resulted in an injury?',
+      'Answer Categories Code Frequency Weighted Frequency %',
+      'Yes 1 850 2,870,500 7.9',
+      'No 2 5,150 17,190,000 47.0',
+    ];
+    const { variables } = parseDictionary(doc(rows), mint);
+    expect(variables).toHaveLength(1);
+    const v = variables[0]!;
+    expect(v.name).toBe('ACC_Q110');
+    expect(v.questionText).toBe('In the past 12 months, did you have an accident that resulted in an injury?');
+    expect(v.codes).toHaveLength(2);
+  });
+
   it('parses two-column code lists without frequency distributions', () => {
     const rows = [
       'Variable Name: CC_05C Length: 1.0 Position: 101',
