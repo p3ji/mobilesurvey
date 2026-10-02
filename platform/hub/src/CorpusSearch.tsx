@@ -887,31 +887,7 @@ export function CorpusSearch({
           onChange={(e) => setQuery(e.target.value)}
         />
       </div>
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '8px', margin: '4px 0 10px' }}>
-        <p className="cs-search-help" style={{ margin: 0 }}>
-          Search includes reviewed equivalents such as “AI” and “artificial intelligence”.
-        </p>
-        {/* TEMPORARY: Vector search high-usage label (can remove in 30 mins) */}
-        <span
-          role="status"
-          style={{
-            fontSize: '11px',
-            fontWeight: 600,
-            padding: '2px 9px',
-            borderRadius: '999px',
-            background: '#fef3c7',
-            color: '#92400e',
-            border: '1px solid #fde68a',
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: '6px',
-            whiteSpace: 'nowrap',
-          }}
-        >
-          <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#d97706', flexShrink: 0 }} aria-hidden="true" />
-          Vector search temporarily unavailable for 30 mins due to high usage
-        </span>
-      </div>
+      <p className="cs-search-help">Search includes reviewed equivalents such as “AI” and “artificial intelligence”.</p>
       <div className="cs-ai-control">
         <label className="cs-filter cs-filter--check">
           <input type="checkbox" checked={aiEnabled} onChange={(event) => {
