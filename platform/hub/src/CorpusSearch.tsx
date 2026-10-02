@@ -39,6 +39,7 @@ import { expandCorpusQuery } from './corpusAiSearch.js';
 import { searchCorpusSemantic } from './corpusSemanticSearch.js';
 import { classifyHit } from './graphClassifier.js';
 import { groupCorpusHits, type CorpusHitGroup } from './groupCorpusHits.js';
+import { renderHitQuestion } from './renderHitQuestion.js';
 import type { CorpusGraphFocus } from './CorpusLineage.js';
 
 const DEBOUNCE_MS = 250;
@@ -175,14 +176,10 @@ function CorpusHit({
     question_text: question,
   });
 
-  const renderedQuestion = useMemo(() => {
-    if (!question || question === label) return undefined;
-    const trimmedQ = question.trim();
-    if (/[:\-\u2013\u2014]$/.test(trimmedQ) && label && !trimmedQ.toLowerCase().includes(label.toLowerCase())) {
-      return `${trimmedQ} — ${label}`;
-    }
-    return question;
-  }, [question, label]);
+  const renderedQuestion = useMemo(
+    () => renderHitQuestion(question, label, isSelectAll),
+    [question, label, isSelectAll]
+  );
 
   return (
     <article className="cs-hit">

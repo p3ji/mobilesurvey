@@ -49,7 +49,7 @@ function cycleLabel(use: PilotUse): string {
   return 'Cycle not established by reviewed passage';
 }
 
-export function ResearcherPage({ onHome }: { onHome: () => void; onSearcher?: () => void }) {
+export function ResearcherPage({ onHome, onSearcher }: { onHome: () => void; onSearcher?: () => void }) {
   const [selectedSurveys, setSelectedSurveys] = useState<string[]>(initialSurveys);
   const [selectedTheme, setSelectedTheme] = useState<string>('all');
   const [selectedPrecision, setSelectedPrecision] = useState<string>('all');
@@ -227,6 +227,17 @@ export function ResearcherPage({ onHome }: { onHome: () => void; onSearcher?: ()
           <strong>Researcher</strong>
           <span className="hub__sub">External published uses of Statistics Canada data</span>
         </div>
+        {onSearcher && (
+          <button
+            type="button"
+            className="researcher-link researcher-link--secondary"
+            onClick={onSearcher}
+            style={{ marginLeft: 'auto', display: 'inline-flex', alignItems: 'center', gap: '6px', fontSize: '13px', padding: '6px 14px' }}
+          >
+            <Search size={14} aria-hidden="true" />
+            Open Searcher
+          </button>
+        )}
       </header>
 
       <main className="hub__main researcher-page">
@@ -587,6 +598,30 @@ export function ResearcherPage({ onHome }: { onHome: () => void; onSearcher?: ()
                             <a href={work.url} target="_blank" rel="noopener noreferrer">
                               Evidence: {use.evidenceLocation} <ExternalLink size={12} aria-hidden="true" />
                             </a>
+                            {onSearcher && (
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  window.location.hash = `#searcher?survey=${encodeURIComponent(use.program)}`;
+                                  onSearcher();
+                                }}
+                                style={{
+                                  background: 'none',
+                                  border: 'none',
+                                  color: '#0d6efd',
+                                  cursor: 'pointer',
+                                  fontSize: '12px',
+                                  padding: '0',
+                                  display: 'inline-flex',
+                                  alignItems: 'center',
+                                  gap: '4px',
+                                  marginLeft: 'auto',
+                                }}
+                                title={`Search variables in ${use.program}`}
+                              >
+                                Search {use.program} variables <ArrowRight size={11} aria-hidden="true" />
+                              </button>
+                            )}
                           </div>
                         </div>
                       ))}

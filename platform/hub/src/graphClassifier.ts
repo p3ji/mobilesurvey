@@ -17,8 +17,8 @@ export interface ClassifiedHit {
   derivedInputs: string[];
 }
 
-const WEIGHT_NAME_REGEX = /^(?:WTPM|WTMP|WTHM|FINALWT|WGT|WEIGHT)$|^(?:WTS?_|WTM_|WT_|WGHT|BOOT|BSW|FWT|REPWT|FWEIGHT|HWEIGHT|WT[0-9]+|WTBS|WTPS|WVCBS|SPFWT|BWT|SAMPLEID|PERSONID|MASTERID|HHID|RECID|VERDATE|REFPER|RECORDID|CASEID|USERID|FORMID|PUMFID|BATCHID|STRAT|FRAME|SEQNUM|IDENT|DO[A-Z]{3}|SAM_|INT_|COL_|SURV|DOF|FLG|FLAG|IF_|QFLG_)|^I[0-9]+$|^IMP[0-9]+/i;
-const WEIGHT_CONCEPT_REGEX = /(?:[-–—]\s*\(F\)$|\(F\)$|\b(?:sampling weight|sample weight|bootstrap|poids [eé]chantillon|share weight|master weight|survey weight|final weight|replicate weights?|poids r[eé]plique|inclusion flag|imputation flag|imputation|allocation flag|quality flag|data quality flag|status flag|edit flag|indicateur d[''’]imputation|drapeau d[''’]imputation|indicateur)\b|^imputation\b)/i;
+const WEIGHT_NAME_REGEX = /^(?:WTPM|WTMP|WTHM|FINALWT|WGT|WEIGHT|WEIGHTH)$|^(?:WTS?_|WT_|WGHT|BOOT|BSW|FWT|REPWT|FWEIGHT|HWEIGHT|WT[0-9]+|WTBS|WTPS|WVCBS|SPFWT|BWT|WGT_|FWGT_|SAMPLEID|PERSONID|MASTERID|HHID|RECID|VERDATE|REFPER|RECORDID|CASEID|USERID|FORMID|PUMFID|BATCHID|STRAT|FRAME|SEQNUM|IDENT|DO[A-Z]{3}|SAM_|INT_|COL_|SURV|DOF|FLG|FLAG|IF_|QFLG_)|^I[0-9]{4,}$|^IMP[0-9]+/i;
+const WEIGHT_CONCEPT_REGEX = /\b(?:sampling weight|sample weight|bootstrap|poids [eé]chantillon|share weight|master weight|survey weights?|final weight|replicate weights?|poids r[eé]plique|inclusion flag|imputation flag|imputation|allocation flag|quality flag|data quality flag|status flag|edit flag|indicateur d[''’]imputation|drapeau d[''’]imputation|indicateur)\b|^imputation\b/i;
 const SYSTEM_ID_REGEX = /^(SAMPLEID|PERSONID|MASTERID|HHID|RECID|VERDATE|REFPER|RECORDID|CASEID|USERID|FORMID|PUMFID|BATCHID|STRAT|FRAME|SEQNUM|IDENT)/i;
 const CCHS_INCLUSION_FLAG_REGEX = /^DO[A-Z]{3}$/i;
 const DERIVED_CONCEPT_REGEX = /(?:^|\b)(?:DV\s*[-–—:]|derived variable|variable d[eé]riv[eé]e|\(D\)|\(G\)|grouped|group[eé]e?s?)|[-–—]\s*(?:derived|\(D\)|\(G\)|grouped|group[eé]e?s?)|\(D\)$/i;
@@ -77,15 +77,20 @@ export function classifyHit(meta: CorpusMeta, label?: string, questionText?: str
   const isMeth = /methamphetamine|m[eé]thamph[eé]tamine|amphetamine/i.test(`${concept} ${question}`);
   const isAdmProcess = /^ADM_[A-Z]/i.test(name) || (/^ADM_/i.test(name) && surveyGroup.startsWith('CCHS'));
 
+  const isSubstantiveFlag =
+    /^(?:based on|derived from|calcul[eé]|selon|compos[eé])/i.test(note) ||
+    /\b(screener|suicide|bipolar|substance|cannabis|cocaine|heroin)\b/i.test(concept);
+
   if (
     !isMeth &&
     (
       WEIGHT_NAME_REGEX.test(name) ||
       isAdmProcess ||
+      (!isSubstantiveFlag && /[-–—]\s*\(F\)$|\(F\)$/i.test(concept)) ||
       WEIGHT_CONCEPT_REGEX.test(concept) ||
       CCHS_INCLUSION_FLAG_REGEX.test(name) ||
       /(_F|_FLG|_FLAG|FL[0-9]*)$/i.test(name) ||
-      /^(STATUS|SNAICS|INSTANCE|CONTACT)$/i.test(name) ||
+      /^(STATUS|SNAICS|INSTANCE|CONTACT|COLDATE)$/i.test(name) ||
       /\b(imputation flag|indicateur d[''’]imputation)\b/i.test(note) ||
       /\b(imputation flag|indicateur d[''’]imputation|is imputed|sont imput[eé]e?s?)\b/i.test(question) ||
       /^imputation\b/i.test(question) ||
