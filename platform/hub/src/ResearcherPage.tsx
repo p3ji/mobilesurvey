@@ -333,28 +333,6 @@ export function ResearcherPage({ onHome, onSearcher }: { onHome: () => void; onS
                 <Search size={15} aria-hidden="true" />
                 2) Search Publications ({works.length})
               </button>
-              <button
-                type="button"
-                className="researcher-link researcher-link--secondary"
-                onClick={() => {
-                  setSelectedYearWindow('recent');
-                  handleTabChange('search');
-                  setTimeout(() => document.getElementById('researcher-results')?.scrollIntoView({ behavior: 'smooth' }), 50);
-                }}
-              >
-                2025–2026 outputs ({recentCount}) <ArrowRight size={15} aria-hidden="true" />
-              </button>
-              <button
-                type="button"
-                className="researcher-link researcher-link--secondary"
-                onClick={() => {
-                  setSelectedType('report');
-                  handleTabChange('search');
-                  setTimeout(() => document.getElementById('researcher-results')?.scrollIntoView({ behavior: 'smooth' }), 50);
-                }}
-              >
-                Policy Reports ({reportsCount})
-              </button>
             </div>
           </div>
           <div className="researcher-hero__summary" aria-label="Pilot coverage summary">
