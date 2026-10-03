@@ -43,9 +43,11 @@ export interface PublicPilotWork {
   mentions: Array<{ program: string; evidenceLocation: string }>;
 }
 
-/** A deliberately small, rights-safe browser snapshot of human-approved facts. */
-export function publicPreview(rows: object[]): PublicPilotWork[] {
-  return (rows as ReviewedWork[]).filter(work => !isStatisticsCanadaPublication(work)).map(work => ({
+/** A deliberately small, rights-safe browser snapshot of human-approved facts (2015+ cutoff). */
+export function publicPreview(rows: object[], minYear: number = 2015): PublicPilotWork[] {
+  return (rows as ReviewedWork[])
+    .filter(work => !isStatisticsCanadaPublication(work) && (work.year === null || work.year >= minYear))
+    .map(work => ({
     id: work.id,
     title: work.title,
     doi: work.doi,
