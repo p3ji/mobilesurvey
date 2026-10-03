@@ -230,8 +230,8 @@ export function ResearcherThemesViz({
       if (w.year) yearsSet.add(w.year);
     }
     if (yearsSet.size === 0) return [];
-    const minYear = timeWindow === 'recent' ? 2015 : Math.min(...yearsSet);
-    const maxYear = Math.max(...yearsSet, 2026);
+    const minYear = timeWindow === 'recent' ? 2020 : 2015;
+    const maxYear = 2026;
     const result: number[] = [];
     for (let y = minYear; y <= maxYear; y++) {
       result.push(y);
@@ -414,17 +414,17 @@ export function ResearcherThemesViz({
                 type="button"
                 className={timeWindow === 'all' ? 'is-active' : ''}
                 onClick={() => setTimeWindow('all')}
-                title="Show full timeline from 1991 to 2026"
+                title="Show full timeline from 2015 to 2026"
               >
-                All Years (1991–2026)
+                All Years (2015–2026)
               </button>
               <button
                 type="button"
                 className={timeWindow === 'recent' ? 'is-active' : ''}
                 onClick={() => setTimeWindow('recent')}
-                title="Focus on recent decades (2015–2026)"
+                title="Focus on recent window (2020–2026)"
               >
-                2015–2026 (Recent)
+                2020–2026 (Recent)
               </button>
             </div>
 
@@ -741,8 +741,8 @@ export function ResearcherThemesViz({
           <p className="researcher-kicker">Empirical Analysis</p>
           <h2 id="researcher-analysis-title">Trends Across External Research Outputs</h2>
           <p>
-            Key observations from a census of 606 peer-reviewed journal articles, institutional policy reports, and academic theses
-            analyzing Statistics Canada microdata files.
+            Key observations from a census of {works.length} peer-reviewed journal articles, institutional policy reports, and academic theses
+            (2015–2026) analyzing Statistics Canada microdata files.
           </p>
         </div>
 
@@ -758,12 +758,12 @@ export function ResearcherThemesViz({
               </div>
             </div>
             <p>
-              Over <strong>67.3% (408 of 606)</strong> of all verified publications appeared in 2025–2026 alone.
+              Over <strong>{((408 / works.length) * 100).toFixed(1)}% (408 of {works.length})</strong> of all verified publications in this decade appeared in 2025–2026 alone.
               The recent release of post-COVID annual files (CCHS 2021–2023, GSS 2021–2023, and LFS microdata) prompted an immediate wave of
               investigations assessing healthcare access recovery, mental health, telework conditions, and shifting cost-of-living impacts.
             </p>
             <div className="researcher-analysis-card__stat">
-              <b>408</b> outputs published in last 18 months · <b>+53 works</b> added in latest harvest
+              <b>408</b> outputs published in last 18 months · <b>{works.length - 408} works</b> in 2015–2024 baseline horizon
             </div>
           </div>
 

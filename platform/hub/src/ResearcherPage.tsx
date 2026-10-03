@@ -309,7 +309,7 @@ export function ResearcherPage({ onHome, onSearcher }: { onHome: () => void; onS
       <main className="hub__main researcher-page">
         <section className="researcher-hero" aria-labelledby="researcher-title">
           <div>
-            <span className="researcher-status">Verified Research Outputs · {works.length} works</span>
+            <span className="researcher-status">Verified Research Outputs (2015–2026) · {works.length} works</span>
             <h1 id="researcher-title">Follow the research back to the data.</h1>
             <p>
               Explore a curated, rights-reviewed catalogue of external publications that analyzed Statistics Canada surveys.
@@ -535,9 +535,9 @@ export function ResearcherPage({ onHome, onSearcher }: { onHome: () => void; onS
                 }}
                 aria-label="Filter by publication year"
               >
-                <option value="all">All Publication Years ({works.length})</option>
-                <option value="recent">Last Year: 2025–2026 ({recentCount})</option>
-                <option value="historical">Prior Years ({works.length - recentCount})</option>
+                <option value="all">All Publication Years: 2015–2026 ({works.length})</option>
+                <option value="recent">Recent Surge: 2025–2026 ({recentCount})</option>
+                <option value="historical">Baseline Horizon: 2015–2024 ({works.length - recentCount})</option>
               </select>
 
               <select
