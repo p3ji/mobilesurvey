@@ -40,7 +40,7 @@ export async function fetchWithBackoff(
   url: string,
   headers: Record<string, string>,
   fetchImpl: typeof fetch,
-  maxRetries = 3
+  maxRetries = 5
 ): Promise<{ status: number; text: string }> {
   let attempt = 0;
   while (attempt < maxRetries) {
@@ -48,8 +48,8 @@ export async function fetchWithBackoff(
     const response = await fetchImpl(url, { headers });
     if (response.status === 429) {
       const retryAfterHeader = response.headers?.get('retry-after');
-      const waitMs = retryAfterHeader ? Number(retryAfterHeader) * 1000 : 1500 * Math.pow(2, attempt);
-      await new Promise(r => setTimeout(r, Math.min(waitMs, 10000)));
+      const waitMs = retryAfterHeader ? Number(retryAfterHeader) * 1000 : Math.max(2000, 1000 * Math.pow(2, attempt));
+      await new Promise(r => setTimeout(r, Math.min(waitMs, 15000)));
       continue;
     }
     const text = await response.text();

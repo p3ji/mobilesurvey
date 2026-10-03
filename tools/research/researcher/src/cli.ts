@@ -56,6 +56,64 @@ const CANONICAL_HARVEST_QUERIES = [
   { program: 'LFS', query: '"Labour Force Survey" "Statistics Canada"' },
   { program: 'LFS', query: '"Canadian Labour Force Survey"' },
   { program: 'LFS', query: '"Enquête sur la population active" "Statistique Canada"' },
+  { program: 'APS', query: '"Aboriginal Peoples Survey"' },
+  { program: 'APS', query: '"Enquête auprès des peuples autochtones"' },
+  { program: 'CHS', query: '"Canadian Housing Survey"' },
+  { program: 'CHS', query: '"Enquête canadienne sur le logement"' },
+  { program: 'SFS', query: '"Survey of Financial Security"' },
+  { program: 'SFS', query: '"Enquête sur la sécurité financière"' },
+  { program: 'LSIC', query: '"Longitudinal Survey of Immigrants to Canada"' },
+  { program: 'LSIC', query: '"Enquête longitudinale auprès des immigrants du Canada"' },
+  { program: 'LISA', query: '"Longitudinal and International Study of Adults"' },
+  { program: 'LISA', query: '"Étude longitudinale et internationale des adultes"' },
+  { program: 'CHSCY', query: '"Canadian Health Survey on Children and Youth"' },
+  { program: 'CHSCY', query: '"Enquête canadienne sur la santé des enfants et des jeunes"' },
+  { program: 'EICS', query: '"Employment Insurance Coverage Survey"' },
+  { program: 'EICS', query: '"Enquête sur la couverture de l\'assurance-emploi"' },
+  { program: 'NGS', query: '"National Graduates Survey"' },
+  { program: 'NGS', query: '"Enquête auprès des diplômés"' },
+  { program: 'CSS', query: '"Canadian Social Survey"' },
+  { program: 'CSS', query: '"Enquête sociale canadienne"' },
+  { program: 'CPSS', query: '"Canadian Perspectives Survey Series"' },
+  { program: 'CPSS', query: '"Série d’enquêtes sur les perspectives canadiennes"' },
+  { program: 'CSCSC', query: '"Canadian Survey of Cyber Security and Cybercrime"' },
+  { program: 'CSCSC', query: '"Enquête canadienne sur la cybersécurité et le cybercrime"' },
+  { program: 'SDTIU', query: '"Survey of Digital Technology and Internet Use"' },
+  { program: 'SDTIU', query: '"Enquête sur les technologies numériques et l\'utilisation d\'Internet"' },
+  { program: 'SFGSME', query: '"Survey on Financing and Growth of Small and Medium Enterprises"' },
+  { program: 'SFGSME', query: '"Enquête sur le financement et la croissance des petites et moyennes entreprises"' },
+  { program: 'SOLMP', query: '"Survey on the Official Language Minority Population"' },
+  { program: 'SOLMP', query: '"Enquête sur la population de langue officielle en situation minoritaire"' },
+  { program: 'CTADS', query: '"Canadian Tobacco, Alcohol and Drugs Survey"' },
+  { program: 'CTADS', query: '"Enquête canadienne sur le tabac, l’alcool et les drogues"' },
+  { program: 'CTNS', query: '"Canadian Tobacco and Nicotine Survey"' },
+  { program: 'CTNS', query: '"Enquête canadienne sur le tabac et la nicotine"' },
+  { program: 'HES', query: '"Households and the Environment Survey"' },
+  { program: 'HES', query: '"Enquête sur les ménages et l’environnement"' },
+  { program: 'PIAAC', query: '"Programme for the International Assessment of Adult Competencies" "Canada"' },
+  { program: 'PIAAC', query: '"Programme pour l’évaluation internationale des compétences des adultes" "Canada"' },
+  { program: 'CAFHS', query: '"Canadian Armed Forces Health Survey"' },
+  { program: 'CAFHS', query: '"Enquête sur la santé dans les Forces armées canadiennes"' },
+  { program: 'CAFVMHS', query: '"Canadian Armed Forces Members and Veterans Mental Health Follow-up Survey"' },
+  { program: 'CNICS', query: '"Childhood National Immunization Coverage Survey"' },
+  { program: 'CNICS', query: '"Enquête nationale sur la couverture vaccinale des enfants"' },
+  { program: 'CSIT', query: '"Canadian Survey on Interprovincial Trade"' },
+  { program: 'CSIT', query: '"Enquête canadienne sur le commerce interprovincial"' },
+  { program: 'EWHS', query: '"Survey on Working from Home and Working Conditions"' },
+  { program: 'PSIS', query: '"Postsecondary Student Information System" "Statistics Canada"' },
+  { program: 'RAIS', query: '"Registered Apprenticeship Information System" "Statistics Canada"' },
+  { program: 'IMDB', query: '"Longitudinal Immigration Database"' },
+  { program: 'IMDB', query: '"Base de données longitudinales sur l’immigration"' },
+  { program: 'NHS', query: '"National Household Survey" "Statistics Canada"' },
+  { program: 'NHS', query: '"Enquête nationale auprès des ménages" "Statistique Canada"' },
+  { program: 'PSES', query: '"Public Service Employee Survey" "Canada"' },
+  { program: 'PSES', query: '"Sondage auprès des fonctionnaires fédéraux"' },
+  { program: 'CLPS', query: '"Canadian Legal Problems Survey"' },
+  { program: 'CVCS', query: '"Canadian Survey on Victimization and Community Safety"' },
+  { program: 'SCMH', query: '"Survey on COVID-19 and Mental Health"' },
+  { program: 'CADS', query: '"Canadian Alcohol and Drugs Survey"' },
+  { program: 'PSSCSC', query: '"Survey on Postsecondary Students Skills and Career Prospects"' },
+  { program: 'SMHSE', query: '"Survey on Mental Health and Stressful Events"' },
 ];
 
 async function main() {
@@ -135,19 +193,24 @@ async function main() {
 
       for (const item of CANONICAL_HARVEST_QUERIES) {
         console.log(`Harvesting ${item.program} (${item.query})...`);
-        const res = await harvestOpenAlexAll(item.query, {
-          filter: `publication_year:${year}`,
-          maxRecords: maxPerQuery,
-          queue: q,
-          onProgress: (fetched, total) => {
-            process.stdout.write(`  fetched ${fetched}/${total}\r`);
+        try {
+          const res = await harvestOpenAlexAll(item.query, {
+            filter: `publication_year:${year}`,
+            maxRecords: maxPerQuery,
+            queue: q,
+            onProgress: (fetched, total) => {
+              process.stdout.write(`  fetched ${fetched}/${total}\r`);
+            }
+          });
+          console.log(`  done: ${res.works.length} works (total index count: ${res.totalCount})`);
+          for (const w of res.works) {
+            w.suggestedPrograms = [...new Set([...(w.suggestedPrograms ?? []), item.program])];
+            allCandidates.push(w);
           }
-        });
-        console.log(`  done: ${res.works.length} works (total index count: ${res.totalCount})`);
-        for (const w of res.works) {
-          w.suggestedPrograms = [...new Set([...(w.suggestedPrograms ?? []), item.program])];
-          allCandidates.push(w);
+        } catch (err) {
+          console.error(`  Warning: failed to harvest ${item.program} (${item.query}): ${err}`);
         }
+        await new Promise(r => setTimeout(r, 400));
       }
 
       writeFileSync(outFile, allCandidates.map(c => JSON.stringify(c)).join('\n') + '\n', { flag: 'w' });
