@@ -247,12 +247,15 @@ export class DerivationQueue {
         // Language filter: Default to English only per Supabase free tier constraint
         if (targetLang && v.source?.lang !== targetLang) return;
 
-        // Filter: derived variables or notes indicating derivation
+        // Filter: derived variables or notes indicating derivation. The trigger phrases are a
+        // recall net, not a definition — StatCan writes derivations many ways ("Derived based on
+        // Section B", "combines the five answers in Question 1"), so match the verbs and nouns
+        // rather than exact sentences. Precision is enforced downstream by the LLM + reviewer;
+        // a missed phrase here means an invisible variable, which is the worse failure mode.
         const note = (v.note || '').trim();
+        const noteLower = note.toLowerCase();
         const isDerivedHint =
-          note.toLowerCase().includes('derived from') ||
-          note.toLowerCase().includes('calculated from') ||
-          note.toLowerCase().includes('based on questions') ||
+          /derived|calculat|comput|recod|combination of|sum of|constructed from|based on/.test(noteLower) ||
           v.name.includes('D') || // StatCan convention: D in mnemonic often indicates derived
           v.concept?.toLowerCase().includes('derived') ||
           false;

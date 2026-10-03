@@ -78,6 +78,14 @@ function initialSurveys(): string[] {
   return raw.split(',').filter(program => program in programNames);
 }
 
+function initialTab(): 'stats' | 'search' {
+  const params = new URLSearchParams(window.location.hash.split('?')[1] ?? '');
+  const tab = params.get('tab');
+  if (tab === 'search') return 'search';
+  if (tab === 'stats') return 'stats';
+  return 'stats';
+}
+
 function cycleLabel(use: PilotUse): string {
   if (use.precision === 'exact_cycles') return `${use.cycles.join(', ')} ${use.cycles.length === 1 ? 'cycle' : 'cycles'}`;
   if (use.precision === 'range') return `Reported range: ${use.cycleText}`;
@@ -85,6 +93,7 @@ function cycleLabel(use: PilotUse): string {
 }
 
 export function ResearcherPage({ onHome, onSearcher }: { onHome: () => void; onSearcher?: () => void }) {
+  const [activeTab, setActiveTab] = useState<'stats' | 'search'>(initialTab);
   const [selectedSurveys, setSelectedSurveys] = useState<string[]>(initialSurveys);
   const [selectedTheme, setSelectedTheme] = useState<string>('all');
   const [selectedPrecision, setSelectedPrecision] = useState<string>('all');
@@ -96,17 +105,25 @@ export function ResearcherPage({ onHome, onSearcher }: { onHome: () => void; onS
   const [query, setQuery] = useState('');
   const [displayLimit, setDisplayLimit] = useState(30);
 
+  function handleTabChange(nextTab: 'stats' | 'search') {
+    setActiveTab(nextTab);
+    const params = new URLSearchParams(window.location.hash.split('?')[1] ?? '');
+    params.set('tab', nextTab);
+    window.history.replaceState(null, '', `${window.location.pathname}${window.location.search}#researcher?${params.toString()}`);
+  }
+
   useEffect(() => {
-    const syncSurveys = () => {
+    const syncState = () => {
+      setActiveTab(initialTab());
       setSelectedSurveys(initialSurveys());
       setSelectedCycle(null);
       setSelectedPubYear(null);
     };
-    window.addEventListener('hashchange', syncSurveys);
-    window.addEventListener('popstate', syncSurveys);
+    window.addEventListener('hashchange', syncState);
+    window.addEventListener('popstate', syncState);
     return () => {
-      window.removeEventListener('hashchange', syncSurveys);
-      window.removeEventListener('popstate', syncSurveys);
+      window.removeEventListener('hashchange', syncState);
+      window.removeEventListener('popstate', syncState);
     };
   }, []);
 
@@ -241,8 +258,15 @@ export function ResearcherPage({ onHome, onSearcher }: { onHome: () => void; onS
     setSelectedSurveys(next);
     setSelectedCycle(null);
     setSelectedPubYear(null);
-    const suffix = next.length ? `?surveys=${encodeURIComponent(next.join(','))}` : '';
-    window.history.replaceState(null, '', `${window.location.pathname}${window.location.search}#researcher${suffix}`);
+    const params = new URLSearchParams(window.location.hash.split('?')[1] ?? '');
+    params.set('tab', activeTab);
+    if (next.length) {
+      params.set('surveys', next.join(','));
+    } else {
+      params.delete('surveys');
+      params.delete('survey');
+    }
+    window.history.replaceState(null, '', `${window.location.pathname}${window.location.search}#researcher?${params.toString()}`);
   }
 
   function resetFilters() {
@@ -256,7 +280,7 @@ export function ResearcherPage({ onHome, onSearcher }: { onHome: () => void; onS
     setQuery('');
     setSortOption('year_desc');
     setDisplayLimit(30);
-    window.history.replaceState(null, '', `${window.location.pathname}${window.location.search}#researcher`);
+    window.history.replaceState(null, '', `${window.location.pathname}${window.location.search}#researcher?tab=${activeTab}`);
   }
 
   return (
@@ -295,45 +319,41 @@ export function ResearcherPage({ onHome, onSearcher }: { onHome: () => void; onS
             <div className="researcher-actions">
               <button
                 type="button"
-                className="researcher-link researcher-link--primary"
-                onClick={() => {
-                  setSelectedYearWindow('recent');
-                  setSelectedType('all');
-                  document.getElementById('researcher-results')?.scrollIntoView({ behavior: 'smooth' });
-                }}
+                className={`researcher-link ${activeTab === 'stats' ? 'researcher-link--primary' : 'researcher-link--secondary'}`}
+                onClick={() => handleTabChange('stats')}
               >
-                2025–2026 outputs ({recentCount}) <ArrowRight size={17} aria-hidden="true" />
+                <BarChart3 size={15} aria-hidden="true" />
+                1) Stats & Output Trends
+              </button>
+              <button
+                type="button"
+                className={`researcher-link ${activeTab === 'search' ? 'researcher-link--primary' : 'researcher-link--secondary'}`}
+                onClick={() => handleTabChange('search')}
+              >
+                <Search size={15} aria-hidden="true" />
+                2) Search Publications ({works.length})
               </button>
               <button
                 type="button"
                 className="researcher-link researcher-link--secondary"
                 onClick={() => {
-                  document.getElementById('researcher-trends')?.scrollIntoView({ behavior: 'smooth' });
+                  setSelectedYearWindow('recent');
+                  handleTabChange('search');
+                  setTimeout(() => document.getElementById('researcher-results')?.scrollIntoView({ behavior: 'smooth' }), 50);
                 }}
               >
-                <BarChart3 size={15} aria-hidden="true" />
-                Theme Trends by Year
+                2025–2026 outputs ({recentCount}) <ArrowRight size={15} aria-hidden="true" />
               </button>
               <button
                 type="button"
                 className="researcher-link researcher-link--secondary"
                 onClick={() => {
                   setSelectedType('report');
-                  setSelectedYearWindow('all');
-                  document.getElementById('researcher-results')?.scrollIntoView({ behavior: 'smooth' });
+                  handleTabChange('search');
+                  setTimeout(() => document.getElementById('researcher-results')?.scrollIntoView({ behavior: 'smooth' }), 50);
                 }}
               >
-                Policy & NGO Reports ({reportsCount})
-              </button>
-              <button
-                type="button"
-                className="researcher-link researcher-link--secondary"
-                onClick={() => {
-                  resetFilters();
-                  document.getElementById('researcher-results')?.scrollIntoView({ behavior: 'smooth' });
-                }}
-              >
-                All verified works ({works.length})
+                Policy Reports ({reportsCount})
               </button>
             </div>
           </div>
@@ -356,27 +376,71 @@ export function ResearcherPage({ onHome, onSearcher }: { onHome: () => void; onS
           </div>
         </section>
 
-        <ResearcherThemesViz
-          works={works}
-          selectedType={selectedType}
-          onSelectType={type => {
-            setSelectedType(type);
-            setDisplayLimit(30);
-          }}
-          selectedTheme={selectedTheme}
-          onSelectTheme={theme => {
-            setSelectedTheme(theme);
-            setDisplayLimit(30);
-          }}
-          selectedPubYear={selectedPubYear}
-          onSelectPubYear={year => {
-            setSelectedPubYear(year);
-            setDisplayLimit(30);
-          }}
-          selectedSurveys={selectedSurveys}
-        />
+        {/* Top-Level Navigation Tabs: 1) Stats  2) Search */}
+        <div className="researcher-tabs-container">
+          <nav className="researcher-tabs" role="tablist" aria-label="Researcher views">
+            <button
+              type="button"
+              role="tab"
+              id="tab-stats"
+              aria-controls="panel-stats"
+              aria-selected={activeTab === 'stats'}
+              className={`researcher-tab ${activeTab === 'stats' ? 'researcher-tab--active' : ''}`}
+              onClick={() => handleTabChange('stats')}
+            >
+              <BarChart3 size={16} aria-hidden="true" />
+              <span>1) Stats & Output Trends</span>
+            </button>
+            <button
+              type="button"
+              role="tab"
+              id="tab-search"
+              aria-controls="panel-search"
+              aria-selected={activeTab === 'search'}
+              className={`researcher-tab ${activeTab === 'search' ? 'researcher-tab--active' : ''}`}
+              onClick={() => handleTabChange('search')}
+            >
+              <Search size={16} aria-hidden="true" />
+              <span>2) Search Publications ({works.length})</span>
+            </button>
+          </nav>
+        </div>
 
-        <section className="researcher-section" id="researcher-results" aria-labelledby="researcher-results-title">
+        {/* Tab 1: Stats & Empirical Thematic Trends */}
+        {activeTab === 'stats' && (
+          <div id="panel-stats" role="tabpanel" aria-labelledby="tab-stats">
+            <ResearcherThemesViz
+              works={works}
+              selectedType={selectedType}
+              onSelectType={type => {
+                setSelectedType(type);
+                setDisplayLimit(30);
+              }}
+              selectedTheme={selectedTheme}
+              onSelectTheme={theme => {
+                setSelectedTheme(theme);
+                setDisplayLimit(30);
+              }}
+              selectedPubYear={selectedPubYear}
+              onSelectPubYear={year => {
+                setSelectedPubYear(year);
+                setDisplayLimit(30);
+              }}
+              selectedSurveys={selectedSurveys}
+              onSelectSurvey={prog => {
+                setSelectedSurveys([prog]);
+                handleTabChange('search');
+              }}
+              onSwitchToSearch={() => handleTabChange('search')}
+              programNames={programNames}
+            />
+          </div>
+        )}
+
+        {/* Tab 2: Search Publications Catalogue */}
+        {activeTab === 'search' && (
+          <div id="panel-search" role="tabpanel" aria-labelledby="tab-search">
+            <section className="researcher-section" id="researcher-results" aria-labelledby="researcher-results-title">
           <div className="researcher-section__heading">
             <p className="researcher-kicker">Documented Data Uses</p>
             <h2 id="researcher-results-title">Outside publications with reviewed data analysis</h2>
@@ -733,8 +797,10 @@ export function ResearcherPage({ onHome, onSearcher }: { onHome: () => void; onS
             </div>
           )}
         </section>
+      </div>
+    )}
 
-        <section className="researcher-method" aria-labelledby="researcher-method-title">
+    <section className="researcher-method" aria-labelledby="researcher-method-title">
           <div>
             <p className="researcher-kicker">How to read this page</p>
             <h2 id="researcher-method-title">Evidence before counts</h2>
