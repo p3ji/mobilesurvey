@@ -6,7 +6,7 @@ import { ResearchQueue } from './queue.js';
 import { extract } from './hermes.js';
 import { validateSource, type CandidateWork, type SourceWork } from './model.js';
 import { publicPreview } from './public-preview.js';
-import { searchOpenAlex } from './adapters/openalex.js';
+import { harvestOpenAlexAll, searchOpenAlex } from './adapters/openalex.js';
 import { fetchCrossrefDoi, searchCrossref } from './adapters/crossref.js';
 import { fetchCrdcnPage, parseCrdcnHtml } from './adapters/crdcn.js';
 import { assembleCandidates } from './adapters/discovery.js';
@@ -36,6 +36,27 @@ async function readJsonl<T>(filePath: string): Promise<T[]> {
   }
   return records;
 }
+
+const CANONICAL_HARVEST_QUERIES = [
+  { program: 'CCHS', query: '"Canadian Community Health Survey"' },
+  { program: 'CCHS', query: '"Enquête sur la santé dans les collectivités canadiennes"' },
+  { program: 'CSD', query: '"Canadian Survey on Disability"' },
+  { program: 'CSD', query: '"Enquête canadienne sur l\'incapacité"' },
+  { program: 'CIS', query: '"Canadian Income Survey"' },
+  { program: 'CIS', query: '"Enquête canadienne sur le revenu"' },
+  { program: 'CHMS', query: '"Canadian Health Measures Survey"' },
+  { program: 'CHMS', query: '"Enquête canadienne sur les mesures de la santé"' },
+  { program: 'SHS', query: '"Survey of Household Spending"' },
+  { program: 'SHS', query: '"Enquête sur les dépenses des ménages"' },
+  { program: 'CIUS', query: '"Canadian Internet Use Survey"' },
+  { program: 'CIUS', query: '"Enquête canadienne sur l\'utilisation d\'Internet"' },
+  { program: 'GSS', query: '"General Social Survey" "Statistics Canada"' },
+  { program: 'GSS', query: '"Canadian General Social Survey"' },
+  { program: 'GSS', query: '"Enquête sociale générale" "Statistique Canada"' },
+  { program: 'LFS', query: '"Labour Force Survey" "Statistics Canada"' },
+  { program: 'LFS', query: '"Canadian Labour Force Survey"' },
+  { program: 'LFS', query: '"Enquête sur la population active" "Statistique Canada"' },
+];
 
 async function main() {
   const q = new ResearchQueue(dbPath);
@@ -106,19 +127,47 @@ async function main() {
       const candidates = getGreyLiteratureCandidates();
       writeFileSync(outFile, candidates.map(c => JSON.stringify(c)).join('\n') + '\n', { flag: 'w' });
       console.log(JSON.stringify({ greyLiteratureWorks: candidates.length, path: outFile }));
+    } else if (command === 'harvest-recent') {
+      const year = getArgValue('--year') ?? '2025|2026';
+      const maxPerQuery = Number(getArgValue('--max-per-query') ?? 2000);
+      const outFile = getArgValue('--out') ?? path.join(ROOT, 'out', 'candidates-recent.jsonl');
+      const allCandidates: CandidateWork[] = [];
+
+      for (const item of CANONICAL_HARVEST_QUERIES) {
+        console.log(`Harvesting ${item.program} (${item.query})...`);
+        const res = await harvestOpenAlexAll(item.query, {
+          filter: `publication_year:${year}`,
+          maxRecords: maxPerQuery,
+          queue: q,
+          onProgress: (fetched, total) => {
+            process.stdout.write(`  fetched ${fetched}/${total}\r`);
+          }
+        });
+        console.log(`  done: ${res.works.length} works (total index count: ${res.totalCount})`);
+        for (const w of res.works) {
+          w.suggestedPrograms = [...new Set([...(w.suggestedPrograms ?? []), item.program])];
+          allCandidates.push(w);
+        }
+      }
+
+      writeFileSync(outFile, allCandidates.map(c => JSON.stringify(c)).join('\n') + '\n', { flag: 'w' });
+      console.log(JSON.stringify({ totalCandidates: allCandidates.length, path: outFile }));
     } else if (command === 'discover-openalex') {
       const query = args.find(a => !a.startsWith('--'));
       if (!query) throw new Error('Usage: researcher discover-openalex "<query>" [--limit=N] [--year=YYYY|YYYY] [--filter=...] [--out=candidates.jsonl]');
       const limit = Number(getArgValue('--limit') ?? 25);
       const outFile = getArgValue('--out');
       const year = getArgValue('--year');
+      const fetchAll = args.includes('--all');
       let filter = getArgValue('--filter');
       if (year && !filter) {
         filter = `publication_year:${year}`;
       } else if (year && filter && !filter.includes('publication_year:')) {
         filter = `${filter},publication_year:${year}`;
       }
-      const res = await searchOpenAlex(query, { perPage: limit, queue: q, filter: filter ?? undefined });
+      const res = fetchAll
+        ? await harvestOpenAlexAll(query, { maxRecords: limit, queue: q, filter: filter ?? undefined })
+        : await searchOpenAlex(query, { perPage: limit, queue: q, filter: filter ?? undefined });
       console.log(`Discovered ${res.works.length} works from OpenAlex (total in index: ${res.totalCount})`);
       if (outFile) {
         writeFileSync(outFile, res.works.map(w => JSON.stringify(w)).join('\n') + '\n', { flag: 'w' });
@@ -192,7 +241,7 @@ async function main() {
       const report = evaluateExtractionAgainstGold(goldRecords, reviewed);
       console.log(JSON.stringify(report, null, 2));
     } else {
-      throw new Error('Commands: seed | run | status | report | audit | reset-failed | review | approve | reject | export | preview | discover-openalex | enrich-crossref | parse-crdcn | assemble | evaluate');
+      throw new Error('Commands: seed | run | status | report | audit | reset-failed | review | approve | reject | export | preview | discover-openalex | harvest-recent | enrich-crossref | parse-crdcn | assemble | evaluate');
     }
   } finally {
     q.close();

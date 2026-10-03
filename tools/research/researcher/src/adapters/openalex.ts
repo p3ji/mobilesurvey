@@ -124,3 +124,35 @@ export async function getOpenAlexByDois(
   }
   return allWorks;
 }
+
+export async function harvestOpenAlexAll(
+  query: string,
+  options: OpenAlexSearchOptions & { maxRecords?: number; onProgress?: (fetched: number, total: number) => void } = {}
+): Promise<{ works: CandidateWork[]; totalCount: number }> {
+  let currentCursor = options.cursor ?? '*';
+  const allWorks: CandidateWork[] = [];
+  const maxRecords = options.maxRecords ?? 10000;
+  let totalCount = 0;
+
+  while (currentCursor && allWorks.length < maxRecords) {
+    const batchSize = Math.min(100, maxRecords - allWorks.length);
+    const res = await searchOpenAlex(query, {
+      ...options,
+      perPage: batchSize,
+      cursor: currentCursor,
+    });
+    totalCount = res.totalCount;
+    allWorks.push(...res.works);
+    if (options.onProgress) {
+      options.onProgress(allWorks.length, totalCount);
+    }
+    if (!res.nextCursor || res.works.length === 0 || res.nextCursor === currentCursor) {
+      break;
+    }
+    currentCursor = res.nextCursor;
+    // Polite pacing
+    await new Promise(r => setTimeout(r, 120));
+  }
+
+  return { works: allWorks, totalCount };
+}
