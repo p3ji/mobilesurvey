@@ -203,11 +203,7 @@ export function ResearcherPage({ onHome, onSearcher }: { onHome: () => void; onS
       if (selectedYearWindow === 'recent' && (work.year ?? 0) < 2025) return false;
       if (selectedYearWindow === 'historical' && (work.year ?? 0) >= 2025) return false;
       // Document type filter
-      if (selectedType === 'report' && work.workType !== 'report') return false;
-      if (selectedType === 'article' && work.workType !== 'article' && work.workType !== 'journal article') return false;
-      if (selectedType === 'preprint' && work.workType !== 'preprint') return false;
-      if (selectedType === 'dissertation' && work.workType !== 'dissertation') return false;
-      if (selectedType === 'other' && ['article', 'journal article', 'report', 'preprint', 'dissertation'].includes(work.workType ?? '')) return false;
+      if (selectedType !== 'all' && work.workType !== selectedType) return false;
       // Cycle year filter
       if (selectedCycle) {
         const hasCycle = work.uses.some(u =>
@@ -241,13 +237,10 @@ export function ResearcherPage({ onHome, onSearcher }: { onHome: () => void; onS
 
   const recentCount = useMemo(() => works.filter(w => (w.year ?? 0) >= 2025).length, []);
   const reportsCount = useMemo(() => works.filter(w => w.workType === 'report').length, []);
-  const articlesCount = useMemo(() => works.filter(w => w.workType === 'article' || w.workType === 'journal article').length, []);
+  const articlesCount = useMemo(() => works.filter(w => w.workType === 'article').length, []);
   const preprintsCount = useMemo(() => works.filter(w => w.workType === 'preprint').length, []);
   const dissertationsCount = useMemo(() => works.filter(w => w.workType === 'dissertation').length, []);
-  const otherCount = useMemo(
-    () => works.filter(w => !['article', 'journal article', 'report', 'preprint', 'dissertation'].includes(w.workType ?? '')).length,
-    []
-  );
+  const conferencesCount = useMemo(() => works.filter(w => w.workType === 'conference-paper').length, []);
   const exactCount = works.filter(w => w.uses.some(u => u.precision === 'exact_cycles')).length;
   const exactPercentage = works.length > 0 ? Math.round((exactCount / works.length) * 100) : 0;
 
@@ -498,10 +491,10 @@ export function ResearcherPage({ onHome, onSearcher }: { onHome: () => void; onS
               >
                 <option value="all">All Document Types ({works.length})</option>
                 <option value="article">Journal Articles ({articlesCount})</option>
-                <option value="report">Policy & NGO Reports ({reportsCount})</option>
-                <option value="preprint">Preprints & Working Papers ({preprintsCount})</option>
+                <option value="report">Policy & Institutional Reports ({reportsCount})</option>
                 <option value="dissertation">Theses & Dissertations ({dissertationsCount})</option>
-                <option value="other">Datasets & Other ({otherCount})</option>
+                <option value="preprint">Preprints & Working Papers ({preprintsCount})</option>
+                <option value="conference-paper">Conference Papers ({conferencesCount})</option>
               </select>
 
               <select

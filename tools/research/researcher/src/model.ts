@@ -372,6 +372,39 @@ export function isStatisticsCanadaPublication(work: {
   return /^(statistics canada|statistique canada|statcan|government of canada - statistics canada)$/i.test(org);
 }
 
+export function isDataArtifactOrPackage(work: {
+  title?: string | null;
+  workType?: string | null;
+  url?: string | null;
+  doi?: string | null;
+  issuingOrganization?: string | null;
+}): boolean {
+  if (work.workType === 'dataset') return true;
+  const title = (work.title ?? '').trim().toLowerCase();
+  if (
+    title.startsWith('data from ') ||
+    title.startsWith('data and code for:') ||
+    title.includes('(replication data)') ||
+    title.includes('[custom tabulation]') ||
+    title.includes('accelerometer processing methods for cycle')
+  ) {
+    return true;
+  }
+  const url = (work.url ?? '').toLowerCase();
+  if (
+    url.includes('figshare.com') ||
+    url.includes('zenodo.org') ||
+    url.includes('borealisdata.ca') ||
+    url.includes('cran.r-project.org') ||
+    url.includes('datadryad.org')
+  ) {
+    return true;
+  }
+  const org = (work.issuingOrganization ?? '').toLowerCase();
+  if (org === 'borealis' || org.includes('dataverse') || org.includes('figshare')) return true;
+  return false;
+}
+
 export function reconstructAbstract(invertedIndex?: Record<string, number[]> | null): string | null {
   if (!invertedIndex || typeof invertedIndex !== 'object') return null;
   const entries = Object.entries(invertedIndex);

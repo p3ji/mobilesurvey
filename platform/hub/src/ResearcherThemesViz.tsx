@@ -58,18 +58,19 @@ export function getThemeConfig(themeKey: string): { label: string; color: string
 export const DOC_TYPE_OPTIONS: Array<{ key: string; label: string }> = [
   { key: 'all', label: 'All Document Types' },
   { key: 'article', label: 'Journal Articles' },
-  { key: 'report', label: 'Policy & NGO Reports' },
-  { key: 'preprint', label: 'Preprints & Working Papers' },
+  { key: 'report', label: 'Policy & Institutional Reports' },
   { key: 'dissertation', label: 'Theses & Dissertations' },
-  { key: 'other', label: 'Datasets & Other' },
+  { key: 'preprint', label: 'Preprints & Working Papers' },
+  { key: 'conference-paper', label: 'Conference Papers' },
 ];
 
 export function getDocCategory(type: string | null): string {
   if (type === 'article' || type === 'journal article') return 'article';
   if (type === 'report') return 'report';
-  if (type === 'preprint') return 'preprint';
   if (type === 'dissertation') return 'dissertation';
-  return 'other';
+  if (type === 'preprint') return 'preprint';
+  if (type === 'conference-paper' || type === 'conference-abstract') return 'conference-paper';
+  return 'article';
 }
 
 interface ResearcherThemesVizProps {
@@ -118,15 +119,8 @@ export function ResearcherThemesViz({
   const filteredWorks = useMemo(() => {
     return works.filter(work => {
       if (selectedType !== 'all') {
-        if (selectedType === 'article') {
-          if (work.workType !== 'article' && work.workType !== 'journal article') return false;
-        } else if (selectedType === 'other') {
-          if (['article', 'journal article', 'report', 'preprint', 'dissertation'].includes(work.workType ?? '')) {
-            return false;
-          }
-        } else if (work.workType !== selectedType) {
-          return false;
-        }
+        const cat = getDocCategory(work.workType);
+        if (cat !== selectedType) return false;
       }
       if (selectedSurveys.length > 0) {
         if (!work.uses.some(u => selectedSurveys.includes(u.program))) return false;
@@ -180,7 +174,7 @@ export function ResearcherThemesViz({
         reports: number;
         dissertations: number;
         preprints: number;
-        other: number;
+        conferences: number;
       }
     >();
 
@@ -195,7 +189,7 @@ export function ResearcherThemesViz({
           reports: 0,
           dissertations: 0,
           preprints: 0,
-          other: 0,
+          conferences: 0,
         });
       }
       const item = map.get(t)!;
@@ -208,7 +202,7 @@ export function ResearcherThemesViz({
       else if (cat === 'report') item.reports += 1;
       else if (cat === 'dissertation') item.dissertations += 1;
       else if (cat === 'preprint') item.preprints += 1;
-      else item.other += 1;
+      else if (cat === 'conference-paper') item.conferences += 1;
     }
 
     return Array.from(map.values())
@@ -885,6 +879,7 @@ export function ResearcherThemesViz({
                         {item.reports > 0 && <span className="researcher-mini-pill researcher-mini-pill--report" title="Policy reports">{item.reports} rep</span>}
                         {item.dissertations > 0 && <span className="researcher-mini-pill researcher-mini-pill--diss" title="Theses/dissertations">{item.dissertations} the</span>}
                         {item.preprints > 0 && <span className="researcher-mini-pill" title="Preprints">{item.preprints} prep</span>}
+                        {item.conferences > 0 && <span className="researcher-mini-pill" style={{ background: '#fef9c3', color: '#854d0e' }} title="Conference papers">{item.conferences} conf</span>}
                       </div>
                     </td>
                     <td style={{ textAlign: 'right' }}>

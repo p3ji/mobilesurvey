@@ -1,4 +1,4 @@
-import { isStatisticsCanadaPublication } from './model.js';
+import { isDataArtifactOrPackage, isStatisticsCanadaPublication } from './model.js';
 
 interface ReviewedClaim {
   program: string;
@@ -46,31 +46,42 @@ export interface PublicPilotWork {
 /** A deliberately small, rights-safe browser snapshot of human-approved facts (2015+ cutoff). */
 export function publicPreview(rows: object[], minYear: number = 2015): PublicPilotWork[] {
   return (rows as ReviewedWork[])
-    .filter(work => !isStatisticsCanadaPublication(work) && (work.year === null || work.year >= minYear))
-    .map(work => ({
-    id: work.id,
-    title: work.title,
-    doi: work.doi,
-    url: work.url,
-    year: work.year,
-    workType: work.workType,
-    issuingOrganization: work.issuingOrganization ?? null,
-    sources: [...new Set(work.sources.map(source => source.source))],
-    theme: work.themes[0]?.primary ?? null,
-    uses: work.claims.filter(claim => claim.role === 'analyzed' && !(
-      claim.precision === 'program_only' && work.claims.some(other =>
-        other.role === 'analyzed' && other.program === claim.program && other.precision !== 'program_only'
-      )
-    )).map(claim => ({
-      program: claim.program,
-      precision: claim.precision,
-      cycles: claim.exactCycles,
-      cycleText: claim.cycleText,
-      evidenceLocation: claim.location,
-    })),
-    mentions: work.claims.filter(claim => claim.role === 'background_mention').map(claim => ({
-      program: claim.program,
-      evidenceLocation: claim.location,
-    })),
-  })).filter(work => work.uses.length > 0);
+    .filter(work => !isStatisticsCanadaPublication(work) && !isDataArtifactOrPackage(work) && (work.year === null || work.year >= minYear))
+    .map(work => {
+      let normType = work.workType ?? 'article';
+      if (normType === 'journal article' || normType === 'review' || normType === 'editorial' || normType === 'research summary') {
+        normType = 'article';
+      } else if (normType === 'conference-abstract') {
+        normType = 'conference-paper';
+      } else if (normType === 'other') {
+        normType = 'preprint';
+      }
+
+      return {
+        id: work.id,
+        title: work.title,
+        doi: work.doi,
+        url: work.url,
+        year: work.year,
+        workType: normType,
+        issuingOrganization: work.issuingOrganization ?? null,
+        sources: [...new Set(work.sources.map(source => source.source))],
+        theme: work.themes[0]?.primary ?? null,
+        uses: work.claims.filter(claim => claim.role === 'analyzed' && !(
+          claim.precision === 'program_only' && work.claims.some(other =>
+            other.role === 'analyzed' && other.program === claim.program && other.precision !== 'program_only'
+          )
+        )).map(claim => ({
+          program: claim.program,
+          precision: claim.precision,
+          cycles: claim.exactCycles,
+          cycleText: claim.cycleText,
+          evidenceLocation: claim.location,
+        })),
+        mentions: work.claims.filter(claim => claim.role === 'background_mention').map(claim => ({
+          program: claim.program,
+          evidenceLocation: claim.location,
+        })),
+      };
+    }).filter(work => work.uses.length > 0);
 }

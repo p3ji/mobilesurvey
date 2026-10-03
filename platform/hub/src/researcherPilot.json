@@ -2647,7 +2647,7 @@
     "doi": "10.1093/ecco-jcc/jjae190.1374",
     "url": "https://doi.org/10.1093/ecco-jcc/jjae190.1374",
     "year": 2025,
-    "workType": "conference-abstract",
+    "workType": "conference-paper",
     "issuingOrganization": "Oxford University Press",
     "sources": [
       "OpenAlex"
@@ -2670,7 +2670,7 @@
     "doi": "10.1093/ecco-jcc/jjae190.1377",
     "url": "https://doi.org/10.1093/ecco-jcc/jjae190.1377",
     "year": 2025,
-    "workType": "conference-abstract",
+    "workType": "conference-paper",
     "issuingOrganization": "Oxford University Press",
     "sources": [
       "OpenAlex"
@@ -4200,29 +4200,6 @@
     "mentions": []
   },
   {
-    "id": "doi:10.1158/1055-9965.c.7660873",
-    "title": "Data from Socioeconomic Inequalities in Participation in Colorectal Cancer Screening in Ontario, Canada: A Decomposition Analysis",
-    "doi": "10.1158/1055-9965.c.7660873",
-    "url": "https://doi.org/10.1158/1055-9965.c.7660873",
-    "year": 2025,
-    "workType": "other",
-    "issuingOrganization": null,
-    "sources": [
-      "OpenAlex"
-    ],
-    "theme": "income and inequality",
-    "uses": [
-      {
-        "program": "CCHS",
-        "precision": "range",
-        "cycles": [],
-        "cycleText": "2017 to 2018",
-        "evidenceLocation": "Abstract"
-      }
-    ],
-    "mentions": []
-  },
-  {
     "id": "doi:10.1158/1055-9965.epi-34-2-hi",
     "title": "Selected Articles from This Issue",
     "doi": "10.1158/1055-9965.epi-34-2-hi",
@@ -4251,7 +4228,7 @@
     "doi": "10.1161/cir.151.suppl_1.p3107",
     "url": "https://doi.org/10.1161/cir.151.suppl_1.p3107",
     "year": 2025,
-    "workType": "conference-abstract",
+    "workType": "conference-paper",
     "issuingOrganization": "Lippincott Williams & Wilkins",
     "sources": [
       "OpenAlex"
@@ -5377,7 +5354,7 @@
     "doi": "10.1371/journal.pone.0200127",
     "url": "https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0200127",
     "year": 2018,
-    "workType": "journal article",
+    "workType": "article",
     "issuingOrganization": null,
     "sources": [
       "PLOS ONE"
@@ -5933,29 +5910,6 @@
           "2016"
         ],
         "cycleText": "2016",
-        "evidenceLocation": "Abstract"
-      }
-    ],
-    "mentions": []
-  },
-  {
-    "id": "doi:10.15456/jae.2026232.0644743547",
-    "title": "Economies of Scale to Consumption in Collective Households (replication data)",
-    "doi": "10.15456/jae.2026232.0644743547",
-    "url": "https://doi.org/10.15456/jae.2026232.0644743547",
-    "year": 2026,
-    "workType": "other",
-    "issuingOrganization": "ZBW – Leibniz-Informationszentrum Wirtschaft",
-    "sources": [
-      "OpenAlex"
-    ],
-    "theme": "families",
-    "uses": [
-      {
-        "program": "SHS",
-        "precision": "program_only",
-        "cycles": [],
-        "cycleText": "",
         "evidenceLocation": "Abstract"
       }
     ],
@@ -7720,58 +7674,12 @@
     "mentions": []
   },
   {
-    "id": "doi:10.32614/cran.package.chms",
-    "title": "chms: Accelerometer Processing Methods for Cycle 7 of the CHMS",
-    "doi": "10.32614/cran.package.chms",
-    "url": "https://doi.org/10.32614/cran.package.chms",
-    "year": 2026,
-    "workType": "dataset",
-    "issuingOrganization": null,
-    "sources": [
-      "OpenAlex"
-    ],
-    "theme": "health",
-    "uses": [
-      {
-        "program": "CHMS",
-        "precision": "program_only",
-        "cycles": [],
-        "cycleText": "",
-        "evidenceLocation": "Abstract"
-      }
-    ],
-    "mentions": []
-  },
-  {
-    "id": "doi:10.32614/cran.package.chmsflow",
-    "title": "chmsflow: Transforming and Harmonizing CHMS Variables",
-    "doi": "10.32614/cran.package.chmsflow",
-    "url": "https://doi.org/10.32614/cran.package.chmsflow",
-    "year": 2026,
-    "workType": "dataset",
-    "issuingOrganization": null,
-    "sources": [
-      "OpenAlex"
-    ],
-    "theme": "health",
-    "uses": [
-      {
-        "program": "CHMS",
-        "precision": "range",
-        "cycles": [],
-        "cycleText": "2007-2019",
-        "evidenceLocation": "Abstract"
-      }
-    ],
-    "mentions": []
-  },
-  {
     "id": "doi:10.32920/31052020",
     "title": "Discrimination Experienced by Landed Immigrants in Canada",
     "doi": "10.32920/31052020",
     "url": "https://doi.org/10.32920/31052020",
     "year": 2026,
-    "workType": "other",
+    "workType": "preprint",
     "issuingOrganization": null,
     "sources": [
       "OpenAlex"
@@ -7796,7 +7704,7 @@
     "doi": "10.32920/31549339",
     "url": "https://doi.org/10.32920/31549339",
     "year": 2026,
-    "workType": "other",
+    "workType": "preprint",
     "issuingOrganization": null,
     "sources": [
       "OpenAlex"
@@ -7821,7 +7729,7 @@
     "doi": "10.32920/31549339.v1",
     "url": "https://doi.org/10.32920/31549339.v1",
     "year": 2026,
-    "workType": "other",
+    "workType": "preprint",
     "issuingOrganization": null,
     "sources": [
       "OpenAlex"
@@ -7869,7 +7777,7 @@
     "doi": "10.32920/ryerson.14640063",
     "url": "https://doi.org/10.32920/ryerson.14640063",
     "year": 2021,
-    "workType": "other",
+    "workType": "preprint",
     "issuingOrganization": null,
     "sources": [
       "OpenAlex"
@@ -7892,7 +7800,7 @@
     "doi": "10.32920/ryerson.14640063.v1",
     "url": "https://doi.org/10.32920/ryerson.14640063.v1",
     "year": 2021,
-    "workType": "other",
+    "workType": "preprint",
     "issuingOrganization": null,
     "sources": [
       "OpenAlex"
@@ -8057,7 +7965,7 @@
     "doi": "10.3389/fpubh.2025.1725525",
     "url": "https://doi.org/10.3389/fpubh.2025.1725525",
     "year": 2026,
-    "workType": "editorial",
+    "workType": "article",
     "issuingOrganization": "Frontiers Media",
     "sources": [
       "OpenAlex"
@@ -8640,7 +8548,7 @@
     "doi": "10.48321/d1cf2e0d05",
     "url": "https://doi.org/10.48321/d1cf2e0d05",
     "year": 2026,
-    "workType": "other",
+    "workType": "preprint",
     "issuingOrganization": "California Digital Library",
     "sources": [
       "OpenAlex"
@@ -8900,58 +8808,12 @@
     "mentions": []
   },
   {
-    "id": "doi:10.5281/zenodo.22902309",
-    "title": "Data and code for: Directional antigenic drift forecasts influenza vaccine effectiveness and guides strain selection",
-    "doi": "10.5281/zenodo.22902309",
-    "url": "https://doi.org/10.5281/zenodo.22902309",
-    "year": 2026,
-    "workType": "dataset",
-    "issuingOrganization": "European Organization for Nuclear Research",
-    "sources": [
-      "OpenAlex"
-    ],
-    "theme": "health",
-    "uses": [
-      {
-        "program": "CCHS",
-        "precision": "program_only",
-        "cycles": [],
-        "cycleText": "",
-        "evidenceLocation": "Abstract"
-      }
-    ],
-    "mentions": []
-  },
-  {
-    "id": "doi:10.5281/zenodo.22902310",
-    "title": "Data and code for: Directional antigenic drift forecasts influenza vaccine effectiveness and guides strain selection",
-    "doi": "10.5281/zenodo.22902310",
-    "url": "https://doi.org/10.5281/zenodo.22902310",
-    "year": 2026,
-    "workType": "dataset",
-    "issuingOrganization": "European Organization for Nuclear Research",
-    "sources": [
-      "OpenAlex"
-    ],
-    "theme": "health",
-    "uses": [
-      {
-        "program": "CCHS",
-        "precision": "program_only",
-        "cycles": [],
-        "cycleText": "",
-        "evidenceLocation": "Abstract"
-      }
-    ],
-    "mentions": []
-  },
-  {
     "id": "doi:10.5334/ijic.icic25105",
     "title": "Creating and Utilizing an Integrated Platform to Map Health in the Community: The Healthy Barrie Community Snapshot",
     "doi": "10.5334/ijic.icic25105",
     "url": "https://doi.org/10.5334/ijic.icic25105",
     "year": 2026,
-    "workType": "conference-abstract",
+    "workType": "conference-paper",
     "issuingOrganization": "Ubiquity Press",
     "sources": [
       "OpenAlex"
@@ -8974,7 +8836,7 @@
     "doi": "10.5334/ijic.icic26108",
     "url": "https://doi.org/10.5334/ijic.icic26108",
     "year": 2026,
-    "workType": "conference-abstract",
+    "workType": "conference-paper",
     "issuingOrganization": "Ubiquity Press",
     "sources": [
       "OpenAlex"
@@ -8997,7 +8859,7 @@
     "doi": "10.5334/ijic.icic26471",
     "url": "https://doi.org/10.5334/ijic.icic26471",
     "year": 2026,
-    "workType": "conference-abstract",
+    "workType": "conference-paper",
     "issuingOrganization": "Ubiquity Press",
     "sources": [
       "OpenAlex"
@@ -9020,7 +8882,7 @@
     "doi": "10.5334/ijic.icic26502",
     "url": "https://doi.org/10.5334/ijic.icic26502",
     "year": 2026,
-    "workType": "conference-abstract",
+    "workType": "conference-paper",
     "issuingOrganization": "Ubiquity Press",
     "sources": [
       "OpenAlex"
@@ -9118,7 +8980,7 @@
     "doi": "10.5465/ambpp.2017.17398abstract",
     "url": "https://doi.org/10.5465/ambpp.2017.17398abstract",
     "year": 2017,
-    "workType": "conference-abstract",
+    "workType": "conference-paper",
     "issuingOrganization": "Academy of Management",
     "sources": [
       "OpenAlex"
@@ -9143,7 +9005,7 @@
     "doi": "10.5465/ambpp.2021.11959abstract",
     "url": "https://doi.org/10.5465/ambpp.2021.11959abstract",
     "year": 2021,
-    "workType": "conference-abstract",
+    "workType": "conference-paper",
     "issuingOrganization": "Academy of Management",
     "sources": [
       "OpenAlex"
@@ -9258,408 +9120,6 @@
     "mentions": []
   },
   {
-    "id": "doi:10.5683/sp3/3rrcpz",
-    "title": "Enquête sur la population active, avril 2026 [Canada]",
-    "doi": "10.5683/sp3/3rrcpz",
-    "url": "https://doi.org/10.5683/sp3/3rrcpz",
-    "year": 2026,
-    "workType": "dataset",
-    "issuingOrganization": "Borealis",
-    "sources": [
-      "OpenAlex"
-    ],
-    "theme": "digital society",
-    "uses": [
-      {
-        "program": "LFS",
-        "precision": "program_only",
-        "cycles": [],
-        "cycleText": "",
-        "evidenceLocation": "Abstract"
-      }
-    ],
-    "mentions": []
-  },
-  {
-    "id": "doi:10.5683/sp3/6sppbn",
-    "title": "Enquête canadienne sur le logement, 2022",
-    "doi": "10.5683/sp3/6sppbn",
-    "url": "https://doi.org/10.5683/sp3/6sppbn",
-    "year": 2025,
-    "workType": "dataset",
-    "issuingOrganization": "Borealis",
-    "sources": [
-      "OpenAlex"
-    ],
-    "theme": "digital society",
-    "uses": [
-      {
-        "program": "CHS",
-        "precision": "program_only",
-        "cycles": [],
-        "cycleText": "",
-        "evidenceLocation": "Abstract"
-      }
-    ],
-    "mentions": []
-  },
-  {
-    "id": "doi:10.5683/sp3/czesyf",
-    "title": "Enquête sur la population active, février 2026 [Canada]",
-    "doi": "10.5683/sp3/czesyf",
-    "url": "https://doi.org/10.5683/sp3/czesyf",
-    "year": 2026,
-    "workType": "dataset",
-    "issuingOrganization": "Borealis",
-    "sources": [
-      "OpenAlex"
-    ],
-    "theme": "digital society",
-    "uses": [
-      {
-        "program": "LFS",
-        "precision": "program_only",
-        "cycles": [],
-        "cycleText": "",
-        "evidenceLocation": "Abstract"
-      }
-    ],
-    "mentions": []
-  },
-  {
-    "id": "doi:10.5683/sp3/dsddpb",
-    "title": "2SLGBTQ+ CCHS 2023 [Canada] [Custom Tabulation] [CSV]",
-    "doi": "10.5683/sp3/dsddpb",
-    "url": "https://doi.org/10.5683/sp3/dsddpb",
-    "year": 2025,
-    "workType": "dataset",
-    "issuingOrganization": "Borealis",
-    "sources": [
-      "OpenAlex"
-    ],
-    "theme": "health",
-    "uses": [
-      {
-        "program": "CCHS",
-        "precision": "exact_cycles",
-        "cycles": [
-          "2023"
-        ],
-        "cycleText": "2023",
-        "evidenceLocation": "Abstract"
-      }
-    ],
-    "mentions": []
-  },
-  {
-    "id": "doi:10.5683/sp3/ffqb3b",
-    "title": "Canadian Community Health Survey, 2022: Annual Component",
-    "doi": "10.5683/sp3/ffqb3b",
-    "url": "https://doi.org/10.5683/sp3/ffqb3b",
-    "year": 2025,
-    "workType": "dataset",
-    "issuingOrganization": "Borealis",
-    "sources": [
-      "OpenAlex"
-    ],
-    "theme": "digital society",
-    "uses": [
-      {
-        "program": "CCHS",
-        "precision": "program_only",
-        "cycles": [],
-        "cycleText": "",
-        "evidenceLocation": "Abstract"
-      }
-    ],
-    "mentions": []
-  },
-  {
-    "id": "doi:10.5683/sp3/gfm492",
-    "title": "Enquête sur la population active, mars 2026 [Canada]",
-    "doi": "10.5683/sp3/gfm492",
-    "url": "https://doi.org/10.5683/sp3/gfm492",
-    "year": 2026,
-    "workType": "dataset",
-    "issuingOrganization": "Borealis",
-    "sources": [
-      "OpenAlex"
-    ],
-    "theme": "digital society",
-    "uses": [
-      {
-        "program": "LFS",
-        "precision": "program_only",
-        "cycles": [],
-        "cycleText": "",
-        "evidenceLocation": "Abstract"
-      }
-    ],
-    "mentions": []
-  },
-  {
-    "id": "doi:10.5683/sp3/mb2fhg",
-    "title": "Employment Insurance Coverage Survey, 2024 [Canada]",
-    "doi": "10.5683/sp3/mb2fhg",
-    "url": "https://doi.org/10.5683/sp3/mb2fhg",
-    "year": 2026,
-    "workType": "dataset",
-    "issuingOrganization": "Borealis",
-    "sources": [
-      "OpenAlex"
-    ],
-    "theme": "families",
-    "uses": [
-      {
-        "program": "EICS",
-        "precision": "program_only",
-        "cycles": [],
-        "cycleText": "",
-        "evidenceLocation": "Abstract"
-      }
-    ],
-    "mentions": []
-  },
-  {
-    "id": "doi:10.5683/sp3/mth7we",
-    "title": "Labour Force Survey, December 2024 [Canada] [Rebased 2025]",
-    "doi": "10.5683/sp3/mth7we",
-    "url": "https://doi.org/10.5683/sp3/mth7we",
-    "year": 2025,
-    "workType": "dataset",
-    "issuingOrganization": "Borealis",
-    "sources": [
-      "OpenAlex"
-    ],
-    "theme": "labour",
-    "uses": [
-      {
-        "program": "LFS",
-        "precision": "program_only",
-        "cycles": [],
-        "cycleText": "",
-        "evidenceLocation": "Abstract"
-      },
-      {
-        "program": "LFS",
-        "precision": "program_only",
-        "cycles": [],
-        "cycleText": "",
-        "evidenceLocation": "Abstract"
-      }
-    ],
-    "mentions": []
-  },
-  {
-    "id": "doi:10.5683/sp3/nphsrg",
-    "title": "Enquête sur la population active, novembre 2025 [Canada]",
-    "doi": "10.5683/sp3/nphsrg",
-    "url": "https://doi.org/10.5683/sp3/nphsrg",
-    "year": 2025,
-    "workType": "dataset",
-    "issuingOrganization": "Borealis",
-    "sources": [
-      "OpenAlex"
-    ],
-    "theme": "digital society",
-    "uses": [
-      {
-        "program": "LFS",
-        "precision": "program_only",
-        "cycles": [],
-        "cycleText": "",
-        "evidenceLocation": "Abstract"
-      }
-    ],
-    "mentions": []
-  },
-  {
-    "id": "doi:10.5683/sp3/pb6vjy",
-    "title": "Enquête sur la population active, janvier 2026 [Canada]",
-    "doi": "10.5683/sp3/pb6vjy",
-    "url": "https://doi.org/10.5683/sp3/pb6vjy",
-    "year": 2026,
-    "workType": "dataset",
-    "issuingOrganization": "Borealis",
-    "sources": [
-      "OpenAlex"
-    ],
-    "theme": "digital society",
-    "uses": [
-      {
-        "program": "LFS",
-        "precision": "program_only",
-        "cycles": [],
-        "cycleText": "",
-        "evidenceLocation": "Abstract"
-      }
-    ],
-    "mentions": []
-  },
-  {
-    "id": "doi:10.5683/sp3/qx6qun",
-    "title": "Enquête sur la population active, décembre 2025 [Canada]",
-    "doi": "10.5683/sp3/qx6qun",
-    "url": "https://doi.org/10.5683/sp3/qx6qun",
-    "year": 2026,
-    "workType": "dataset",
-    "issuingOrganization": "Borealis",
-    "sources": [
-      "OpenAlex"
-    ],
-    "theme": "digital society",
-    "uses": [
-      {
-        "program": "LFS",
-        "precision": "program_only",
-        "cycles": [],
-        "cycleText": "",
-        "evidenceLocation": "Abstract"
-      }
-    ],
-    "mentions": []
-  },
-  {
-    "id": "doi:10.5683/sp3/tlvvdz",
-    "title": "2SLGBTQ+ Census 2021 [Canada] [Custom Tabulation] [B2020] [CSV]",
-    "doi": "10.5683/sp3/tlvvdz",
-    "url": "https://doi.org/10.5683/sp3/tlvvdz",
-    "year": 2025,
-    "workType": "dataset",
-    "issuingOrganization": "Borealis",
-    "sources": [
-      "OpenAlex"
-    ],
-    "theme": "health",
-    "uses": [
-      {
-        "program": "CCHS",
-        "precision": "exact_cycles",
-        "cycles": [
-          "2023"
-        ],
-        "cycleText": "2023",
-        "evidenceLocation": "Abstract"
-      }
-    ],
-    "mentions": []
-  },
-  {
-    "id": "doi:10.5683/sp3/uguyc3",
-    "title": "Canadian Income Survey, 2022",
-    "doi": "10.5683/sp3/uguyc3",
-    "url": "https://doi.org/10.5683/sp3/uguyc3",
-    "year": 2025,
-    "workType": "dataset",
-    "issuingOrganization": "Borealis",
-    "sources": [
-      "OpenAlex"
-    ],
-    "theme": "education",
-    "uses": [
-      {
-        "program": "LFS",
-        "precision": "program_only",
-        "cycles": [],
-        "cycleText": "",
-        "evidenceLocation": "Abstract"
-      }
-    ],
-    "mentions": []
-  },
-  {
-    "id": "doi:10.5683/sp3/xlc7le",
-    "title": "Enquête sur la population active, octobre 2025 [Canada]",
-    "doi": "10.5683/sp3/xlc7le",
-    "url": "https://doi.org/10.5683/sp3/xlc7le",
-    "year": 2025,
-    "workType": "dataset",
-    "issuingOrganization": "Borealis",
-    "sources": [
-      "OpenAlex"
-    ],
-    "theme": "digital society",
-    "uses": [
-      {
-        "program": "LFS",
-        "precision": "program_only",
-        "cycles": [],
-        "cycleText": "",
-        "evidenceLocation": "Abstract"
-      }
-    ],
-    "mentions": []
-  },
-  {
-    "id": "doi:10.5683/sp4/amucjl",
-    "title": "Enquête sur la population active, juillet 2026 [Canada]",
-    "doi": "10.5683/sp4/amucjl",
-    "url": "https://doi.org/10.5683/sp4/amucjl",
-    "year": 2026,
-    "workType": "dataset",
-    "issuingOrganization": "Borealis",
-    "sources": [
-      "OpenAlex"
-    ],
-    "theme": "digital society",
-    "uses": [
-      {
-        "program": "LFS",
-        "precision": "program_only",
-        "cycles": [],
-        "cycleText": "",
-        "evidenceLocation": "Abstract"
-      }
-    ],
-    "mentions": []
-  },
-  {
-    "id": "doi:10.5683/sp4/b4mid3",
-    "title": "Enquête sur la population active, juin 2026 [Canada]",
-    "doi": "10.5683/sp4/b4mid3",
-    "url": "https://doi.org/10.5683/sp4/b4mid3",
-    "year": 2026,
-    "workType": "dataset",
-    "issuingOrganization": "Borealis",
-    "sources": [
-      "OpenAlex"
-    ],
-    "theme": "digital society",
-    "uses": [
-      {
-        "program": "LFS",
-        "precision": "program_only",
-        "cycles": [],
-        "cycleText": "",
-        "evidenceLocation": "Abstract"
-      }
-    ],
-    "mentions": []
-  },
-  {
-    "id": "doi:10.5683/sp4/byjdjp",
-    "title": "Enquête sur la population active, mai 2026 [Canada]",
-    "doi": "10.5683/sp4/byjdjp",
-    "url": "https://doi.org/10.5683/sp4/byjdjp",
-    "year": 2026,
-    "workType": "dataset",
-    "issuingOrganization": "Borealis",
-    "sources": [
-      "OpenAlex"
-    ],
-    "theme": "digital society",
-    "uses": [
-      {
-        "program": "LFS",
-        "precision": "program_only",
-        "cycles": [],
-        "cycleText": "",
-        "evidenceLocation": "Abstract"
-      }
-    ],
-    "mentions": []
-  },
-  {
     "id": "doi:10.5811/westjem.46551",
     "title": "Sociodemographic and Health Behaviour of Frequent, Avoidable Emergency Department Users in Ontario, Canada: A Population-based Descriptive Study",
     "doi": "10.5811/westjem.46551",
@@ -9697,313 +9157,6 @@
     "uses": [
       {
         "program": "GSS",
-        "precision": "program_only",
-        "cycles": [],
-        "cycleText": "",
-        "evidenceLocation": "Abstract"
-      }
-    ],
-    "mentions": []
-  },
-  {
-    "id": "doi:10.6084/m9.figshare.31797094",
-    "title": "Additional file 1 of Exposure to per- and polyfluoroalkyl substances and adult cardiometabolic health: a Canadian Health Measures Survey mixture analysis",
-    "doi": "10.6084/m9.figshare.31797094",
-    "url": "https://doi.org/10.6084/m9.figshare.31797094",
-    "year": 2026,
-    "workType": "article",
-    "issuingOrganization": "Figshare (United Kingdom)",
-    "sources": [
-      "OpenAlex"
-    ],
-    "theme": "health",
-    "uses": [
-      {
-        "program": "CHMS",
-        "precision": "program_only",
-        "cycles": [],
-        "cycleText": "",
-        "evidenceLocation": "Title"
-      }
-    ],
-    "mentions": []
-  },
-  {
-    "id": "doi:10.6084/m9.figshare.31797094.v1",
-    "title": "Additional file 1 of Exposure to per- and polyfluoroalkyl substances and adult cardiometabolic health: a Canadian Health Measures Survey mixture analysis",
-    "doi": "10.6084/m9.figshare.31797094.v1",
-    "url": "https://doi.org/10.6084/m9.figshare.31797094.v1",
-    "year": 2026,
-    "workType": "article",
-    "issuingOrganization": "Figshare (United Kingdom)",
-    "sources": [
-      "OpenAlex"
-    ],
-    "theme": "health",
-    "uses": [
-      {
-        "program": "CHMS",
-        "precision": "program_only",
-        "cycles": [],
-        "cycleText": "",
-        "evidenceLocation": "Title"
-      }
-    ],
-    "mentions": []
-  },
-  {
-    "id": "doi:10.6084/m9.figshare.32044453",
-    "title": "Self-perceived mental health among Canadian adolescents and young adults with asthma: Insights from a national cross-sectional study",
-    "doi": "10.6084/m9.figshare.32044453",
-    "url": "https://doi.org/10.6084/m9.figshare.32044453",
-    "year": 2026,
-    "workType": "article",
-    "issuingOrganization": "Figshare (United Kingdom)",
-    "sources": [
-      "OpenAlex"
-    ],
-    "theme": "health",
-    "uses": [
-      {
-        "program": "CCHS",
-        "precision": "exact_cycles",
-        "cycles": [
-          "2020"
-        ],
-        "cycleText": "2020",
-        "evidenceLocation": "Abstract"
-      }
-    ],
-    "mentions": []
-  },
-  {
-    "id": "doi:10.6084/m9.figshare.32044453.v1",
-    "title": "Self-Perceived Mental Health Among Canadian Adolescents and Young Adults with Asthma: Insights from a National Cross-sectional Study",
-    "doi": "10.6084/m9.figshare.32044453.v1",
-    "url": "https://doi.org/10.6084/m9.figshare.32044453.v1",
-    "year": 2026,
-    "workType": "article",
-    "issuingOrganization": "Figshare (United Kingdom)",
-    "sources": [
-      "OpenAlex"
-    ],
-    "theme": "health",
-    "uses": [
-      {
-        "program": "CCHS",
-        "precision": "range",
-        "cycles": [],
-        "cycleText": "2019-2020",
-        "evidenceLocation": "Abstract"
-      }
-    ],
-    "mentions": []
-  },
-  {
-    "id": "doi:10.6084/m9.figshare.32044453.v2",
-    "title": "Self-perceived mental health among Canadian adolescents and young adults with asthma: Insights from a national cross-sectional study",
-    "doi": "10.6084/m9.figshare.32044453.v2",
-    "url": "https://figshare.com/articles/journal_contribution/Self-Perceived_Mental_Health_Among_Canadian_Adolescents_and_Young_Adults_with_Asthma_Insights_from_a_National_Cross-sectional_Study/32044453",
-    "year": 2026,
-    "workType": "article",
-    "issuingOrganization": "Figshare (United Kingdom)",
-    "sources": [
-      "OpenAlex"
-    ],
-    "theme": "health",
-    "uses": [
-      {
-        "program": "CCHS",
-        "precision": "exact_cycles",
-        "cycles": [
-          "2020"
-        ],
-        "cycleText": "2020",
-        "evidenceLocation": "Abstract"
-      }
-    ],
-    "mentions": []
-  },
-  {
-    "id": "doi:10.6084/m9.figshare.c.8366659",
-    "title": "Exposure to per- and polyfluoroalkyl substances and adult cardiometabolic health: a Canadian Health Measures Survey mixture analysis",
-    "doi": "10.6084/m9.figshare.c.8366659",
-    "url": "https://doi.org/10.6084/m9.figshare.c.8366659",
-    "year": 2026,
-    "workType": "other",
-    "issuingOrganization": "Figshare (United Kingdom)",
-    "sources": [
-      "OpenAlex"
-    ],
-    "theme": "health",
-    "uses": [
-      {
-        "program": "CHMS",
-        "precision": "program_only",
-        "cycles": [],
-        "cycleText": "",
-        "evidenceLocation": "Abstract"
-      }
-    ],
-    "mentions": []
-  },
-  {
-    "id": "doi:10.6084/m9.figshare.c.8366659.v1",
-    "title": "Exposure to per- and polyfluoroalkyl substances and adult cardiometabolic health: a Canadian Health Measures Survey mixture analysis",
-    "doi": "10.6084/m9.figshare.c.8366659.v1",
-    "url": "https://doi.org/10.6084/m9.figshare.c.8366659.v1",
-    "year": 2026,
-    "workType": "other",
-    "issuingOrganization": "Figshare (United Kingdom)",
-    "sources": [
-      "OpenAlex"
-    ],
-    "theme": "health",
-    "uses": [
-      {
-        "program": "CHMS",
-        "precision": "program_only",
-        "cycles": [],
-        "cycleText": "",
-        "evidenceLocation": "Abstract"
-      }
-    ],
-    "mentions": []
-  },
-  {
-    "id": "doi:10.6084/m9.figshare.c.8426059",
-    "title": "Evaluating primary health care utilization among lesbian, gay, and bisexual individuals in Canada with a view to inform more equitable health measures",
-    "doi": "10.6084/m9.figshare.c.8426059",
-    "url": "https://doi.org/10.6084/m9.figshare.c.8426059",
-    "year": 2026,
-    "workType": "other",
-    "issuingOrganization": "Figshare (United Kingdom)",
-    "sources": [
-      "OpenAlex"
-    ],
-    "theme": "health",
-    "uses": [
-      {
-        "program": "CCHS",
-        "precision": "exact_cycles",
-        "cycles": [
-          "2016"
-        ],
-        "cycleText": "2016",
-        "evidenceLocation": "Abstract"
-      }
-    ],
-    "mentions": []
-  },
-  {
-    "id": "doi:10.6084/m9.figshare.c.8426059.v1",
-    "title": "Evaluating primary health care utilization among lesbian, gay, and bisexual individuals in Canada with a view to inform more equitable health measures",
-    "doi": "10.6084/m9.figshare.c.8426059.v1",
-    "url": "https://doi.org/10.6084/m9.figshare.c.8426059.v1",
-    "year": 2026,
-    "workType": "other",
-    "issuingOrganization": "Figshare (United Kingdom)",
-    "sources": [
-      "OpenAlex"
-    ],
-    "theme": "health",
-    "uses": [
-      {
-        "program": "CCHS",
-        "precision": "exact_cycles",
-        "cycles": [
-          "2016"
-        ],
-        "cycleText": "2016",
-        "evidenceLocation": "Abstract"
-      }
-    ],
-    "mentions": []
-  },
-  {
-    "id": "doi:10.6084/m9.figshare.c.8504218",
-    "title": "Objective and perceived neighbourhood walkability: population-average associations with transportation and recreational physical activity in urban-dwelling Canadian adults",
-    "doi": "10.6084/m9.figshare.c.8504218",
-    "url": "https://doi.org/10.6084/m9.figshare.c.8504218",
-    "year": 2026,
-    "workType": "other",
-    "issuingOrganization": "Figshare (United Kingdom)",
-    "sources": [
-      "OpenAlex"
-    ],
-    "theme": "health",
-    "uses": [
-      {
-        "program": "CHMS",
-        "precision": "range",
-        "cycles": [],
-        "cycleText": "2016-2019",
-        "evidenceLocation": "Abstract"
-      }
-    ],
-    "mentions": []
-  },
-  {
-    "id": "doi:10.6084/m9.figshare.c.8504218.v1",
-    "title": "Objective and perceived neighbourhood walkability: population-average associations with transportation and recreational physical activity in urban-dwelling Canadian adults",
-    "doi": "10.6084/m9.figshare.c.8504218.v1",
-    "url": "https://doi.org/10.6084/m9.figshare.c.8504218.v1",
-    "year": 2026,
-    "workType": "other",
-    "issuingOrganization": "Figshare (United Kingdom)",
-    "sources": [
-      "OpenAlex"
-    ],
-    "theme": "health",
-    "uses": [
-      {
-        "program": "CHMS",
-        "precision": "range",
-        "cycles": [],
-        "cycleText": "2016-2019",
-        "evidenceLocation": "Abstract"
-      }
-    ],
-    "mentions": []
-  },
-  {
-    "id": "doi:10.6084/m9.figshare.c.8524810",
-    "title": "Occupation and urinary phthalate metabolite concentrations in a national survey of adults in Canada",
-    "doi": "10.6084/m9.figshare.c.8524810",
-    "url": "https://doi.org/10.6084/m9.figshare.c.8524810",
-    "year": 2026,
-    "workType": "other",
-    "issuingOrganization": "Figshare (United Kingdom)",
-    "sources": [
-      "OpenAlex"
-    ],
-    "theme": "labour",
-    "uses": [
-      {
-        "program": "CHMS",
-        "precision": "program_only",
-        "cycles": [],
-        "cycleText": "",
-        "evidenceLocation": "Abstract"
-      }
-    ],
-    "mentions": []
-  },
-  {
-    "id": "doi:10.6084/m9.figshare.c.8524810.v1",
-    "title": "Occupation and urinary phthalate metabolite concentrations in a national survey of adults in Canada",
-    "doi": "10.6084/m9.figshare.c.8524810.v1",
-    "url": "https://doi.org/10.6084/m9.figshare.c.8524810.v1",
-    "year": 2026,
-    "workType": "other",
-    "issuingOrganization": "Figshare (United Kingdom)",
-    "sources": [
-      "OpenAlex"
-    ],
-    "theme": "labour",
-    "uses": [
-      {
-        "program": "CHMS",
         "precision": "program_only",
         "cycles": [],
         "cycleText": "",
@@ -10598,29 +9751,6 @@
         "precision": "range",
         "cycles": [],
         "cycleText": "2008-2019",
-        "evidenceLocation": "Abstract"
-      }
-    ],
-    "mentions": []
-  },
-  {
-    "id": "doi:10.7910/dvn/181yby",
-    "title": "Labour Force Survey: Point and variance estimates of postsecondary student demographics and employment characteristics, 2006–2025.",
-    "doi": "10.7910/dvn/181yby",
-    "url": "https://doi.org/10.7910/dvn/181yby",
-    "year": 2026,
-    "workType": "dataset",
-    "issuingOrganization": "Harvard University",
-    "sources": [
-      "OpenAlex"
-    ],
-    "theme": "education",
-    "uses": [
-      {
-        "program": "LFS",
-        "precision": "program_only",
-        "cycles": [],
-        "cycleText": "",
         "evidenceLocation": "Abstract"
       }
     ],
@@ -11313,7 +10443,7 @@
     "doi": null,
     "url": "https://www.canada.ca/en/employment-social-development/corporate/reports/research/typology-internet-users-canada.html",
     "year": 2026,
-    "workType": "research summary",
+    "workType": "article",
     "issuingOrganization": null,
     "sources": [
       "ESDC"
@@ -11975,7 +11105,7 @@
     "doi": null,
     "url": "https://crdcn.ca/publication/top-dietary-sources-of-energy-sodium-sugars-and-saturated-fats-among-canadians-insights-from-the-2015-canadian-community-health-survey/",
     "year": 2019,
-    "workType": "journal article",
+    "workType": "article",
     "issuingOrganization": null,
     "sources": [
       "CRDCN"
@@ -12268,7 +11398,7 @@
     "doi": null,
     "url": "https://uwo.scholaris.ca/bitstreams/2532665e-d30d-4ef4-b6be-3d4819641565/download",
     "year": 2026,
-    "workType": "review",
+    "workType": "article",
     "issuingOrganization": "Western University",
     "sources": [
       "OpenAlex"
