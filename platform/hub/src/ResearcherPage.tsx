@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { ArrowLeft, ArrowRight, BarChart3, BookOpen, Calendar, ExternalLink, RotateCcw, Search, X } from 'lucide-react';
 import logo from './assets/logo.png';
 import pilotRecords from './researcherPilot.json';
+import { ResearcherThemesViz } from './ResearcherThemesViz.jsx';
 
 interface PilotUse {
   program: string;
@@ -188,6 +189,8 @@ export function ResearcherPage({ onHome, onSearcher }: { onHome: () => void; onS
       if (selectedType === 'report' && work.workType !== 'report') return false;
       if (selectedType === 'article' && work.workType !== 'article' && work.workType !== 'journal article') return false;
       if (selectedType === 'preprint' && work.workType !== 'preprint') return false;
+      if (selectedType === 'dissertation' && work.workType !== 'dissertation') return false;
+      if (selectedType === 'other' && ['article', 'journal article', 'report', 'preprint', 'dissertation'].includes(work.workType ?? '')) return false;
       // Cycle year filter
       if (selectedCycle) {
         const hasCycle = work.uses.some(u =>
@@ -223,6 +226,11 @@ export function ResearcherPage({ onHome, onSearcher }: { onHome: () => void; onS
   const reportsCount = useMemo(() => works.filter(w => w.workType === 'report').length, []);
   const articlesCount = useMemo(() => works.filter(w => w.workType === 'article' || w.workType === 'journal article').length, []);
   const preprintsCount = useMemo(() => works.filter(w => w.workType === 'preprint').length, []);
+  const dissertationsCount = useMemo(() => works.filter(w => w.workType === 'dissertation').length, []);
+  const otherCount = useMemo(
+    () => works.filter(w => !['article', 'journal article', 'report', 'preprint', 'dissertation'].includes(w.workType ?? '')).length,
+    []
+  );
   const exactCount = works.filter(w => w.uses.some(u => u.precision === 'exact_cycles')).length;
   const exactPercentage = works.length > 0 ? Math.round((exactCount / works.length) * 100) : 0;
 
@@ -300,6 +308,16 @@ export function ResearcherPage({ onHome, onSearcher }: { onHome: () => void; onS
                 type="button"
                 className="researcher-link researcher-link--secondary"
                 onClick={() => {
+                  document.getElementById('researcher-trends')?.scrollIntoView({ behavior: 'smooth' });
+                }}
+              >
+                <BarChart3 size={15} aria-hidden="true" />
+                Theme Trends by Year
+              </button>
+              <button
+                type="button"
+                className="researcher-link researcher-link--secondary"
+                onClick={() => {
                   setSelectedType('report');
                   setSelectedYearWindow('all');
                   document.getElementById('researcher-results')?.scrollIntoView({ behavior: 'smooth' });
@@ -337,6 +355,26 @@ export function ResearcherPage({ onHome, onSearcher }: { onHome: () => void; onS
             </div>
           </div>
         </section>
+
+        <ResearcherThemesViz
+          works={works}
+          selectedType={selectedType}
+          onSelectType={type => {
+            setSelectedType(type);
+            setDisplayLimit(30);
+          }}
+          selectedTheme={selectedTheme}
+          onSelectTheme={theme => {
+            setSelectedTheme(theme);
+            setDisplayLimit(30);
+          }}
+          selectedPubYear={selectedPubYear}
+          onSelectPubYear={year => {
+            setSelectedPubYear(year);
+            setDisplayLimit(30);
+          }}
+          selectedSurveys={selectedSurveys}
+        />
 
         <section className="researcher-section" id="researcher-results" aria-labelledby="researcher-results-title">
           <div className="researcher-section__heading">
@@ -417,9 +455,11 @@ export function ResearcherPage({ onHome, onSearcher }: { onHome: () => void; onS
                 aria-label="Filter by document type"
               >
                 <option value="all">All Document Types ({works.length})</option>
-                <option value="report">Policy & NGO Reports ({reportsCount})</option>
                 <option value="article">Journal Articles ({articlesCount})</option>
+                <option value="report">Policy & NGO Reports ({reportsCount})</option>
                 <option value="preprint">Preprints & Working Papers ({preprintsCount})</option>
+                <option value="dissertation">Theses & Dissertations ({dissertationsCount})</option>
+                <option value="other">Datasets & Other ({otherCount})</option>
               </select>
 
               <select

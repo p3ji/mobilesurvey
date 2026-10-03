@@ -245,7 +245,11 @@ function collectLabelledFields(rows: readonly string[]): Map<string, string> {
           currentKey = undefined;
           continue;
         }
-        if (labelMatches(LABELS.note, currentKey) && fields.get(currentKey)!.length >= 40) {
+        // RDC data dictionaries carry notes of 50+ lines (long derivation prose); the old 40-line
+        // cap silently truncated them, dropping "Derived from …" sentences the lineage pipeline
+        // depends on. Blocks are still bounded by the next variable header and code rows reset
+        // accumulation, so a generous ceiling cannot bleed across variables.
+        if (labelMatches(LABELS.note, currentKey) && fields.get(currentKey)!.length >= 150) {
           currentKey = undefined;
           continue;
         }
