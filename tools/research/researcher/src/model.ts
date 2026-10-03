@@ -20,7 +20,7 @@ export interface SourceWork {
   abstractRights?: 'permitted' | 'restricted' | 'unknown';
   passage: string;
   passageLocation: string;
-  surveyCandidates: Array<{ program: string; aliases: string[] }>;
+  surveyCandidates: Array<{ program: string; aliases: string[]; validCycles?: string[] }>;
 }
 
 export interface Claim {
@@ -64,6 +64,7 @@ export interface SurveyCandidateSpec {
   program: string;
   name: string;
   aliases: string[];
+  validCycles?: string[];
 }
 
 export const CANONICAL_SURVEYS: Record<string, SurveyCandidateSpec> = {
@@ -71,49 +72,65 @@ export const CANONICAL_SURVEYS: Record<string, SurveyCandidateSpec> = {
     program: 'CIUS',
     name: 'Canadian Internet Use Survey',
     aliases: ['Canadian Internet Use Survey', 'CIUS', "Enquête canadienne sur l'utilisation d'Internet", 'ECUI'],
+    validCycles: ['2005', '2007', '2009', '2010', '2012', '2018', '2020', '2022', '2024'],
   },
   CCHS: {
     program: 'CCHS',
     name: 'Canadian Community Health Survey',
     aliases: ['Canadian Community Health Survey', 'Canadian Community Health Survey - Annual Component', 'CCHS', "Enquête sur la santé dans les collectivités canadiennes", 'ESCC'],
+    validCycles: [
+      '2000', '2001', '2002', '2003', '2004', '2005',
+      '2007', '2008', '2009', '2010', '2011', '2012', '2013', '2014', '2015', '2016', '2017', '2018', '2019', '2020', '2021', '2022', '2023', '2024',
+    ],
   },
   CHMS: {
     program: 'CHMS',
     name: 'Canadian Health Measures Survey',
     aliases: ['Canadian Health Measures Survey', 'CHMS', "Enquête canadienne sur les mesures de la santé", 'ECMS'],
+    validCycles: [
+      '2007', '2008', '2009', '2010', '2011', '2012', '2013', '2014', '2015', '2016', '2017', '2018', '2019', '2022', '2023',
+    ],
   },
   GSS: {
     program: 'GSS',
     name: 'General Social Survey',
     aliases: ['General Social Survey', 'GSS', "Enquête sociale générale", 'ESG'],
+    validCycles: Array.from({ length: 40 }, (_, i) => String(1985 + i)),
   },
   LFS: {
     program: 'LFS',
     name: 'Labour Force Survey',
     aliases: ['Labour Force Survey', 'LFS', "Enquête sur la population active", 'EPA'],
+    validCycles: Array.from({ length: 51 }, (_, i) => String(1976 + i)),
   },
   CIS: {
     program: 'CIS',
     name: 'Canadian Income Survey',
     aliases: ['Canadian Income Survey', 'CIS', "Enquête canadienne sur le revenu", 'ECR'],
+    validCycles: ['2012', '2013', '2014', '2015', '2016', '2017', '2018', '2019', '2020', '2021', '2022', '2023', '2024'],
   },
   CSD: {
     program: 'CSD',
     name: 'Canadian Survey on Disability',
     aliases: ['Canadian Survey on Disability', 'CSD', "Enquête canadienne sur l'incapacité", 'ECI'],
+    validCycles: ['2012', '2017', '2022'],
   },
   SHS: {
     program: 'SHS',
     name: 'Survey of Household Spending',
     aliases: ['Survey of Household Spending', 'SHS', "Enquête sur les dépenses des ménages", 'EDM'],
+    validCycles: [
+      '1997', '1998', '1999', '2000', '2001', '2002', '2003', '2004', '2005', '2006', '2007', '2008', '2009', '2010',
+      '2011', '2012', '2013', '2014', '2015', '2016', '2017', '2019', '2021', '2023',
+    ],
   },
 };
 
-export function getSurveyCandidates(programs: string[]): Array<{ program: string; aliases: string[] }> {
+export function getSurveyCandidates(programs: string[]): Array<{ program: string; aliases: string[]; validCycles?: string[] }> {
   return programs.map(p => {
     const spec = CANONICAL_SURVEYS[p.toUpperCase()];
     if (!spec) return { program: p, aliases: [p] };
-    return { program: spec.program, aliases: spec.aliases };
+    return { program: spec.program, aliases: spec.aliases, validCycles: spec.validCycles };
   });
 }
 
@@ -277,7 +294,17 @@ export function validateExtraction(raw: unknown, passage: string, candidates: So
         issues.push(`claim ${i}: lacks positive Canadian grounding for generic survey`);
       }
     }
-    if (claim.precision === 'exact_cycles' && (!claim.exactCycles.length || claim.exactCycles.some(c => !inPassage(c, claim.quote)))) issues.push(`claim ${i}: unsupported exact cycle`);
+    if (claim.precision === 'exact_cycles') {
+      if (!claim.exactCycles.length || claim.exactCycles.some(c => !inPassage(c, claim.quote))) {
+        issues.push(`claim ${i}: unsupported exact cycle`);
+      }
+      if (candidate?.validCycles && candidate.validCycles.length > 0) {
+        const invalidCycles = claim.exactCycles.filter(c => !candidate.validCycles!.includes(c));
+        if (invalidCycles.length > 0) {
+          issues.push(`claim ${i}: non-existent survey cycle(s) for ${claim.program}: ${invalidCycles.join(', ')}`);
+        }
+      }
+    }
     if (claim.precision === 'range' && !inPassage(claim.cycleText, claim.quote)) issues.push(`claim ${i}: unsupported range`);
     if (claim.precision === 'program_only' && claim.exactCycles.length) issues.push(`claim ${i}: program-only contains cycles`);
   }

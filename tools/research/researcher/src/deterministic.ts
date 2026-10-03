@@ -278,8 +278,15 @@ export function extractDeterministic(
           }
         }
 
-        if (matchedYears.size > 0) {
-          const candidateYears = [...matchedYears].sort();
+        const validCyclesSet = candidate.validCycles && candidate.validCycles.length > 0
+          ? new Set(candidate.validCycles)
+          : null;
+
+        const candidateYears = [...matchedYears]
+          .filter(y => !validCyclesSet || validCyclesSet.has(y))
+          .sort();
+
+        if (candidateYears.length > 0) {
           precision = 'exact_cycles';
           exactCycles.push(...candidateYears);
           cycleText = candidateYears.join(', ');

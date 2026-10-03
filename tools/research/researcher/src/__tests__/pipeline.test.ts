@@ -215,4 +215,47 @@ describe('Researcher pipeline',()=>{
     expect(analyzedResult.value.claims[0]!.role).toBe('analyzed');
     expect(analyzedResult.value.claims[0]!.exactCycles).toEqual(['2018', '2020']);
   });
+
+  it('rejects claims referencing non-existent survey cycles (e.g. CIUS 2015)', async () => {
+    const { CANONICAL_SURVEYS, validateExtraction } = await import('../model.js');
+    const { extractDeterministic } = await import('../deterministic.js');
+
+    const ciusSpec = CANONICAL_SURVEYS.CIUS!;
+    const passage = 'We examined microdata from the 2015 Canadian Internet Use Survey (CIUS) to study online activity.';
+
+    // 1. In deterministic extraction: 2015 is filtered out because it is not an official CIUS cycle
+    const work: SourceWork = {
+      title: 'Study of Online Activity',
+      url: 'https://example.org/test',
+      source: 'test',
+      passage,
+      passageLocation: 'Methods',
+      surveyCandidates: [{ program: 'CIUS', aliases: ciusSpec.aliases, validCycles: ciusSpec.validCycles }],
+    };
+    const result = extractDeterministic(work, passage);
+    expect(result.value.claims).toHaveLength(1);
+    // 2015 was not accepted as an exact cycle because CIUS 2015 never happened
+    expect(result.value.claims[0]!.exactCycles).toEqual([]);
+    expect(result.value.claims[0]!.precision).toBe('program_only');
+
+    // 2. In validateExtraction: if any agent or model tries to claim 2015 as an exact cycle for CIUS, it is flagged as an invalid historical cycle
+    const badExtraction = {
+      claims: [{
+        surveyText: 'Canadian Internet Use Survey',
+        program: 'CIUS',
+        role: 'analyzed' as const,
+        cycleText: '2015',
+        precision: 'exact_cycles' as const,
+        exactCycles: ['2015'],
+        quote: passage,
+        location: 'Methods',
+      }],
+      primaryTheme: 'digital society',
+      additionalThemes: [],
+      themeRationale: 'Internet use',
+      variables: [],
+    };
+    const checked = validateExtraction(badExtraction, passage, work.surveyCandidates);
+    expect(checked.issues).toContain('claim 0: non-existent survey cycle(s) for CIUS: 2015');
+  });
 });
