@@ -75,31 +75,19 @@ export function getDocCategory(type: string | null): string {
 
 interface ResearcherThemesVizProps {
   works: PilotWork[];
-  selectedType: string;
-  onSelectType: (type: string) => void;
-  selectedTheme: string;
-  onSelectTheme: (theme: string) => void;
-  selectedPubYear: number | null;
-  onSelectPubYear: (year: number | null) => void;
-  selectedSurveys: string[];
-  onSelectSurvey?: (program: string) => void;
   onSwitchToSearch?: () => void;
   programNames?: Record<string, string>;
 }
 
 export function ResearcherThemesViz({
   works,
-  selectedType,
-  onSelectType,
-  selectedTheme,
-  onSelectTheme,
-  selectedPubYear,
-  onSelectPubYear,
-  selectedSurveys,
-  onSelectSurvey,
   onSwitchToSearch,
   programNames = {},
 }: ResearcherThemesVizProps) {
+  const [selectedType, setSelectedType] = useState<string>("all");
+  const [selectedTheme, setSelectedTheme] = useState<string>("all");
+  const [selectedPubYear, setSelectedPubYear] = useState<number | null>(null);
+  const [selectedSurveys, setSelectedSurveys] = useState<string[]>([]);
   const [chartMode, setChartMode] = useState<'count' | 'share'>('count');
   const [timeWindow, setTimeWindow] = useState<'all' | 'recent'>('all');
   const [hoveredYear, setHoveredYear] = useState<number | null>(null);
@@ -313,16 +301,7 @@ export function ResearcherThemesViz({
 
   const activeHoveredYearData = hoveredYear && matrix[hoveredYear] ? matrix[hoveredYear] : null;
 
-  function handleGoToSearch(theme?: string, year?: number, survey?: string) {
-    if (theme) onSelectTheme(theme);
-    if (year) onSelectPubYear(year);
-    if (survey && onSelectSurvey) onSelectSurvey(survey);
-    if (onSwitchToSearch) {
-      onSwitchToSearch();
-    } else {
-      document.getElementById('researcher-results')?.scrollIntoView({ behavior: 'smooth' });
-    }
-  }
+  
 
   return (
     <div className="researcher-stats-view">
@@ -386,7 +365,7 @@ export function ResearcherThemesViz({
                   key={opt.key}
                   type="button"
                   className={`researcher-trends__type-chip ${selectedType === opt.key ? 'is-active' : ''}`}
-                  onClick={() => onSelectType(opt.key)}
+                  onClick={() => setSelectedType(opt.key)}
                   aria-pressed={selectedType === opt.key}
                 >
                   <span>{opt.label}</span>
@@ -435,14 +414,15 @@ export function ResearcherThemesViz({
               </button>
             </div>
 
-            {(selectedTheme !== 'all' || selectedPubYear !== null || selectedType !== 'all') && (
+            {(selectedTheme !== 'all' || selectedPubYear !== null || selectedType !== 'all' || selectedSurveys.length > 0) && (
               <button
                 type="button"
                 className="researcher-trends__clear-btn"
                 onClick={() => {
-                  onSelectTheme('all');
-                  onSelectPubYear(null);
-                  onSelectType('all');
+                  setSelectedTheme('all');
+                  setSelectedPubYear(null);
+                  setSelectedType('all');
+                  setSelectedSurveys([]);
                 }}
                 title="Reset all filters on visualization"
               >
@@ -458,7 +438,7 @@ export function ResearcherThemesViz({
           {filteredWorks.length === 0 ? (
             <div className="researcher-trends__empty">
               <p>No publications found matching the current document type and survey filters.</p>
-              <button type="button" className="researcher-reset-btn" onClick={() => onSelectType('all')}>
+              <button type="button" className="researcher-reset-btn" onClick={() => { setSelectedType('all'); setSelectedSurveys([]); }}>
                 Show all document types
               </button>
             </div>
@@ -555,11 +535,11 @@ export function ResearcherThemesViz({
                       tabIndex={0}
                       role="button"
                       aria-label={`Year ${year}: ${yearTotal} publication${yearTotal === 1 ? '' : 's'}. Click to filter.`}
-                      onClick={() => onSelectPubYear(isSelectedYear ? null : year)}
+                      onClick={() => setSelectedPubYear(isSelectedYear ? null : year)}
                       onKeyDown={e => {
                         if (e.key === 'Enter' || e.key === ' ') {
                           e.preventDefault();
-                          onSelectPubYear(isSelectedYear ? null : year);
+                          setSelectedPubYear(isSelectedYear ? null : year);
                         }
                       }}
                     >
@@ -659,9 +639,9 @@ export function ResearcherThemesViz({
                 <button
                   type="button"
                   className="researcher-trends__inspector-action"
-                  onClick={() => handleGoToSearch(undefined, hoveredYear)}
+                  onClick={() => setSelectedPubYear(selectedPubYear === hoveredYear ? null : hoveredYear)}
                 >
-                  View {activeHoveredYearData.total} publications in Search <ArrowRight size={11} aria-hidden="true" />
+                  {selectedPubYear === hoveredYear ? `Clear Year ${hoveredYear} filter` : `Filter trends to Year ${hoveredYear}`}
                 </button>
               </div>
 
@@ -678,7 +658,7 @@ export function ResearcherThemesViz({
                         style={{ borderLeftColor: conf.color }}
                         onMouseEnter={() => setHoveredTheme(theme)}
                         onMouseLeave={() => setHoveredTheme(null)}
-                        onClick={() => onSelectTheme(selectedTheme === theme ? 'all' : theme)}
+                        onClick={() => setSelectedTheme(selectedTheme === theme ? 'all' : theme)}
                         title={`Click to filter by ${conf.label}`}
                       >
                         <span className="researcher-trends__chip-dot" style={{ backgroundColor: conf.color }} />
@@ -714,7 +694,7 @@ export function ResearcherThemesViz({
                       backgroundColor: isSelected ? `${conf.color}15` : undefined,
                       borderColor: isSelected ? conf.color : undefined,
                     }}
-                    onClick={() => onSelectTheme(isSelected ? 'all' : theme)}
+                    onClick={() => setSelectedTheme(isSelected ? 'all' : theme)}
                     onMouseEnter={() => setHoveredTheme(theme)}
                     onMouseLeave={() => setHoveredTheme(null)}
                     aria-pressed={isSelected}
@@ -732,7 +712,7 @@ export function ResearcherThemesViz({
                 <button
                   type="button"
                   className="researcher-trends__clear-theme-btn"
-                  onClick={() => onSelectTheme('all')}
+                  onClick={() => setSelectedTheme('all')}
                 >
                   Clear theme ({getThemeConfig(selectedTheme).label}) <X size={11} aria-hidden="true" />
                 </button>
@@ -899,10 +879,10 @@ export function ResearcherThemesViz({
                       <button
                         type="button"
                         className="researcher-theme-action-btn"
-                        onClick={() => handleGoToSearch(item.theme)}
-                        title={`View ${item.count} ${conf.label} publications in Search`}
+                        onClick={() => setSelectedTheme(selectedTheme === item.theme ? 'all' : item.theme)}
+                        title={`${selectedTheme === item.theme ? "Clear" : "Isolate"} ${conf.label} theme in trends`}
                       >
-                        View in Search <ArrowRight size={11} aria-hidden="true" />
+                        {selectedTheme === item.theme ? `Showing Only ${conf.label}` : "Isolate Theme"}
                       </button>
                     </td>
                   </tr>
@@ -956,10 +936,10 @@ export function ResearcherThemesViz({
 
                 <button
                   type="button"
-                  className="researcher-prog-card__btn"
-                  onClick={() => handleGoToSearch(undefined, undefined, prog.program)}
+                  className={`researcher-prog-card__btn ${selectedSurveys.includes(prog.program) ? "is-active" : ""}`}
+                  onClick={() => setSelectedSurveys(selectedSurveys.includes(prog.program) ? [] : [prog.program])}
                 >
-                  Search {prog.program} publications <ArrowRight size={12} aria-hidden="true" />
+                  {selectedSurveys.includes(prog.program) ? `Clear ${prog.program} filter` : `Filter trends by ${prog.program}`}
                 </button>
               </div>
             );
@@ -974,17 +954,17 @@ export function ResearcherThemesViz({
           <div>
             <h3>Ready to inspect individual publications?</h3>
             <p>
-              Switch to the Search tab to query 606 outside publications by title, author, institution, or survey cycle with verbatim evidence links.
+              Switch to the Search tab to query {works.length} outside publications by title, author, institution, or survey cycle with verbatim evidence links.
             </p>
           </div>
         </div>
         <button
           type="button"
           className="researcher-link researcher-link--primary"
-          onClick={() => handleGoToSearch()}
+          onClick={() => onSwitchToSearch?.()}
           style={{ padding: '12px 24px', fontSize: '14px', flexShrink: 0 }}
         >
-          Browse All 606 Works in Search <ArrowRight size={16} aria-hidden="true" />
+          Browse All {works.length} Works in Search <ArrowRight size={16} aria-hidden="true" />
         </button>
       </div>
     </div>

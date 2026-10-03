@@ -377,39 +377,28 @@ export function ResearcherPage({ onHome, onSearcher }: { onHome: () => void; onS
         </div>
 
         {/* Tab 1: Stats & Empirical Thematic Trends */}
-        {activeTab === 'stats' && (
-          <div id="panel-stats" role="tabpanel" aria-labelledby="tab-stats">
-            <ResearcherThemesViz
-              works={works}
-              selectedType={selectedType}
-              onSelectType={type => {
-                setSelectedType(type);
-                setDisplayLimit(30);
-              }}
-              selectedTheme={selectedTheme}
-              onSelectTheme={theme => {
-                setSelectedTheme(theme);
-                setDisplayLimit(30);
-              }}
-              selectedPubYear={selectedPubYear}
-              onSelectPubYear={year => {
-                setSelectedPubYear(year);
-                setDisplayLimit(30);
-              }}
-              selectedSurveys={selectedSurveys}
-              onSelectSurvey={prog => {
-                setSelectedSurveys([prog]);
-                handleTabChange('search');
-              }}
-              onSwitchToSearch={() => handleTabChange('search')}
-              programNames={programNames}
-            />
-          </div>
-        )}
+        <div
+          id="panel-stats"
+          role="tabpanel"
+          aria-labelledby="tab-stats"
+          hidden={activeTab !== 'stats'}
+          style={{ display: activeTab === 'stats' ? 'block' : 'none' }}
+        >
+          <ResearcherThemesViz
+            works={works}
+            programNames={programNames}
+            onSwitchToSearch={() => handleTabChange('search')}
+          />
+        </div>
 
         {/* Tab 2: Search Publications Catalogue */}
-        {activeTab === 'search' && (
-          <div id="panel-search" role="tabpanel" aria-labelledby="tab-search">
+        <div
+          id="panel-search"
+          role="tabpanel"
+          aria-labelledby="tab-search"
+          hidden={activeTab !== 'search'}
+          style={{ display: activeTab === 'search' ? 'block' : 'none' }}
+        >
             <section className="researcher-section" id="researcher-results" aria-labelledby="researcher-results-title">
           <div className="researcher-section__heading">
             <p className="researcher-kicker">Documented Data Uses</p>
@@ -785,7 +774,6 @@ export function ResearcherPage({ onHome, onSearcher }: { onHome: () => void; onS
           )}
         </section>
       </div>
-    )}
 
     <section className="researcher-method" aria-labelledby="researcher-method-title">
           <div>
