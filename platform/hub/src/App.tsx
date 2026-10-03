@@ -38,6 +38,8 @@ import { draftRulesFromAnnotation, explainFlag, llmConfigured } from './validato
 import { CorpusSearch } from './CorpusSearch.js';
 import { CorpusGraphExplorer } from './CorpusGraphExplorer.js';
 import { SearcherAbout } from './SearcherAbout.js';
+import { DataCartView } from './DataCartView.js';
+import { useDataCart } from './useDataCart.js';
 import { ResearcherPage } from './ResearcherPage.js';
 import type { CorpusGraphFocus } from './CorpusLineage.js';
 import {
@@ -1078,7 +1080,7 @@ function CollectorView({ onBack }: { onBack: () => void }) {
 
 // ── Searcher view ─────────────────────────────────────────────────────────────
 
-type SearchScope = 'search' | 'graph' | 'about';
+type SearchScope = 'search' | 'graph' | 'about' | 'cart';
 
 function parseSearcherParams(): {
   scope: SearchScope;
@@ -1105,7 +1107,11 @@ function parseSearcherParams(): {
   const legacyAboutView = searchParams.get('view') === 'about' && hashView !== 'searcher';
   const scope: SearchScope = hashView === 'about' || legacyAboutView || rawScope === 'about'
     ? 'about'
-    : rawScope === 'graph' || rawScope === 'concepts' ? 'graph' : 'search';
+    : rawScope === 'graph' || rawScope === 'concepts'
+      ? 'graph'
+      : rawScope === 'cart' || hashView === 'cart'
+        ? 'cart'
+        : 'search';
 
   const conceptId = hashParams.get('concept') ?? searchParams.get('concept') ?? null;
   const initialGraphTab = rawScope === 'concepts'
@@ -1126,6 +1132,7 @@ function SearcherView({ onBack, onResearcher }: { onBack: () => void; onResearch
   const [graphTab, setGraphTab] = useState<'surveys' | 'concepts' | 'lineage' | null>(
     initialParams.initialGraphTab ?? null
   );
+  const { count: cartCount } = useDataCart();
 
   useEffect(() => {
     const openLegacyAboutLink = () => {
@@ -1201,11 +1208,31 @@ function SearcherView({ onBack, onResearcher }: { onBack: () => void; onResearch
           >
             About
           </button>
+          <button
+            type="button"
+            role="tab"
+            id="searcher-cart-tab"
+            aria-controls="searcher-panel"
+            aria-selected={scope === 'cart'}
+            className={`sr-scope ${scope === 'cart' ? 'sr-scope--active' : ''}`}
+            onClick={() => setScope('cart')}
+          >
+            Data Cart
+            {cartCount > 0 && <span className="sr-cart-badge">{cartCount}</span>}
+          </button>
         </div>
 
         <div id="searcher-panel" role="tabpanel" aria-labelledby={`searcher-${scope}-tab`}>
           {scope === 'about' ? (
             <SearcherAbout source={corpus} onExplore={() => setScope('search')} onResearcher={onResearcher} />
+          ) : scope === 'cart' ? (
+            <DataCartView
+              onSearch={() => setScope('search')}
+              onExploreProgram={(survey) => {
+                setCorpusSurvey(survey);
+                setScope('search');
+              }}
+            />
           ) : corpus === null ? (
             <div className="cs-error">
               <strong>Statistics Canada metadata search is unavailable in this deployment.</strong>

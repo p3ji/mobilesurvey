@@ -37,9 +37,11 @@ import { CorpusDocumentReader } from './CorpusDocument.js';
 import { CorpusSubjects } from './CorpusSubjects.js';
 import { expandCorpusQuery } from './corpusAiSearch.js';
 import { searchCorpusSemantic } from './corpusSemanticSearch.js';
+import { Check, Plus } from 'lucide-react';
 import { classifyHit } from './graphClassifier.js';
 import { groupCorpusHits, type CorpusHitGroup } from './groupCorpusHits.js';
 import { isPlaceholderConcept, renderHitQuestion } from './renderHitQuestion.js';
+import { useDataCart, makeCartItemId } from './useDataCart.js';
 import type { CorpusGraphFocus } from './CorpusLineage.js';
 
 const DEBOUNCE_MS = 250;
@@ -186,6 +188,33 @@ function CorpusHit({
     [question, label, isSelectAll]
   );
 
+  const { hasItem, toggleItem } = useDataCart();
+  const cartItemId = useMemo(
+    () => makeCartItemId(meta.surveyGroup, meta.variableName, meta.lang || 'en'),
+    [meta.surveyGroup, meta.variableName, meta.lang]
+  );
+  const isInCart = hasItem(cartItemId);
+
+  const handleCartToggle = () => {
+    toggleItem({
+      id: cartItemId,
+      variableName: meta.variableName,
+      surveyGroup: meta.surveyGroup,
+      surveyAcronym: meta.surveyAcronym ?? null,
+      year: meta.year ?? null,
+      lang: meta.lang || 'en',
+      label,
+      question,
+      universe: meta.universe,
+      note: meta.note,
+      codes: meta.codes,
+      role: classification.role,
+      isHarmonized,
+      isGrouped: classification.isGrouped,
+      isSelectAll,
+    });
+  };
+
   return (
     <article className="cs-hit">
       <div className="cs-hit__head">
@@ -230,6 +259,26 @@ function CorpusHit({
           {meta.year === undefined ? '' : ` · ${meta.year}`}
         </span>
         <span className="cs-hit__lang">{meta.lang === 'fr' ? 'FR' : 'EN'}</span>
+        <button
+          type="button"
+          className={`cs-cart-btn ${isInCart ? 'cs-cart-btn--active' : ''}`}
+          onClick={handleCartToggle}
+          title={isInCart ? `Remove ${meta.variableName} from Data Cart` : `Save ${meta.variableName} to Data Cart`}
+          aria-label={isInCart ? `Remove ${meta.variableName} from Data Cart` : `Save ${meta.variableName} to Data Cart`}
+          aria-pressed={isInCart}
+        >
+          {isInCart ? (
+            <>
+              <Check size={12} aria-hidden="true" style={{ verticalAlign: -1, marginRight: 4 }} />
+              <span>In cart</span>
+            </>
+          ) : (
+            <>
+              <Plus size={12} aria-hidden="true" style={{ verticalAlign: -1, marginRight: 4 }} />
+              <span>Add to cart</span>
+            </>
+          )}
+        </button>
       </div>
 
       <p className="cs-hit__label">{isPlaceholderConcept(label) ? (renderedQuestion ?? meta.variableName) : label}</p>
