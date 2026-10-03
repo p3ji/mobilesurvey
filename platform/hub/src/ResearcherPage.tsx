@@ -641,6 +641,18 @@ export function ResearcherPage({ onHome, onSearcher }: { onHome: () => void; onS
 
           <p className="researcher-count" aria-live="polite">
             Showing {Math.min(shown.length, displayLimit)} of {shown.length} matched works ({works.length} total reviewed)
+            {selectedType !== 'all' && (
+              <span className="researcher-active-filter-badge">
+                Type: {selectedType === 'conference-paper' ? 'Conference Paper' : selectedType}
+                <button type="button" onClick={() => setSelectedType('all')} aria-label="Remove document type filter">×</button>
+              </span>
+            )}
+            {selectedTheme !== 'all' && (
+              <span className="researcher-active-filter-badge">
+                Theme: {selectedTheme}
+                <button type="button" onClick={() => setSelectedTheme('all')} aria-label="Remove theme filter">×</button>
+              </span>
+            )}
             {selectedCycle && (
               <span className="researcher-active-filter-badge">
                 Cycle {selectedCycle}
