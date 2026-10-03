@@ -160,4 +160,59 @@ describe('Researcher pipeline',()=>{
     expect(canLfsResult.value.claims[0]!.exactCycles).toEqual(['2024']);
     expect(canLfsResult.issues).toEqual([]);
   });
+
+  it('distinguishes background mentions from active analysis and prevents citation years from becoming cycles', async () => {
+    const { extractDeterministic } = await import('../deterministic.js');
+    const ciusCandidates = [{ program: 'CIUS', aliases: ['Canadian Internet Use Survey', 'CIUS'] }];
+
+    // AJER paper flagged by user (doi:10.55016/ojs/ajer.v63i2.56354)
+    const ajerWork: SourceWork = {
+      title: 'Predicting Problematic Internet Use in A Sample of Canadian University Students',
+      doi: '10.55016/ojs/ajer.v63i2.56354',
+      url: 'https://doi.org/10.55016/ojs/ajer.v63i2.56354',
+      source: 'OpenAlex',
+      passage: 'The growth of Internet users in Canada has been phenomenal.The most recent Canadian Internet Use Survey revealed that 83% of Canadian households had access to the Internet at home in 2012, compared with 79% in 2010 (Statistics Canada, 2013).Doubtlessly, the Internet has become an increasingly important feature of the learning environment for students.Excessive use of the Internet, however, can pose various serious risks for the users.In fact, the negative consequences that can arise from excessive Internet usage have attracted increasing research attention.Studies have demonstrated that academic under-performance, failure to exercise and to engage in faceto-face social activities, negative affective states, sleep deprivation, decreased ability to concentrate, health problems, and family conflicts were the frequently reported consequences of excessive internet use (Gür, Yurt, Bulduk, & Atagöz, 2015;',
+      passageLocation: 'Abstract',
+      surveyCandidates: ciusCandidates,
+    };
+    const ajerResult = extractDeterministic(ajerWork, ajerWork.passage);
+    expect(ajerResult.value.claims).toHaveLength(1);
+    const ajerClaim = ajerResult.value.claims[0]!;
+    expect(ajerClaim.program).toBe('CIUS');
+    expect(ajerClaim.role).toBe('background_mention');
+    expect(ajerClaim.quote).toBe(
+      'The most recent Canadian Internet Use Survey revealed that 83% of Canadian households had access to the Internet at home in 2012, compared with 79% in 2010 (Statistics Canada, 2013).'
+    );
+    expect(ajerClaim.exactCycles).toEqual([]);
+    expect(ajerClaim.precision).toBe('program_only');
+    expect(ajerResult.issues).toEqual([]);
+
+    // According to ... citation
+    const accordingWork: SourceWork = {
+      title: 'Using the Internet as a Health Intermediary: Providing Information and Services to Marginalized Sexual Communities',
+      url: 'https://example.org/health-intermediary',
+      source: 'springer',
+      passage: 'According to the Canadian Internet Use Survey, 58 per cent of Canadians have used the internet to search for medical or health-related information (CIUS, 2005).',
+      passageLocation: 'Introduction',
+      surveyCandidates: ciusCandidates,
+    };
+    const accordingResult = extractDeterministic(accordingWork, accordingWork.passage);
+    expect(accordingResult.value.claims).toHaveLength(1);
+    expect(accordingResult.value.claims[0]!.role).toBe('background_mention');
+    expect(accordingResult.value.claims[0]!.exactCycles).toEqual([]);
+
+    // Genuine multi-cycle active analysis
+    const analyzedWork: SourceWork = {
+      title: 'Digital Divide: A Typology of Internet Users in Canada',
+      url: 'https://example.org/typology',
+      source: 'journal',
+      passage: 'Data for this study are from the 2018 and 2020 cycles of the CIUS (Canadian Internet Use Survey). We model adoption patterns using logistic regression.',
+      passageLocation: 'Data and Methods',
+      surveyCandidates: ciusCandidates,
+    };
+    const analyzedResult = extractDeterministic(analyzedWork, analyzedWork.passage);
+    expect(analyzedResult.value.claims).toHaveLength(1);
+    expect(analyzedResult.value.claims[0]!.role).toBe('analyzed');
+    expect(analyzedResult.value.claims[0]!.exactCycles).toEqual(['2018', '2020']);
+  });
 });

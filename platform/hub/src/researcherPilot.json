@@ -14,12 +14,9 @@
     "uses": [
       {
         "program": "CCHS",
-        "precision": "exact_cycles",
-        "cycles": [
-          "2003",
-          "2014"
-        ],
-        "cycleText": "2003, 2014",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
         "evidenceLocation": "Abstract"
       }
     ],
@@ -116,12 +113,9 @@
     "uses": [
       {
         "program": "SHS",
-        "precision": "exact_cycles",
-        "cycles": [
-          "1997",
-          "2009"
-        ],
-        "cycleText": "1997, 2009",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
         "evidenceLocation": "Abstract"
       }
     ],
@@ -165,12 +159,9 @@
     "uses": [
       {
         "program": "CCHS",
-        "precision": "exact_cycles",
-        "cycles": [
-          "2000",
-          "2003"
-        ],
-        "cycleText": "2000, 2003",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
         "evidenceLocation": "Abstract"
       }
     ],
@@ -191,12 +182,9 @@
     "uses": [
       {
         "program": "CCHS",
-        "precision": "exact_cycles",
-        "cycles": [
-          "2007",
-          "2022"
-        ],
-        "cycleText": "2007, 2022",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
         "evidenceLocation": "Abstract"
       }
     ],
@@ -291,11 +279,9 @@
     "uses": [
       {
         "program": "GSS",
-        "precision": "exact_cycles",
-        "cycles": [
-          "2014"
-        ],
-        "cycleText": "2014",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
         "evidenceLocation": "Abstract"
       }
     ],
@@ -391,11 +377,9 @@
         "program": "CCHS",
         "precision": "exact_cycles",
         "cycles": [
-          "2015",
-          "2017",
-          "2019"
+          "2015"
         ],
-        "cycleText": "2015, 2017, 2019",
+        "cycleText": "2015",
         "evidenceLocation": "Abstract"
       }
     ],
@@ -416,11 +400,9 @@
     "uses": [
       {
         "program": "GSS",
-        "precision": "exact_cycles",
-        "cycles": [
-          "2022"
-        ],
-        "cycleText": "2022",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
         "evidenceLocation": "Abstract"
       }
     ],
@@ -791,10 +773,9 @@
         "program": "CCHS",
         "precision": "exact_cycles",
         "cycles": [
-          "2002",
-          "2018"
+          "2002"
         ],
-        "cycleText": "2002, 2018",
+        "cycleText": "2002",
         "evidenceLocation": "Abstract"
       }
     ],
@@ -914,12 +895,9 @@
         "program": "CCHS",
         "precision": "exact_cycles",
         "cycles": [
-          "2012",
-          "2012",
-          "2022",
-          "2022"
+          "2012"
         ],
-        "cycleText": "2012, 2012, 2022, 2022",
+        "cycleText": "2012",
         "evidenceLocation": "Abstract"
       }
     ],
@@ -1086,14 +1064,9 @@
     "uses": [
       {
         "program": "CCHS",
-        "precision": "exact_cycles",
-        "cycles": [
-          "2015",
-          "2016",
-          "2017",
-          "2018"
-        ],
-        "cycleText": "2015, 2016, 2017, 2018",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
         "evidenceLocation": "Abstract"
       }
     ],
@@ -1162,11 +1135,9 @@
     "uses": [
       {
         "program": "GSS",
-        "precision": "exact_cycles",
-        "cycles": [
-          "2015"
-        ],
-        "cycleText": "2015",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
         "evidenceLocation": "Abstract"
       }
     ],
@@ -1258,10 +1229,9 @@
         "program": "SHS",
         "precision": "exact_cycles",
         "cycles": [
-          "2006",
-          "2019"
+          "2006"
         ],
-        "cycleText": "2006, 2019",
+        "cycleText": "2006",
         "evidenceLocation": "Abstract"
       }
     ],
@@ -1384,59 +1354,6 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "Title"
-      }
-    ],
-    "mentions": []
-  },
-  {
-    "id": "doi:10.1037/cap0000116",
-    "title": "Learning disabilities in Canada: Definitions and accommodations.",
-    "doi": "10.1037/cap0000116",
-    "url": "https://doi.org/10.1037/cap0000116",
-    "year": 2017,
-    "workType": "article",
-    "issuingOrganization": "American Psychological Association",
-    "sources": [
-      "OpenAlex"
-    ],
-    "theme": "education",
-    "uses": [
-      {
-        "program": "CSD",
-        "precision": "exact_cycles",
-        "cycles": [
-          "2006",
-          "2009",
-          "2012",
-          "2015"
-        ],
-        "cycleText": "2006, 2009, 2012, 2015",
-        "evidenceLocation": "Abstract"
-      }
-    ],
-    "mentions": []
-  },
-  {
-    "id": "doi:10.1057/9780230227323_7",
-    "title": "Using the Internet as a Health Intermediary: Providing Information and Services to Marginalized Sexual Communities",
-    "doi": "10.1057/9780230227323_7",
-    "url": "https://doi.org/10.1057/9780230227323_7",
-    "year": 2008,
-    "workType": "book-chapter",
-    "issuingOrganization": "Palgrave Macmillan",
-    "sources": [
-      "OpenAlex"
-    ],
-    "theme": "digital society",
-    "uses": [
-      {
-        "program": "CIUS",
-        "precision": "exact_cycles",
-        "cycles": [
-          "2005"
-        ],
-        "cycleText": "2005",
-        "evidenceLocation": "Abstract"
       }
     ],
     "mentions": []
@@ -1688,11 +1605,9 @@
     "uses": [
       {
         "program": "GSS",
-        "precision": "exact_cycles",
-        "cycles": [
-          "1990"
-        ],
-        "cycleText": "1990",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
         "evidenceLocation": "Abstract"
       }
     ],
@@ -1809,11 +1724,9 @@
     "uses": [
       {
         "program": "SHS",
-        "precision": "exact_cycles",
-        "cycles": [
-          "2009"
-        ],
-        "cycleText": "2009",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
         "evidenceLocation": "Abstract"
       }
     ],
@@ -1834,11 +1747,9 @@
     "uses": [
       {
         "program": "GSS",
-        "precision": "exact_cycles",
-        "cycles": [
-          "2019"
-        ],
-        "cycleText": "2019",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
         "evidenceLocation": "Abstract"
       }
     ],
@@ -1882,11 +1793,9 @@
     "uses": [
       {
         "program": "GSS",
-        "precision": "exact_cycles",
-        "cycles": [
-          "2007"
-        ],
-        "cycleText": "2007",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
         "evidenceLocation": "Abstract"
       }
     ],
@@ -2003,12 +1912,9 @@
     "uses": [
       {
         "program": "CCHS",
-        "precision": "exact_cycles",
-        "cycles": [
-          "2005",
-          "2014"
-        ],
-        "cycleText": "2005, 2014",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
         "evidenceLocation": "Abstract"
       }
     ],
@@ -2029,12 +1935,9 @@
     "uses": [
       {
         "program": "CCHS",
-        "precision": "exact_cycles",
-        "cycles": [
-          "2005",
-          "2021"
-        ],
-        "cycleText": "2005, 2021",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
         "evidenceLocation": "Abstract"
       }
     ],
@@ -2055,12 +1958,9 @@
     "uses": [
       {
         "program": "CCHS",
-        "precision": "exact_cycles",
-        "cycles": [
-          "2005",
-          "2014"
-        ],
-        "cycleText": "2005, 2014",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
         "evidenceLocation": "Abstract"
       }
     ],
@@ -2127,12 +2027,9 @@
     "uses": [
       {
         "program": "LFS",
-        "precision": "exact_cycles",
-        "cycles": [
-          "1998",
-          "2022"
-        ],
-        "cycleText": "1998, 2022",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
         "evidenceLocation": "Abstract"
       }
     ],
@@ -2187,6 +2084,29 @@
     "mentions": []
   },
   {
+    "id": "doi:10.1108/edi-06-2024-0264",
+    "title": "The short-term effects of COVID-19 on labour market outcomes of recent immigrants to Canada",
+    "doi": "10.1108/edi-06-2024-0264",
+    "url": "https://doi.org/10.1108/edi-06-2024-0264",
+    "year": 2025,
+    "workType": "article",
+    "issuingOrganization": "Emerald Publishing Limited",
+    "sources": [
+      "OpenAlex"
+    ],
+    "theme": "labour",
+    "uses": [
+      {
+        "program": "LFS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Abstract"
+      }
+    ],
+    "mentions": []
+  },
+  {
     "id": "doi:10.1108/edi-09-2021-0239",
     "title": "Earnings of persons with disabilities: Who earns more (less) from entrepreneurial pursuit?",
     "doi": "10.1108/edi-09-2021-0239",
@@ -2198,6 +2118,29 @@
       "OpenAlex"
     ],
     "theme": "labour",
+    "uses": [
+      {
+        "program": "CSD",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Abstract"
+      }
+    ],
+    "mentions": []
+  },
+  {
+    "id": "doi:10.1108/heswbl-08-2019-0106",
+    "title": "Work integrated learning resources for students with disabilities: are post-secondary institutions in Canada supporting this demographic to be career ready?",
+    "doi": "10.1108/heswbl-08-2019-0106",
+    "url": "https://doi.org/10.1108/heswbl-08-2019-0106",
+    "year": 2020,
+    "workType": "article",
+    "issuingOrganization": "Emerald Publishing Limited",
+    "sources": [
+      "OpenAlex"
+    ],
+    "theme": "education",
     "uses": [
       {
         "program": "CSD",
@@ -2272,14 +2215,9 @@
     "uses": [
       {
         "program": "SHS",
-        "precision": "exact_cycles",
-        "cycles": [
-          "1997",
-          "2009",
-          "1997",
-          "2006"
-        ],
-        "cycleText": "1997, 2009, 1997, 2006",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
         "evidenceLocation": "Abstract"
       }
     ],
@@ -2325,10 +2263,9 @@
         "program": "GSS",
         "precision": "exact_cycles",
         "cycles": [
-          "2013",
           "2013"
         ],
-        "cycleText": "2013, 2013",
+        "cycleText": "2013",
         "evidenceLocation": "Abstract"
       }
     ],
@@ -2404,29 +2341,6 @@
     "mentions": []
   },
   {
-    "id": "doi:10.1111/j.1751-5823.2001.tb00470.x",
-    "title": "Estimation Methods and Related Systems at Statistics Canada",
-    "doi": "10.1111/j.1751-5823.2001.tb00470.x",
-    "url": "https://doi.org/10.1111/j.1751-5823.2001.tb00470.x",
-    "year": 2001,
-    "workType": "article",
-    "issuingOrganization": "Wiley",
-    "sources": [
-      "OpenAlex"
-    ],
-    "theme": "digital society",
-    "uses": [
-      {
-        "program": "LFS",
-        "precision": "program_only",
-        "cycles": [],
-        "cycleText": "",
-        "evidenceLocation": "Abstract"
-      }
-    ],
-    "mentions": []
-  },
-  {
     "id": "doi:10.1111/j.1755-618x.2009.01216.x",
     "title": "Social Capital and the Care Networks of Frail Seniors",
     "doi": "10.1111/j.1755-618x.2009.01216.x",
@@ -2441,11 +2355,9 @@
     "uses": [
       {
         "program": "GSS",
-        "precision": "exact_cycles",
-        "cycles": [
-          "2002"
-        ],
-        "cycleText": "2002",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
         "evidenceLocation": "Abstract"
       }
     ],
@@ -2466,11 +2378,9 @@
     "uses": [
       {
         "program": "CCHS",
-        "precision": "exact_cycles",
-        "cycles": [
-          "2017"
-        ],
-        "cycleText": "2017",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
         "evidenceLocation": "Abstract"
       }
     ],
@@ -2516,10 +2426,9 @@
         "program": "CCHS",
         "precision": "exact_cycles",
         "cycles": [
-          "2008",
           "2009"
         ],
-        "cycleText": "2008, 2009",
+        "cycleText": "2009",
         "evidenceLocation": "Abstract"
       }
     ],
@@ -2586,11 +2495,9 @@
     "uses": [
       {
         "program": "LFS",
-        "precision": "exact_cycles",
-        "cycles": [
-          "2001"
-        ],
-        "cycleText": "2001",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
         "evidenceLocation": "Abstract"
       }
     ],
@@ -2709,10 +2616,9 @@
         "program": "CHMS",
         "precision": "exact_cycles",
         "cycles": [
-          "2016",
-          "2019"
+          "2016"
         ],
-        "cycleText": "2016, 2019",
+        "cycleText": "2016",
         "evidenceLocation": "Abstract"
       }
     ],
@@ -2733,12 +2639,9 @@
     "uses": [
       {
         "program": "CHMS",
-        "precision": "exact_cycles",
-        "cycles": [
-          "2016",
-          "2019"
-        ],
-        "cycleText": "2016, 2019",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
         "evidenceLocation": "Abstract"
       }
     ],
@@ -2761,10 +2664,9 @@
         "program": "CHMS",
         "precision": "exact_cycles",
         "cycles": [
-          "2007",
-          "2017"
+          "2007"
         ],
-        "cycleText": "2007, 2017",
+        "cycleText": "2007",
         "evidenceLocation": "Abstract"
       }
     ],
@@ -2902,10 +2804,9 @@
         "program": "CCHS",
         "precision": "exact_cycles",
         "cycles": [
-          "2017",
           "2018"
         ],
-        "cycleText": "2017, 2018",
+        "cycleText": "2018",
         "evidenceLocation": "Abstract"
       }
     ],
@@ -2995,11 +2896,9 @@
     "uses": [
       {
         "program": "GSS",
-        "precision": "exact_cycles",
-        "cycles": [
-          "2008"
-        ],
-        "cycleText": "2008",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
         "evidenceLocation": "Abstract"
       }
     ],
@@ -3020,16 +2919,9 @@
     "uses": [
       {
         "program": "GSS",
-        "precision": "exact_cycles",
-        "cycles": [
-          "1992",
-          "1998",
-          "2005",
-          "2010",
-          "2015",
-          "2022"
-        ],
-        "cycleText": "1992, 1998, 2005, 2010, 2015, 2022",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
         "evidenceLocation": "Abstract"
       }
     ],
@@ -3311,14 +3203,9 @@
     "uses": [
       {
         "program": "CHMS",
-        "precision": "exact_cycles",
-        "cycles": [
-          "2009",
-          "2011",
-          "2016",
-          "2019"
-        ],
-        "cycleText": "2009, 2011, 2016, 2019",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
         "evidenceLocation": "Abstract"
       }
     ],
@@ -3341,33 +3228,9 @@
         "program": "CHMS",
         "precision": "exact_cycles",
         "cycles": [
-          "2016",
-          "2018"
+          "2016"
         ],
-        "cycleText": "2016, 2018",
-        "evidenceLocation": "Abstract"
-      }
-    ],
-    "mentions": []
-  },
-  {
-    "id": "doi:10.1186/s13223-025-00958-3",
-    "title": "Food insecurity amongst Canadian children with food allergy during the COVID-19 pandemic",
-    "doi": "10.1186/s13223-025-00958-3",
-    "url": "https://doi.org/10.1186/s13223-025-00958-3",
-    "year": 2025,
-    "workType": "article",
-    "issuingOrganization": "BioMed Central",
-    "sources": [
-      "OpenAlex"
-    ],
-    "theme": "digital society",
-    "uses": [
-      {
-        "program": "CCHS",
-        "precision": "program_only",
-        "cycles": [],
-        "cycleText": "",
+        "cycleText": "2016",
         "evidenceLocation": "Abstract"
       }
     ],
@@ -3391,35 +3254,9 @@
         "precision": "exact_cycles",
         "cycles": [
           "2020",
-          "2021",
           "2021"
         ],
-        "cycleText": "2020, 2021, 2021",
-        "evidenceLocation": "Abstract"
-      }
-    ],
-    "mentions": []
-  },
-  {
-    "id": "doi:10.1214/20-ejs1726",
-    "title": "Empirical likelihood inference with public-use survey data",
-    "doi": "10.1214/20-ejs1726",
-    "url": "https://doi.org/10.1214/20-ejs1726",
-    "year": 2020,
-    "workType": "article",
-    "issuingOrganization": "Institute of Mathematical Statistics",
-    "sources": [
-      "OpenAlex"
-    ],
-    "theme": "health",
-    "uses": [
-      {
-        "program": "GSS",
-        "precision": "exact_cycles",
-        "cycles": [
-          "2016"
-        ],
-        "cycleText": "2016",
+        "cycleText": "2020, 2021",
         "evidenceLocation": "Abstract"
       }
     ],
@@ -3489,6 +3326,29 @@
         "precision": "program_only",
         "cycles": [],
         "cycleText": "",
+        "evidenceLocation": "Abstract"
+      }
+    ],
+    "mentions": []
+  },
+  {
+    "id": "doi:10.1353/cja.2005.0032",
+    "title": "Examining the Healthy Immigrant Effect in Mid- To Later Life: Findings from the Canadian Community Health Survey",
+    "doi": "10.1353/cja.2005.0032",
+    "url": "https://doi.org/10.1353/cja.2005.0032",
+    "year": 2004,
+    "workType": "article",
+    "issuingOrganization": "Cambridge University Press",
+    "sources": [
+      "OpenAlex"
+    ],
+    "theme": "immigration",
+    "uses": [
+      {
+        "program": "CCHS",
+        "precision": "range",
+        "cycles": [],
+        "cycleText": "2000-2001",
         "evidenceLocation": "Abstract"
       }
     ],
@@ -3681,11 +3541,9 @@
     "uses": [
       {
         "program": "GSS",
-        "precision": "exact_cycles",
-        "cycles": [
-          "2017"
-        ],
-        "cycleText": "2017",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
         "evidenceLocation": "Abstract"
       }
     ],
@@ -3752,11 +3610,9 @@
     "uses": [
       {
         "program": "CIS",
-        "precision": "exact_cycles",
-        "cycles": [
-          "2020"
-        ],
-        "cycleText": "2020",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
         "evidenceLocation": "Abstract"
       }
     ],
@@ -3777,11 +3633,9 @@
     "uses": [
       {
         "program": "CIS",
-        "precision": "exact_cycles",
-        "cycles": [
-          "2020"
-        ],
-        "cycleText": "2020",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
         "evidenceLocation": "Abstract"
       }
     ],
@@ -3850,11 +3704,9 @@
     "uses": [
       {
         "program": "CCHS",
-        "precision": "exact_cycles",
-        "cycles": [
-          "2007"
-        ],
-        "cycleText": "2007",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
         "evidenceLocation": "Abstract"
       }
     ],
@@ -3948,10 +3800,9 @@
         "program": "GSS",
         "precision": "exact_cycles",
         "cycles": [
-          "2012",
-          "2018"
+          "2012"
         ],
-        "cycleText": "2012, 2018",
+        "cycleText": "2012",
         "evidenceLocation": "Abstract"
       }
     ],
@@ -4025,11 +3876,34 @@
     "uses": [
       {
         "program": "GSS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Abstract"
+      }
+    ],
+    "mentions": []
+  },
+  {
+    "id": "doi:10.2196/11224",
+    "title": "Health-Related Internet Usage and Design Feature Preference for E-Mental Health Programs Among Men and Women",
+    "doi": "10.2196/11224",
+    "url": "https://doi.org/10.2196/11224",
+    "year": 2018,
+    "workType": "article",
+    "issuingOrganization": "JMIR Publications",
+    "sources": [
+      "OpenAlex"
+    ],
+    "theme": "health",
+    "uses": [
+      {
+        "program": "CIUS",
         "precision": "exact_cycles",
         "cycles": [
-          "2014"
+          "2012"
         ],
-        "cycleText": "2014",
+        "cycleText": "2012",
         "evidenceLocation": "Abstract"
       }
     ],
@@ -4050,11 +3924,9 @@
     "uses": [
       {
         "program": "GSS",
-        "precision": "exact_cycles",
-        "cycles": [
-          "2019"
-        ],
-        "cycleText": "2019",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
         "evidenceLocation": "Abstract"
       }
     ],
@@ -4100,11 +3972,9 @@
     "uses": [
       {
         "program": "CCHS",
-        "precision": "exact_cycles",
-        "cycles": [
-          "2012"
-        ],
-        "cycleText": "2012",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
         "evidenceLocation": "Abstract"
       }
     ],
@@ -4125,11 +3995,9 @@
     "uses": [
       {
         "program": "CCHS",
-        "precision": "exact_cycles",
-        "cycles": [
-          "2016"
-        ],
-        "cycleText": "2016",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
         "evidenceLocation": "Abstract"
       }
     ],
@@ -4200,11 +4068,9 @@
     "uses": [
       {
         "program": "CCHS",
-        "precision": "exact_cycles",
-        "cycles": [
-          "2017"
-        ],
-        "cycleText": "2017",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
         "evidenceLocation": "Abstract"
       }
     ],
@@ -4225,11 +4091,9 @@
     "uses": [
       {
         "program": "GSS",
-        "precision": "exact_cycles",
-        "cycles": [
-          "2012"
-        ],
-        "cycleText": "2012",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
         "evidenceLocation": "Abstract"
       }
     ],
@@ -4250,14 +4114,9 @@
     "uses": [
       {
         "program": "CCHS",
-        "precision": "exact_cycles",
-        "cycles": [
-          "2020",
-          "2019",
-          "2020",
-          "2019"
-        ],
-        "cycleText": "2020, 2019, 2020, 2019",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
         "evidenceLocation": "Abstract"
       }
     ],
@@ -4278,14 +4137,9 @@
     "uses": [
       {
         "program": "CCHS",
-        "precision": "exact_cycles",
-        "cycles": [
-          "2020",
-          "2019",
-          "2020",
-          "2019"
-        ],
-        "cycleText": "2020, 2019, 2020, 2019",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
         "evidenceLocation": "Abstract"
       }
     ],
@@ -4313,9 +4167,9 @@
       },
       {
         "program": "CIS",
-        "precision": "range",
+        "precision": "program_only",
         "cycles": [],
-        "cycleText": "2017 to 2018",
+        "cycleText": "",
         "evidenceLocation": "Abstract"
       }
     ],
@@ -4480,11 +4334,9 @@
     "uses": [
       {
         "program": "GSS",
-        "precision": "exact_cycles",
-        "cycles": [
-          "1995"
-        ],
-        "cycleText": "1995",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
         "evidenceLocation": "Abstract"
       }
     ],
@@ -4505,11 +4357,9 @@
     "uses": [
       {
         "program": "LFS",
-        "precision": "exact_cycles",
-        "cycles": [
-          "2006"
-        ],
-        "cycleText": "2006",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
         "evidenceLocation": "Abstract"
       }
     ],
@@ -4557,10 +4407,9 @@
         "program": "GSS",
         "precision": "exact_cycles",
         "cycles": [
-          "2001",
           "1998"
         ],
-        "cycleText": "2001, 1998",
+        "cycleText": "1998",
         "evidenceLocation": "Abstract"
       }
     ],
@@ -4604,12 +4453,9 @@
     "uses": [
       {
         "program": "LFS",
-        "precision": "exact_cycles",
-        "cycles": [
-          "1997",
-          "2007"
-        ],
-        "cycleText": "1997, 2007",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
         "evidenceLocation": "Abstract"
       }
     ],
@@ -4655,10 +4501,9 @@
         "program": "CCHS",
         "precision": "exact_cycles",
         "cycles": [
-          "2023",
-          "2021"
+          "2023"
         ],
-        "cycleText": "2023, 2021",
+        "cycleText": "2023",
         "evidenceLocation": "Abstract"
       }
     ],
@@ -4695,6 +4540,29 @@
     "mentions": []
   },
   {
+    "id": "doi:10.3138/cjccj-2024-0035",
+    "title": "Mental Health and Police Legitimacy",
+    "doi": "10.3138/cjccj-2024-0035",
+    "url": "https://doi.org/10.3138/cjccj-2024-0035",
+    "year": 2025,
+    "workType": "article",
+    "issuingOrganization": "University of Toronto Press",
+    "sources": [
+      "OpenAlex"
+    ],
+    "theme": "health",
+    "uses": [
+      {
+        "program": "GSS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Abstract"
+      }
+    ],
+    "mentions": []
+  },
+  {
     "id": "doi:10.3138/cpp.2019-031",
     "title": "Using an Engel Curve Approach to Infer Cost of Living Experienced by Canadian Households",
     "doi": "10.3138/cpp.2019-031",
@@ -4709,12 +4577,9 @@
     "uses": [
       {
         "program": "SHS",
-        "precision": "exact_cycles",
-        "cycles": [
-          "1997",
-          "2015"
-        ],
-        "cycleText": "1997, 2015",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
         "evidenceLocation": "Abstract"
       }
     ],
@@ -4781,11 +4646,9 @@
     "uses": [
       {
         "program": "LFS",
-        "precision": "exact_cycles",
-        "cycles": [
-          "2019"
-        ],
-        "cycleText": "2019",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
         "evidenceLocation": "Abstract"
       }
     ],
@@ -4806,11 +4669,9 @@
     "uses": [
       {
         "program": "LFS",
-        "precision": "exact_cycles",
-        "cycles": [
-          "2020"
-        ],
-        "cycleText": "2020",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
         "evidenceLocation": "Abstract"
       }
     ],
@@ -5115,11 +4976,9 @@
     "uses": [
       {
         "program": "CCHS",
-        "precision": "exact_cycles",
-        "cycles": [
-          "2017"
-        ],
-        "cycleText": "2017",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
         "evidenceLocation": "Abstract"
       }
     ],
@@ -5140,11 +4999,9 @@
     "uses": [
       {
         "program": "GSS",
-        "precision": "exact_cycles",
-        "cycles": [
-          "2013"
-        ],
-        "cycleText": "2013",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
         "evidenceLocation": "Abstract"
       }
     ],
@@ -5190,14 +5047,9 @@
         "program": "GSS",
         "precision": "exact_cycles",
         "cycles": [
-          "2000",
-          "2010",
-          "1992",
-          "1998",
-          "2005",
           "2010"
         ],
-        "cycleText": "2000, 2010, 1992, 1998, 2005, 2010",
+        "cycleText": "2010",
         "evidenceLocation": "Abstract"
       }
     ],
@@ -5264,12 +5116,9 @@
     "uses": [
       {
         "program": "LFS",
-        "precision": "exact_cycles",
-        "cycles": [
-          "1991",
-          "2002"
-        ],
-        "cycleText": "1991, 2002",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
         "evidenceLocation": "Abstract"
       }
     ],
@@ -5352,12 +5201,9 @@
     "uses": [
       {
         "program": "SHS",
-        "precision": "exact_cycles",
-        "cycles": [
-          "1998",
-          "2004"
-        ],
-        "cycleText": "1998, 2004",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
         "evidenceLocation": "Abstract"
       }
     ],
@@ -5380,35 +5226,9 @@
         "program": "CIUS",
         "precision": "exact_cycles",
         "cycles": [
-          "2011",
           "2012"
         ],
-        "cycleText": "2011, 2012",
-        "evidenceLocation": "Abstract"
-      }
-    ],
-    "mentions": []
-  },
-  {
-    "id": "doi:10.3934/publichealth.2014.2.84",
-    "title": "Mental Health Service Utilization among Students and Staff in 18 Months Following Dawson College Shooting",
-    "doi": "10.3934/publichealth.2014.2.84",
-    "url": "https://doi.org/10.3934/publichealth.2014.2.84",
-    "year": 2014,
-    "workType": "article",
-    "issuingOrganization": "AIMS Press",
-    "sources": [
-      "OpenAlex"
-    ],
-    "theme": "education",
-    "uses": [
-      {
-        "program": "CCHS",
-        "precision": "exact_cycles",
-        "cycles": [
-          "2002"
-        ],
-        "cycleText": "2002",
+        "cycleText": "2012",
         "evidenceLocation": "Abstract"
       }
     ],
@@ -5429,11 +5249,9 @@
     "uses": [
       {
         "program": "LFS",
-        "precision": "exact_cycles",
-        "cycles": [
-          "2003"
-        ],
-        "cycleText": "2003",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
         "evidenceLocation": "Abstract"
       }
     ],
@@ -5454,12 +5272,9 @@
     "uses": [
       {
         "program": "LFS",
-        "precision": "exact_cycles",
-        "cycles": [
-          "2005",
-          "2004"
-        ],
-        "cycleText": "2005, 2004",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
         "evidenceLocation": "Abstract"
       }
     ],
@@ -5603,15 +5418,9 @@
         "program": "CSD",
         "precision": "exact_cycles",
         "cycles": [
-          "2001",
-          "2006",
-          "2001",
-          "2006",
-          "2012",
-          "2011",
-          "2011"
+          "2012"
         ],
-        "cycleText": "2001, 2006, 2001, 2006, 2012, 2011, 2011",
+        "cycleText": "2012",
         "evidenceLocation": "Abstract"
       }
     ],
@@ -5635,34 +5444,6 @@
         "precision": "program_only",
         "cycles": [],
         "cycleText": "",
-        "evidenceLocation": "Abstract"
-      }
-    ],
-    "mentions": []
-  },
-  {
-    "id": "doi:10.55016/ojs/ajer.v63i2.56354",
-    "title": "Predicting Problematic Internet Use in A Sample of Canadian University Students",
-    "doi": "10.55016/ojs/ajer.v63i2.56354",
-    "url": "https://doi.org/10.55016/ojs/ajer.v63i2.56354",
-    "year": 2017,
-    "workType": "article",
-    "issuingOrganization": "University of Alberta Press",
-    "sources": [
-      "OpenAlex"
-    ],
-    "theme": "education",
-    "uses": [
-      {
-        "program": "CIUS",
-        "precision": "exact_cycles",
-        "cycles": [
-          "2012",
-          "2010",
-          "2013",
-          "2015"
-        ],
-        "cycleText": "2012, 2010, 2013, 2015",
         "evidenceLocation": "Abstract"
       }
     ],
@@ -5936,11 +5717,9 @@
     "uses": [
       {
         "program": "GSS",
-        "precision": "exact_cycles",
-        "cycles": [
-          "2020"
-        ],
-        "cycleText": "2020",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
         "evidenceLocation": "Abstract"
       }
     ],
@@ -6007,14 +5786,9 @@
     "uses": [
       {
         "program": "CHMS",
-        "precision": "exact_cycles",
-        "cycles": [
-          "2009",
-          "2011",
-          "2016",
-          "2019"
-        ],
-        "cycleText": "2009, 2011, 2016, 2019",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
         "evidenceLocation": "Abstract"
       }
     ],
@@ -6035,14 +5809,9 @@
     "uses": [
       {
         "program": "CHMS",
-        "precision": "exact_cycles",
-        "cycles": [
-          "2009",
-          "2011",
-          "2016",
-          "2019"
-        ],
-        "cycleText": "2009, 2011, 2016, 2019",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
         "evidenceLocation": "Abstract"
       }
     ],
@@ -6063,12 +5832,9 @@
     "uses": [
       {
         "program": "CHMS",
-        "precision": "exact_cycles",
-        "cycles": [
-          "2007",
-          "2019"
-        ],
-        "cycleText": "2007, 2019",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
         "evidenceLocation": "Abstract"
       }
     ],
@@ -6135,11 +5901,9 @@
     "uses": [
       {
         "program": "GSS",
-        "precision": "exact_cycles",
-        "cycles": [
-          "2001"
-        ],
-        "cycleText": "2001",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
         "evidenceLocation": "Abstract"
       }
     ],
@@ -6160,11 +5924,9 @@
     "uses": [
       {
         "program": "GSS",
-        "precision": "exact_cycles",
-        "cycles": [
-          "2001"
-        ],
-        "cycleText": "2001",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
         "evidenceLocation": "Abstract"
       }
     ],
@@ -6185,11 +5947,9 @@
     "uses": [
       {
         "program": "GSS",
-        "precision": "exact_cycles",
-        "cycles": [
-          "2001"
-        ],
-        "cycleText": "2001",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
         "evidenceLocation": "Abstract"
       }
     ],
@@ -6256,11 +6016,9 @@
     "uses": [
       {
         "program": "GSS",
-        "precision": "exact_cycles",
-        "cycles": [
-          "1992"
-        ],
-        "cycleText": "1992",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
         "evidenceLocation": "Abstract"
       }
     ],
@@ -6354,12 +6112,9 @@
     "uses": [
       {
         "program": "SHS",
-        "precision": "exact_cycles",
-        "cycles": [
-          "1997",
-          "2009"
-        ],
-        "cycleText": "1997, 2009",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
         "evidenceLocation": "Abstract"
       }
     ],
@@ -6474,10 +6229,9 @@
         "program": "CSD",
         "precision": "exact_cycles",
         "cycles": [
-          "2012",
-          "2011"
+          "2012"
         ],
-        "cycleText": "2012, 2011",
+        "cycleText": "2012",
         "evidenceLocation": "Abstract"
       }
     ],
@@ -6498,13 +6252,9 @@
     "uses": [
       {
         "program": "GSS",
-        "precision": "exact_cycles",
-        "cycles": [
-          "1993",
-          "1999",
-          "2004"
-        ],
-        "cycleText": "1993, 1999, 2004",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
         "evidenceLocation": "Abstract"
       }
     ],
@@ -6733,10 +6483,9 @@
         "program": "GSS",
         "precision": "exact_cycles",
         "cycles": [
-          "1990",
           "1991"
         ],
-        "cycleText": "1990, 1991",
+        "cycleText": "1991",
         "evidenceLocation": "Abstract"
       }
     ],
@@ -6780,13 +6529,9 @@
     "uses": [
       {
         "program": "SHS",
-        "precision": "exact_cycles",
-        "cycles": [
-          "1996",
-          "1997",
-          "1998"
-        ],
-        "cycleText": "1996, 1997, 1998",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
         "evidenceLocation": "Abstract"
       }
     ],
@@ -7020,11 +6765,9 @@
     "uses": [
       {
         "program": "GSS",
-        "precision": "exact_cycles",
-        "cycles": [
-          "2018"
-        ],
-        "cycleText": "2018",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
         "evidenceLocation": "Abstract"
       }
     ],
@@ -7047,20 +6790,18 @@
         "program": "LFS",
         "precision": "exact_cycles",
         "cycles": [
-          "2024",
-          "2023"
+          "2024"
         ],
-        "cycleText": "2024, 2023",
+        "cycleText": "2024",
         "evidenceLocation": "Data Sources"
       },
       {
         "program": "CIS",
         "precision": "exact_cycles",
         "cycles": [
-          "2024",
           "2023"
         ],
-        "cycleText": "2024, 2023",
+        "cycleText": "2023",
         "evidenceLocation": "Data Sources"
       }
     ],
@@ -7129,11 +6870,9 @@
     "uses": [
       {
         "program": "GSS",
-        "precision": "exact_cycles",
-        "cycles": [
-          "2006"
-        ],
-        "cycleText": "2006",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
         "evidenceLocation": "Abstract"
       }
     ],
@@ -7520,6 +7259,29 @@
     "mentions": []
   },
   {
+    "id": "url:b5c2116a29049c7b2d1594f4a525a237fb7ad1f8130d1209ead7627fa6dd7ea7",
+    "title": "Patterns of Retirement as Reflected in Income Tax Records for Older Workers",
+    "doi": null,
+    "url": "http://socserv.mcmaster.ca/qsep/p/qsep434.pdf",
+    "year": 2009,
+    "workType": "preprint",
+    "issuingOrganization": "Federal Reserve Bank of St. Louis",
+    "sources": [
+      "OpenAlex"
+    ],
+    "theme": "digital society",
+    "uses": [
+      {
+        "program": "LFS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Abstract"
+      }
+    ],
+    "mentions": []
+  },
+  {
     "id": "url:b612c8a5f5b3431a867734f00c944cf19d8fba64f5cfddc72e24581cb4d7bf75",
     "title": "Population Health Profile: Mental Health and Substance Use in Toronto",
     "doi": null,
@@ -7591,35 +7353,6 @@
     "mentions": []
   },
   {
-    "id": "url:cabe4e993ee0edb9a3302156e3569379e198b045c83086587f529373173ff418",
-    "title": "Employment Realities of Recent Junior/Community College and University Graduates and Premature Leavers with Disabilities.",
-    "doi": null,
-    "url": "https://files.eric.ed.gov/fulltext/ED567880.pdf",
-    "year": 2015,
-    "workType": "article",
-    "issuingOrganization": null,
-    "sources": [
-      "OpenAlex"
-    ],
-    "theme": "education",
-    "uses": [
-      {
-        "program": "CSD",
-        "precision": "exact_cycles",
-        "cycles": [
-          "2011",
-          "2012",
-          "2014",
-          "2014",
-          "2014"
-        ],
-        "cycleText": "2011, 2012, 2014, 2014, 2014",
-        "evidenceLocation": "Abstract"
-      }
-    ],
-    "mentions": []
-  },
-  {
     "id": "url:d249b22d30d9d3117d681d1c2ac6e48de9cd70b7c61d1c3b3a5a7ddea45351e4",
     "title": "Housing Insecurity and Health of Older Adults in the Greater Toronto Area",
     "doi": null,
@@ -7636,20 +7369,18 @@
         "program": "CCHS",
         "precision": "exact_cycles",
         "cycles": [
-          "2021",
-          "2020"
+          "2021"
         ],
-        "cycleText": "2021, 2020",
+        "cycleText": "2021",
         "evidenceLocation": "Data Sources"
       },
       {
         "program": "GSS",
         "precision": "exact_cycles",
         "cycles": [
-          "2021",
           "2020"
         ],
-        "cycleText": "2021, 2020",
+        "cycleText": "2020",
         "evidenceLocation": "Data Sources"
       }
     ],
@@ -7672,20 +7403,18 @@
         "program": "CIS",
         "precision": "exact_cycles",
         "cycles": [
-          "2023",
-          "2024"
+          "2023"
         ],
-        "cycleText": "2023, 2024",
+        "cycleText": "2023",
         "evidenceLocation": "Executive Summary"
       },
       {
         "program": "LFS",
         "precision": "exact_cycles",
         "cycles": [
-          "2023",
           "2024"
         ],
-        "cycleText": "2023, 2024",
+        "cycleText": "2024",
         "evidenceLocation": "Executive Summary"
       }
     ],
@@ -7742,10 +7471,9 @@
         "program": "CIUS",
         "precision": "exact_cycles",
         "cycles": [
-          "2005",
-          "2000"
+          "2005"
         ],
-        "cycleText": "2005, 2000",
+        "cycleText": "2005",
         "evidenceLocation": "Abstract"
       }
     ],
@@ -7768,10 +7496,9 @@
         "program": "LFS",
         "precision": "exact_cycles",
         "cycles": [
-          "2019",
-          "2024"
+          "2019"
         ],
-        "cycleText": "2019, 2024",
+        "cycleText": "2019",
         "evidenceLocation": "Data and Methodology"
       }
     ],
@@ -7938,20 +7665,18 @@
         "program": "CIS",
         "precision": "exact_cycles",
         "cycles": [
-          "2024",
           "2024"
         ],
-        "cycleText": "2024, 2024",
+        "cycleText": "2024",
         "evidenceLocation": "Technical Annex"
       },
       {
         "program": "LFS",
         "precision": "exact_cycles",
         "cycles": [
-          "2024",
           "2024"
         ],
-        "cycleText": "2024, 2024",
+        "cycleText": "2024",
         "evidenceLocation": "Technical Annex"
       }
     ],
@@ -7999,22 +7724,16 @@
         "program": "CCHS",
         "precision": "exact_cycles",
         "cycles": [
-          "2000",
-          "2001",
-          "1996"
+          "2001"
         ],
-        "cycleText": "2000, 2001, 1996",
+        "cycleText": "2001",
         "evidenceLocation": "Abstract"
       },
       {
         "program": "LFS",
-        "precision": "exact_cycles",
-        "cycles": [
-          "2000",
-          "2001",
-          "1996"
-        ],
-        "cycleText": "2000, 2001, 1996",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
         "evidenceLocation": "Abstract"
       }
     ],

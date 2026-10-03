@@ -62,35 +62,119 @@ const THEME_KEYWORDS: Record<string, string[]> = {
   ],
 };
 
+function isSentenceBoundary(passage: string, index: number): boolean {
+  const char = passage[index];
+  if (char !== '.' && char !== '!' && char !== '?') return false;
+
+  // Decimal numbers like 3.14 or DOIs like 10.55016
+  if (index > 0 && /\d/.test(passage[index - 1]!) && index + 1 < passage.length && /\d/.test(passage[index + 1]!)) {
+    return false;
+  }
+
+  // Common abbreviation checks
+  const preceding = passage.slice(Math.max(0, index - 8), index + 1).toLowerCase();
+  if (preceding.endsWith('et al.') || preceding.endsWith('e.g.') || preceding.endsWith('i.e.') || preceding.endsWith('vs.')) {
+    return false;
+  }
+  if (preceding.endsWith('dr.') || preceding.endsWith('mr.') || preceding.endsWith('ms.') || preceding.endsWith('mrs.') || preceding.endsWith('prof.')) {
+    return false;
+  }
+  if (preceding.endsWith('vol.') || preceding.endsWith('no.') || preceding.endsWith('pp.') || preceding.endsWith('p.')) {
+    return false;
+  }
+
+  // Acronyms or single letter initials: e.g. U.S. or J. Smith
+  if (index > 0 && /[A-Z]/.test(passage[index - 1]!)) {
+    if (index + 2 < passage.length && /[A-Z]/.test(passage[index + 1]!) && passage[index + 2] === '.') {
+      return false;
+    }
+    if (index >= 2 && passage[index - 2] === '.' && /[A-Z]/.test(passage[index - 1]!)) {
+      return false;
+    }
+  }
+
+  // Look ahead past closing quotation marks or brackets: e.g. .", .), .)
+  let k = index + 1;
+  while (k < passage.length && ['"', "'", ')', ']', '”', '’'].includes(passage[k]!)) {
+    k++;
+  }
+
+  // Valid boundary if at end of string, followed by whitespace, or followed by uppercase letter
+  if (k >= passage.length || /\s/.test(passage[k]!) || /[A-Z]/.test(passage[k]!)) {
+    return true;
+  }
+
+  return false;
+}
+
 function extractSentence(passage: string, matchIndex: number, matchLength: number): string {
-  // Find sentence start (period followed by space, or newline, or start of string)
   let start = 0;
   for (let i = matchIndex - 1; i >= 0; i--) {
-    if ((passage[i] === '.' || passage[i] === '!' || passage[i] === '?') && (passage[i + 1] === ' ' || passage[i + 1] === '\n')) {
-      start = i + 2;
-      break;
-    }
     if (passage[i] === '\n') {
       start = i + 1;
       break;
     }
-  }
-
-  // Find sentence end
-  let end = passage.length;
-  for (let i = matchIndex + matchLength; i < passage.length; i++) {
-    if ((passage[i] === '.' || passage[i] === '!' || passage[i] === '?') && (i + 1 === passage.length || passage[i + 1] === ' ' || passage[i + 1] === '\n')) {
-      end = i + 1;
+    if (isSentenceBoundary(passage, i)) {
+      let k = i + 1;
+      while (k < passage.length && ['"', "'", ')', ']', '”', '’'].includes(passage[k]!)) {
+        k++;
+      }
+      while (k < passage.length && /\s/.test(passage[k]!)) {
+        k++;
+      }
+      start = k;
       break;
     }
+  }
+
+  let end = passage.length;
+  for (let i = matchIndex + matchLength; i < passage.length; i++) {
     if (passage[i] === '\n') {
       end = i;
+      break;
+    }
+    if (isSentenceBoundary(passage, i)) {
+      let k = i + 1;
+      while (k < passage.length && ['"', "'", ')', ']', '”', '’'].includes(passage[k]!)) {
+        k++;
+      }
+      end = k;
       break;
     }
   }
 
   return passage.slice(start, end).trim();
 }
+
+const BACKGROUND_MENTION_PATTERNS: RegExp[] = [
+  // Survey is the subject of a reporting/finding verb
+  /\b(?:the\s+)?(?:[\w\s\x27-]{0,40})?(?:survey|microdata|rdc|pumf|statcan|statistics\s+canada|statistique\s+canada|cchs|chms|cius|cis|csd|gss|lfs|shs|ecui|escc|ecms|esg|epa|ecr)\s+(?:reveals?|revealed|shows?|showed|reported?|indicates?|indicated|found|finds|estimated?|estimates|demonstrates?|demonstrated|suggests?|suggested)\s+that\b/i,
+  // External attribution phrases
+  /\b(?:according\s+to|d\x27après|selon)\s+(?:the\s+|les?\s+|l\x27)?(?:[\w\s\x27-]{0,30})?(?:survey|enquête|statcan|statistics\s+canada|statistique\s+canada|[A-Z]{3,5})\b/i,
+  // Question or module adaptation
+  /\b(?:questions?|items?|scales?|modules?|subscales?)\s+(?:from|of|adapted\s+from|in)\s+the\b/i,
+  /\b(?:adapted|drawn|measured)\s+(?:from|using\s+questions?\s+from)\s+the\b/i,
+  // Introduction examples or non-publication
+  /\b(?:e\.g\.|for\s+example|such\s+as)\s*,?\s*(?:the\s+)?(?:[\w\s\x27-]{0,20})?(?:survey|enquête|[A-Z]{3,5})\b/i,
+  /\bhave\s+not\s+(?:yet\s+)?published\s+data\b/i,
+  /\b(?:as\s+reported|as\s+noted|as\s+documented|as\s+estimated)\s+by\b/i,
+  /\b(?:see|cf\.)\s+(?:also\s+)?(?:statistics\s+canada|statistique\s+canada|statcan)\b/i,
+  /\b(?:cited|referenced)\s+in\b/i,
+];
+
+const ACTIVE_ANALYSIS_PATTERNS: RegExp[] = [
+  /\b(?:we|i|our\s+study|this\s+study|this\s+paper|this\s+article|this\s+report|this\s+dissertation|the\s+present\s+study|the\s+present\s+paper|our\s+analysis|our\s+research)\s+(?:analyz|analys|examin|investigat|us|utiliz|utilis|model|estimat|evaluat|explor|draw|drew|rel|assess|employ|construct|perform|show|find)/i,
+  /\b(?:were|was|are|is)\s+(?:obtained|drawn|derived|taken|collected|extracted)\s+from\b/i,
+  /\b(?:data|samples?)\s+(?:were|was|are|is)\s+(?:combined|merged|pooled|used|analyzed|analysed)\b/i,
+  /\b(?:sample|cohort)\s+(?:was|is|were)\s+drawn\s+from\b/i,
+  /\b(?:utilizing|using)\s+(?:data|microdata|variables?|information|a\s+sample)\b/i,
+  /\busing\s+(?:the\s+)?(?:[\d]{4}|cycle\s+\d+|annual\s+component|pumf|rdc)?\s*(?:canadian|statcan|statistics\s+canada|[A-Z]{3,5})/i,
+  /\b(?:pumf|rdc|research\s+data\s+centre|centre\s+de\s+donn[ée]es\s+de\s+recherche|custom\s+tabulations?|tabulations?\s+sp[ée]ciales?)\b/i,
+  /\b(?:regression\s+analysis\s+of\s+data\s+from|logistic\s+regression|proportional\s+hazards|econometric\s+model|ols\s+regression)\b/i,
+  /\b(?:linked\s+respondents\s+of\s+the|cohort\s+that\s+linked|were\s+linked\s+to)\b/i,
+  /\b(?:relies\s+on\s+the|makes?\s+use\s+of|based\s+on\s+data\s+from|draws?\s+(?:up)?on\s+data\s+from|exploiting)\b/i,
+  /\b(?:utilisons|analysons|examinons|cette\s+[ée]tude\s+(?:utilise|analyse|examine)|les\s+donn[ée]es\s+proviennent|analyse\s+les\s+donn[ée]es)\b/i,
+];
 
 export function extractDeterministic(
   source: SourceWork,
@@ -141,16 +225,16 @@ export function extractDeterministic(
 
       // Determine role
       let role: Claim['role'] = 'analyzed';
-      if (
-        quoteLower.includes('questions from') ||
-        quoteLower.includes('items from') ||
-        quoteLower.includes('adapted from') ||
-        quoteLower.includes('scale of the') ||
-        quoteLower.includes('items of the') ||
-        quoteLower.includes('measured using questions from')
-      ) {
+      const isMention = BACKGROUND_MENTION_PATTERNS.some(p => p.test(quote));
+      const titleHasSurvey = source.title ? candidate.aliases.some(a => source.title.toLowerCase().includes(a.toLowerCase())) : false;
+      const isActive = ACTIVE_ANALYSIS_PATTERNS.some(p => p.test(quote)) || (titleHasSurvey && ACTIVE_ANALYSIS_PATTERNS.some(p => p.test(source.title ?? '')));
+
+      if (isMention && !isActive) {
         role = 'background_mention';
-      } else if (quoteLower.includes('compared to') || quoteLower.includes('consistent with')) {
+      } else if (
+        /\b(?:our\s+(?:findings|results|sample|cohort|data)|we\s+found)\b/i.test(quote) &&
+        (quoteLower.includes('compared to') || quoteLower.includes('consistent with'))
+      ) {
         role = 'comparison';
       }
 
@@ -165,10 +249,37 @@ export function extractDeterministic(
         precision = 'range';
         cycleText = rangeMatch[0];
       } else {
-        // Look for 4-digit years between 1990 and 2030 in quote
-        const yearMatches = [...quote.matchAll(/\b(199\d|20[0-3]\d)\b/g)];
-        const candidateYears = yearMatches.map(m => m[1]).filter(Boolean) as string[];
-        if (candidateYears.length > 0) {
+        // Strip parenthetical author citations: e.g. (Statistics Canada, 2013) or (Gür et al., 2015)
+        const strippedQuote = quote.replace(
+          /\((?:(?:[A-Za-z\s,&.-]+)?(?:Statistics\s+Canada|Statistique\s+Canada|StatCan|[A-Z][a-z]+(?:\s+et\s+al\.?)?))(?:\s*[,&]\s*[A-Za-z\s.-]+)*,\s*(?:199\d|20[0-3]\d)[^)]*?\)/gi,
+          ''
+        );
+
+        // Associated cycle patterns near the survey or cycle markers
+        const cyclePatterns = [
+          new RegExp(`\\b(199\\d|20[0-3]\\d)(?:\\s*,\\s*(199\\d|20[0-3]\\d))*(?:\\s+and\\s+(199\\d|20[0-3]\\d))?\\s+(?:cycles?\\s+(?:of|from|in)\\s+)?(?:the\\s+)?(?:[A-Z]{2,6}\\s*(?:\\([^)]*?\\))?\\s*)?(?:${escaped})\\b`, 'i'),
+          new RegExp(`\\b(?:${escaped})\\s*(?:\\([^)]*?\\))?\\s*(?:in\\s+|from\\s+|cycles?\\s+(?:of\\s+)?|\\()?\\s*(199\\d|20[0-3]\\d)(?:\\s*,\\s*(199\\d|20[0-3]\\d))*(?:\\s+and\\s+(199\\d|20[0-3]\\d))?\\b`, 'i'),
+          /\b(199\d|20[0-3]\d)(?:\s*(?:,|and)\s*(199\d|20[0-3]\d))*\s+cycles?\b/i,
+          /\bcycles?\s+(?:of|from|in)\s+(199\d|20[0-3]\d)(?:\s*(?:,|and)\s*(199\d|20[0-3]\d))*/i,
+          /\b(?:cycle|cycle\s+de|wave|vague)\s+\d+(?:\.\d+)?\s*(?:\((199\d|20[0-3]\d)\))?/i,
+          /\b(?:conducted|collected|fielded|administered)\s+in\s+(199\d|20[0-3]\d)\b/i,
+          /\bfrom\s+the\s+(199\d|20[0-3]\d)\s+(?:survey|microdata|sample|data|cycle)\b/i,
+          /\b(199\d|20[0-3]\d)\s+annual\s+component\b/i,
+        ];
+
+        const matchedYears = new Set<string>();
+        for (const pattern of cyclePatterns) {
+          const m = pattern.exec(strippedQuote);
+          if (m) {
+            const yearsInMatch = [...m[0].matchAll(/\b(199\d|20[0-3]\d)\b/g)].map(y => y[1]);
+            for (const y of yearsInMatch) {
+              if (y) matchedYears.add(y);
+            }
+          }
+        }
+
+        if (matchedYears.size > 0) {
+          const candidateYears = [...matchedYears].sort();
           precision = 'exact_cycles';
           exactCycles.push(...candidateYears);
           cycleText = candidateYears.join(', ');
