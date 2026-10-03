@@ -303,6 +303,14 @@ export function ResearcherThemesViz({
     return peakY ? { year: peakY, count: peakVal } : null;
   }, [availableYears, matrix]);
 
+  const activeProgramsCount = useMemo(() => {
+    const progs = new Set<string>();
+    for (const w of filteredWorks) {
+      for (const u of w.uses) progs.add(u.program);
+    }
+    return progs.size;
+  }, [filteredWorks]);
+
   const activeHoveredYearData = hoveredYear && matrix[hoveredYear] ? matrix[hoveredYear] : null;
 
   function handleGoToSearch(theme?: string, year?: number, survey?: string) {
@@ -357,6 +365,11 @@ export function ResearcherThemesViz({
                 <span className="researcher-metric-pill__sub">{peakYearEntry.count} publications</span>
               </div>
             )}
+            <div className="researcher-metric-pill">
+              <span className="researcher-metric-pill__label">Surveys Analyzed</span>
+              <strong>{activeProgramsCount}</strong>
+              <span className="researcher-metric-pill__sub">distinct programs</span>
+            </div>
           </div>
         </div>
 

@@ -130,6 +130,16 @@ export function ResearcherPage({ onHome, onSearcher }: { onHome: () => void; onS
   const programs = useMemo(() => [...new Set(works.flatMap(work => work.uses.map(use => use.program)))].sort(), []);
   const availableThemes = useMemo(() => [...new Set(works.map(work => work.theme).filter(Boolean) as string[])].sort(), []);
 
+  const programCounts = useMemo(() => {
+    const counts: Record<string, number> = {};
+    for (const work of works) {
+      for (const use of work.uses) {
+        counts[use.program] = (counts[use.program] ?? 0) + 1;
+      }
+    }
+    return counts;
+  }, []);
+
   const surveyWorks = useMemo(() => {
     if (selectedSurveys.length === 0) return [];
     return works.filter(w => w.uses.some(u => selectedSurveys.includes(u.program)));
@@ -289,9 +299,8 @@ export function ResearcherPage({ onHome, onSearcher }: { onHome: () => void; onS
         {onSearcher && (
           <button
             type="button"
-            className="researcher-link researcher-link--secondary"
+            className="researcher-header-btn"
             onClick={onSearcher}
-            style={{ marginLeft: 'auto', display: 'inline-flex', alignItems: 'center', gap: '6px', fontSize: '13px', padding: '6px 14px' }}
           >
             <Search size={14} aria-hidden="true" />
             Open Searcher
@@ -309,23 +318,11 @@ export function ResearcherPage({ onHome, onSearcher }: { onHome: () => void; onS
               Every survey relationship and cycle link shown here is grounded in verbatim methods evidence.
               Statistics Canada's own publications are excluded and mapped separately to retain clear attribution.
             </p>
-            <div className="researcher-actions">
-              <button
-                type="button"
-                className={`researcher-link ${activeTab === 'stats' ? 'researcher-link--primary' : 'researcher-link--secondary'}`}
-                onClick={() => handleTabChange('stats')}
-              >
-                <BarChart3 size={15} aria-hidden="true" />
-                1) Stats & Output Trends
-              </button>
-              <button
-                type="button"
-                className={`researcher-link ${activeTab === 'search' ? 'researcher-link--primary' : 'researcher-link--secondary'}`}
-                onClick={() => handleTabChange('search')}
-              >
-                <Search size={15} aria-hidden="true" />
-                2) Search Publications ({works.length})
-              </button>
+            <div className="researcher-hero__mobile-stats">
+              <span><b>{works.length}</b> reviewed works</span>
+              <span><b>{programs.length}</b> survey programs</span>
+              <span><b>{reportsCount}</b> policy reports</span>
+              <span><b>{exactPercentage}%</b> exact cycle</span>
             </div>
           </div>
           <div className="researcher-hero__summary" aria-label="Pilot coverage summary">
@@ -360,7 +357,8 @@ export function ResearcherPage({ onHome, onSearcher }: { onHome: () => void; onS
               onClick={() => handleTabChange('stats')}
             >
               <BarChart3 size={16} aria-hidden="true" />
-              <span>1) Stats & Output Trends</span>
+              <span className="researcher-tab__label-desktop">1) Stats & Output Trends</span>
+              <span className="researcher-tab__label-mobile">1) Stats & Trends</span>
             </button>
             <button
               type="button"
@@ -372,7 +370,8 @@ export function ResearcherPage({ onHome, onSearcher }: { onHome: () => void; onS
               onClick={() => handleTabChange('search')}
             >
               <Search size={16} aria-hidden="true" />
-              <span>2) Search Publications ({works.length})</span>
+              <span className="researcher-tab__label-desktop">2) Search Publications ({works.length})</span>
+              <span className="researcher-tab__label-mobile">2) Search ({works.length})</span>
             </button>
           </nav>
         </div>
@@ -438,7 +437,7 @@ export function ResearcherPage({ onHome, onSearcher }: { onHome: () => void; onS
                 aria-pressed={selectedSurveys.length === 0}
                 onClick={() => selectSurvey(null)}
               >
-                All surveys
+                All surveys <span className="researcher-survey-badge">{works.length}</span>
               </button>
               {programs.map(program => (
                 <button
@@ -447,9 +446,9 @@ export function ResearcherPage({ onHome, onSearcher }: { onHome: () => void; onS
                   className={selectedSurveys.includes(program) ? 'is-active' : ''}
                   aria-pressed={selectedSurveys.includes(program)}
                   onClick={() => selectSurvey(program)}
-                  title={programNames[program]}
+                  title={`${programNames[program] ?? program} (${programCounts[program] ?? 0} publications)`}
                 >
-                  {program}
+                  {program} <span className="researcher-survey-badge">{programCounts[program] ?? 0}</span>
                 </button>
               ))}
             </div>
@@ -641,6 +640,12 @@ export function ResearcherPage({ onHome, onSearcher }: { onHome: () => void; onS
 
           <p className="researcher-count" aria-live="polite">
             Showing {Math.min(shown.length, displayLimit)} of {shown.length} matched works ({works.length} total reviewed)
+            {selectedSurveys.length > 0 && (
+              <span className="researcher-active-filter-badge">
+                Survey: {selectedSurveys.join(', ')}
+                <button type="button" onClick={() => { setSelectedSurveys([]); setSelectedCycle(null); setSelectedPubYear(null); }} aria-label="Remove survey filter">×</button>
+              </span>
+            )}
             {selectedType !== 'all' && (
               <span className="researcher-active-filter-badge">
                 Type: {selectedType === 'conference-paper' ? 'Conference Paper' : selectedType}
@@ -762,9 +767,8 @@ export function ResearcherPage({ onHome, onSearcher }: { onHome: () => void; onS
                 <div style={{ textAlign: 'center', marginTop: '24px' }}>
                   <button
                     type="button"
-                    className="researcher-link researcher-link--secondary"
+                    className="researcher-load-more-btn"
                     onClick={() => setDisplayLimit(prev => prev + 30)}
-                    style={{ display: 'inline-flex', padding: '10px 24px', cursor: 'pointer' }}
                   >
                     Show 30 more works ({shown.length - displayLimit} remaining)
                   </button>
