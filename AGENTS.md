@@ -27,6 +27,7 @@
 - `ARCHITECTURE.md` — package relationships, ownership boundaries, and instructions for adding or extracting a tool.
 
 ## Current state
+- **Bilingual UI and updates list (2026-10-04):** A shared EN/FR preference spans Hub, Designer, and respondent entry points; public pages and core controls have French copy, with deeper tool terminology still being translated. The Hub footer has a consented updates signup backed by the append-only `newsletter_subscribers` Supabase table (anon insert only, no public read). No email delivery provider is connected yet.
 - **Phases 1–13 DONE** (full history: Brain note → Log). Latest: Validator V1/V2/V3 complete and verified live end-to-end against Supabase (2026-07-09); all DEPLOYMENT.md §§9b/9c tables live.
 - **Phase 14 IN PROGRESS:** Questionnaire Testing Bot (`tools/testing/questionnaire-bot`). Phases A–C done (path enumeration ×3 strategies, browser-driven scenario execution, HTML report + CLI; 91 tests, 12 real-Chromium).
   - NOT DONE: e2e run against a live `tools/collection/respondent` dev server (tests use a static fixture), text-drift/edit-firing assertion engine, discovery mode for external questionnaires (Phase D).
