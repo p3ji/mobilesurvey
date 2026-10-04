@@ -713,9 +713,10 @@ function CollectionDashboard({ surveyId }: { surveyId: string }) {
     const allKeys = new Set<string>();
     for (const row of rowsToExport) for (const k of Object.keys(row.answersJson)) allKeys.add(k);
     const answerCols = [...allKeys].sort();
-    const header = ['respondent_id', 'submitted_at', 'duration_ms', 'completed', ...answerCols];
+    const header = ['respondent_id', 'submitted_at', 'duration_ms', 'completed', 'instrument_version', 'instrument_sha256', ...answerCols];
     const csvRows = rowsToExport.map((row) => [
       row.respondentId, row.submittedAt, row.durationMs ?? '', String(row.completed),
+      row.instrumentVersion ?? '', row.instrumentSha256 ?? '',
       ...answerCols.map((k) => row.answersJson[k] ?? ''),
     ]);
     return [header, ...csvRows]

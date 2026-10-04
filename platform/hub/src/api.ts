@@ -133,6 +133,8 @@ export interface ResponseRow {
   durationMs: number | null;
   completed: boolean;
   answersJson: Record<string, unknown>;
+  instrumentVersion: string | null;
+  instrumentSha256: string | null;
 }
 
 export interface SurveyParadataRow {
@@ -168,18 +170,19 @@ export async function listSurveys(): Promise<SurveySummary[]> {
     .order('updated_at', { ascending: false });
   if (error) throw error;
 
-  // Fetch response counts in one query
+  // Count in Postgres: fetching IDs silently truncates at the Data API row limit.
   const ids = (surveys ?? []).map((s: { id: string }) => s.id);
   let counts: Record<string, number> = {};
   if (ids.length > 0) {
-    const { data: resp } = await sb()
-      .from('responses')
-      .select('survey_id')
-      .in('survey_id', ids);
-    for (const r of resp ?? []) {
-      const row = r as { survey_id: string };
-      counts[row.survey_id] = (counts[row.survey_id] ?? 0) + 1;
-    }
+    const results = await Promise.all(ids.map(async (id) => {
+      const { count, error: countError } = await sb()
+        .from('responses')
+        .select('id', { count: 'exact', head: true })
+        .eq('survey_id', id);
+      if (countError) throw countError;
+      return [id, count ?? 0] as const;
+    }));
+    counts = Object.fromEntries(results);
   }
 
   return (surveys ?? []).map((r: {
@@ -442,25 +445,43 @@ export async function fetchResponses(surveyId: string): Promise<ResponseRow[]> {
       durationMs: r.durationMs,
       completed: r.completed,
       answersJson: r.answersJson,
+      instrumentVersion: r.instrumentVersion ?? null,
+      instrumentSha256: r.instrumentSha256 ?? null,
     }));
   }
-  const { data, error } = await sb()
-    .from('responses')
-    .select('id, respondent_id, submitted_at, duration_ms, completed, answers_json')
-    .eq('survey_id', surveyId)
-    .order('submitted_at', { ascending: false });
-  if (error) throw error;
-  return (data ?? []).map((r: {
+  type Row = {
     id: string; respondent_id: string; submitted_at: string;
     duration_ms: number | null; completed: boolean; answers_json: Record<string, unknown> | null;
-  }) => ({
+    instrument_version: string | null; instrument_sha256: string | null;
+  };
+  const rows: Row[] = [];
+  let cursor: string | null = null;
+  // Keyset paging on the primary key avoids offset shifts as new submissions arrive.
+  while (true) {
+    let query = sb()
+      .from('responses')
+      .select('id, respondent_id, submitted_at, duration_ms, completed, answers_json, instrument_version, instrument_sha256')
+      .eq('survey_id', surveyId)
+      .order('id', { ascending: true })
+      .limit(500);
+    if (cursor !== null) query = query.gt('id', cursor);
+    const { data, error } = await query;
+    if (error) throw error;
+    const page = (data ?? []) as Row[];
+    rows.push(...page);
+    if (page.length < 500) break;
+    cursor = page[page.length - 1]!.id;
+  }
+  return rows.map((r) => ({
     id: r.id,
     respondentId: r.respondent_id,
     submittedAt: r.submitted_at,
     durationMs: r.duration_ms,
     completed: r.completed,
     answersJson: r.answers_json ?? {},
-  }));
+    instrumentVersion: r.instrument_version,
+    instrumentSha256: r.instrument_sha256,
+  })).sort((a, b) => b.submittedAt.localeCompare(a.submittedAt) || b.id.localeCompare(a.id));
 }
 
 export async function fetchSurveyParadata(surveyId: string): Promise<SurveyParadataRow[]> {
@@ -474,23 +495,35 @@ export async function fetchSurveyParadata(surveyId: string): Promise<SurveyParad
       payloadJson: p.payloadJson,
     }));
   }
-  const { data, error } = await sb()
-    .from('paradata')
-    .select('id, session_key, respondent_id, ts, type, payload_json')
-    .eq('survey_id', surveyId)
-    .order('ts', { ascending: true });
-  if (error) throw error;
-  return (data ?? []).map((r: {
+  type Row = {
     id: number; session_key: string | null; respondent_id: string | null;
     ts: string; type: string; payload_json: unknown;
-  }) => ({
+  };
+  const rows: Row[] = [];
+  let cursor: number | null = null;
+  while (true) {
+    let query = sb()
+      .from('paradata')
+      .select('id, session_key, respondent_id, ts, type, payload_json')
+      .eq('survey_id', surveyId)
+      .order('id', { ascending: true })
+      .limit(500);
+    if (cursor !== null) query = query.gt('id', cursor);
+    const { data, error } = await query;
+    if (error) throw error;
+    const page = (data ?? []) as Row[];
+    rows.push(...page);
+    if (page.length < 500) break;
+    cursor = page[page.length - 1]!.id;
+  }
+  return rows.map((r) => ({
     id: r.id,
     sessionKey: r.session_key,
     respondentId: r.respondent_id,
     ts: r.ts,
     type: r.type,
     payloadJson: r.payload_json,
-  }));
+  })).sort((a, b) => a.ts.localeCompare(b.ts) || a.id - b.id);
 }
 
 // ── Catalog (for Searcher) ────────────────────────────────────────────────────

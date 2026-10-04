@@ -237,6 +237,8 @@ export interface LocalResponseRecord {
   pageCountReached?: number;
   totalPages?: number;
   answersJson: Record<string, unknown>;
+  instrumentVersion?: string | null;
+  instrumentSha256?: string | null;
 }
 
 export function listLocalResponses(surveyId?: string): LocalResponseRecord[] {

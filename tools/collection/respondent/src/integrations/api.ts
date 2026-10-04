@@ -16,6 +16,7 @@ import {
   saveLocalResponse,
   saveLocalParadata,
   surveyCollectsData,
+  type Instrument,
 } from '@mobilesurvey/instrument-schema';
 import { createMockParadataSink, localSessionStore, mockCmsClient } from './mocks.js';
 
@@ -125,12 +126,25 @@ export async function ensureSurveyRow(
 
 // ── Response submission ───────────────────────────────────────────────────────
 
+/** Fingerprint the instrument actually loaded for this submission. */
+export async function instrumentSha256(instrument: Instrument): Promise<string> {
+  const bytes = new TextEncoder().encode(JSON.stringify(instrument));
+  const digest = await crypto.subtle.digest('SHA-256', bytes);
+  return Array.from(new Uint8Array(digest), (byte) => byte.toString(16).padStart(2, '0')).join('');
+}
+
 export async function submitResponse(
   surveyId: string,
   respondentId: string,
   answers: Record<string, unknown>,
-  opts?: { startedAt?: number; durationMs?: number; pageCountReached?: number; totalPages?: number },
+  opts: { instrument: Instrument; startedAt?: number; durationMs?: number; pageCountReached?: number; totalPages?: number },
 ): Promise<{ saved: boolean; errorMsg?: string }> {
+  let digest: string;
+  try {
+    digest = await instrumentSha256(opts.instrument);
+  } catch (error) {
+    return { saved: false, errorMsg: `Could not fingerprint the questionnaire: ${String(error)}` };
+  }
   // 1. User-created local surveys: save to localStorage with zero cloud leakage
   if (isLocalSurvey(surveyId)) {
     saveLocalResponse({
@@ -144,6 +158,8 @@ export async function submitResponse(
       pageCountReached: opts?.pageCountReached ?? 0,
       totalPages: opts?.totalPages ?? 0,
       answersJson: answers,
+      instrumentVersion: opts.instrument.version,
+      instrumentSha256: digest,
     });
     return { saved: true };
   }
@@ -156,6 +172,8 @@ export async function submitResponse(
       survey_id: surveyId,
       respondent_id: respondentId,
       answers_json: answers,
+      instrument_version: opts.instrument.version,
+      instrument_sha256: digest,
       started_at: opts?.startedAt ? new Date(opts.startedAt).toISOString() : null,
       duration_ms: opts?.durationMs ?? null,
       page_count_reached: opts?.pageCountReached ?? 0,

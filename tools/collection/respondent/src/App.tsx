@@ -275,6 +275,7 @@ export function App() {
 
     const submitResult = (surveyId && loaded.collectsData)
       ? await submitResponse(surveyId, effectiveRespondentId, responses, {
+          instrument: loaded.instrument,
           startedAt: surveyStartedAt.current ?? undefined,
           durationMs: surveyStartedAt.current ? now - surveyStartedAt.current : undefined,
         })

@@ -611,6 +611,19 @@ rebuild cluster memberships, but it must preserve the occurrence IDs used by the
 
 ---
 
+### 9i. Response provenance and complete dashboard reads
+
+Before deploying a Hub or Respondent build that reads or writes `instrument_version` and
+`instrument_sha256`, apply `supabase/migrations/20261004190628_response_provenance.sql` to the
+app's Supabase project. Both columns are nullable so older submissions remain readable; do not
+backfill them from the survey's current instrument, which may have changed since submission.
+The hash is SHA-256 of the respondent app's JSON serialization of the loaded instrument. It
+distinguishes same-version edits, but the current survey row is not an immutable snapshot.
+
+The Hub retrieves responses and paradata in primary-key pages and obtains survey response counts
+from database count queries. A deployment with a custom Data API row limit below 500 must raise
+that limit or lower the page size in `platform/hub/src/api.ts`.
+
 ## Security notes
 
 - The public Supabase `anon` key in the bundle is a **publishable key** — it is safe to expose but grants only the permissions defined by Row Level Security (RLS) policies.
