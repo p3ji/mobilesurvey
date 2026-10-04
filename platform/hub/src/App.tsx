@@ -3,12 +3,14 @@
  */
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import {
+  Accessibility,
   BarChart3,
   Building2,
   FileInput,
   FlaskConical,
   GraduationCap,
   Headphones,
+  Languages,
   LayoutDashboard,
   Layers,
   Library,
@@ -16,6 +18,7 @@ import {
   PenLine,
   ShieldCheck,
   Smartphone,
+  TrendingUp,
 } from 'lucide-react';
 import logo from './assets/logo.png';
 import {
@@ -3455,6 +3458,30 @@ function HomePage({ onNavigate }: { onNavigate: (v: HubView) => void }) {
       status: 'live',
       href: `${RUNTIME_URL}/?survey=demo`,
       action: () => window.open(`${RUNTIME_URL}/?survey=demo`, '_blank', 'noopener'),
+    },
+    {
+      id: 'remine',
+      icon: <TrendingUp size={22} />,
+      name: 'Remine',
+      tagline: 'Automated tabular data mining & briefs',
+      description: 'Mines StatCan multi-dimensional cubes (WDS API) and survey response cross-tabs for unwritten findings — persistent gaps, trend reversals, and benchmark crossings — under a zero-hallucination token contract.',
+      status: 'coming-soon',
+    },
+    {
+      id: 'a11y-auditor',
+      icon: <Accessibility size={22} />,
+      name: 'Accessibility Auditor',
+      tagline: 'WCAG 2.2 AA/AAA compliance test for surveys',
+      description: 'Automated testing tailored for survey UX: validates 24×24px touch targets, sticky progress-bar focus visibility, cognitive-free access gates, roster redundant entry avoidance, and keyboard dragging alternatives.',
+      status: 'coming-soon',
+    },
+    {
+      id: 'survey-translator',
+      icon: <Languages size={22} />,
+      name: 'StatCan Survey Translator',
+      tagline: 'LoRA fine-tuned model for statistical language',
+      description: 'Parameter-efficient translation calibrated on 438,000+ StatCan variables: masters official Canadian statistical terminology, question stems, NAICS/NOC classifications, and bilingual DDI schemes.',
+      status: 'coming-soon',
     },
   ], [onNavigate]);
 
