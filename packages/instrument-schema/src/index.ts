@@ -18,3 +18,4 @@ export {
   compareInstrumentVersions,
   type BundledSurvey,
 } from './bundled.js';
+export * from './localStore.js';

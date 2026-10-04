@@ -3,7 +3,17 @@
  * Falls back to the local Hono API when VITE_SUPABASE_URL is not set.
  */
 import { createClient, type SupabaseClient } from '@supabase/supabase-js';
-import { compareInstrumentVersions, type Instrument } from '@mobilesurvey/instrument-schema';
+import {
+  compareInstrumentVersions,
+  createLocalSurvey,
+  deleteLocalSurvey,
+  getLocalSurvey,
+  isLocalSurvey,
+  listLocalParadata,
+  listLocalResponses,
+  updateLocalSurveyConfig,
+  type Instrument,
+} from '@mobilesurvey/instrument-schema';
 import { SupabaseCorpusSource } from '@mobilesurvey/metadata-registry';
 
 // ── Supabase client (lazy, only when env vars are present) ────────────────────
@@ -71,7 +81,20 @@ export function corpusSource(): SupabaseCorpusSource | null {
   }
   return _corpus;
 }
-export const respondentLink = (id: string) => `${RUNTIME_URL}/?survey=${encodeURIComponent(id)}`;
+export const respondentLink = (id: string, params?: Record<string, string>) => {
+  const base = `${RUNTIME_URL}/?survey=${encodeURIComponent(id)}`;
+  if (!params) return base;
+  const q = new URLSearchParams();
+  for (const [k, v] of Object.entries(params)) {
+    if (v) q.set(k, v);
+  }
+  const str = q.toString();
+  return str ? `${base}&${str}` : base;
+};
+
+export const personalizedRespondentLink = (id: string, token: string, extraParams?: Record<string, string>) => {
+  return respondentLink(id, { token, ...extraParams });
+};
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -81,10 +104,26 @@ export interface SurveySummary {
   id: string;
   title: string;
   requiresAccessCode: boolean;
+  anonymized?: boolean;
   status: SurveyStatus;
   questionCount: number;
   updatedAt: number;
   responseCount: number;
+}
+
+export type AccessCodeStatus = 'ready' | 'sent' | 'started' | 'completed';
+
+export interface AccessCodeRow {
+  code: string;
+  surveyId: string;
+  email: string | null;
+  respondentName: string | null;
+  respondentFieldsJson: Record<string, unknown>;
+  status: AccessCodeStatus;
+  sentAt: string | null;
+  startedAt: string | null;
+  completedAt: string | null;
+  usedAt: string | null;
 }
 
 export interface ResponseRow {
@@ -125,7 +164,7 @@ function countQuestions(instrument: Instrument): number {
 export async function listSurveys(): Promise<SurveySummary[]> {
   const { data: surveys, error } = await sb()
     .from('surveys')
-    .select('id, title, requires_access_code, status, question_count, updated_at')
+    .select('id, title, requires_access_code, anonymized, status, question_count, updated_at')
     .order('updated_at', { ascending: false });
   if (error) throw error;
 
@@ -145,11 +184,12 @@ export async function listSurveys(): Promise<SurveySummary[]> {
 
   return (surveys ?? []).map((r: {
     id: string; title: string; requires_access_code: boolean;
-    status: string; question_count: number; updated_at: string;
+    anonymized?: boolean; status: string; question_count: number; updated_at: string;
   }) => ({
     id: r.id,
     title: r.title,
     requiresAccessCode: r.requires_access_code,
+    anonymized: r.anonymized ?? false,
     status: r.status as SurveyStatus,
     questionCount: r.question_count,
     updatedAt: new Date(r.updated_at).getTime(),
@@ -157,30 +197,193 @@ export async function listSurveys(): Promise<SurveySummary[]> {
   }));
 }
 
+/**
+ * Create a visitor survey. Always stored in the browser (localStore) — the public demo never
+ * writes visitor-authored instruments to the shared Supabase project.
+ */
 export async function createSurvey(title: string, instrument: Instrument): Promise<string> {
-  const id = `s-${Date.now().toString(36)}`;
-  const { error } = await sb().from('surveys').insert({
-    id,
-    title,
-    instrument_json: instrument,
-    requires_access_code: false,
-    status: 'draft',
-    question_count: countQuestions(instrument),
-    updated_at: new Date().toISOString(),
-  });
-  if (error) throw error;
-  return id;
+  return createLocalSurvey(title, instrument).id;
 }
 
 export async function setSurveyConfig(
   id: string,
-  config: { requiresAccessCode?: boolean; status?: SurveyStatus },
+  config: { requiresAccessCode?: boolean; anonymized?: boolean; status?: SurveyStatus },
 ): Promise<void> {
+  if (isLocalSurvey(id) && getLocalSurvey(id)) {
+    updateLocalSurveyConfig(id, config);
+    return;
+  }
   const patch: Record<string, unknown> = { updated_at: new Date().toISOString() };
   if (config.requiresAccessCode !== undefined) patch.requires_access_code = config.requiresAccessCode;
+  if (config.anonymized !== undefined) patch.anonymized = config.anonymized;
   if (config.status !== undefined) patch.status = config.status;
   const { error } = await sb().from('surveys').update(patch).eq('id', id);
   if (error) throw error;
+}
+
+// ── Access codes & sample recipients ──────────────────────────────────────────
+
+const MOCK_CODES_KEY = 'mobilesurvey:mock_access_codes';
+
+function getMockAccessCodes(): AccessCodeRow[] {
+  if (typeof window === 'undefined') return [];
+  try {
+    const raw = localStorage.getItem(MOCK_CODES_KEY);
+    return raw ? JSON.parse(raw) : [];
+  } catch {
+    return [];
+  }
+}
+
+function setMockAccessCodes(rows: AccessCodeRow[]): void {
+  if (typeof window === 'undefined') return;
+  try {
+    localStorage.setItem(MOCK_CODES_KEY, JSON.stringify(rows));
+  } catch {
+    /* ignore */
+  }
+}
+
+export async function fetchAccessCodes(surveyId: string): Promise<AccessCodeRow[]> {
+  if (isLocalSurvey(surveyId)) return getMockAccessCodes().filter((r) => r.surveyId === surveyId);
+  try {
+    const { data, error } = await sb()
+      .from('access_codes')
+      .select('code, survey_id, email, respondent_name, respondent_fields_json, status, sent_at, started_at, completed_at, used_at')
+      .eq('survey_id', surveyId)
+      .order('code', { ascending: true });
+    if (error) throw error;
+    return (data ?? []).map((r: {
+      code: string; survey_id: string; email: string | null;
+      respondent_name: string | null; respondent_fields_json: Record<string, unknown>;
+      status: string | null; sent_at: string | null; started_at: string | null;
+      completed_at: string | null; used_at: string | null;
+    }) => ({
+      code: r.code,
+      surveyId: r.survey_id,
+      email: r.email ?? null,
+      respondentName: r.respondent_name ?? null,
+      respondentFieldsJson: r.respondent_fields_json ?? {},
+      status: (r.status ?? (r.used_at ? 'completed' : 'ready')) as AccessCodeStatus,
+      sentAt: r.sent_at ?? null,
+      startedAt: r.started_at ?? null,
+      completedAt: r.completed_at ?? r.used_at ?? null,
+      usedAt: r.used_at ?? null,
+    }));
+  } catch {
+    return getMockAccessCodes().filter((r) => r.surveyId === surveyId);
+  }
+}
+
+export async function saveAccessCodes(
+  surveyId: string,
+  records: Array<{
+    code: string;
+    email?: string | null;
+    respondentName?: string | null;
+    respondentFieldsJson?: Record<string, unknown>;
+    status?: AccessCodeStatus;
+  }>,
+): Promise<void> {
+  const rows = records.map((r) => ({
+    code: r.code.trim(),
+    survey_id: surveyId,
+    email: r.email?.trim() || null,
+    respondent_name: r.respondentName?.trim() || null,
+    respondent_fields_json: r.respondentFieldsJson ?? {},
+    status: r.status ?? 'ready',
+  }));
+
+  const writeLocal = () => {
+    const all = getMockAccessCodes().filter((existing) => !rows.some((r) => r.code === existing.code));
+    for (const r of rows) {
+      all.push({
+        code: r.code,
+        surveyId: r.survey_id,
+        email: r.email,
+        respondentName: r.respondent_name,
+        respondentFieldsJson: r.respondent_fields_json,
+        status: r.status as AccessCodeStatus,
+        sentAt: null,
+        startedAt: null,
+        completedAt: null,
+        usedAt: null,
+      });
+    }
+    setMockAccessCodes(all);
+  };
+
+  // Local sandbox surveys keep their sample list on-device only.
+  if (isLocalSurvey(surveyId)) { writeLocal(); return; }
+
+  try {
+    const { error } = await sb().from('access_codes').upsert(rows, { onConflict: 'code' });
+    if (error) throw error;
+  } catch {
+    writeLocal();
+  }
+}
+
+/** True when the code lives in the on-device mock store (local sandbox survey or offline fallback). */
+function isMockCode(code: string): boolean {
+  return getMockAccessCodes().some((r) => r.code === code);
+}
+
+export async function updateAccessCode(
+  code: string,
+  patch: Partial<AccessCodeRow>,
+): Promise<void> {
+  const writeLocal = () => {
+    const all = getMockAccessCodes();
+    const idx = all.findIndex((r) => r.code === code);
+    const item = idx !== -1 ? all[idx] : undefined;
+    if (item) {
+      all[idx] = { ...item, ...patch };
+      setMockAccessCodes(all);
+    }
+  };
+  // A Supabase update matching zero rows returns no error, so route mock codes explicitly.
+  if (isMockCode(code)) { writeLocal(); return; }
+
+  const dbPatch: Record<string, unknown> = {};
+  if (patch.status !== undefined) dbPatch.status = patch.status;
+  if (patch.email !== undefined) dbPatch.email = patch.email;
+  if (patch.respondentName !== undefined) dbPatch.respondent_name = patch.respondentName;
+  if (patch.sentAt !== undefined) dbPatch.sent_at = patch.sentAt;
+  if (patch.startedAt !== undefined) dbPatch.started_at = patch.startedAt;
+  if (patch.completedAt !== undefined) {
+    dbPatch.completed_at = patch.completedAt;
+    dbPatch.used_at = patch.completedAt;
+  }
+
+  try {
+    const { error } = await sb().from('access_codes').update(dbPatch).eq('code', code);
+    if (error) throw error;
+  } catch {
+    writeLocal();
+  }
+}
+
+export async function deleteAccessCode(code: string): Promise<void> {
+  const writeLocal = () => setMockAccessCodes(getMockAccessCodes().filter((r) => r.code !== code));
+  if (isMockCode(code)) { writeLocal(); return; }
+  try {
+    const { error } = await sb().from('access_codes').delete().eq('code', code);
+    if (error) throw error;
+  } catch {
+    writeLocal();
+  }
+}
+
+export async function clearAccessCodes(surveyId: string): Promise<void> {
+  const writeLocal = () => setMockAccessCodes(getMockAccessCodes().filter((r) => r.surveyId !== surveyId));
+  if (isLocalSurvey(surveyId)) { writeLocal(); return; }
+  try {
+    const { error } = await sb().from('access_codes').delete().eq('survey_id', surveyId);
+    if (error) throw error;
+  } catch {
+    writeLocal();
+  }
 }
 
 /** Upsert a survey row by explicit id — used to seed bundled demo surveys into Supabase. */
@@ -219,6 +422,11 @@ export async function upsertSurvey(id: string, title: string, instrument: Instru
 }
 
 export async function deleteSurvey(id: string): Promise<void> {
+  if (isLocalSurvey(id) && getLocalSurvey(id)) {
+    deleteLocalSurvey(id);
+    setMockAccessCodes(getMockAccessCodes().filter((r) => r.surveyId !== id));
+    return;
+  }
   const { error } = await sb().from('surveys').delete().eq('id', id);
   if (error) throw error;
 }
@@ -226,6 +434,16 @@ export async function deleteSurvey(id: string): Promise<void> {
 // ── Responses (collection monitor) ───────────────────────────────────────────
 
 export async function fetchResponses(surveyId: string): Promise<ResponseRow[]> {
+  if (isLocalSurvey(surveyId)) {
+    return listLocalResponses(surveyId).map((r) => ({
+      id: r.id,
+      respondentId: r.respondentId,
+      submittedAt: r.submittedAt,
+      durationMs: r.durationMs,
+      completed: r.completed,
+      answersJson: r.answersJson,
+    }));
+  }
   const { data, error } = await sb()
     .from('responses')
     .select('id, respondent_id, submitted_at, duration_ms, completed, answers_json')
@@ -246,6 +464,16 @@ export async function fetchResponses(surveyId: string): Promise<ResponseRow[]> {
 }
 
 export async function fetchSurveyParadata(surveyId: string): Promise<SurveyParadataRow[]> {
+  if (isLocalSurvey(surveyId)) {
+    return listLocalParadata(surveyId).map((p) => ({
+      id: p.id,
+      sessionKey: p.sessionKey,
+      respondentId: p.respondentId,
+      ts: p.ts,
+      type: p.type,
+      payloadJson: p.payloadJson,
+    }));
+  }
   const { data, error } = await sb()
     .from('paradata')
     .select('id, session_key, respondent_id, ts, type, payload_json')
@@ -289,6 +517,8 @@ export async function fetchAllInstruments(): Promise<InstrumentSummary[]> {
 }
 
 export async function fetchSurveyInstrument(surveyId: string): Promise<Instrument | null> {
+  const local = getLocalSurvey(surveyId);
+  if (local) return local.instrument;
   const { data, error } = await sb()
     .from('surveys')
     .select('instrument_json')

@@ -10,8 +10,11 @@ This repository follows the survey process. A **tool** owns one capability; a **
 | Metadata discovery | `tools/metadata/metadata-registry`, `statcan-corpus` | Searcher and graph screens in Hub; corpus CLI | Instruments or corpus documents → searchable metadata |
 | Published research use | `tools/research/researcher` | Researcher construction screen in Hub; local CLI | Source passages → reviewed publication-use candidates |
 | Questionnaire testing | `tools/testing/questionnaire-bot` | CLI and HTML report | `Instrument` + respondent URL → paths, assertions, report |
+| *Tabular mining & dissemination (Roadmap)* | `tools/analysis/remine` (`@mobilesurvey/remine`) | Analyzer screen in Hub; CLI | Multidimensional cubes / cross-tabs → fact briefs & bound articles |
+| *Accessibility compliance (Roadmap)* | `tools/testing/a11y-auditor` | Bot CLI / Hub Validator & Designer | `Instrument` + DOM → WCAG 2.2 AA/AAA audit reports & certification |
+| *Survey translation & harmonization (Roadmap)* | `tools/authoring/survey-translator` | Designer translation pane; CLI | Monolingual questions → StatCan-calibrated bilingual DDI (LoRA) |
 
-`platform/hub` combines these tools with survey management, response monitoring, analysis, and CATI views. `platform/api` is the local SQLite fallback. Production persistence goes from browser apps to Supabase. The Hub currently owns the Validator, Searcher, Migrator, and Analyzer screens and their persistence adapters; those UIs have **not** been separated into standalone apps.
+`platform/hub` combines these tools with survey management, response monitoring, analysis, and CATI views. `platform/api` is the local SQLite fallback. Production persistence goes from browser apps to Supabase. The Hub currently owns the Validator, Searcher, Migrator, and Analyzer screens and their persistence adapters; those UIs have **not** been separated into standalone apps. Roadmap module specifications are detailed in `docs/roadmap-modular-tools.md`.
 
 ## Shared contracts and dependency direction
 

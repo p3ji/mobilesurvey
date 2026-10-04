@@ -40,15 +40,79 @@ const ACCESS_CODES: Record<string, string> = {
 export const mockCmsClient: CmsClient = {
   resolveAccessCode: async (accessCode) => {
     // Simulate a little network latency.
-    await new Promise((r) => setTimeout(r, 300));
-    const caseId = ACCESS_CODES[accessCode.trim().toUpperCase()];
+    await new Promise((r) => setTimeout(r, 100));
+    const normalized = accessCode.trim().toUpperCase();
+
+    // Check localStorage mock access codes first
+    try {
+      if (typeof window !== 'undefined') {
+        const stored = localStorage.getItem('mobilesurvey:mock_access_codes');
+        if (stored) {
+          const list = JSON.parse(stored) as Array<{
+            code: string;
+            email?: string | null;
+            respondentName?: string | null;
+            respondentFieldsJson?: Record<string, unknown>;
+            status?: string;
+            completedAt?: string | null;
+            usedAt?: string | null;
+          }>;
+          const match = list.find((c) => c.code.toUpperCase() === normalized);
+          if (match) {
+            const caseId = `case-${match.code}`;
+            return {
+              caseId,
+              status: match.status ?? (match.usedAt ? 'completed' : 'ready'),
+              completedAt: match.completedAt ?? match.usedAt ?? null,
+              sample: {
+                id: caseId,
+                fields: {
+                  name: match.respondentName ?? '',
+                  email: match.email ?? '',
+                  ...(match.respondentFieldsJson ?? {}),
+                },
+              },
+            };
+          }
+        }
+      }
+    } catch {
+      /* ignore */
+    }
+
+    const caseId = ACCESS_CODES[normalized];
     if (!caseId) return null;
     const sample = SAMPLE_UNITS.find((u) => u.id === caseId)!;
-    return { caseId, sample };
+    return { caseId, sample, status: 'ready' };
   },
   reportStatus: async (caseId, status) => {
     // eslint-disable-next-line no-console
     console.info(`[mock CMS] case ${caseId} → ${status}`);
+    const code = caseId.replace(/^case-/, '').toUpperCase();
+    try {
+      if (typeof window !== 'undefined') {
+        const stored = localStorage.getItem('mobilesurvey:mock_access_codes');
+        if (stored) {
+          const list = JSON.parse(stored) as Array<Record<string, unknown>>;
+          const idx = list.findIndex((c) => String(c.code ?? '').toUpperCase() === code);
+          const item = idx !== -1 ? list[idx] : undefined;
+          if (item) {
+            const now = new Date().toISOString();
+            if (status === 'started' || status === 'resumed') {
+              item.status = 'started';
+              item.startedAt = now;
+            } else if (status === 'complete' || status === 'completed') {
+              item.status = 'completed';
+              item.completedAt = now;
+              item.usedAt = now;
+            }
+            localStorage.setItem('mobilesurvey:mock_access_codes', JSON.stringify(list));
+          }
+        }
+      }
+    } catch {
+      /* ignore */
+    }
   },
 };
 

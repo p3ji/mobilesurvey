@@ -7,12 +7,14 @@ const HELP_URL =
 
 export function AccessGate({
   onAuthenticate,
+  initialError,
 }: {
   onAuthenticate: (code: string) => Promise<{ ok: boolean; error?: string }>;
+  initialError?: string | null;
 }) {
   const [code, setCode] = useState('');
   const [busy, setBusy] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(initialError ?? null);
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();

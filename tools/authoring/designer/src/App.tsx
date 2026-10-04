@@ -20,7 +20,9 @@ const MIN_RIGHT = 240;
 const MAX_RIGHT = 680;
 
 export default function App() {
-  const [renderMode, setRenderMode] = useState(false);
+  const [renderMode, setRenderMode] = useState(() => {
+    return typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('render') === '1';
+  });
   const [mode, setMode] = useState<'pro' | 'easy' | 'interviewer'>(() => {
     const m = new URLSearchParams(window.location.search).get('mode');
     if (m === 'easy') return 'easy';

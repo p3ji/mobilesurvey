@@ -18,7 +18,23 @@ import {
   Smartphone,
 } from 'lucide-react';
 import logo from './assets/logo.png';
-import { blankInstrument, lfsInstrument, demoInstrument, fsepInstrument, BUNDLED_SURVEYS, redactResponses, piiVariableNames, surveyCollectsData, type Instrument } from '@mobilesurvey/instrument-schema';
+import {
+  lfsInstrument,
+  demoInstrument,
+  fsepInstrument,
+  BUNDLED_SURVEYS,
+  redactResponses,
+  piiVariableNames,
+  surveyCollectsData,
+  createLocalSurvey,
+  listLocalSurveys,
+  countLocalResponses,
+  cloneLocalSurvey,
+  LOCAL_SURVEYS_CHANGE_EVENT,
+  type Instrument,
+  type LocalSurveyRecord,
+} from '@mobilesurvey/instrument-schema';
+import { CustomSolutionModal } from './CustomSolutionModal.js';
 import { migrate, type MigrateResult } from '@mobilesurvey/questionnaire-migrator';
 import { compile } from '@mobilesurvey/expression-engine';
 import { draftRuleFromDisposition, walkQuestions } from '@mobilesurvey/validation-engine';
@@ -38,9 +54,11 @@ import { draftRulesFromAnnotation, explainFlag, llmConfigured } from './validato
 import { CorpusSearch } from './CorpusSearch.js';
 import { CorpusGraphExplorer } from './CorpusGraphExplorer.js';
 import { SearcherAbout } from './SearcherAbout.js';
+import { PrivacyPolicyView } from './PrivacyPolicyView.js';
 import { DataCartView } from './DataCartView.js';
 import { useDataCart } from './useDataCart.js';
 import { ResearcherPage } from './ResearcherPage.js';
+import { SurveyDistributeModal } from './SurveyDistributeModal.js';
 import type { CorpusGraphFocus } from './CorpusLineage.js';
 import {
   corpusSource,
@@ -143,7 +161,7 @@ const DEMO_SURVEYS: SurveySummary[] = [
 
 // ── Module definitions ────────────────────────────────────────────────────────
 
-type HubView = 'home' | 'collector' | 'searcher' | 'researcher' | 'trainer' | 'migrator' | 'analyzer' | 'interviewer' | 'supervisor' | 'validator';
+type HubView = 'home' | 'collector' | 'searcher' | 'researcher' | 'trainer' | 'migrator' | 'analyzer' | 'interviewer' | 'supervisor' | 'validator' | 'privacy';
 
 const VALID_HUB_VIEWS = new Set<HubView>([
   'home',
@@ -156,6 +174,7 @@ const VALID_HUB_VIEWS = new Set<HubView>([
   'interviewer',
   'supervisor',
   'validator',
+  'privacy',
 ]);
 
 function isValidHubView(val: string): val is HubView {
@@ -165,17 +184,19 @@ function isValidHubView(val: string): val is HubView {
 function getViewFromUrl(): HubView {
   if (typeof window === 'undefined') return 'home';
 
-  // 1. Check window.location.hash: #searcher, #/searcher, #searcher?q=..., #collector
+  // 1. Check window.location.hash: #searcher, #/searcher, #searcher?q=..., #collector, #privacy
   const rawHash = window.location.hash.replace(/^#[/]?/, '');
   const hashPart = rawHash.split('?')[0] ?? '';
   const viewFromHash = (hashPart.split('&')[0] ?? '').trim().toLowerCase();
   if (viewFromHash === 'about') return 'searcher'; // Preserve links to the former standalone page.
+  if (viewFromHash === 'privacy' || viewFromHash === 'privacy-policy') return 'privacy';
   if (isValidHubView(viewFromHash)) return viewFromHash;
 
   // 2. Check window.location.search: ?view=searcher
   const searchParams = new URLSearchParams(window.location.search);
   const viewParam = searchParams.get('view')?.toLowerCase();
   if (viewParam === 'about') return 'searcher';
+  if (viewParam === 'privacy' || viewParam === 'privacy-policy') return 'privacy';
   if (viewParam && isValidHubView(viewParam)) return viewParam;
 
   // 3. If there is a direct search query (?q=...) or searcher hash, default to searcher
@@ -820,15 +841,23 @@ function SurveyCard({
   isLive,
   onChange,
   readOnly,
+  onClone,
+  isLocal,
+  extraActions,
 }: {
   survey: SurveySummary;
   isLive?: boolean;
   onChange: () => void;
   readOnly?: boolean;
+  onClone?: () => void;
+  /** Survey lives only in this browser (My Surveys). */
+  isLocal?: boolean;
+  extraActions?: ReactNode;
 }) {
   const [copied, setCopied] = useState(false);
   const [busy, setBusy] = useState(false);
   const [showResponses, setShowResponses] = useState(false);
+  const [showDistribute, setShowDistribute] = useState(false);
   const link = respondentLink(survey.id);
 
   const patch = async (config: Parameters<typeof setSurveyConfig>[1]) => {
@@ -859,10 +888,15 @@ function SurveyCard({
   };
 
   return (
-    <div className={`card${isLive ? ' card--live' : ''}${showResponses ? ' card--expanded' : ''}`}>
+    <div className={`card${isLive ? ' card--live' : ''}${isLocal ? ' card--local' : ''}${showResponses ? ' card--expanded' : ''}`}>
       <div className="card__head">
         <h3 className="card__title">{survey.title}</h3>
         <div className="card__badges">
+          {isLocal && (
+            <span className="badge badge--local" title="Stored privately in this browser — never sent to a server">
+              🔒 This device
+            </span>
+          )}
           {isLive && <span className="badge badge--live">● Live</span>}
           <span className={`badge badge--${survey.status}`}>{survey.status}</span>
         </div>
@@ -872,6 +906,12 @@ function SurveyCard({
         <span>{survey.questionCount} questions</span>
         <span>·</span>
         <span>{survey.requiresAccessCode ? '🔒 access code' : '🌐 open'}</span>
+        {survey.anonymized && (
+          <>
+            <span>·</span>
+            <span>🛡 anonymized</span>
+          </>
+        )}
         <span>·</span>
         <span>{survey.responseCount} response{survey.responseCount === 1 ? '' : 's'}</span>
       </div>
@@ -896,14 +936,37 @@ function SurveyCard({
         <code className="card__link-url">{link}</code>
         <div className="card__link-actions">
           <button type="button" onClick={copyLink}>{copied ? '✓ Copied' : '⎘ Copy'}</button>
+          <button type="button" onClick={() => setShowDistribute(true)}>🔗 Distribute…</button>
           <a className="btn-link" href={link} target="_blank" rel="noopener noreferrer">Launch ↗</a>
         </div>
+        {isLocal && (
+          <span className="card__link-note">
+            Works in this browser only — responses are stored on this device.
+          </span>
+        )}
       </div>
 
       <div className="card__actions">
         <a className="btn btn--primary" href={designerLink(survey.id)} target="_blank" rel="noopener noreferrer">
           ✎ Edit in Designer
         </a>
+        <button
+          type="button"
+          className="btn"
+          onClick={() => setShowDistribute(true)}
+        >
+          🔗 Share &amp; Distribute
+        </button>
+        {onClone && (
+          <button
+            type="button"
+            className="btn btn--secondary"
+            onClick={onClone}
+            title="Clone this template to your local workspace"
+          >
+            📑 Clone to Workspace
+          </button>
+        )}
         {!readOnly && (
           <>
             <button type="button"
@@ -911,6 +974,7 @@ function SurveyCard({
               onClick={() => setShowResponses((v) => !v)}>
               {showResponses ? '▲ Hide responses' : `▼ Responses (${survey.responseCount})`}
             </button>
+            {extraActions}
             <button type="button" className="btn btn--danger" onClick={remove} disabled={busy}>
               Delete
             </button>
@@ -923,19 +987,105 @@ function SurveyCard({
           <CollectionDashboard surveyId={survey.id} />
         </div>
       )}
+
+      {showDistribute && (
+        <SurveyDistributeModal
+          survey={survey}
+          isOpen={showDistribute}
+          onClose={() => setShowDistribute(false)}
+          onSurveyUpdated={onChange}
+          isDemoMode={readOnly}
+        />
+      )}
     </div>
+  );
+}
+
+function localToSummary(s: LocalSurveyRecord): SurveySummary {
+  return {
+    id: s.id,
+    title: s.title,
+    requiresAccessCode: s.requiresAccessCode ?? false,
+    anonymized: s.anonymized ?? false,
+    status: s.status ?? 'draft',
+    questionCount: s.questionCount,
+    updatedAt: s.updatedAt,
+    responseCount: countLocalResponses(s.id),
+  };
+}
+
+function LocalSurveyCard({
+  survey,
+  onOpenSolutionModal,
+  onChange,
+}: {
+  survey: LocalSurveyRecord;
+  onOpenSolutionModal: (title: string, surveyId: string) => void;
+  onChange: () => void;
+}) {
+  const duplicate = () => {
+    cloneLocalSurvey(survey.id);
+    onChange();
+  };
+
+  const exportJson = () => {
+    const slug = (survey.title || 'survey').toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
+    const blob = new Blob([JSON.stringify(survey.instrument, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${slug}.instrument.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  return (
+    <SurveyCard
+      survey={localToSummary(survey)}
+      isLocal
+      onChange={onChange}
+      extraActions={
+        <>
+          <button type="button" className="btn btn--subtle" onClick={exportJson} title="Download the questionnaire as JSON">
+            ⬇ Export
+          </button>
+          <button type="button" className="btn btn--subtle" onClick={duplicate} title="Duplicate this survey">
+            📑 Copy
+          </button>
+          <button
+            type="button"
+            className="btn btn--highlight"
+            onClick={() => onOpenSolutionModal(survey.title, survey.id)}
+            title="Collect real data from many respondents with a hosted deployment"
+          >
+            ✉ Host this for real…
+          </button>
+        </>
+      }
+    />
   );
 }
 
 // ── Collector view ────────────────────────────────────────────────────────────
 
-function CollectorView({ onBack }: { onBack: () => void }) {
+function CollectorView({ onBack, onPrivacy }: { onBack: () => void; onPrivacy?: () => void }) {
+  const [localSurveys, setLocalSurveys] = useState<LocalSurveyRecord[]>(() => listLocalSurveys());
   const [surveys, setSurveys] = useState<SurveySummary[] | null>(null);
   const [online, setOnline] = useState<boolean | null>(null);
   const [demoMode, setDemoMode] = useState(false);
   const [creating, setCreating] = useState(false);
 
+  // Custom solution modal state
+  const [solutionModalOpen, setSolutionModalOpen] = useState(false);
+  const [solutionSurveyTitle, setSolutionSurveyTitle] = useState('');
+  const [solutionSurveyId, setSolutionSurveyId] = useState<string | null>(null);
+
+  const refreshLocal = useCallback(() => {
+    setLocalSurveys(listLocalSurveys());
+  }, []);
+
   const refresh = useCallback(async () => {
+    refreshLocal();
     try {
       setSurveys(await listSurveys());
       setOnline(true);
@@ -945,7 +1095,7 @@ function CollectorView({ onBack }: { onBack: () => void }) {
       if (!isLocalhost()) { setSurveys(DEMO_SURVEYS); setDemoMode(true); }
       else { setSurveys([]); setDemoMode(false); }
     }
-  }, []);
+  }, [refreshLocal]);
 
   useEffect(() => {
     pingApi().then((connected) => {
@@ -960,20 +1110,40 @@ function CollectorView({ onBack }: { onBack: () => void }) {
       }
     });
     refresh();
-  }, [refresh]);
+
+    const handleLocalChange = () => refreshLocal();
+    // Custom event covers this tab; `storage` covers saves made in the Designer / Respondent tabs.
+    const handleStorage = (e: StorageEvent) => {
+      if (!e.key || e.key.startsWith('mobilesurvey')) refreshLocal();
+    };
+    window.addEventListener(LOCAL_SURVEYS_CHANGE_EVENT, handleLocalChange);
+    window.addEventListener('storage', handleStorage);
+    return () => {
+      window.removeEventListener(LOCAL_SURVEYS_CHANGE_EVENT, handleLocalChange);
+      window.removeEventListener('storage', handleStorage);
+    };
+  }, [refresh, refreshLocal]);
 
   const newSurvey = async () => {
     const title = prompt('Name your new survey', 'Untitled survey');
     if (!title) return;
     setCreating(true);
     try {
-      const id = await createSurvey(title, blankInstrument(title));
-      logAudit('survey.create', 'survey', id, { title });
-      window.open(designerLink(id), '_blank', 'noopener');
-      await refresh();
-    } catch {
-      alert('Could not create the survey — check your Supabase connection.');
-    } finally { setCreating(false); }
+      const record = createLocalSurvey(title);
+      refreshLocal();
+      logAudit('survey.create', 'survey', record.id, { title, local: true });
+      window.open(designerLink(record.id), '_blank', 'noopener');
+    } finally {
+      setCreating(false);
+    }
+  };
+
+  const cloneToWorkspace = (surveyId: string, title: string) => {
+    const cloned = cloneLocalSurvey(surveyId, `${title} (My Copy)`);
+    if (cloned) {
+      refreshLocal();
+      window.open(designerLink(cloned.id), '_blank', 'noopener');
+    }
   };
 
   // Exploration-only bundled surveys are never in Supabase — surface them as read-only demo cards.
@@ -989,8 +1159,9 @@ function CollectorView({ onBack }: { onBack: () => void }) {
       responseCount: 0,
     }));
   const explorationIds = new Set(explorationDemos.map((s) => s.id));
-  // Drop any stale exploration-only rows from the backend list; render the bundled cards instead.
-  const backendSurveys = (surveys ?? []).filter((s) => !explorationIds.has(s.id));
+  // Drop stale exploration-only rows and legacy visitor-created rows (`s-*`, from before
+  // authoring went local) from the backend list — visitor surveys now live in My Surveys only.
+  const backendSurveys = (surveys ?? []).filter((s) => !explorationIds.has(s.id) && !s.id.startsWith('s-'));
   // Separate live (published + no code) from designer demos.
   const liveSurveys = backendSurveys.filter((s) => s.status === 'published' && !s.requiresAccessCode);
   const demoSurveys = [
@@ -1006,7 +1177,7 @@ function CollectorView({ onBack }: { onBack: () => void }) {
             <img src={logo} alt="Back to home" className="hub__back-logo" />
           </button>
           <strong>Collector</strong>
-          <span className="hub__sub">Manage surveys and track collection</span>
+          <span className="hub__sub">Design surveys and test collection</span>
         </div>
         <div className="hub__header-right">
           {demoMode ? (
@@ -1016,64 +1187,130 @@ function CollectorView({ onBack }: { onBack: () => void }) {
               {online === false ? '● Offline' : '● Supabase connected'}
             </span>
           )}
-          {!demoMode && (
-            <button type="button" className="btn btn--primary" onClick={newSurvey} disabled={creating}>
-              + New survey
-            </button>
-          )}
+          <button type="button" className="btn btn--primary" onClick={newSurvey} disabled={creating}>
+            + New survey
+          </button>
         </div>
       </header>
 
       <main className="hub__main">
-        {online === false && !demoMode && (
-          <div className="hub__alert">
-            Supabase is not reachable. Check that <code>VITE_SUPABASE_URL</code> and <code>VITE_SUPABASE_ANON_KEY</code> are set and the migration has been run.
-          </div>
-        )}
-        {demoMode && (
-          <div className="hub__notice">
-            Demo mode — showing bundled example surveys. Set Supabase env vars and run the SQL migration to manage your own surveys.
-          </div>
+        {/* Live Showcase / Bundled Surveys */}
+        <section className="hub__section">
+          <h2 className="hub__section-title">
+            ● Live collection showcase
+            <span className="hub__section-sub">Official demonstration surveys with sample responses and live analytics</span>
+          </h2>
+          {liveSurveys.length === 0 ? (
+            <p className="hub__empty">No showcase surveys available.</p>
+          ) : (
+            <div className="hub__grid">
+              {liveSurveys.map((s) => (
+                <SurveyCard
+                  key={s.id}
+                  survey={s}
+                  isLive
+                  onChange={refresh}
+                  readOnly={demoMode}
+                  onClone={() => cloneToWorkspace(s.id, s.title)}
+                />
+              ))}
+            </div>
+          )}
+        </section>
+
+        {/* Designer demo templates */}
+        {demoSurveys.length > 0 && (
+          <section className="hub__section">
+            <h2 className="hub__section-title">
+              Designer demos
+              <span className="hub__section-sub">Complex skip logic, rosters, and tables — clone one into My Surveys to start building</span>
+            </h2>
+            <div className="hub__grid">
+              {demoSurveys.map((s) => (
+                <SurveyCard
+                  key={s.id}
+                  survey={s}
+                  onChange={refresh}
+                  readOnly={demoMode || explorationIds.has(s.id)}
+                  onClone={() => cloneToWorkspace(s.id, s.title)}
+                />
+              ))}
+            </div>
+          </section>
         )}
 
-        {surveys === null ? (
-          <p className="hub__loading">Loading…</p>
-        ) : (
-          <>
-            {/* Live surveys */}
-            <section className="hub__section">
+        {/* My Surveys — visitor-authored, stored in this browser only */}
+        <section className="hub__section" id="my-surveys">
+          <div className="hub__workspace-header">
+            <div>
               <h2 className="hub__section-title">
-                ● Live surveys
-                <span className="hub__section-sub">Open to respondents via the link below</span>
+                🔒 My Surveys
+                <span className="hub__section-sub">
+                  Surveys you created or cloned · saved in this browser only, never uploaded
+                </span>
               </h2>
-              {liveSurveys.length === 0 ? (
-                <p className="hub__empty">No published open surveys yet. Publish a survey and set it to "open" to launch it.</p>
-              ) : (
-                <div className="hub__grid">
-                  {liveSurveys.map((s) => (
-                    <SurveyCard key={s.id} survey={s} isLive onChange={refresh} readOnly={demoMode} />
-                  ))}
-                </div>
-              )}
-            </section>
+            </div>
+            <button type="button" className="btn btn--primary" onClick={newSurvey} disabled={creating}>
+              + New survey
+            </button>
+          </div>
 
-            {/* Designer demo surveys */}
-            {demoSurveys.length > 0 && (
-              <section className="hub__section">
-                <h2 className="hub__section-title">
-                  Designer demos
-                  <span className="hub__section-sub">Draft or code-gated — use to explore the designer</span>
-                </h2>
-                <div className="hub__grid">
-                  {demoSurveys.map((s) => (
-                    <SurveyCard key={s.id} survey={s} onChange={refresh} readOnly={demoMode || explorationIds.has(s.id)} />
-                  ))}
-                </div>
-              </section>
-            )}
-          </>
-        )}
+          {localSurveys.length === 0 ? (
+            <div className="hub__notice" style={{ textAlign: 'left', lineHeight: '1.6' }}>
+              <strong>No surveys yet.</strong> Create a new survey, or use “Clone to Workspace” on a demo above.
+              Everything works here — editing, publishing, access codes, distribution, test responses and the
+              response dashboard — and it all stays on this device.
+            </div>
+          ) : (
+            <div className="hub__grid">
+              {localSurveys.map((s) => (
+                <LocalSurveyCard
+                  key={s.id}
+                  survey={s}
+                  onOpenSolutionModal={(title, id) => {
+                    setSolutionSurveyTitle(title);
+                    setSolutionSurveyId(id);
+                    setSolutionModalOpen(true);
+                  }}
+                  onChange={refreshLocal}
+                />
+              ))}
+            </div>
+          )}
+
+          <div className="hub__notice" style={{ textAlign: 'left', lineHeight: '1.6', marginTop: 16 }}>
+            <strong>Need to collect real data from many respondents?</strong> This demo keeps your work in your
+            browser. For a hosted deployment — shared team workspace, central database, CATI, or custom
+            integrations —{' '}
+            <button
+              type="button"
+              className="btn-link"
+              onClick={() => {
+                setSolutionSurveyTitle('');
+                setSolutionSurveyId(null);
+                setSolutionModalOpen(true);
+              }}
+            >
+              get in touch
+            </button>
+            .
+          </div>
+        </section>
       </main>
+
+      <CustomSolutionModal
+        isOpen={solutionModalOpen}
+        onClose={() => setSolutionModalOpen(false)}
+        surveyTitle={solutionSurveyTitle}
+        onOpenPrivacy={onPrivacy}
+        onTestSandbox={
+          solutionSurveyId
+            ? () => {
+                window.open(`${DESIGNER_URL}/?survey=${encodeURIComponent(solutionSurveyId)}&render=1`, '_blank', 'noopener');
+              }
+            : undefined
+        }
+      />
     </div>
   );
 }
@@ -3276,6 +3513,32 @@ function HomePage({ onNavigate }: { onNavigate: (v: HubView) => void }) {
           </div>
         </details>
       </main>
+
+      <footer className="hub__footer">
+        <div className="hub__footer-content">
+          <div className="hub__footer-brand">
+            <span className="hub__footer-title">Modular Survey Tools</span>
+            <span className="hub__footer-copy">© 2026 Peji. Open-source under MIT License.</span>
+          </div>
+          <nav className="hub__footer-links" aria-label="Footer navigation">
+            <a
+              href="#privacy"
+              onClick={(e) => {
+                e.preventDefault();
+                onNavigate('privacy');
+              }}
+            >
+              Privacy, Security &amp; Ethics Policy
+            </a>
+            <a href="mailto:contact@peji.ca?subject=Modular%20Survey%20Tools%20Inquiry">
+              Contact &amp; Enterprise Deployments (contact@peji.ca)
+            </a>
+            <a href="https://github.com/p3ji/mobilesurvey" target="_blank" rel="noopener noreferrer">
+              GitHub Repository
+            </a>
+          </nav>
+        </div>
+      </footer>
     </div>
   );
 }
@@ -3663,7 +3926,7 @@ export function App() {
     };
   }, []);
 
-  if (view === 'collector') return <CollectorView onBack={() => setView('home')} />;
+  if (view === 'collector') return <CollectorView onBack={() => setView('home')} onPrivacy={() => setView('privacy')} />;
   if (view === 'searcher') return <SearcherView onBack={() => setView('home')} onResearcher={() => setView('researcher')} />;
   if (view === 'researcher') return <ResearcherPage onHome={() => setView('home')} onSearcher={() => setView('searcher')} />;
   if (view === 'trainer') return <TrainingView onBack={() => setView('home')} />;
@@ -3672,5 +3935,6 @@ export function App() {
   if (view === 'interviewer') return <InterviewerView onBack={() => setView('home')} />;
   if (view === 'supervisor') return <SupervisorView onBack={() => setView('home')} />;
   if (view === 'validator') return <ValidatorView onBack={() => setView('home')} />;
+  if (view === 'privacy') return <PrivacyPolicyView onBack={() => setView('home')} />;
   return <HomePage onNavigate={setView} />;
 }

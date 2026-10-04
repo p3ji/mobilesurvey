@@ -10,7 +10,13 @@ import type {
   SampleUnit,
   SessionStore,
 } from '@mobilesurvey/runtime-engine';
-import { surveyCollectsData } from '@mobilesurvey/instrument-schema';
+import {
+  getLocalSurvey,
+  isLocalSurvey,
+  saveLocalResponse,
+  saveLocalParadata,
+  surveyCollectsData,
+} from '@mobilesurvey/instrument-schema';
 import { createMockParadataSink, localSessionStore, mockCmsClient } from './mocks.js';
 
 // ── Supabase client ───────────────────────────────────────────────────────────
@@ -33,28 +39,43 @@ export interface ServedSurvey {
   id: string;
   title: string;
   requiresAccessCode: boolean;
+  anonymized?: boolean;
   status: string;
   instrument: unknown;
 }
 
 export async function fetchSurvey(id: string): Promise<ServedSurvey | null> {
-  // Try Supabase first
+  // 1. Check local storage first (user-authored sandbox surveys)
+  const local = getLocalSurvey(id);
+  if (local) {
+    return {
+      id: local.id,
+      title: local.title,
+      requiresAccessCode: local.requiresAccessCode ?? false,
+      anonymized: local.anonymized ?? false,
+      status: local.status ?? 'published',
+      instrument: local.instrument,
+    };
+  }
+
+  // 2. Try Supabase
   if (SUPABASE_URL && SUPABASE_KEY) {
     try {
       const { data, error } = await sb()
         .from('surveys')
-        .select('id, title, requires_access_code, status, instrument_json')
+        .select('id, title, requires_access_code, anonymized, status, instrument_json')
         .eq('id', id)
         .single();
       if (!error && data) {
         const row = data as {
           id: string; title: string; requires_access_code: boolean;
-          status: string; instrument_json: unknown;
+          anonymized?: boolean; status: string; instrument_json: unknown;
         };
         return {
           id: row.id,
           title: row.title,
           requiresAccessCode: row.requires_access_code,
+          anonymized: row.anonymized ?? false,
           status: row.status,
           instrument: row.instrument_json,
         };
@@ -84,8 +105,8 @@ export async function ensureSurveyRow(
   instrument: unknown,
   opts?: { requiresAccessCode?: boolean },
 ): Promise<void> {
-  // Exploration-only bundled surveys must never be written to the backend.
-  if (!surveyCollectsData(id)) return;
+  // Exploration-only bundled surveys and local user surveys must never be written to Supabase.
+  if (isLocalSurvey(id) || !surveyCollectsData(id)) return;
   if (!SUPABASE_URL || !SUPABASE_KEY) return;
   try {
     await sb().from('surveys').upsert(
@@ -110,7 +131,24 @@ export async function submitResponse(
   answers: Record<string, unknown>,
   opts?: { startedAt?: number; durationMs?: number; pageCountReached?: number; totalPages?: number },
 ): Promise<{ saved: boolean; errorMsg?: string }> {
-  // Exploration-only bundled surveys are not stored — return without writing.
+  // 1. User-created local surveys: save to localStorage with zero cloud leakage
+  if (isLocalSurvey(surveyId)) {
+    saveLocalResponse({
+      id: `resp-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 6)}`,
+      surveyId,
+      respondentId,
+      submittedAt: new Date().toISOString(),
+      startedAt: opts?.startedAt ? new Date(opts.startedAt).toISOString() : null,
+      durationMs: opts?.durationMs ?? null,
+      completed: true,
+      pageCountReached: opts?.pageCountReached ?? 0,
+      totalPages: opts?.totalPages ?? 0,
+      answersJson: answers,
+    });
+    return { saved: true };
+  }
+
+  // 2. Exploration-only bundled surveys are not stored — return without writing.
   if (!surveyCollectsData(surveyId)) return { saved: false };
   if (!SUPABASE_URL || !SUPABASE_KEY) return { saved: false, errorMsg: 'Supabase env vars not configured in this build.' };
   try {
@@ -160,27 +198,50 @@ export async function uploadAttachment(
 function supabaseCms(): CmsClient {
   return {
     resolveAccessCode: async (code) => {
+      const cleanCode = code.trim();
       const { data, error } = await sb()
         .from('access_codes')
-        .select('code, survey_id, respondent_name, respondent_fields_json')
-        .eq('code', code)
+        .select('code, survey_id, email, respondent_name, respondent_fields_json, status, completed_at, used_at')
+        .eq('code', cleanCode)
         .single();
       if (error || !data) return null;
       const row = data as {
-        code: string; survey_id: string;
+        code: string; survey_id: string; email?: string | null;
         respondent_name: string | null; respondent_fields_json: Record<string, unknown>;
+        status?: string; completed_at?: string | null; used_at?: string | null;
       };
       const caseId = `case-${row.code}`;
       return {
         caseId,
+        status: row.status ?? (row.used_at ? 'completed' : 'ready'),
+        completedAt: row.completed_at ?? row.used_at,
         sample: {
           id: caseId,
-          fields: { name: row.respondent_name ?? '', ...row.respondent_fields_json },
+          fields: {
+            name: row.respondent_name ?? '',
+            email: row.email ?? '',
+            ...row.respondent_fields_json,
+          },
         } as SampleUnit,
       };
     },
-    reportStatus: async (_caseId, _status) => {
-      /* status tracking not yet in the schema — no-op */
+    reportStatus: async (caseId, status) => {
+      const code = caseId.replace(/^case-/, '');
+      const now = new Date().toISOString();
+      const patch: Record<string, unknown> = {};
+      if (status === 'started' || status === 'resumed') {
+        patch.status = 'started';
+        patch.started_at = now;
+      } else if (status === 'complete' || status === 'completed') {
+        patch.status = 'completed';
+        patch.completed_at = now;
+        patch.used_at = now;
+      }
+      try {
+        await sb().from('access_codes').update(patch).eq('code', code);
+      } catch {
+        /* best-effort */
+      }
     },
   };
 }
@@ -226,6 +287,18 @@ function supabaseParadataSink(): RuntimeParadataSink {
       events.push(event);
       const surveyId = sessionKey?.split('::')?.[0] ?? null;
       const respondentId = sessionKey?.split('::')?.[1] ?? null;
+
+      if (surveyId && isLocalSurvey(surveyId)) {
+        saveLocalParadata(surveyId, {
+          sessionKey,
+          respondentId,
+          ts: event.ts,
+          type: event.type,
+          payload: (event as { payload?: unknown }).payload,
+        });
+        return;
+      }
+
       void (async () => {
         try {
           await sb().from('paradata').insert({
@@ -253,7 +326,28 @@ export interface Backend {
   paradata: RuntimeParadataSink;
 }
 
-export async function createBackend(opts?: { collectsData?: boolean }): Promise<Backend> {
+export async function createBackend(opts?: { collectsData?: boolean; surveyId?: string }): Promise<Backend> {
+  // Local user surveys run entirely on local mocks with local storage (zero cloud calls)
+  if (opts?.surveyId && isLocalSurvey(opts.surveyId)) {
+    return {
+      online: true,
+      cms: mockCmsClient,
+      sessionStore: localSessionStore,
+      paradata: {
+        setSessionKey: () => {},
+        emit: (event) => {
+          saveLocalParadata(opts.surveyId!, {
+            ts: event.ts,
+            type: event.type,
+            payload: (event as { payload?: unknown }).payload,
+          });
+        },
+        flush: async () => {},
+        buffer: () => [],
+      },
+    };
+  }
+
   // Exploration-only surveys run entirely on local mocks — nothing reaches Supabase.
   if (SUPABASE_URL && SUPABASE_KEY && opts?.collectsData !== false) {
     return {

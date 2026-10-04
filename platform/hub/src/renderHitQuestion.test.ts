@@ -15,7 +15,7 @@ describe('renderHitQuestion', () => {
 
     expect(
       renderHitQuestion('In the past 12 months, which aids did you use -', 'Manual wheelchair')
-    ).toBe('In the past 12 months, which aids did you use - — Manual wheelchair');
+    ).toBe('In the past 12 months, which aids did you use — Manual wheelchair');
   });
 
   it('stitches select-all questions ending in question mark with introductory stems', () => {

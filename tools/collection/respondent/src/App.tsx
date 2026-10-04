@@ -9,7 +9,7 @@
  * starts immediately. Without a `?survey` param it falls back to the bundled Labour Force survey.
  */
 import { useEffect, useRef, useState } from 'react';
-import { bundledSurvey, surveyCollectsData, type Instrument } from '@mobilesurvey/instrument-schema';
+import { bundledSurvey, isLocalSurvey, surveyCollectsData, type Instrument } from '@mobilesurvey/instrument-schema';
 import {
   createMockSensorServices,
   type ParadataEvent,
@@ -32,6 +32,7 @@ interface LoadedSurvey {
   /** The survey row id / alias (surveys.id) — the FK target for sessions, paradata, responses. */
   surveyId: string;
   requiresAccessCode: boolean;
+  anonymized?: boolean;
   /** Whether responses are persisted to the backend (false = exploration-only). */
   collectsData: boolean;
   /**
@@ -73,7 +74,9 @@ function anonId(): string {
 }
 
 export function App() {
-  const [phase, setPhase] = useState<'gate' | 'survey' | 'done'>('gate');
+  const [phase, setPhase] = useState<'gate' | 'survey' | 'done' | 'already_completed'>('gate');
+  const [completedInfo, setCompletedInfo] = useState<{ timestamp: string | null } | null>(null);
+  const [gateError, setGateError] = useState<string | null>(null);
   const [survey, setSurvey] = useState<SurveyContext | null>(null);
   const [done, setDone] = useState<DoneContext | null>(null);
 
@@ -84,10 +87,14 @@ export function App() {
   const surveyStartedAt = useRef<number | null>(null);
 
   // Notice banner text depends on whether the survey actually persists responses.
-  const noticeFor = (collects: boolean): LoadedSurvey['notice'] =>
-    collects
+  const noticeFor = (collects: boolean, isLocal?: boolean): LoadedSurvey['notice'] => {
+    if (isLocal) {
+      return { kind: 'demo-saves', text: '🔒 Private Local Sandbox — responses you submit stay on your device with zero cloud storage.' };
+    }
+    return collects
       ? { kind: 'demo-saves', text: 'This is a demonstration survey — responses you submit will be saved to illustrate the data collection dashboard.' }
       : { kind: 'demo-no-save', text: 'This is a demo survey. Do not submit real personal information — responses are not saved.' };
+  };
 
   // Load the backend and the survey (by ?survey=<id>, else the bundled fallback).
   useEffect(() => {
@@ -96,12 +103,12 @@ export function App() {
       const surveyId = new URLSearchParams(window.location.search).get('survey');
       // No ?survey param falls back to the bundled Household & Employment demo.
       const effectiveId = surveyId ?? 'lfs';
-      const collects = surveyCollectsData(effectiveId);
-      // Registry-driven: bundled demos keep the Completion inspection panel, even when the
-      // demo row is served from the backend rather than loaded from the bundle.
-      const isDemo = bundledSurvey(effectiveId) !== undefined;
+      const isLocal = isLocalSurvey(effectiveId);
+      const collects = isLocal || surveyCollectsData(effectiveId);
+      // Registry-driven: bundled demos and local surveys keep the Completion inspection panel
+      const isDemo = isLocal || bundledSurvey(effectiveId) !== undefined;
       // Exploration-only surveys get a mock backend so nothing reaches Supabase.
-      const b = await createBackend({ collectsData: collects });
+      const b = await createBackend({ collectsData: collects, surveyId: effectiveId });
 
       let loadedSurvey: LoadedSurvey;
       const served = surveyId ? await fetchSurvey(surveyId) : null;
@@ -109,10 +116,11 @@ export function App() {
         loadedSurvey = {
           instrument: served.instrument as Instrument,
           requiresAccessCode: served.requiresAccessCode,
+          anonymized: served.anonymized ?? false,
           surveyId: effectiveId,
           collectsData: collects,
           isDemo,
-          notice: noticeFor(collects),
+          notice: noticeFor(collects, isLocal),
         };
       } else {
         // Fall back to a bundled instrument (exploration-only demos are never in Supabase).
@@ -128,6 +136,7 @@ export function App() {
         loadedSurvey = {
           instrument: bundled.instrument,
           requiresAccessCode: bundled.requiresAccessCode,
+          anonymized: false,
           surveyId: effectiveId,
           collectsData: collects,
           isDemo,
@@ -161,10 +170,16 @@ export function App() {
     document.title = `${name} — mobilesurvey`;
   }, [loaded]);
 
-  // Auto-start anonymous surveys (no access code) once everything is loaded.
+  // Auto-start token-authenticated or anonymous surveys once everything is loaded.
   useEffect(() => {
-    if (!backend || !loaded || loaded.requiresAccessCode || phase !== 'gate' || survey) return;
-    void startAnonymous(backend, loaded);
+    if (!backend || !loaded || phase !== 'gate' || survey) return;
+    const urlParams = new URLSearchParams(window.location.search);
+    const token = urlParams.get('token') ?? urlParams.get('code');
+    if (token) {
+      void authenticate(token, true);
+    } else if (!loaded.requiresAccessCode) {
+      void startAnonymous(backend, loaded);
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [backend, loaded]);
 
@@ -193,7 +208,7 @@ export function App() {
   };
 
   /** Code-gated path: resolve a code, load any saved session, and enter the survey. */
-  const authenticate = async (code: string): Promise<{ ok: boolean; error?: string }> => {
+  const authenticate = async (code: string, fromUrl = false): Promise<{ ok: boolean; error?: string }> => {
     if (!backend || !loaded) return { ok: false, error: 'Still connecting — please try again.' };
     let resolved;
     try {
@@ -206,12 +221,22 @@ export function App() {
       const demo = DEMO_CODES[code.toUpperCase()];
       if (demo) {
         const caseId = `case-${code.toLowerCase()}`;
-        resolved = { caseId, sample: { id: caseId, fields: { name: demo.name } } };
+        resolved = { caseId, sample: { id: caseId, fields: { name: demo.name } }, status: 'ready' };
       }
     }
     if (!resolved) {
+      if (fromUrl) {
+        setGateError('That invitation link or code was not recognized. Please check your link or enter your access code below.');
+      }
       return { ok: false, error: 'That access code was not recognized. Please check and try again.' };
     }
+
+    if (resolved.status === 'completed' || resolved.completedAt) {
+      setCompletedInfo({ timestamp: resolved.completedAt ?? null });
+      setPhase('already_completed');
+      return { ok: true };
+    }
+
     const { caseId, sample } = resolved;
     const key = sessionKey(loaded.surveyId, caseId);
     const saved = (await backend.sessionStore.load(key)) as SavedSession | null;
@@ -243,8 +268,13 @@ export function App() {
     await backend.cms.reportStatus(caseId, 'completed');
     await backend.paradata.flush();
     const surveyId = new URLSearchParams(window.location.search).get('survey');
+
+    const effectiveRespondentId = loaded.anonymized
+      ? `anon-${Math.abs(now ^ (performance.now() | 0)).toString(36)}`
+      : caseId;
+
     const submitResult = (surveyId && loaded.collectsData)
-      ? await submitResponse(surveyId, caseId, responses, {
+      ? await submitResponse(surveyId, effectiveRespondentId, responses, {
           startedAt: surveyStartedAt.current ?? undefined,
           durationMs: surveyStartedAt.current ? now - surveyStartedAt.current : undefined,
         })
@@ -279,6 +309,32 @@ export function App() {
     );
   }
 
+  if (phase === 'already_completed') {
+    return (
+      <div className="app">
+        <div className="gate">
+          <div className="gate__card">
+            <div className="gate__brand">Electronic Questionnaire</div>
+            <div style={{ textAlign: 'center', margin: '24px 0 16px' }}>
+              <div style={{ fontSize: '42px', lineHeight: 1, marginBottom: '12px', color: '#16a34a' }}>✓</div>
+              <h1 className="gate__title">Survey already completed</h1>
+              <p className="gate__sub" style={{ marginTop: 12 }}>
+                Thank you! Your response for this survey has already been received
+                {completedInfo?.timestamp
+                  ? ` on ${new Date(completedInfo.timestamp).toLocaleDateString(undefined, { dateStyle: 'long', timeStyle: 'short' })}`
+                  : ''}.
+              </p>
+              <div className="gate__hint" style={{ marginTop: 20 }}>
+                This invitation link is single-use and your response has been recorded.
+                If you have any questions, please contact your survey coordinator.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   if (!backend || !loaded) {
     return (
       <div className="app">
@@ -296,7 +352,7 @@ export function App() {
     <div className="app">
       <a className="skip-link" href="#eq-main">Skip to main content</a>
       {phase === 'gate' && loaded.requiresAccessCode && (
-        <AccessGate onAuthenticate={authenticate} />
+        <AccessGate onAuthenticate={authenticate} initialError={gateError} />
       )}
 
       {phase === 'survey' && survey && (

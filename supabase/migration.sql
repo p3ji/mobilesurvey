@@ -8,6 +8,7 @@ create table if not exists public.surveys (
   title                text        not null,
   instrument_json      jsonb       not null,
   requires_access_code boolean     not null default true,
+  anonymized           boolean     not null default false,
   status               text        not null default 'draft'
                          check (status in ('draft', 'published')),
   question_count       integer     not null default 0,
@@ -48,12 +49,18 @@ create table if not exists public.paradata (
   payload_json         jsonb
 );
 
--- Access codes for code-gated surveys
+-- Access codes & sample recipients for code-gated and targeted email surveys
 create table if not exists public.access_codes (
   code                 text        primary key,
   survey_id            text        not null references public.surveys(id) on delete cascade,
+  email                text,
   respondent_name      text,
   respondent_fields_json jsonb     not null default '{}',
+  status               text        not null default 'ready'
+                         check (status in ('ready', 'sent', 'started', 'completed')),
+  sent_at              timestamptz,
+  started_at           timestamptz,
+  completed_at         timestamptz,
   used_at              timestamptz
 );
 
@@ -83,10 +90,14 @@ create policy "sessions_all"    on public.sessions    for all    using (true);
 create policy "paradata_insert" on public.paradata    for insert with check (true);
 create policy "paradata_select" on public.paradata    for select using (true);
 
--- access codes: read + update (mark used) + insert
+-- access codes: read + update (mark used) + insert + delete
 create policy "access_codes_select" on public.access_codes for select using (true);
 create policy "access_codes_update" on public.access_codes for update using (true);
 create policy "access_codes_insert" on public.access_codes for insert with check (true);
+create policy "access_codes_delete" on public.access_codes for delete using (true);
+
+grant select, insert, update, delete on public.access_codes to anon;
+grant select, insert, update on public.surveys to anon;
 
 -- ── Indexes ───────────────────────────────────────────────────────────────────
 
@@ -94,3 +105,6 @@ create index if not exists responses_survey_id_idx  on public.responses (survey_
 create index if not exists responses_submitted_idx  on public.responses (submitted_at desc);
 create index if not exists paradata_session_key_idx on public.paradata  (session_key);
 create index if not exists paradata_survey_id_idx   on public.paradata  (survey_id);
+create index if not exists access_codes_survey_id_idx on public.access_codes (survey_id);
+create index if not exists access_codes_survey_status_idx on public.access_codes (survey_id, status);
+create index if not exists access_codes_email_idx on public.access_codes (survey_id, email);

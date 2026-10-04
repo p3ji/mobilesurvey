@@ -22,7 +22,12 @@ export interface SampleProvider {
 /** Collection Management System interface: case assignment + status round-trip. */
 export interface CmsClient {
   /** Exchange a respondent access code for a case and its pre-fill context. */
-  resolveAccessCode(accessCode: string): Promise<{ caseId: string; sample: SampleUnit } | null>;
+  resolveAccessCode(accessCode: string): Promise<{
+    caseId: string;
+    sample: SampleUnit;
+    completedAt?: string | null;
+    status?: string | null;
+  } | null>;
   /** Push a status/mode change back to the CMS. */
   reportStatus(caseId: string, status: string): Promise<void>;
 }
