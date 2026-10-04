@@ -3365,7 +3365,7 @@ function HomePage({ onNavigate }: { onNavigate: (v: HubView) => void }) {
       name: 'Researcher',
       tag: 'Pilot catalogue',
       tagline: 'Trace published uses of survey data',
-      description: 'Explore three reviewed works published outside Statistics Canada, linked to the surveys and cycles they analyze.',
+      description: 'Explore reviewed publications from outside Statistics Canada, linked to the surveys and cycles they analyze.',
       status: 'live',
       href: '#researcher',
       action: () => onNavigate('researcher'),
@@ -3486,21 +3486,47 @@ function HomePage({ onNavigate }: { onNavigate: (v: HubView) => void }) {
   ], [onNavigate]);
 
   return (
-    <div className="hub">
+    <div className="hub hub--landing">
       <header className="hub__header hub__header--home">
-        <div className="hub__brand">
-          <img src={logo} alt="Modular Survey Tools" className="hub__logo" />
-          <span className="hub__sub">Open-source survey platform</span>
-        </div>
+        <a className="home-brand" href="#top" aria-label="Modular Survey Tools home">
+          <span className="home-brand__mark" aria-hidden="true"><span /><span /><span /><span /></span>
+          <span className="home-brand__text"><strong>modular<span>survey</span></strong><small>TOOLS</small></span>
+        </a>
+        <nav className="home-nav" aria-label="Main navigation">
+          <a href="#discover">Discover</a>
+          <a href="#design">Design</a>
+          <a href="#collect">Collect</a>
+          <a href="#review">Review</a>
+        </nav>
+        <a className="home-header-cta" href="#try-demo">Try a demo <span aria-hidden="true">↗</span></a>
       </header>
 
-      <main className="hub__main hub__main--home">
-        <div className="hub__intro">
-          <h1>Design, collect, and analyze surveys — end to end.</h1>
-          <p>Choose what you want to do, or open an example survey to get started.</p>
-        </div>
+      <main className="hub__main hub__main--home" id="top">
+        <section className="home-hero" aria-labelledby="home-hero-title">
+          <div className="home-hero__content">
+            <span className="home-eyebrow"><span className="home-eyebrow__dot" /> Open-source survey platform</span>
+            <h1 id="home-hero-title">Better surveys<br />begin with <em>better tools.</em></h1>
+            <p>One connected workspace to discover questions, design instruments, collect responses, and make sense of the data.</p>
+            <div className="home-hero__actions">
+              <a className="home-hero__primary" href="#try-demo">Explore a demo <span aria-hidden="true">↗</span></a>
+              <a className="home-hero__secondary" href="#tool-paths">Browse all tools <span aria-hidden="true">↓</span></a>
+            </div>
+          </div>
+          <div className="home-hero__visual" aria-hidden="true">
+            <div className="home-visual__orbit home-visual__orbit--outer" />
+            <div className="home-visual__orbit home-visual__orbit--inner" />
+            <div className="home-visual__center"><span className="home-visual__glyph">✳</span><strong>One connected<br />workflow</strong></div>
+            <div className="home-visual__node home-visual__node--discover"><Library size={20} /><span>Discover</span></div>
+            <div className="home-visual__node home-visual__node--design"><PenLine size={20} /><span>Design</span></div>
+            <div className="home-visual__node home-visual__node--collect"><LayoutDashboard size={20} /><span>Collect</span></div>
+            <div className="home-visual__node home-visual__node--review"><BarChart3 size={20} /><span>Review</span></div>
+            <span className="home-visual__spark home-visual__spark--one" />
+            <span className="home-visual__spark home-visual__spark--two" />
+          </div>
+        </section>
 
-        <nav className="tool-paths" aria-label="Browse tools by task">
+        <div className="home-section-kicker"><span>01 / FIND YOUR WAY</span><span>Choose a starting point</span></div>
+        <nav className="tool-paths" id="tool-paths" aria-label="Browse tools by task">
           {HOME_GROUPS.map((group, index) => (
             <a className="tool-paths__link" href={`#${group.id}`} key={group.id}>
               <span className="tool-paths__number">0{index + 1}</span>
@@ -3511,8 +3537,9 @@ function HomePage({ onNavigate }: { onNavigate: (v: HubView) => void }) {
           ))}
         </nav>
 
-        <DemoSurveyPicker />
+        <div id="try-demo" className="home-demo-wrap"><DemoSurveyPicker /></div>
 
+        <div className="home-section-kicker home-section-kicker--tools"><span>02 / THE TOOLKIT</span><span>Built for the full survey lifecycle</span></div>
         <div className="tool-sections">
           {HOME_GROUPS.map((group, index) => (
             <section className="tool-section" id={group.id} key={group.id} aria-labelledby={`${group.id}-title`}>
@@ -3563,6 +3590,7 @@ function HomePage({ onNavigate }: { onNavigate: (v: HubView) => void }) {
             <a href="https://github.com/p3ji/mobilesurvey" target="_blank" rel="noopener noreferrer">
               GitHub Repository
             </a>
+            <a href="https://peji.ca" target="_blank" rel="noopener noreferrer">Made by Peji ↗</a>
           </nav>
         </div>
       </footer>
