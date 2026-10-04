@@ -1214,7 +1214,8 @@ export class SupabaseCorpusSource {
       const groups = subRows.map((r) => r.survey_group);
       if (groups.length === 0) return [];
 
-      const countsUrl = `${this.url}/rest/v1/corpus_survey_counts?survey_group=in.(${groups.join(',')})&order=year_max.desc.nullslast&limit=8`;
+      const encodedGroups = groups.map((g) => encodeURIComponent(g)).join(',');
+      const countsUrl = `${this.url}/rest/v1/corpus_survey_counts?survey_group=in.(${encodedGroups})&order=year_max.desc.nullslast&limit=8`;
       const countsRes = await this.fetchImpl(countsUrl, {
         headers: { apikey: this.anonKey, Authorization: `Bearer ${this.anonKey}` },
         ...(signal ? { signal } : {}),
@@ -1225,38 +1226,139 @@ export class SupabaseCorpusSource {
 
       const topGroups = counts.map((c) => c.survey_group).slice(0, 4);
 
-      // Domain keywords for common subjects to target substantive variables
-      const subjectTerms = subject
-        .toLowerCase()
-        .replace(/[^a-z0-9\s]/g, ' ')
-        .split(/\s+/)
-        .filter((w) => w.length >= 4 && !['and', 'the', 'for', 'with'].includes(w));
+      // Domain keywords for all 31 StatCan subjects to target substantive variables
+      const DOMAIN_KEYWORDS: Record<string, string[]> = {
+        'Agriculture and food': ['food', 'agri', 'farm', 'crop', 'livestock', 'diet', 'nutrition'],
+        'Business and consumer services and culture': ['culture', 'arts', 'service', 'recreation', 'heritage', 'hospitality'],
+        'Business performance and ownership': ['revenue', 'sales', 'profit', 'obstacle', 'ownership', 'shareholder', 'growth', 'exporter'],
+        'Children and youth': ['child', 'youth', 'infant', 'teen', 'pediatric', 'parenting', 'school-age'],
+        'Construction': ['construction', 'building', 'contractor', 'infrastructure', 'residential building'],
+        'Crime and justice': ['crime', 'victim', 'police', 'court', 'law', 'offence', 'assault', 'theft', 'safety'],
+        'Digital economy and society': ['cyber', 'internet', 'online', 'digital', 'tech', 'software', 'cloud', 'website'],
+        'Economic accounts': ['gdp', 'economic accounts', 'gross domestic', 'national balance', 'input-output'],
+        'Education, training and learning': ['education', 'school', 'student', 'degree', 'training', 'course', 'tuition', 'learning'],
+        'Energy': ['electricity', 'gas', 'oil', 'renewable', 'fuel', 'power', 'energy consumption', 'heating'],
+        'Environment': ['water', 'climate', 'greenhouse', 'pollution', 'waste', 'environ', 'recycling', 'conservation'],
+        'Families, households and marital status': ['marital', 'spouse', 'partner', 'living arrang', 'household type', 'marriage', 'common-law'],
+        'Government': ['government', 'public service', 'federal', 'provincial', 'municipal', 'policy', 'program evaluation'],
+        'Health': ['health', 'chronic', 'symptom', 'pain', 'medication', 'doctor', 'patient', 'hospital', 'disease', 'condition'],
+        'Housing': ['dwelling', 'tenure', 'rent', 'mortgag', 'bedroom', 'housing', 'shelter', 'condominium', 'repair'],
+        'Immigration and ethnocultural diversity': ['immigrant', 'citizenship', 'birthplace', 'ethnic', 'cultural', 'visible minority', 'landing year'],
+        'Income, pensions, spending and wealth': ['income', 'pension', 'spending', 'wealth', 'earnings', 'debt', 'assets', 'expenditure'],
+        'Indigenous peoples': ['indigenous', 'aboriginal', 'first nations', 'metis', 'inuit'],
+        'International trade': ['export', 'import', 'tariff', 'foreign market', 'goods trade', 'services trade', 'trade barriers'],
+        'Labour': ['employment', 'job', 'worker', 'occupation', 'wage', 'salary', 'work hours', 'labour force'],
+        'Languages': ['language', 'mother tongue', 'official language', 'english', 'french', 'first official language'],
+        'Manufacturing': ['manufacturing', 'factory', 'production', 'plant', 'machinery', 'fabricated'],
+        'Older adults and population aging': ['senior', 'aging', 'elderly', 'retirement', 'caregiver', 'care receiving', 'pensioner'],
+        'Population and demography': ['population', 'demographic', 'fertility', 'mortality', 'migration', 'census tract'],
+        'Prices and price indexes': ['price index', 'inflation', 'consumer price', 'cpi', 'producer price'],
+        'Retail and wholesale': ['retail', 'wholesale', 'store', 'order online', 'physical store', 'online purchase'],
+        'Science and technology': ['r&d', 'research and development', 'patent', 'technology', 'innovation', 'scientific'],
+        'Society and community': ['volunteer', 'community', 'social network', 'civic', 'trust', 'neighbourhood'],
+        'Statistical methods': ['sampling', 'estimation', 'methodology', 'imputation', 'variance'],
+        'Transportation': ['transit', 'transport', 'vehicle', 'commute', 'road', 'traffic', 'public transit'],
+        'Travel and tourism': ['travel', 'tourism', 'visitor', 'trip', 'destination', 'tourist', 'hotel', 'overnight'],
+      };
 
-      if (/agriculture/i.test(subject)) subjectTerms.push('food', 'agri', 'farm', 'crop', 'diet', 'nutrition', 'fruit', 'vegetable', 'fsc', 'nourriture', 'aliment');
-      if (/crime|justice/i.test(subject)) subjectTerms.push('crime', 'victim', 'police', 'court', 'law', 'offence', 'assault', 'theft', 'safety');
-      if (/digital/i.test(subject)) subjectTerms.push('cyber', 'internet', 'tech', 'online', 'digital', 'software', 'computer');
-      if (/science|techno/i.test(subject)) subjectTerms.push('cyber', 'tech', 'online', 'software', 'innovat', 'secur', 'comput', 'r&d', 'patent', 'digital', 'cloud', 'recherche');
-      if (/environment/i.test(subject)) subjectTerms.push('water', 'climat', 'energy', 'pollut', 'waste', 'environ', 'recycl');
-      if (/housing/i.test(subject)) subjectTerms.push('hous', 'dwell', 'rent', 'tenant', 'mortgag', 'shelter', 'logement');
-      if (/transport/i.test(subject)) subjectTerms.push('transit', 'transport', 'vehic', 'car', 'commute', 'road');
+      // Negative keywords to shield specific subjects against cross-domain contamination
+      const NEGATIVE_KEYWORDS: Record<string, string[]> = {
+        Housing: [
+          'diabetes',
+          'insulin',
+          'blood pressure',
+          'education in household',
+          'highest level of education',
+          'household person',
+          'person aged',
+          'television',
+          'internet connection',
+          'landline',
+          'spending on contract',
+        ],
+        'Families, households and marital status': [
+          'disability status',
+          'immigration status',
+          'indigenous status',
+          'visible minority',
+          'mental health care',
+          'trust in diff',
+        ],
+        'Business performance and ownership': [
+          'ransomware',
+          'cyber',
+          'hacker',
+          'malware',
+          'phishing',
+        ],
+        'Retail and wholesale': [
+          'ransomware',
+          'cyber',
+          'phishing',
+          'malware',
+        ],
+      };
+
+      const STOP_WORDS = new Set([
+        'and', 'the', 'for', 'with', 'status', 'level', 'type', 'group',
+        'other', 'total', 'general', 'index', 'indexes', 'accounts',
+        'performance', 'services', 'methods',
+      ]);
+
+      const explicitKeywords = DOMAIN_KEYWORDS[subject];
+      const subjectTerms = explicitKeywords
+        ? [...explicitKeywords]
+        : subject
+            .toLowerCase()
+            .replace(/[^a-z0-9\s]/g, ' ')
+            .split(/\s+/)
+            .filter((w) => w.length >= 4 && !STOP_WORDS.has(w));
+
+      const negativeTerms = NEGATIVE_KEYWORDS[subject] ?? [];
+
+      const isSubstantiveCandidate = (v: CorpusSearchRow): boolean => {
+        const nm = v.name.toUpperCase();
+        if (
+          nm.endsWith('ID') ||
+          nm === 'VERDATE' ||
+          nm === 'PUMFID' ||
+          nm === 'SEQID' ||
+          nm === 'RECID' ||
+          nm.startsWith('DO')
+        ) {
+          return false;
+        }
+        if (v.tcode === 'T15.2' && !v.concept && !v.question_text) return false;
+        if (isProcessVariable(v)) return false;
+        if (isHarmonizedContent(v)) return false;
+
+        if (negativeTerms.length > 0) {
+          const haystack = `${(v.concept ?? '').toLowerCase()} ${(v.question_text ?? '').toLowerCase()}`;
+          for (const neg of negativeTerms) {
+            if (haystack.includes(neg)) return false;
+          }
+        }
+        return true;
+      };
 
       // First attempt: search for domain-targeted variables within these surveys
       let domainVars: CorpusSearchRow[] = [];
       if (subjectTerms.length > 0) {
-        const orCond = subjectTerms.slice(0, 8).map((k) => `concept.ilike.*${k}*,question_text.ilike.*${k}*,name.ilike.*${k}*`).join(',');
-        const targetedUrl = `${this.url}/rest/v1/corpus_variable?survey_group=in.(${topGroups.join(',')})&or=(${orCond})&order=year.desc.nullslast&limit=${limit * 3}`;
+        const orCond = encodeURIComponent(
+          subjectTerms
+            .slice(0, 8)
+            .map((k) => `concept.ilike.*${k}*,question_text.ilike.*${k}*,name.ilike.*${k}*`)
+            .join(','),
+        );
+        const encodedTopGroups = topGroups.map((g) => encodeURIComponent(g)).join(',');
+        const targetedUrl = `${this.url}/rest/v1/corpus_variable?survey_group=in.(${encodedTopGroups})&or=(${orCond})&order=year.desc.nullslast&limit=${limit * 4}`;
         const targetedRes = await this.fetchImpl(targetedUrl, {
           headers: { apikey: this.anonKey, Authorization: `Bearer ${this.anonKey}` },
           ...(signal ? { signal } : {}),
         });
         if (targetedRes.ok) {
-          domainVars = ((await targetedRes.json()) as CorpusSearchRow[]).filter((v) => {
-            const nm = v.name.toUpperCase();
-            if (nm.endsWith('ID') || nm === 'VERDATE' || nm === 'PUMFID' || nm === 'SEQID' || nm === 'RECID' || nm.startsWith('DO')) return false;
-            if (isProcessVariable(v)) return false;
-            if (isHarmonizedContent(v)) return false;
-            return true;
-          });
+          const rows = (await targetedRes.json()) as CorpusSearchRow[];
+          domainVars = rows.filter(isSubstantiveCandidate);
         }
       }
 
@@ -1268,8 +1370,9 @@ export class SupabaseCorpusSource {
         }));
       }
 
-      // Fallback: general variables from top surveys, excluding process/weights and harmonized sociodemographics
-      const varsUrl = `${this.url}/rest/v1/corpus_variable?survey_group=in.(${topGroups.join(',')})&order=year.desc.nullslast,position.asc&limit=${limit * 20}`;
+      // Fallback: general variables from top surveys, excluding process/weights, harmonized sociodemographics, and negatives
+      const encodedTopGroups = topGroups.map((g) => encodeURIComponent(g)).join(',');
+      const varsUrl = `${this.url}/rest/v1/corpus_variable?survey_group=in.(${encodedTopGroups})&order=year.desc.nullslast,position.asc&limit=${limit * 20}`;
       const varsRes = await this.fetchImpl(varsUrl, {
         headers: { apikey: this.anonKey, Authorization: `Bearer ${this.anonKey}` },
         ...(signal ? { signal } : {}),
@@ -1277,14 +1380,7 @@ export class SupabaseCorpusSource {
       if (!varsRes.ok) return [];
       const vars = (await varsRes.json()) as CorpusSearchRow[];
 
-      const filtered = vars.filter((v) => {
-        const nm = v.name.toUpperCase();
-        if (nm.endsWith('ID') || nm === 'VERDATE' || nm === 'PUMFID' || nm === 'SEQID' || nm === 'RECID' || nm.startsWith('DO')) return false;
-        if (v.tcode === 'T15.2' && !v.concept && !v.question_text) return false;
-        if (isProcessVariable(v)) return false;
-        if (isHarmonizedContent(v)) return false;
-        return true;
-      });
+      const filtered = vars.filter(isSubstantiveCandidate);
 
       filtered.sort((a, b) => {
         const aHasQ = a.question_text ? 1 : 0;
@@ -1296,7 +1392,9 @@ export class SupabaseCorpusSource {
         return (a.position ?? '').localeCompare(b.position ?? '', undefined, { numeric: true });
       });
 
-      const selected = domainVars.concat(filtered.filter((f) => !domainVars.some((d) => d.record_id === f.record_id))).slice(0, limit);
+      const selected = domainVars
+        .concat(filtered.filter((f) => !domainVars.some((d) => d.record_id === f.record_id)))
+        .slice(0, limit);
 
       return selected.map((row) => ({
         entry: toRegistryEntry(row),

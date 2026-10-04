@@ -445,6 +445,43 @@ describe('SupabaseCorpusSource', () => {
     });
     expect(await source.stats()).toMatchObject({ variables: 0, yearMin: null });
   });
+
+  describe('recentBySubject', () => {
+    it('targets domain keywords and suppresses negative terms for Housing', async () => {
+      const fetchImpl = vi.fn(async (input: RequestInfo | URL) => {
+        const url = String(input);
+        if (url.includes('corpus_survey_subject')) {
+          return new Response(JSON.stringify([{ survey_group: 'CHS_ECL' }]), { status: 200 });
+        }
+        if (url.includes('corpus_survey_counts')) {
+          return new Response(JSON.stringify([{ survey_group: 'CHS_ECL', year_max: 2022 }]), { status: 200 });
+        }
+        if (url.includes('corpus_variable')) {
+          return new Response(
+            JSON.stringify([
+              row({ record_id: 'r1', name: 'DCT_05', concept: 'Tenure', question_text: 'Is this dwelling owned?' }),
+              row({ record_id: 'r2', name: 'EDDVH3', concept: 'Highest level of education in household', question_text: null }),
+            ]),
+            { status: 200 },
+          );
+        }
+        return new Response('[]', { status: 200 });
+      }) as unknown as typeof fetch;
+
+      const source = new SupabaseCorpusSource({ url: 'https://p.supabase.co', anonKey: 'a', fetchImpl });
+      const hits = await source.recentBySubject('Housing', 5);
+
+      expect(hits.length).toBe(1);
+      expect((hits[0]!.entry.payload as CorpusSearchRow).name).toBe('DCT_05');
+    });
+
+    it('returns empty array when no surveys are assigned to the subject', async () => {
+      const fetchImpl = stubFetch([]);
+      const source = new SupabaseCorpusSource({ url: 'https://p.supabase.co', anonKey: 'a', fetchImpl });
+      const hits = await source.recentBySubject('Nonexistent Subject', 5);
+      expect(hits).toEqual([]);
+    });
+  });
 });
 
 describe('subject facet', () => {

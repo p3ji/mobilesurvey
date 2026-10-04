@@ -17,7 +17,7 @@
 #
 survey_group	acronym	records	official_name	suggest_name	subjects	suggest_content
 GSS_ESG_12-32	GSS	27298	General Social Survey - Caregiving and Care Receiving (GSS)	Society and community	Children and youth | Families, households and marital status | Health | Older adults and population aging | Society and community
-CCHS_ESCC	CCHS	14651	Canadian Community Health Survey - Annual Component (CCHS)	Health|Society and community	Children and youth | Health | Housing | Immigration and ethnocultural diversity | Indigenous peoples | Labour | Languages | Society and community	Health|Transportation
+CCHS_ESCC	CCHS	14651	Canadian Community Health Survey - Annual Component (CCHS)	Health|Society and community	Children and youth | Health | Immigration and ethnocultural diversity | Indigenous peoples | Labour | Languages | Society and community	Health|Transportation
 LSIC_ELIC	LSIC	6973			Immigration and ethnocultural diversity | Education, training and learning | Labour | Languages	Immigration and ethnocultural diversity|Languages|Labour|Education, training and learning
 CIS_ECR_2012-2019_rebased	CIS	6791	Canadian Income Survey (CIS)	Income, pensions, spending and wealth	Children and youth | Education, training and learning | Health | Income, pensions, spending and wealth | Labour | Society and community	Income, pensions, spending and wealth|Labour
 CHMS_ECMS	CHMS	6658	Canadian Health Measures Survey (CHMS)	Health	Children and youth | Health
@@ -50,7 +50,7 @@ CAFVMHS_ESSMFACM_2018	CAFVMHS	1467			Health	Health
 SFGSME_EFCPME	SFGSME	1455			Business performance and ownership	Business performance and ownership
 SGVP_EDBP_2023	SGVP	1444	Survey on Giving&#44; Volunteering and Participating (SGVP)	Society and community	Society and community	Society and community
 CHSCY_ECSEJ_2019	CHSCY	1425	Canadian Health Survey on Children and Youth (CHSCY)	Health|Children and youth	Children and youth | Education, training and learning | Health | Society and community	Children and youth|Health
-CSCSC_ECCC_2019_v1	CSCSC	1371	Canadian Survey of Cyber Security and Cybercrime (CSCSC)	Crime and justice|Digital economy and society	Business performance and ownership | Crime and justice | Digital economy and society | Science and technology	Digital economy and society|Business performance and ownership
+CSCSC_ECCC_2019_v1	CSCSC	1371	Canadian Survey of Cyber Security and Cybercrime (CSCSC)	Crime and justice|Digital economy and society	Crime and justice | Digital economy and society | Science and technology	Digital economy and society|Business performance and ownership
 CIS_ECR_2019	CIS	1360	Canadian Income Survey (CIS)	Income, pensions, spending and wealth	Children and youth | Education, training and learning | Health | Income, pensions, spending and wealth | Labour | Society and community	Income, pensions, spending and wealth|Labour
 GSS_ESG_37	GSS	1348	General Social Survey - Caregiving and Care Receiving (GSS)	Society and community	Children and youth | Families, households and marital status | Health | Older adults and population aging | Society and community	Families, households and marital status|Transportation|Labour
 CIS_ECR_2018	CIS	1346	Canadian Income Survey (CIS)	Income, pensions, spending and wealth	Children and youth | Education, training and learning | Health | Income, pensions, spending and wealth | Labour | Society and community	Income, pensions, spending and wealth|Labour
@@ -59,7 +59,7 @@ APS_EAPA_2017_NIS_SIN	APS	1258			Indigenous peoples | Health | Education, traini
 BC_CB_K12	BC	1255			Education, training and learning | Children and youth	Education, training and learning|Languages
 SFS_ESF_2019	SFS	1181	Survey of Financial Security (SFS)	Income, pensions, spending and wealth	Income, pensions, spending and wealth	Income, pensions, spending and wealth|Families, households and marital status|Housing
 LISA_ELIA_2020	LISA	1164			Labour | Income, pensions, spending and wealth | Health | Families, households and marital status | Education, training and learning	Children and youth|Labour|Transportation|Population and demography
-CSCSC_ECCC_2023	CSCSC	1105	Canadian Survey of Cyber Security and Cybercrime (CSCSC)	Crime and justice|Digital economy and society	Business performance and ownership | Crime and justice | Digital economy and society | Science and technology	Digital economy and society|Business performance and ownership
+CSCSC_ECCC_2023	CSCSC	1105	Canadian Survey of Cyber Security and Cybercrime (CSCSC)	Crime and justice|Digital economy and society	Crime and justice | Digital economy and society | Science and technology	Digital economy and society|Business performance and ownership
 SFS_ESF_2016	SFS	1101	Survey of Financial Security (SFS)	Income, pensions, spending and wealth	Income, pensions, spending and wealth	Income, pensions, spending and wealth|Housing
 NGES_EFGN	NGES	1075			Government | Labour | Indigenous peoples	Labour|Indigenous peoples|Education, training and learning|Languages
 APS_EAPA_2017	APS	1068			Indigenous peoples | Health | Education, training and learning | Languages | Labour	Education, training and learning|Languages|Labour|Housing
@@ -76,7 +76,7 @@ SDTIU_ETNUI_2021	SDTIU	876	Survey of Digital Technology and Internet Use (SDTIU)
 SSPPS_ESEPP_2018	SSPPS	873	Survey of Safety in Public and Private Spaces (SSPPS)		Children and youth | Crime and justice | Indigenous peoples	Crime and justice|Families, households and marital status
 CIS_ECR_2017	CIS	861	Canadian Income Survey (CIS)	Income, pensions, spending and wealth	Children and youth | Education, training and learning | Health | Income, pensions, spending and wealth | Labour | Society and community	Income, pensions, spending and wealth|Labour
 ACS_EEA_2006	ACS	856	Adult Correctional Services (ACS)	Crime and justice	Crime and justice | Indigenous peoples	Children and youth|Indigenous peoples|Languages|Transportation
-CSCSC_ECCC_2021	CSCSC	802	Canadian Survey of Cyber Security and Cybercrime (CSCSC)	Crime and justice|Digital economy and society	Business performance and ownership | Crime and justice | Digital economy and society | Science and technology	Digital economy and society|Business performance and ownership
+CSCSC_ECCC_2021	CSCSC	802	Canadian Survey of Cyber Security and Cybercrime (CSCSC)	Crime and justice|Digital economy and society	Crime and justice | Digital economy and society | Science and technology	Digital economy and society|Business performance and ownership
 SDTIU_ETNUI_2019	SDTIU	802	Survey of Digital Technology and Internet Use (SDTIU)	Science and technology|Digital economy and society	Digital economy and society	Business performance and ownership|Digital economy and society
 HES_ALL_2006	HES	744	Households and the Environment Survey (HES)	Families, households and marital status|Environment	Energy | Environment | Families, households and marital status | Housing | Society and community	Environment|Families, households and marital status|Housing
 GSS_ESG_33	GSS	726	General Social Survey - Caregiving and Care Receiving (GSS)	Society and community	Children and youth | Families, households and marital status | Health | Older adults and population aging | Society and community	Society and community
@@ -88,15 +88,15 @@ SFS_ESF_2012	SFS	553	Survey of Financial Security (SFS)	Income, pensions, spendi
 CNICS_ENCVE_2021	CNICS	547	Childhood National Immunization Coverage Survey (CNICS)	Children and youth	Children and youth | Health	Children and youth|Health
 SEPR_EPUR_2014	SEPR	540			Government | Health	Society and community
 CLPS_ECPJ_2021	CLPS	534	Canadian Legal Problems Survey (CLPS)		Crime and justice	Crime and justice|Health
-IFPI_IITA	IFPI	520			Agriculture and food | Business performance and ownership	Business performance and ownership
+IFPI_IITA	IFPI	520			Agriculture and food | Business performance and ownership | Retail and wholesale	Business performance and ownership
 HES_EME_2019	HES	512	Households and the Environment Survey (HES)	Families, households and marital status|Environment	Energy | Environment | Families, households and marital status | Housing | Society and community	Environment|Housing
-CCHS_ESCC_2024_RR_SCH2TAL2	CCHS	511	Canadian Community Health Survey - Annual Component (CCHS)	Health|Society and community	Children and youth | Health | Housing | Immigration and ethnocultural diversity | Indigenous peoples | Labour | Languages | Society and community	Health|Transportation
+CCHS_ESCC_2024_RR_SCH2TAL2	CCHS	511	Canadian Community Health Survey - Annual Component (CCHS)	Health|Society and community	Children and youth | Health | Immigration and ethnocultural diversity | Indigenous peoples | Labour | Languages | Society and community	Health|Transportation
 SFT_ETF_2024	SFT	505	Survey on Family Transitions (SFT)	Families, households and marital status	Families, households and marital status | Children and youth | Society and community	Families, households and marital status|Housing|Population and demography|Children and youth
 HES_EME_2013	HES	495	Households and the Environment Survey (HES)	Families, households and marital status|Environment	Energy | Environment | Families, households and marital status | Housing | Society and community	Environment|Families, households and marital status|Housing
 SEFJ_EECF	SEFJ	492			Labour | Government	Labour|Business performance and ownership
 CNICS_ENCVE_2019	CNICS	486	Childhood National Immunization Coverage Survey (CNICS)	Children and youth	Children and youth | Health	Children and youth|Health
 NGS_END_2018	NGS	485	National Graduates Survey (NGS)	Education, training and learning	Education, training and learning | Labour	Education, training and learning|Labour
-CIUS_ECUI_2018	CIUS	483	Canadian Internet Use Survey (CIUS)	Digital economy and society	Digital economy and society | Income, pensions, spending and wealth | Science and technology	Digital economy and society
+CIUS_ECUI_2018	CIUS	483	Canadian Internet Use Survey (CIUS)	Digital economy and society	Digital economy and society | Income, pensions, spending and wealth | Retail and wholesale | Science and technology	Digital economy and society
 NGS_END_2023	NGS	480	National Graduates Survey (NGS)	Education, training and learning	Education, training and learning | Labour	Education, training and learning|Labour
 CIS_ECR_2014	CIS	480	Canadian Income Survey (CIS)	Income, pensions, spending and wealth	Children and youth | Education, training and learning | Health | Income, pensions, spending and wealth | Labour | Society and community	Income, pensions, spending and wealth|Labour
 CAFTWS_ETBFAC_2017	CAFTWS	475			Health | Labour	Families, households and marital status|Health
@@ -104,12 +104,12 @@ CIS_ECR_2013	CIS	472	Canadian Income Survey (CIS)	Income, pensions, spending and
 CIS_ECR_2012	CIS	466	Canadian Income Survey (CIS)	Income, pensions, spending and wealth	Children and youth | Education, training and learning | Health | Income, pensions, spending and wealth | Labour | Society and community	Income, pensions, spending and wealth|Labour
 SMHSE_ESMES	SMHSE	460			Health	Health
 PSES_SAFF_2024	PSES	444	Public Service Employee Survey (PSES)		Government | Labour	Labour
-CIUS_ECUI_2020	CIUS	441	Canadian Internet Use Survey (CIUS)	Digital economy and society	Digital economy and society | Income, pensions, spending and wealth | Science and technology	Digital economy and society
+CIUS_ECUI_2020	CIUS	441	Canadian Internet Use Survey (CIUS)	Digital economy and society	Digital economy and society | Income, pensions, spending and wealth | Retail and wholesale | Science and technology	Digital economy and society
 CCAHS_ECSAC_2023	CCAHS	437	Canadian COVID-19 Antibody and Health Survey (CCAHS)	Health	Health | Society and community	Health
 CTADS_ECTAD_2017	CTADS	434	Canadian Tobacco&#44; Alcohol and Drugs Survey (CTADS)	Health	Health | Society and community	Health
 PSSCSC_ESPCC_2022	PSSCSC	422			Business and consumer services and culture | Digital economy and society	Digital economy and society|Housing|Families, households and marital status
 CADS_ECAD_2019	CADS	421	Canadian Alcohol and Drugs Survey (CADS)	Health	Health	Health
-CIUS_ECUI_2022	CIUS	420	Canadian Internet Use Survey (CIUS)	Digital economy and society	Digital economy and society | Income, pensions, spending and wealth | Science and technology	Digital economy and society
+CIUS_ECUI_2022	CIUS	420	Canadian Internet Use Survey (CIUS)	Digital economy and society	Digital economy and society | Income, pensions, spending and wealth | Retail and wholesale | Science and technology	Digital economy and society
 PSES_SAFF_2017	PSES	404	Public Service Employee Survey (PSES)		Government | Labour	Labour
 RAIS_SIAI_08_16	RAIS	396	Registered Apprenticeship Information System (RAIS)	Labour	Education, training and learning | Income, pensions, spending and wealth | Labour	Education, training and learning|Housing|Labour
 HES_EME_2015	HES	379	Households and the Environment Survey (HES)	Families, households and marital status|Environment	Energy | Environment | Families, households and marital status | Housing | Society and community	Environment|Families, households and marital status|Housing
@@ -194,7 +194,7 @@ DES_EEN_2018	DES	93			Digital economy and society | Business performance and own
 CHS_ECL_2018_ID_v2	CHS	90			Crime and justice | Families, households and marital status | Health | Housing | Immigration and ethnocultural diversity | Society and community	Income, pensions, spending and wealth|Families, households and marital status
 SOA_ESO_2017	SOA	71			Health	Families, households and marital status
 CHIRP_ENPIR_AllYears	CHIRP	66			Population and demography | Health | Children and youth | Immigration and ethnocultural diversity	Population and demography|Children and youth|Housing|Families, households and marital status
-IMDB_BDIM	IMDB	63	Longitudinal Immigration Database (IMDB)	Immigration and ethnocultural diversity|Population and demography	Business performance and ownership | Children and youth | Immigration and ethnocultural diversity | Income, pensions, spending and wealth | Labour | Population and demography
+IMDB_BDIM	IMDB	63	Longitudinal Immigration Database (IMDB)	Immigration and ethnocultural diversity|Population and demography	Children and youth | Immigration and ethnocultural diversity | Income, pensions, spending and wealth | Labour | Population and demography
 PSEW_EPBQ_2021	PSEW	53			Society and community | Health	Income, pensions, spending and wealth|Families, households and marital status
 SAFSO_EAOSP	SAFSO	51	Survey on Accessibility in Federal Sector Organizations (SAFSO)		Government | Health	Transportation
 VSSBD_SECM	VSSBD	44			Population and demography | Health	Population and demography
