@@ -182,6 +182,7 @@ export function Toolbar({
     <header className="toolbar">
       <div className="toolbar__brand">
         <a href={getHubUrl()} className="toolbar__home" title="Return to survey hub">
+          <span className="toolbar__mark" aria-hidden="true"><span /><span /><span /><span /></span>
           <strong>Modular Survey Tools</strong>
         </a>
         <h1 className="toolbar__title">{pick(instrument.metadata.title as Record<string, string>, language)}</h1>

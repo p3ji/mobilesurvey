@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { ArrowLeft, ArrowRight, BarChart3, BookOpen, Calendar, ExternalLink, RotateCcw, Search, X } from 'lucide-react';
-import logo from './assets/logo.png';
+import logo from './assets/brand-light.svg';
 import pilotRecords from './researcherPilot.json';
 import { ResearcherThemesViz } from './ResearcherThemesViz.jsx';
 

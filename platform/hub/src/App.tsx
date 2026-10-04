@@ -20,7 +20,7 @@ import {
   Smartphone,
   TrendingUp,
 } from 'lucide-react';
-import logo from './assets/logo.png';
+import logo from './assets/brand-light.svg';
 import {
   lfsInstrument,
   demoInstrument,
@@ -3505,8 +3505,8 @@ function HomePage({ onNavigate }: { onNavigate: (v: HubView) => void }) {
         <section className="home-hero" aria-labelledby="home-hero-title">
           <div className="home-hero__content">
             <span className="home-eyebrow"><span className="home-eyebrow__dot" /> Open-source survey platform</span>
-            <h1 id="home-hero-title">Better surveys<br />begin with <em>better tools.</em></h1>
-            <p>One connected workspace to discover questions, design instruments, collect responses, and make sense of the data.</p>
+            <h1 id="home-hero-title">Less manual work.<br />More room for <em>insight.</em></h1>
+            <p>Connected tools streamline the statistical workflow—from survey design and collection to validation, discovery, and analysis—so teams can spend more time learning from the data.</p>
             <div className="home-hero__actions">
               <a className="home-hero__primary" href="#try-demo">Explore a demo <span aria-hidden="true">↗</span></a>
               <a className="home-hero__secondary" href="#tool-paths">Browse all tools <span aria-hidden="true">↓</span></a>

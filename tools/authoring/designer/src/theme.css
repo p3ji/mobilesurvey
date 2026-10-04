@@ -1,0 +1,68 @@
+/* Suite identity layered over the Designer's dense editing controls. */
+.toolbar {
+  min-height: 64px;
+  gap: 12px;
+  padding: 10px 18px;
+  border-top: 3px solid #ecae72;
+  border-bottom: 1px solid #d4e1d8;
+  background: #fffefa;
+  box-shadow: 0 12px 30px -27px #153942;
+  position: relative;
+  z-index: 10;
+}
+.toolbar__brand { align-items: center; gap: 13px; min-width: 0; }
+.toolbar__home { display: inline-flex; align-items: center; gap: 10px; color: #153b43; white-space: nowrap; }
+.toolbar__home:hover { opacity: 1; color: #087a78; }
+.toolbar__home strong { color: inherit; font-size: 15px; font-weight: 800; letter-spacing: -.05em; }
+.toolbar__mark { display: grid; grid-template-columns: repeat(2, 9px); grid-template-rows: repeat(2, 9px); gap: 3px; flex: none; transform: rotate(-12deg); }
+.toolbar__mark span { background: #0d8583; border-radius: 2px; }
+.toolbar__mark span:nth-child(2) { background: #f1a864; border-radius: 2px 6px 2px 2px; }
+.toolbar__mark span:nth-child(3) { background: #a4c6b7; }
+.toolbar__mark span:nth-child(4) { background: #163b48; }
+.toolbar__title { max-width: 210px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; padding-left: 13px; border-left: 1px solid #d5e0da; color: #5c7074; font-size: 13px; }
+.toolbar__group { align-items: center; }
+.toolbar__group button, .toolbar__group a { min-height: 36px; }
+.toolbar__mode, .toolbar__export, .toolbar__help { border-radius: 999px; }
+.toolbar__render-btn { background: #087a78; border-color: #087a78; border-radius: 999px; box-shadow: 0 10px 20px -15px #075b5c; }
+.toolbar__render-btn:hover:not(:disabled) { background: #075b5c; border-color: #075b5c; }
+.toolbar__collect-btn { border-radius: 999px; background: #e3f1ed; border-color: #bcdacf; color: #075b5c; }
+.toolbar__collect-btn:hover:not(:disabled) { background: #d5eae1; border-color: #88bbaa; }
+.toolbar__mode-menu, .toolbar__export-menu { border-radius: 13px; border-color: #cadbd2; box-shadow: 0 18px 48px -28px #153942; }
+.tabs__list-row { border-top: 2px solid #e4eee8; }
+.tabs__trigger { font-weight: 650; }
+.tabs__trigger[data-state='active'] { color: #075b5c; }
+.panel--left { border-right: 1px solid #dce2de; }
+.panel--right { border-left: 1px solid #dce2de; }
+.panel--center { background: #edf1eb; }
+.inspector { padding: 18px; }
+.inspector h2 { color: #173b43; }
+.tree__row--selected { box-shadow: inset 3px 0 #087a78; }
+.preview__bar, .flow__toolbar { background: #fffefa; }
+
+.layout--easy { background: radial-gradient(circle at 50% 0%, #e6f1e9 0, transparent 45%), #f4f3ee; }
+.easymode { max-width: 860px; padding: 46px 26px 80px; gap: 19px; }
+.easymode__title { color: #173b43; font-size: clamp(26px, 3vw, 36px); letter-spacing: -.055em; line-height: 1.1; }
+.easymode__sub { font-size: 14px; line-height: 1.6; }
+.easymode__empty { display: flex; flex-direction: column; align-items: center; gap: 13px; min-height: 210px; justify-content: center; background: #fffefa; border: 1px dashed #9dc8b7; border-radius: 18px; box-shadow: 0 20px 40px -40px #153942; }
+.easymode__empty::before { content: '✳'; display: grid; place-items: center; width: 64px; height: 64px; border-radius: 50%; color: #087a78; background: #e3f1ed; box-shadow: 0 0 0 9px #e3f1ed8a; font-size: 34px; line-height: 1; }
+.easymode__card { padding: 18px 20px; border-radius: 15px; }
+.easymode__card--selected { box-shadow: 0 0 0 2px #087a7833; }
+.em-add-btn { background: #ecae72; border-color: #ecae72; color: #183543; border-radius: 999px; font-weight: 800; padding: 10px 17px; }
+.em-add-btn:hover { background: #f6c28e; border-color: #f6c28e; }
+.em-add-menu { border-radius: 13px; box-shadow: 0 18px 45px -25px #153942; }
+.iv-map-panel, .iv-center-panel, .iv-preview-panel { border-color: #dce2de; }
+@media (max-width: 1120px) {
+  .toolbar { flex-wrap: wrap; }
+  .toolbar__brand { margin-right: auto; }
+  .toolbar__group { margin-inline-start: 0; }
+}
+@media (max-width: 700px) {
+  .toolbar { gap: 7px; padding: 8px 10px; }
+  .toolbar__home strong { font-size: 13px; }
+  .toolbar__title { display: none; }
+  .easymode { padding: 28px 16px 65px; }
+  .easymode__empty { min-height: 190px; padding: 24px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .toolbar button, .easymode__card { transition: none; }
+}

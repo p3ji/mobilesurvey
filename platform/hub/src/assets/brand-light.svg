@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 187 42" role="img" aria-labelledby="title">
+  <title id="title">Modular Survey Tools</title>
+  <g transform="translate(4 5) rotate(-12 16 16)">
+    <rect x="0" y="0" width="13" height="13" rx="2.5" fill="#41b9ab"/>
+    <path d="M18 0h10a3 3 0 0 1 3 3v10H18z" fill="#efad70"/>
+    <rect x="0" y="18" width="13" height="13" rx="2.5" fill="#a9d1c2"/>
+    <rect x="18" y="18" width="13" height="13" rx="2.5" fill="#fffefa"/>
+  </g>
+  <text x="45" y="22" fill="#fffefa" font-family="Inter, system-ui, sans-serif" font-size="17" font-weight="750" letter-spacing="-1">modular</text>
+  <text x="110" y="22" fill="#b9ddd1" font-family="Inter, system-ui, sans-serif" font-size="17" font-weight="750" letter-spacing="-1">survey</text>
+  <text x="46" y="35" fill="#a9c7c7" font-family="Inter, system-ui, sans-serif" font-size="8" font-weight="750" letter-spacing="3">TOOLS</text>
+</svg>
