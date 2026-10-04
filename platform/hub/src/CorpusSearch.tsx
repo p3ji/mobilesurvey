@@ -995,8 +995,8 @@ export function CorpusSearch({
       <div className="cs-discovery-hero">
         <div className="cs-discovery-hero__copy">
           <span className="cs-discovery-hero__eyebrow">STATISTICS CANADA METADATA</span>
-          <h2>Find the variable behind the question.</h2>
-          <p>Move from a research idea to the exact wording, population, response categories, and source record.</p>
+          <h2>Find the data that’s already there.</h2>
+          <p>Search survey data dictionaries to find variables on your topic across programs and years, including data that never appears in published tables.</p>
         </div>
         <div className="cs-discovery-hero__art" aria-hidden="true">
           <span className="cs-discovery-hero__orbit cs-discovery-hero__orbit--outer" />

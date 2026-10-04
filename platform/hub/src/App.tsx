@@ -3587,9 +3587,6 @@ function HomePage({ onNavigate }: { onNavigate: (v: HubView) => void }) {
             <a href="mailto:contact@peji.ca?subject=Modular%20Survey%20Tools%20Inquiry">
               Contact &amp; Enterprise Deployments (contact@peji.ca)
             </a>
-            <a href="https://github.com/p3ji/mobilesurvey" target="_blank" rel="noopener noreferrer">
-              GitHub Repository
-            </a>
             <a href="https://peji.ca" target="_blank" rel="noopener noreferrer">Made by Peji ↗</a>
           </nav>
         </div>
