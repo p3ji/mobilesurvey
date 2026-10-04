@@ -269,6 +269,20 @@ select[aria-invalid="true"] {
   padding: 12px 14px;
   margin-top: 4px;
 }
+
+/* Shared respondent controls inherit the Hub's paper-and-teal language. */
+.eq__page-heading { color: var(--brand-dark); border-bottom-color: #81b9aa; letter-spacing: -.035em; }
+.eq__section-heading { color: var(--ink-soft); }
+.eq__loop-heading { color: var(--brand); }
+.eq__statement { background: var(--selected); border-left-color: var(--brand); border-radius: 0 10px 10px 0; }
+.eq__q-text { color: var(--ink); letter-spacing: -.012em; }
+.eq__instruction { color: var(--ink-soft); }
+.eq__radios { gap: 9px; }
+.eq__radio label, .eq__checkbox label { border-color: var(--line); border-radius: 10px; background: var(--panel); }
+.eq__radio label:hover, .eq__checkbox label:hover { border-color: #7eb6a9; background: #f0f7f3; }
+.eq__grid__row:nth-child(even), .eq__table__corner, .eq__table__col-hdr, .eq__table__row-lbl--total, .eq__table__cell--computed { background: var(--selected); }
+.eq__table-wrapper { border-color: var(--line); border-radius: 12px; }
+.eq__grid__cell input[type="radio"], input[type="checkbox"], input[type="radio"] { accent-color: var(--brand); }
 .eq__consent-heading {
   margin: 0 0 6px;
   font-weight: 600;
