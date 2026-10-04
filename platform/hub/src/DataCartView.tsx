@@ -1,4 +1,5 @@
 import { useState, useMemo, useRef } from 'react';
+import { useUiLanguage, uiText } from '@mobilesurvey/ui-locale';
 import {
   Trash2,
   Download,
@@ -21,6 +22,8 @@ interface DataCartViewProps {
 }
 
 export function DataCartView({ onSearch, onExploreProgram }: DataCartViewProps) {
+  const language = useUiLanguage();
+  const l = (en: string, fr: string) => uiText(language, en, fr);
   const {
     items,
     count,
@@ -173,12 +176,12 @@ export function DataCartView({ onSearch, onExploreProgram }: DataCartViewProps) 
             {item.role && (
               <span className={`cs-hit__kind cs-hit__kind--${item.role}`}>
                 {item.role === 'collected'
-                  ? 'Question'
+                  ? l('Question', 'Question')
                   : item.role === 'derived'
-                    ? 'Derived DV'
+                    ? l('Derived DV', 'Variable dérivée')
                     : item.role === 'administrative'
-                      ? 'Admin Link'
-                      : 'Paradata / Weight'}
+                      ? l('Admin Link', 'Lien administratif')
+                      : l('Paradata / Weight', 'Paradonnée / poids')}
               </span>
             )}
             {item.isGrouped && (
@@ -187,13 +190,13 @@ export function DataCartView({ onSearch, onExploreProgram }: DataCartViewProps) 
               </span>
             )}
             {item.isHarmonized && (
-              <span className="cs-hit__badge--harmonized" title="Harmonized standard question">
-                Harmonized
+              <span className="cs-hit__badge--harmonized" title={l('Harmonized standard question', 'Question standard harmonisée')}>
+                {l('Harmonized', 'Harmonisée')}
               </span>
             )}
             {item.isSelectAll && (
-              <span className="cs-hit__badge--select-all" title="Select all item">
-                Select all
+              <span className="cs-hit__badge--select-all" title={l('Select all item', 'Élément Sélectionner tout')}>
+                {l('Select all', 'Sélectionner tout')}
               </span>
             )}
 
@@ -208,11 +211,11 @@ export function DataCartView({ onSearch, onExploreProgram }: DataCartViewProps) 
             type="button"
             className="cart-card__remove-btn"
             onClick={() => removeItem(item.id)}
-            title={`Remove ${item.variableName} from cart`}
-            aria-label={`Remove ${item.variableName} from cart`}
+            title={l(`Remove ${item.variableName} from cart`, `Retirer ${item.variableName} du panier`)}
+            aria-label={l(`Remove ${item.variableName} from cart`, `Retirer ${item.variableName} du panier`)}
           >
             <Trash2 size={14} aria-hidden="true" />
-            <span>Remove</span>
+            <span>{l('Remove', 'Retirer')}</span>
           </button>
         </div>
 
@@ -223,12 +226,12 @@ export function DataCartView({ onSearch, onExploreProgram }: DataCartViewProps) 
 
         {item.universe && (
           <p className="cs-hit__field">
-            <span className="cs-hit__field-name">Universe:</span> {item.universe}
+            <span className="cs-hit__field-name">{l('Universe:', 'Univers :')}</span> {item.universe}
           </p>
         )}
         {item.note && (
           <p className="cs-hit__field">
-            <span className="cs-hit__field-name">Note:</span> {item.note}
+            <span className="cs-hit__field-name">{l('Note:', 'Note :')}</span> {item.note}
           </p>
         )}
 
@@ -240,8 +243,8 @@ export function DataCartView({ onSearch, onExploreProgram }: DataCartViewProps) 
               onClick={() => toggleCodeList(item.id)}
               aria-expanded={isCodesOpen}
             >
-              <span>{codes.length} response categories</span>
-              <span>{isCodesOpen ? '▲ Hide' : '▼ Show'}</span>
+              <span>{codes.length} {l('response categories', 'catégories de réponse')}</span>
+              <span>{isCodesOpen ? l('▲ Hide', '▲ Masquer') : l('▼ Show', '▼ Afficher')}</span>
             </button>
             {isCodesOpen && (
               <div className="cs-codes cart-card__codes-list">
@@ -260,13 +263,13 @@ export function DataCartView({ onSearch, onExploreProgram }: DataCartViewProps) 
         {/* User Notes field */}
         <div className="cart-card__notes-wrap">
           <label htmlFor={`cart-notes-${item.id}`} className="cart-card__notes-label">
-            Research Notes / Hypotheses:
+            {l('Research Notes / Hypotheses:', 'Notes de recherche / hypothèses :')}
           </label>
           <input
             id={`cart-notes-${item.id}`}
             type="text"
             className="cart-card__notes-input"
-            placeholder="Add personal notes (e.g. 'Primary outcome', 'Covariate for model 2', 'Needs recoding')..."
+            placeholder={l("Add personal notes (e.g. 'Primary outcome', 'Covariate for model 2', 'Needs recoding')...", 'Ajouter des notes (p. ex. résultat principal, covariable, recodage nécessaire)…')}
             value={item.userNotes ?? ''}
             onChange={e => updateNotes(item.id, e.target.value)}
           />
@@ -283,16 +286,14 @@ export function DataCartView({ onSearch, onExploreProgram }: DataCartViewProps) 
           <div className="cart-empty-icon" aria-hidden="true">
             <FileSpreadsheet size={48} strokeWidth={1.5} />
           </div>
-          <h2>Your Data Cart is empty</h2>
+          <h2>{l('Your Data Cart is empty', 'Votre panier de données est vide')}</h2>
           <p className="cart-empty-lead">
-            Collect and organize Statistics Canada variables from across surveys and cycles as you search.
-            Saved variables persist safely in your browser and can be exported as CSV spreadsheets,
-            machine-readable JSON codebooks, or R / Stata / SAS syntax.
+            {l('Collect and organize Statistics Canada variables from across surveys and cycles as you search. Saved variables persist safely in your browser and can be exported as CSV spreadsheets, machine-readable JSON codebooks, or R / Stata / SAS syntax.', 'Rassemblez des variables de Statistique Canada provenant de diverses enquêtes et de divers cycles. Les variables enregistrées restent dans votre navigateur et peuvent être exportées en CSV, en JSON ou sous forme de syntaxe R, Stata ou SAS.')}
           </p>
           <div className="cart-empty-actions">
             <button type="button" className="cart-primary-btn" onClick={onSearch}>
               <Search size={16} aria-hidden="true" />
-              <span>Search Statistics Canada Variables</span>
+              <span>{l('Search Statistics Canada Variables', 'Rechercher des variables de Statistique Canada')}</span>
             </button>
             <button
               type="button"
@@ -300,7 +301,7 @@ export function DataCartView({ onSearch, onExploreProgram }: DataCartViewProps) 
               onClick={() => fileInputRef.current?.click()}
             >
               <Upload size={16} aria-hidden="true" />
-              <span>Import Saved Cart (JSON)</span>
+              <span>{l('Import Saved Cart (JSON)', 'Importer un panier enregistré (JSON)')}</span>
             </button>
             <input
               type="file"
@@ -314,18 +315,18 @@ export function DataCartView({ onSearch, onExploreProgram }: DataCartViewProps) 
           <div className="cart-empty-features">
             <div className="cart-feature-card">
               <Sparkles size={20} className="cart-feature-icon" />
-              <h4>One-Click Collection</h4>
-              <p>Click "+ Add to cart" on any search result card to bookmark variables for your study.</p>
+              <h4>{l('One-Click Collection', 'Ajout en un clic')}</h4>
+              <p>{l('Click "+ Add to cart" on any search result card to bookmark variables for your study.', 'Cliquez sur « Ajouter au panier » dans un résultat pour conserver des variables pour votre étude.')}</p>
             </div>
             <div className="cart-feature-card">
               <FileSpreadsheet size={20} className="cart-feature-icon" />
-              <h4>Spreadsheet Export</h4>
-              <p>Download complete variable definitions with response codes, question text, and notes in CSV.</p>
+              <h4>{l('Spreadsheet Export', 'Exportation en tableur')}</h4>
+              <p>{l('Download complete variable definitions with response codes, question text, and notes in CSV.', 'Téléchargez en CSV les définitions des variables, les codes de réponse, le texte des questions et vos notes.')}</p>
             </div>
             <div className="cart-feature-card">
               <Copy size={20} className="cart-feature-icon" />
-              <h4>Syntax Generation</h4>
-              <p>Generate copy-paste <code>keep</code> statements and variable lists for R, Stata, and SAS.</p>
+              <h4>{l('Syntax Generation', 'Génération de syntaxe')}</h4>
+              <p>{l('Generate copy-paste', 'Générez des listes de variables et des instructions')} <code>keep</code> {l('statements and variable lists for R, Stata, and SAS.', 'à copier dans R, Stata ou SAS.')}</p>
             </div>
           </div>
         </div>
@@ -339,11 +340,10 @@ export function DataCartView({ onSearch, onExploreProgram }: DataCartViewProps) 
       {/* Header & Overview */}
       <div className="cart-header">
         <div>
-          <div className="cart-kicker">Research Workspace</div>
-          <h2 className="cart-title">Data Cart</h2>
+          <div className="cart-kicker">{l('Research Workspace', 'Espace de recherche')}</div>
+          <h2 className="cart-title">{l('Data Cart', 'Panier de données')}</h2>
           <p className="cart-subtitle">
-            Saved Statistics Canada variables stored locally in your browser. Annotate, organize,
-            and export variable lists for statistical packages or research data requests.
+            {l('Saved Statistics Canada variables stored locally in your browser. Annotate, organize, and export variable lists for statistical packages or research data requests.', 'Variables de Statistique Canada enregistrées localement dans votre navigateur. Annotez, organisez et exportez des listes pour les logiciels statistiques ou les demandes d’accès aux données de recherche.')}
           </p>
         </div>
 
@@ -355,7 +355,7 @@ export function DataCartView({ onSearch, onExploreProgram }: DataCartViewProps) 
           </div>
           <div className="cart-metric-pill">
             <span className="cart-metric-pill__num">{surveySummary.distinctSurveys}</span>
-            <span className="cart-metric-pill__lbl">Survey{surveySummary.distinctSurveys === 1 ? '' : 's'}</span>
+            <span className="cart-metric-pill__lbl">{l(surveySummary.distinctSurveys === 1 ? 'Survey' : 'Surveys', surveySummary.distinctSurveys === 1 ? 'Enquête' : 'Enquêtes')}</span>
           </div>
           <div className="cart-metric-pill">
             <span className="cart-metric-pill__num">{surveySummary.distinctCycles}</span>
@@ -385,7 +385,7 @@ export function DataCartView({ onSearch, onExploreProgram }: DataCartViewProps) 
               aria-expanded={showCopyDropdown}
             >
               {copiedFormat ? <Check size={14} aria-hidden="true" /> : <Copy size={14} aria-hidden="true" />}
-              <span>{copiedFormat ? `Copied (${copiedFormat.toUpperCase()})!` : 'Copy Variable Names'}</span>
+              <span>{copiedFormat ? l(`Copied (${copiedFormat.toUpperCase()})!`, `Copié (${copiedFormat.toUpperCase()})!`) : l('Copy Variable Names', 'Copier les noms des variables')}</span>
             </button>
 
             {showCopyDropdown && (
@@ -396,7 +396,7 @@ export function DataCartView({ onSearch, onExploreProgram }: DataCartViewProps) 
                   onClick={() => handleCopy('comma')}
                   role="menuitem"
                 >
-                  <strong>Comma-separated</strong>
+                  <strong>{l('Comma-separated', 'Séparés par des virgules')}</strong>
                   <span>e.g., GEN_01, SMK_01, INC_01</span>
                 </button>
                 <button
@@ -405,7 +405,7 @@ export function DataCartView({ onSearch, onExploreProgram }: DataCartViewProps) 
                   onClick={() => handleCopy('r')}
                   role="menuitem"
                 >
-                  <strong>R vector syntax</strong>
+                  <strong>{l('R vector syntax', 'Syntaxe de vecteur R')}</strong>
                   <span>c("GEN_01", "SMK_01", "INC_01")</span>
                 </button>
                 <button
@@ -414,7 +414,7 @@ export function DataCartView({ onSearch, onExploreProgram }: DataCartViewProps) 
                   onClick={() => handleCopy('stata')}
                   role="menuitem"
                 >
-                  <strong>Stata keep statement</strong>
+                  <strong>{l('Stata keep statement', 'Instruction keep de Stata')}</strong>
                   <span>keep GEN_01 SMK_01 INC_01</span>
                 </button>
                 <button
@@ -423,7 +423,7 @@ export function DataCartView({ onSearch, onExploreProgram }: DataCartViewProps) 
                   onClick={() => handleCopy('sas')}
                   role="menuitem"
                 >
-                  <strong>SAS keep statement</strong>
+                  <strong>{l('SAS keep statement', 'Instruction keep de SAS')}</strong>
                   <span>keep GEN_01 SMK_01 INC_01;</span>
                 </button>
                 <button
@@ -432,7 +432,7 @@ export function DataCartView({ onSearch, onExploreProgram }: DataCartViewProps) 
                   onClick={() => handleCopy('space')}
                   role="menuitem"
                 >
-                  <strong>Space-delimited</strong>
+                  <strong>{l('Space-delimited', 'Séparés par des espaces')}</strong>
                   <span>e.g., GEN_01 SMK_01 INC_01</span>
                 </button>
                 <button
@@ -441,8 +441,8 @@ export function DataCartView({ onSearch, onExploreProgram }: DataCartViewProps) 
                   onClick={() => handleCopy('newline')}
                   role="menuitem"
                 >
-                  <strong>One per line</strong>
-                  <span>Plain line-by-line list</span>
+                  <strong>{l('One per line', 'Un par ligne')}</strong>
+                  <span>{l('Plain line-by-line list', 'Liste simple, une variable par ligne')}</span>
                 </button>
               </div>
             )}
@@ -451,13 +451,13 @@ export function DataCartView({ onSearch, onExploreProgram }: DataCartViewProps) 
           {/* Export CSV */}
           <button type="button" className="cart-action-btn" onClick={handleDownloadCsv}>
             <FileSpreadsheet size={14} aria-hidden="true" />
-            <span>Export CSV</span>
+            <span>{l('Export CSV', 'Exporter CSV')}</span>
           </button>
 
           {/* Export JSON */}
           <button type="button" className="cart-action-btn" onClick={handleDownloadJson}>
             <Download size={14} aria-hidden="true" />
-            <span>Export JSON</span>
+            <span>{l('Export JSON', 'Exporter JSON')}</span>
           </button>
 
           {/* Import JSON */}
@@ -465,10 +465,10 @@ export function DataCartView({ onSearch, onExploreProgram }: DataCartViewProps) 
             type="button"
             className="cart-action-btn"
             onClick={() => fileInputRef.current?.click()}
-            title="Import an existing JSON cart file"
+            title={l('Import an existing JSON cart file', 'Importer un fichier JSON de panier existant')}
           >
             <Upload size={14} aria-hidden="true" />
-            <span>Import JSON</span>
+            <span>{l('Import JSON', 'Importer JSON')}</span>
           </button>
           <input
             type="file"
@@ -483,7 +483,7 @@ export function DataCartView({ onSearch, onExploreProgram }: DataCartViewProps) 
         <div className="cart-action-group cart-action-group--right">
           {confirmClear ? (
             <div className="cart-confirm-clear">
-              <span>Clear all {count} items?</span>
+              <span>{l('Clear all', 'Supprimer les')} {count} {l('items?', 'éléments?')}</span>
               <button
                 type="button"
                 className="cart-btn-danger"
@@ -492,14 +492,14 @@ export function DataCartView({ onSearch, onExploreProgram }: DataCartViewProps) 
                   setConfirmClear(false);
                 }}
               >
-                Yes, clear
+                {l('Yes, clear', 'Oui, supprimer')}
               </button>
               <button
                 type="button"
                 className="cart-btn-cancel"
                 onClick={() => setConfirmClear(false)}
               >
-                Cancel
+                {l('Cancel', 'Annuler')}
               </button>
             </div>
           ) : (
@@ -507,10 +507,10 @@ export function DataCartView({ onSearch, onExploreProgram }: DataCartViewProps) 
               type="button"
               className="cart-action-btn cart-action-btn--subtle"
               onClick={() => setConfirmClear(true)}
-              title="Remove all variables from cart"
+              title={l('Remove all variables from cart', 'Retirer toutes les variables du panier')}
             >
               <RotateCcw size={14} aria-hidden="true" />
-              <span>Clear Cart</span>
+              <span>{l('Clear Cart', 'Vider le panier')}</span>
             </button>
           )}
         </div>
@@ -523,7 +523,7 @@ export function DataCartView({ onSearch, onExploreProgram }: DataCartViewProps) 
           <input
             type="search"
             className="cart-search-input"
-            placeholder="Search saved variables by name, label, question or notes..."
+            placeholder={l('Search saved variables by name, label, question or notes...', 'Rechercher dans les variables enregistrées par nom, libellé, question ou note…')}
             value={searchFilter}
             onChange={e => setSearchFilter(e.target.value)}
           />
@@ -532,7 +532,7 @@ export function DataCartView({ onSearch, onExploreProgram }: DataCartViewProps) 
               type="button"
               className="cart-search-clear"
               onClick={() => setSearchFilter('')}
-              aria-label="Clear cart search filter"
+              aria-label={l('Clear cart search filter', 'Effacer le filtre de recherche du panier')}
             >
               ×
             </button>
@@ -545,9 +545,9 @@ export function DataCartView({ onSearch, onExploreProgram }: DataCartViewProps) 
             className="cart-survey-select"
             value={selectedSurveyFilter}
             onChange={e => setSelectedSurveyFilter(e.target.value)}
-            aria-label="Filter cart by survey program"
+            aria-label={l('Filter cart by survey program', 'Filtrer le panier par programme d’enquête')}
           >
-            <option value="all">All Surveys ({count})</option>
+            <option value="all">{l('All Surveys', 'Toutes les enquêtes')} ({count})</option>
             {distinctPrograms.map(prog => {
               const progCount = items.filter(
                 it => (it.surveyAcronym || it.surveyGroup) === prog
@@ -566,11 +566,11 @@ export function DataCartView({ onSearch, onExploreProgram }: DataCartViewProps) 
           type="button"
           className={`cart-toggle-btn ${groupBySurvey ? 'is-active' : ''}`}
           onClick={() => setGroupBySurvey(prev => !prev)}
-          title="Toggle grouping variables by survey program"
+          title={l('Toggle grouping variables by survey program', 'Regrouper les variables par programme d’enquête')}
           aria-pressed={groupBySurvey}
         >
           <Layers size={14} aria-hidden="true" />
-          <span>Group by Survey</span>
+          <span>{l('Group by Survey', 'Regrouper par enquête')}</span>
         </button>
       </div>
 
@@ -578,7 +578,7 @@ export function DataCartView({ onSearch, onExploreProgram }: DataCartViewProps) 
       <div className="cart-items-wrap">
         {filteredItems.length === 0 ? (
           <div className="cart-no-matches">
-            <p>No variables in cart match the current search filter.</p>
+            <p>{l('No variables in cart match the current search filter.', 'Aucune variable du panier ne correspond au filtre actuel.')}</p>
             <button
               type="button"
               className="cs-link"
@@ -587,7 +587,7 @@ export function DataCartView({ onSearch, onExploreProgram }: DataCartViewProps) 
                 setSelectedSurveyFilter('all');
               }}
             >
-              Reset search filter
+              {l('Reset search filter', 'Réinitialiser le filtre de recherche')}
             </button>
           </div>
         ) : groupBySurvey && groupedItems ? (
@@ -606,7 +606,7 @@ export function DataCartView({ onSearch, onExploreProgram }: DataCartViewProps) 
                     className="cs-link cart-group-explore"
                     onClick={() => onExploreProgram(progName)}
                   >
-                    <span>Search more {progName} variables</span>
+                    <span>{l('Search more', 'Rechercher d’autres variables de')} {progName} {l('variables', '')}</span>
                     <ArrowRight size={12} aria-hidden="true" />
                   </button>
                 )}
@@ -626,11 +626,11 @@ export function DataCartView({ onSearch, onExploreProgram }: DataCartViewProps) 
       {/* Floating / Bottom Return to Search Bar */}
       <div className="cart-footer">
         <p>
-          Need more variables? Return to the main search to query the full 438,000+ Statistics Canada metadata corpus.
+          {l('Need more variables? Return to the main search to query the full 438,000+ Statistics Canada metadata corpus.', 'Vous cherchez d’autres variables? Retournez à la recherche principale pour explorer le corpus de plus de 438 000 notices de Statistique Canada.')}
         </p>
         <button type="button" className="cart-primary-btn" onClick={onSearch}>
           <Search size={14} aria-hidden="true" />
-          <span>Return to Search</span>
+          <span>{l('Return to Search', 'Retour à la recherche')}</span>
         </button>
       </div>
     </div>

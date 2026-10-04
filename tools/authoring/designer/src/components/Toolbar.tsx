@@ -306,35 +306,35 @@ export function Toolbar({
         {exportOpen && (
           <div className="toolbar__export-menu" role="menu">
             <button type="button" role="menuitem" onClick={() => fileInputRef.current?.click()}>
-              ⬆ Import instrument JSON
+              ⬆ {l('Import instrument JSON', 'Importer un instrument JSON')}
             </button>
             <button type="button" role="menuitem" onClick={() => xmlInputRef.current?.click()}>
-              ⬆ Import DDI-XML
+              ⬆ {l('Import DDI-XML', 'Importer DDI-XML')}
             </button>
             {importError && (
               <p className="toolbar__import-error" role="alert">{importError}</p>
             )}
             <hr className="toolbar__menu-divider" />
             <button type="button" role="menuitem" onClick={exportHtmlDoc}>
-              ⬇ HTML Questionnaire
+              ⬇ {l('HTML Questionnaire', 'Questionnaire HTML')}
             </button>
             <button type="button" role="menuitem" onClick={exportJson}>
-              ⬇ Instrument JSON
+              ⬇ {l('Instrument JSON', 'Instrument JSON')}
             </button>
             <button type="button" role="menuitem" onClick={() => exportDdi('instance')}>
               ⬇ DDI-XML (DDI-L 3.3)
             </button>
             <button type="button" role="menuitem" onClick={() => exportDdi('fragment')}>
-              ⬇ DDI-XML (FragmentInstance, for repositories)
+              ⬇ DDI-XML ({l('FragmentInstance, for repositories', 'FragmentInstance, pour les dépôts')})
             </button>
             <button type="button" role="menuitem" onClick={exportLinkedData}>
-              ⬇ JSON-LD (linked data, FAIR)
+              ⬇ JSON-LD ({l('linked data, FAIR', 'données liées, FAIR')})
             </button>
             <button type="button" role="menuitem" onClick={exportJsonSchema}>
-              ⬇ JSON Schema
+              ⬇ {l('JSON Schema', 'Schéma JSON')}
             </button>
             <button type="button" role="menuitem" onClick={exportPdf}>
-              🖨 PDF Spec
+              🖨 {l('PDF Spec', 'Spécification PDF')}
             </button>
           </div>
         )}
@@ -346,30 +346,30 @@ export function Toolbar({
           href={`${getHubUrl()}#privacy`}
           target="_blank"
           rel="noopener noreferrer"
-          title="Privacy &amp; Demonstration Notice"
+          title={l('Privacy & Demonstration Notice', 'Confidentialité et avis sur la démonstration')}
         >
-          🛡 Privacy
+          🛡 {l('Privacy', 'Confidentialité')}
         </a>
         <a
           className="toolbar__help"
           href={HELP_URL}
           target="_blank"
           rel="noopener noreferrer"
-          aria-label="Open the authoring tool manual (opens in a new tab)"
-          title="User manual"
+          aria-label={l('Open the authoring tool manual (opens in a new tab)', 'Ouvrir le manuel de l’outil de conception (nouvel onglet)')}
+          title={l('User manual', 'Guide d’utilisation')}
         >
-          ? Help
+          ? {l('Help', 'Aide')}
         </a>
         <button
           type="button"
           className="toolbar__collect-btn"
           onClick={() => setCollectModalOpen(true)}
-          title="Deploy or collect responses for this survey"
+          title={l('Deploy or collect responses for this survey', 'Publier cette enquête ou recueillir des réponses')}
         >
-          🌐 Collect…
+          🌐 {l('Collect…', 'Collecter…')}
         </button>
-        <button type="button" className="toolbar__render-btn" onClick={onRender} aria-label="Render survey">
-          ▶ Render
+        <button type="button" className="toolbar__render-btn" onClick={onRender} aria-label={l('Render survey', 'Afficher l’enquête')}>
+          ▶ {l('Render', 'Afficher')}
         </button>
       </div>
 
@@ -383,40 +383,40 @@ export function Toolbar({
             aria-labelledby="designer-collect-title"
           >
             <div className="designer-modal-header">
-              <span className="designer-modal-badge">ℹ Interactive Demonstration</span>
+              <span className="designer-modal-badge">ℹ {l('Interactive Demonstration', 'Démonstration interactive')}</span>
               <button
                 type="button"
                 className="designer-modal-close"
                 onClick={() => setCollectModalOpen(false)}
-                aria-label="Close dialog"
+                aria-label={l('Close dialog', 'Fermer la fenêtre')}
               >
                 ✕
               </button>
             </div>
 
             <div className="designer-modal-body">
-              <h2 id="designer-collect-title">Survey Collection &amp; Custom Deployment</h2>
+              <h2 id="designer-collect-title">{l('Survey Collection & Custom Deployment', 'Collecte d’enquête et déploiement personnalisé')}</h2>
               <p className="designer-modal-lead">
-                The questionnaire designer and preview sandbox on this platform are provided as an interactive demonstration.
+                {l('The questionnaire designer and preview sandbox on this platform are provided as an interactive demonstration.', 'Le concepteur de questionnaires et l’environnement d’aperçu de cette plateforme sont offerts à titre de démonstration interactive.')}
               </p>
 
               <div className="designer-modal-callout">
-                <strong>🔒 Privacy &amp; Research Ethics Standards</strong>
+                <strong>🔒 {l('Privacy & Research Ethics Standards', 'Confidentialité et normes d’éthique de la recherche')}</strong>
                 <p>
-                  To uphold statutory privacy regulations (PIPEDA/GDPR) and research ethics standards (TCPS 2), live multi-respondent cloud data collection is restricted in this public sandbox. Any surveys you build remain 100% private to your browser.
+                  {l('To uphold statutory privacy regulations (PIPEDA/GDPR) and research ethics standards (TCPS 2), live multi-respondent cloud data collection is restricted in this public sandbox. Any surveys you build remain 100% private to your browser.', 'Afin de respecter les règles de confidentialité et les normes d’éthique de la recherche, la collecte infonuagique auprès de plusieurs répondants n’est pas offerte dans cette démonstration publique. Les enquêtes que vous créez restent privées dans votre navigateur.')}
                 </p>
               </div>
 
               <div className="designer-modal-solution-box">
-                <h3>Need to collect real data for your organization?</h3>
+                <h3>{l('Need to collect real data for your organization?', 'Vous devez recueillir des données réelles pour votre organisation?')}</h3>
                 <p>
-                  We provide dedicated, production-ready survey installations tailored to research institutes, public agencies, and enterprises:
+                  {l('We provide dedicated, production-ready survey installations tailored to research institutes, public agencies, and enterprises:', 'Nous proposons des installations d’enquête dédiées, adaptées aux instituts de recherche, aux organismes publics et aux entreprises :')}
                 </p>
                 <ul>
-                  <li><strong>Dedicated Cloud or On-Premises:</strong> Air-gapped self-hosting with zero external dependencies.</li>
-                  <li><strong>Regulatory PII Security:</strong> Role-based access control, cryptographic respondent codes, and automated PII redaction.</li>
-                  <li><strong>Statistical Metadata Alignment:</strong> DDI-Lifecycle 3.3 standards, Statistics Canada knowledge graph integration, and audit logging.</li>
-                  <li><strong>Unlimited Scale:</strong> High-concurrency electronic questionnaires and CATI phone interviewer workflows.</li>
+                  <li><strong>{l('Dedicated Cloud or On-Premises:', 'Infonuagique dédiée ou installation locale :')}</strong> {l('Air-gapped self-hosting with zero external dependencies.', 'Hébergement autonome isolé, sans dépendances externes.')}</li>
+                  <li><strong>{l('Regulatory PII Security:', 'Protection des renseignements personnels :')}</strong> {l('Role-based access control, cryptographic respondent codes, and automated PII redaction.', 'Accès selon les rôles, codes de répondants protégés et caviardage automatisé.')}</li>
+                  <li><strong>{l('Statistical Metadata Alignment:', 'Conformité des métadonnées statistiques :')}</strong> {l('DDI-Lifecycle 3.3 standards, Statistics Canada knowledge graph integration, and audit logging.', 'Norme DDI-Lifecycle 3.3, intégration au graphe de connaissances de Statistique Canada et journal d’audit.')}</li>
+                  <li><strong>{l('Unlimited Scale:', 'Capacité de montée en charge :')}</strong> {l('High-concurrency electronic questionnaires and CATI phone interviewer workflows.', 'Questionnaires électroniques et processus d’interview téléphonique assistée par ordinateur.')}</li>
                 </ul>
               </div>
             </div>
@@ -428,7 +428,7 @@ export function Toolbar({
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                ✉ Contact for Custom Solution (contact@peji.ca)
+                ✉ {l('Contact for Custom Solution', 'Nous joindre pour une solution personnalisée')} (contact@peji.ca)
               </a>
               <button
                 type="button"
@@ -438,27 +438,27 @@ export function Toolbar({
                   onRender();
                 }}
               >
-                ▶ Test in Sandbox (Render)
+                ▶ {l('Test in Sandbox (Render)', 'Tester dans la démo (Afficher)')}
               </button>
               <button
                 type="button"
                 className="designer-btn-subtle"
                 onClick={() => setCollectModalOpen(false)}
               >
-                Close
+                {l('Close', 'Fermer')}
               </button>
             </div>
 
             <div className="designer-modal-footer-note">
-              <span>Read our </span>
+              <span>{l('Read our ', 'Lisez notre ')}</span>
               <a
                 href={`${getHubUrl()}#privacy`}
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                Privacy &amp; Demonstration Notice
+                {l('Privacy & Demonstration Notice', 'avis de confidentialité et de démonstration')}
               </a>
-              <span> for details on local storage and data handling.</span>
+              <span>{l(' for details on local storage and data handling.', ' pour en savoir plus sur le stockage local et le traitement des données.')}</span>
             </div>
           </div>
         </div>

@@ -208,7 +208,13 @@ export function SurveyRunner({
       {notice && (
         <div className={`eq__notice eq__notice--${notice.kind}`} role="note">
           {notice.kind === 'demo-no-save' ? '⚠ ' : 'ℹ '}
-          {notice.text}
+          {uiLanguage === 'fr'
+            ? notice.text.startsWith('🔒')
+              ? 'Environnement local privé : les réponses soumises restent sur votre appareil et ne sont pas stockées dans le nuage.'
+              : notice.kind === 'demo-no-save'
+                ? 'Il s’agit d’une enquête de démonstration. Ne soumettez pas de renseignements personnels réels : les réponses ne sont pas enregistrées.'
+                : 'Il s’agit d’une enquête de démonstration. Vos réponses seront enregistrées pour illustrer le tableau de bord de collecte.'
+            : notice.text}
         </div>
       )}
 

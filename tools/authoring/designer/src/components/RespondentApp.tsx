@@ -9,6 +9,7 @@
  * not the compact device-frame preview.
  */
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { LanguageSwitch, setUiLanguage, useUiLanguage, uiText } from '@mobilesurvey/ui-locale';
 import { useMachine } from '@xstate/react';
 import { flattenInstrument, numberQuestions, pageHasHardEdits, paginate, pick, runtimeMachine } from '@mobilesurvey/runtime-engine';
 import { QuestionPage } from '@mobilesurvey/respondent-view';
@@ -27,6 +28,8 @@ function CompletionScreen({
   onReset: () => void;
   onExit: () => void;
 }) {
+  const uiLanguage = useUiLanguage();
+  const l = (en: string, fr: string) => uiText(uiLanguage, en, fr);
   const [copied, setCopied] = useState(false);
 
   const filled = Object.fromEntries(
@@ -44,26 +47,27 @@ function CompletionScreen({
   return (
     <div className="rapp">
       <div className="rapp__complete">
+        <LanguageSwitch />
         <div className="rapp__complete-icon" aria-hidden="true">✓</div>
-        <h2 className="rapp__complete-title">Survey submitted</h2>
+        <h2 className="rapp__complete-title">{l('Survey submitted', 'Enquête soumise')}</h2>
         <p className="rapp__complete-sub">
-          Responses collected in this session, in data-schema form.
+          {l('Responses collected in this session, in data-schema form.', 'Réponses recueillies pendant cette session, présentées selon le schéma de données.')}
         </p>
 
         <div className="rapp__resp-header">
-          <strong>Response data</strong>
+          <strong>{l('Response data', 'Données de réponse')}</strong>
           <button type="button" onClick={handleCopy}>
-            {copied ? '✓ Copied' : '⎘ Copy JSON'}
+            {copied ? l('✓ Copied', '✓ Copié') : l('⎘ Copy JSON', '⎘ Copier le JSON')}
           </button>
         </div>
         <pre className="rapp__responses">{json}</pre>
 
         <div className="rapp__complete-actions">
           <button type="button" onClick={onReset}>
-            ↺ Take survey again
+            ↺ {l('Take survey again', 'Remplir l’enquête de nouveau')}
           </button>
           <button type="button" onClick={onExit} className="rapp__exit-btn">
-            ← Back to designer
+            ← {l('Back to designer', 'Retour à Designer')}
           </button>
         </div>
       </div>
@@ -74,6 +78,7 @@ function CompletionScreen({
 // ─── main component ───────────────────────────────────────────────────────────
 
 export function RespondentApp({ onExit }: { onExit: () => void }) {
+  const uiLanguage = useUiLanguage();
   const instrument = useDesigner((s) => s.instrument);
   const designerLang = useDesigner((s) => s.language);
 
@@ -89,6 +94,10 @@ export function RespondentApp({ onExit }: { onExit: () => void }) {
   useEffect(() => {
     send({ type: 'SET_LANGUAGE', language: lang });
   }, [lang, send]);
+
+  useEffect(() => {
+    if (instrument.languages.includes(uiLanguage)) setLang(uiLanguage);
+  }, [instrument.languages, uiLanguage]);
 
   const result = useMemo(
     () => flattenInstrument(instrument, snapshot.context.state),
@@ -149,10 +158,11 @@ export function RespondentApp({ onExit }: { onExit: () => void }) {
     <div className="rapp">
       {/* ── Header ── */}
       <header className="rapp__header">
-        <button type="button" className="rapp__back-link" onClick={onExit} aria-label="Exit to designer">
+        <button type="button" className="rapp__back-link" onClick={onExit} aria-label={uiText(uiLanguage, 'Exit to designer', 'Retour à Designer')}>
           ← Designer
         </button>
         <span className="rapp__title">{title}</span>
+        <LanguageSwitch />
         <div className="rapp__lang">
           {instrument.languages.map((l) => (
             <button
@@ -160,7 +170,7 @@ export function RespondentApp({ onExit }: { onExit: () => void }) {
               type="button"
               className={l === lang ? 'pill pill--active' : 'pill'}
               aria-pressed={l === lang}
-              onClick={() => setLang(l as LanguageCode)}
+              onClick={() => { setLang(l as LanguageCode); if (l === 'en' || l === 'fr') setUiLanguage(l); }}
             >
               {l.toUpperCase()}
             </button>

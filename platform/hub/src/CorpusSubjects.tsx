@@ -17,6 +17,7 @@
  */
 import { useEffect, useState } from 'react';
 import type { CorpusSubjectFacet, CorpusUnclassified, SupabaseCorpusSource } from '@mobilesurvey/metadata-registry';
+import { uiText, useUiLanguage } from '@mobilesurvey/ui-locale';
 
 const formatInt = (n: number): string => n.toLocaleString('en-CA');
 
@@ -30,6 +31,8 @@ export interface CorpusSubjectsProps {
 }
 
 export function CorpusSubjects({ source, selected, onSelect }: CorpusSubjectsProps) {
+  const language = useUiLanguage();
+  const l = (en: string, fr: string) => uiText(language, en, fr);
   const [facets, setFacets] = useState<CorpusSubjectFacet[] | null>(null);
   const [gap, setGap] = useState<CorpusUnclassified | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -64,8 +67,8 @@ export function CorpusSubjects({ source, selected, onSelect }: CorpusSubjectsPro
   if (error !== null) {
     return (
       <aside className="cf">
-        <h2 className="cf__head">Filter results by</h2>
-        <p className="cf__gap">Subjects unavailable — {error}</p>
+        <h2 className="cf__head">{l('Filter results by', 'Filtrer les résultats par')}</h2>
+        <p className="cf__gap">{l('Subjects unavailable', 'Sujets indisponibles')} — {error}</p>
       </aside>
     );
   }
@@ -75,9 +78,9 @@ export function CorpusSubjects({ source, selected, onSelect }: CorpusSubjectsPro
   const anyConfirmed = facets.some((f) => f.confirmed > 0);
 
   return (
-    <aside className="cf" aria-label="Filter results by subject">
-      <h2 className="cf__head">Filter results by</h2>
-      <h3 className="cf__group">Subject</h3>
+    <aside className="cf" aria-label={l('Filter results by subject', 'Filtrer les résultats par sujet')}>
+      <h2 className="cf__head">{l('Filter results by', 'Filtrer les résultats par')}</h2>
+      <h3 className="cf__group">{l('Subject', 'Sujet')}</h3>
 
       <ul className="cf__list">
         <li>
@@ -86,7 +89,7 @@ export function CorpusSubjects({ source, selected, onSelect }: CorpusSubjectsPro
             className={`cf__item${selected === null ? ' cf__item--on' : ''}`}
             onClick={() => onSelect(null)}
           >
-            All subjects
+            {l('All subjects', 'Tous les sujets')}
           </button>
         </li>
         {shown.map((f) => (
@@ -97,12 +100,12 @@ export function CorpusSubjects({ source, selected, onSelect }: CorpusSubjectsPro
               onClick={() => onSelect(selected === f.subject ? null : f.subject)}
               title={
                 f.confirmed > 0
-                  ? `${f.confirmed} of ${f.surveys} surveys confirmed by hand`
-                  : 'Assigned from the survey title; not yet confirmed'
+                  ? l(`${f.confirmed} of ${f.surveys} surveys confirmed by hand`, `${f.confirmed} enquêtes sur ${f.surveys} confirmées manuellement`)
+                  : l('Assigned from the survey title; not yet confirmed', 'Attribué selon le titre de l’enquête; non encore confirmé')
               }
             >
               {f.subject} <span className="cf__n">({formatInt(f.variables)})</span>
-              {f.confirmed === 0 && <span className="cf__prov" aria-label="suggested">·</span>}
+              {f.confirmed === 0 && <span className="cf__prov" aria-label={l('suggested', 'proposé')}>·</span>}
             </button>
           </li>
         ))}
@@ -110,16 +113,16 @@ export function CorpusSubjects({ source, selected, onSelect }: CorpusSubjectsPro
 
       {facets.length > SHOWN && (
         <button type="button" className="cf__more" onClick={() => setExpanded((v) => !v)}>
-          {expanded ? 'Less' : `More (${facets.length - SHOWN})`}
+          {expanded ? l('Less', 'Moins') : l(`More (${facets.length - SHOWN})`, `Plus (${facets.length - SHOWN})`)}
         </button>
       )}
 
       {gap !== null && gap.variables > 0 && (
         <p className="cf__gap">
-          {formatInt(gap.variables)} variables ({Math.round((100 * gap.variables) / gap.totalVariables)}%)
-          are in {formatInt(gap.surveys)} surveys with no subject assigned, and this filter cannot
-          reach them.
-          {!anyConfirmed && ' Subjects so far are derived from survey titles, not yet reviewed.'}
+          {language === 'fr'
+            ? `${formatInt(gap.variables)} variables (${Math.round((100 * gap.variables) / gap.totalVariables)} %) se trouvent dans ${formatInt(gap.surveys)} enquêtes sans sujet attribué; ce filtre ne permet pas de les trouver.`
+            : `${formatInt(gap.variables)} variables (${Math.round((100 * gap.variables) / gap.totalVariables)}%) are in ${formatInt(gap.surveys)} surveys with no subject assigned, and this filter cannot reach them.`}
+          {!anyConfirmed && l(' Subjects so far are derived from survey titles, not yet reviewed.', ' Les sujets proviennent actuellement des titres d’enquête et n’ont pas encore été vérifiés.')}
         </p>
       )}
     </aside>

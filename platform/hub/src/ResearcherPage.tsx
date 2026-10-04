@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import { useUiLanguage, uiText } from '@mobilesurvey/ui-locale';
 import { ArrowLeft, ArrowRight, BarChart3, BookOpen, Calendar, ExternalLink, RotateCcw, Search, X } from 'lucide-react';
 import logo from './assets/brand-light.svg';
 import pilotRecords from './researcherPilot.json';
@@ -93,6 +94,8 @@ function cycleLabel(use: PilotUse): string {
 }
 
 export function ResearcherPage({ onHome, onSearcher }: { onHome: () => void; onSearcher?: () => void }) {
+  const language = useUiLanguage();
+  const l = (en: string, fr: string) => uiText(language, en, fr);
   const [activeTab, setActiveTab] = useState<'stats' | 'search'>(initialTab);
   const [selectedSurveys, setSelectedSurveys] = useState<string[]>(initialSurveys);
   const [selectedTheme, setSelectedTheme] = useState<string>('all');
@@ -290,11 +293,11 @@ export function ResearcherPage({ onHome, onSearcher }: { onHome: () => void; onS
     <div className="hub">
       <header className="hub__header">
         <div className="hub__brand">
-          <button type="button" className="hub__back" onClick={onHome} aria-label="Back to home">
-            <img src={logo} alt="Back to home" className="hub__back-logo" />
+          <button type="button" className="hub__back" onClick={onHome} aria-label={l('Back to home', 'Retour à l’accueil')}>
+            <img src={logo} alt={l('Back to home', 'Retour à l’accueil')} className="hub__back-logo" />
           </button>
           <strong>Researcher</strong>
-          <span className="hub__sub">External published uses of Statistics Canada data</span>
+          <span className="hub__sub">{l('External published uses of Statistics Canada data', 'Publications externes utilisant les données de Statistique Canada')}</span>
         </div>
         {onSearcher && (
           <button
@@ -303,7 +306,7 @@ export function ResearcherPage({ onHome, onSearcher }: { onHome: () => void; onS
             onClick={onSearcher}
           >
             <Search size={14} aria-hidden="true" />
-            Open Searcher
+            {l('Open Searcher', 'Ouvrir Searcher')}
           </button>
         )}
       </header>
@@ -311,42 +314,40 @@ export function ResearcherPage({ onHome, onSearcher }: { onHome: () => void; onS
       <main className="hub__main researcher-page">
         <section className="researcher-hero" aria-labelledby="researcher-title">
           <div>
-            <span className="researcher-status">Verified Research Outputs (2015–2026) · {works.length} works</span>
-            <h1 id="researcher-title">Follow the research back to the data.</h1>
+            <span className="researcher-status">{l('Verified Research Outputs', 'Publications de recherche vérifiées')} (2015–2026) · {works.length} {l('works', 'travaux')}</span>
+            <h1 id="researcher-title">{l('Follow the research back to the data.', 'Remontez de la recherche jusqu’aux données.')}</h1>
             <p>
-              Explore a curated, rights-reviewed catalogue of external publications that analyzed Statistics Canada surveys.
-              Every survey relationship and cycle link shown here is grounded in verbatim methods evidence.
-              Statistics Canada's own publications are excluded and mapped separately to retain clear attribution.
+              {l("Explore a curated, rights-reviewed catalogue of external publications that analyzed Statistics Canada surveys. Every survey relationship and cycle link shown here is grounded in verbatim methods evidence. Statistics Canada's own publications are excluded and mapped separately to retain clear attribution.", 'Explorez un catalogue sélectionné de publications externes qui ont analysé des enquêtes de Statistique Canada. Chaque lien avec une enquête ou un cycle repose sur une preuve explicite dans la méthode de l’étude. Les publications de Statistique Canada sont répertoriées séparément.')}
             </p>
             <div className="researcher-hero__mobile-stats">
-              <span><b>{works.length}</b> reviewed works</span>
-              <span><b>{programs.length}</b> survey programs</span>
-              <span><b>{reportsCount}</b> policy reports</span>
-              <span><b>{exactPercentage}%</b> exact cycle</span>
+              <span><b>{works.length}</b> {l('reviewed works', 'travaux vérifiés')}</span>
+              <span><b>{programs.length}</b> {l('survey programs', 'programmes d’enquête')}</span>
+              <span><b>{reportsCount}</b> {l('policy reports', 'rapports de politiques')}</span>
+              <span><b>{exactPercentage}%</b> {l('exact cycle', 'cycle exact')}</span>
             </div>
           </div>
-          <div className="researcher-hero__summary" aria-label="Pilot coverage summary">
+          <div className="researcher-hero__summary" aria-label={l('Pilot coverage summary', 'Sommaire de la couverture du projet pilote')}>
             <BookOpen size={30} strokeWidth={1.5} aria-hidden="true" />
             <strong>{works.length.toString().padStart(2, '0')}</strong>
-            <span>reviewed works</span>
+            <span>{l('reviewed works', 'travaux vérifiés')}</span>
             <div className="researcher-hero__summary-line">
-              <b>{reportsCount}</b> policy & NGO reports
+              <b>{reportsCount}</b> {l('policy & NGO reports', 'rapports de politiques et d’ONG')}
             </div>
             <div className="researcher-hero__summary-line">
-              <b>{recentCount}</b> published in 2025–2026 (last year)
+              <b>{recentCount}</b> {l('published in 2025–2026 (last year)', 'publiés en 2025–2026')}
             </div>
             <div className="researcher-hero__summary-line">
-              <b>{programs.length}</b> survey programs analyzed
+              <b>{programs.length}</b> {l('survey programs analyzed', 'programmes d’enquête analysés')}
             </div>
             <div className="researcher-hero__summary-line">
-              <b>{exactPercentage}%</b> exact-cycle precision
+              <b>{exactPercentage}%</b> {l('exact-cycle precision', 'cycles identifiés avec précision')}
             </div>
           </div>
         </section>
 
         {/* Top-Level Navigation Tabs: 1) Stats  2) Search */}
         <div className="researcher-tabs-container">
-          <nav className="researcher-tabs" role="tablist" aria-label="Researcher views">
+          <nav className="researcher-tabs" role="tablist" aria-label={l('Researcher views', 'Vues de Researcher')}>
             <button
               type="button"
               role="tab"
@@ -357,8 +358,8 @@ export function ResearcherPage({ onHome, onSearcher }: { onHome: () => void; onS
               onClick={() => handleTabChange('stats')}
             >
               <BarChart3 size={16} aria-hidden="true" />
-              <span className="researcher-tab__label-desktop">1) Stats & Output Trends</span>
-              <span className="researcher-tab__label-mobile">1) Stats & Trends</span>
+              <span className="researcher-tab__label-desktop">1) {l('Stats & Output Trends', 'Statistiques et tendances de publication')}</span>
+              <span className="researcher-tab__label-mobile">1) {l('Stats & Trends', 'Statistiques et tendances')}</span>
             </button>
             <button
               type="button"
@@ -370,8 +371,8 @@ export function ResearcherPage({ onHome, onSearcher }: { onHome: () => void; onS
               onClick={() => handleTabChange('search')}
             >
               <Search size={16} aria-hidden="true" />
-              <span className="researcher-tab__label-desktop">2) Search Publications ({works.length})</span>
-              <span className="researcher-tab__label-mobile">2) Search ({works.length})</span>
+              <span className="researcher-tab__label-desktop">2) {l('Search Publications', 'Rechercher des publications')} ({works.length})</span>
+              <span className="researcher-tab__label-mobile">2) {l('Search', 'Rechercher')} ({works.length})</span>
             </button>
           </nav>
         </div>
@@ -401,11 +402,10 @@ export function ResearcherPage({ onHome, onSearcher }: { onHome: () => void; onS
         >
             <section className="researcher-section" id="researcher-results" aria-labelledby="researcher-results-title">
           <div className="researcher-section__heading">
-            <p className="researcher-kicker">Documented Data Uses</p>
-            <h2 id="researcher-results-title">Outside publications with reviewed data analysis</h2>
+            <p className="researcher-kicker">{l('Documented Data Uses', 'Utilisations documentées des données')}</p>
+            <h2 id="researcher-results-title">{l('Outside publications with reviewed data analysis', 'Publications externes dont l’analyse des données a été vérifiée')}</h2>
             <p>
-              These records count observed research outputs from indexed bibliographic sources.
-              A paper citing a survey as background is tracked as a mention and excluded from data-use counts.
+              {l('These records count observed research outputs from indexed bibliographic sources. A paper citing a survey as background is tracked as a mention and excluded from data-use counts.', 'Ces notices dénombrent les travaux repérés dans les sources bibliographiques indexées. Une publication qui cite une enquête en contexte est comptée comme mention, et non comme utilisation de ses données.')}
             </p>
           </div>
 
@@ -413,20 +413,20 @@ export function ResearcherPage({ onHome, onSearcher }: { onHome: () => void; onS
             <label className="researcher-search">
               <Search size={18} aria-hidden="true" />
               <input
-                aria-label="Search pilot publications"
+                aria-label={l('Search pilot publications', 'Rechercher dans les publications du projet pilote')}
                 value={query}
                 onChange={event => setQuery(event.target.value)}
-                placeholder="Search titles, themes, authors, publishers, or surveys"
+                placeholder={l('Search titles, themes, authors, publishers, or surveys', 'Rechercher un titre, thème, auteur, éditeur ou une enquête')}
               />
             </label>
-            <div className="researcher-survey-filters" aria-label="Filter by survey">
+            <div className="researcher-survey-filters" aria-label={l('Filter by survey', 'Filtrer par enquête')}>
               <button
                 type="button"
                 className={selectedSurveys.length === 0 ? 'is-active' : ''}
                 aria-pressed={selectedSurveys.length === 0}
                 onClick={() => selectSurvey(null)}
               >
-                All surveys <span className="researcher-survey-badge">{works.length}</span>
+                {l('All surveys', 'Toutes les enquêtes')} <span className="researcher-survey-badge">{works.length}</span>
               </button>
               {programs.map(program => (
                 <button
@@ -444,15 +444,15 @@ export function ResearcherPage({ onHome, onSearcher }: { onHome: () => void; onS
           </div>
 
           <div className="researcher-secondary-filters">
-            <div className="researcher-theme-filters" aria-label="Filter by research theme">
-              <span>Theme:</span>
+            <div className="researcher-theme-filters" aria-label={l('Filter by research theme', 'Filtrer par thème de recherche')}>
+              <span>{l('Theme:', 'Thème :')}</span>
               <button
                 type="button"
                 className={`researcher-theme-chip ${selectedTheme === 'all' ? 'is-active' : ''}`}
                 onClick={() => setSelectedTheme('all')}
                 aria-pressed={selectedTheme === 'all'}
               >
-                All
+                {l('All', 'Tous')}
               </button>
               {availableThemes.map(theme => (
                 <button
@@ -475,14 +475,14 @@ export function ResearcherPage({ onHome, onSearcher }: { onHome: () => void; onS
                   setSelectedType(e.target.value);
                   setDisplayLimit(30);
                 }}
-                aria-label="Filter by document type"
+                aria-label={l('Filter by document type', 'Filtrer par type de document')}
               >
-                <option value="all">All Document Types ({works.length})</option>
-                <option value="article">Journal Articles ({articlesCount})</option>
-                <option value="report">Policy & Institutional Reports ({reportsCount})</option>
-                <option value="dissertation">Theses & Dissertations ({dissertationsCount})</option>
-                <option value="preprint">Preprints & Working Papers ({preprintsCount})</option>
-                <option value="conference-paper">Conference Papers ({conferencesCount})</option>
+                <option value="all">{l('All Document Types', 'Tous les types de documents')} ({works.length})</option>
+                <option value="article">{l('Journal Articles', 'Articles de revue')} ({articlesCount})</option>
+                <option value="report">{l('Policy & Institutional Reports', 'Rapports de politiques et d’organismes')} ({reportsCount})</option>
+                <option value="dissertation">{l('Theses & Dissertations', 'Thèses et mémoires')} ({dissertationsCount})</option>
+                <option value="preprint">{l('Preprints & Working Papers', 'Prépublications et documents de travail')} ({preprintsCount})</option>
+                <option value="conference-paper">{l('Conference Papers', 'Communications de conférence')} ({conferencesCount})</option>
               </select>
 
               <select
@@ -492,11 +492,11 @@ export function ResearcherPage({ onHome, onSearcher }: { onHome: () => void; onS
                   setSelectedYearWindow(e.target.value as any);
                   setDisplayLimit(30);
                 }}
-                aria-label="Filter by publication year"
+                aria-label={l('Filter by publication year', 'Filtrer par année de publication')}
               >
-                <option value="all">All Publication Years: 2015–2026 ({works.length})</option>
-                <option value="recent">Recent Surge: 2025–2026 ({recentCount})</option>
-                <option value="historical">Baseline Horizon: 2015–2024 ({works.length - recentCount})</option>
+                <option value="all">{l('All Publication Years', 'Toutes les années de publication')} : 2015–2026 ({works.length})</option>
+                <option value="recent">{l('Recent Surge', 'Période récente')} : 2025–2026 ({recentCount})</option>
+                <option value="historical">{l('Baseline Horizon', 'Période antérieure')} : 2015–2024 ({works.length - recentCount})</option>
               </select>
 
               <select
@@ -506,23 +506,23 @@ export function ResearcherPage({ onHome, onSearcher }: { onHome: () => void; onS
                   setSelectedPrecision(e.target.value);
                   setDisplayLimit(30);
                 }}
-                aria-label="Filter by cycle precision"
+                aria-label={l('Filter by cycle precision', 'Filtrer selon la précision du cycle')}
               >
-                <option value="all">All Precision Levels</option>
-                <option value="exact_cycles">Exact Cycles Only</option>
-                <option value="range">Reported Range</option>
-                <option value="program_only">Program Only (Unstated)</option>
+                <option value="all">{l('All Precision Levels', 'Tous les niveaux de précision')}</option>
+                <option value="exact_cycles">{l('Exact Cycles Only', 'Cycles exacts seulement')}</option>
+                <option value="range">{l('Reported Range', 'Intervalle déclaré')}</option>
+                <option value="program_only">{l('Program Only (Unstated)', 'Programme seulement (cycle non précisé)')}</option>
               </select>
 
               <select
                 className="researcher-select"
                 value={sortOption}
                 onChange={e => setSortOption(e.target.value as any)}
-                aria-label="Sort publications"
+                aria-label={l('Sort publications', 'Trier les publications')}
               >
-                <option value="year_desc">Newest Year First</option>
-                <option value="year_asc">Oldest Year First</option>
-                <option value="title_asc">Title (A-Z)</option>
+                <option value="year_desc">{l('Newest Year First', 'Années les plus récentes d’abord')}</option>
+                <option value="year_asc">{l('Oldest Year First', 'Années les plus anciennes d’abord')}</option>
+                <option value="title_asc">{l('Title (A-Z)', 'Titre (A–Z)')}</option>
               </select>
             </div>
           </div>
@@ -532,14 +532,14 @@ export function ResearcherPage({ onHome, onSearcher }: { onHome: () => void; onS
             <section className="researcher-survey-stats" aria-label={`Statistics for ${surveyLabel}`}>
               <div className="researcher-survey-stats__header">
                 <div className="researcher-survey-stats__titles">
-                  <span className="researcher-survey-stats__kicker">Survey Analysis Overview</span>
+                  <span className="researcher-survey-stats__kicker">{l('Survey Analysis Overview', 'Aperçu des analyses par enquête')}</span>
                   <h4>{surveyLabel}</h4>
                 </div>
                 <div className="researcher-survey-stats__badges">
-                  <span className="researcher-stat-badge"><b>{surveyWorks.length}</b> publications</span>
-                  <span className="researcher-stat-badge"><b>{cycleStats.length}</b> cycles identified</span>
+                  <span className="researcher-stat-badge"><b>{surveyWorks.length}</b> {l('publications', 'publications')}</span>
+                  <span className="researcher-stat-badge"><b>{cycleStats.length}</b> {l('cycles identified', 'cycles identifiés')}</span>
                   {peakCycle && (
-                    <span className="researcher-stat-badge">Peak cycle: <b>{peakCycle.cycle}</b> ({peakCycle.count} {peakCycle.count === 1 ? 'pub' : 'pubs'})</span>
+                    <span className="researcher-stat-badge">{l('Peak cycle:', 'Cycle le plus étudié :')} <b>{peakCycle.cycle}</b> ({peakCycle.count} {l('pubs', 'publications')})</span>
                   )}
                   {(selectedCycle || selectedPubYear) && (
                     <button
@@ -547,7 +547,7 @@ export function ResearcherPage({ onHome, onSearcher }: { onHome: () => void; onS
                       className="researcher-clear-cycle-btn"
                       onClick={() => { setSelectedCycle(null); setSelectedPubYear(null); }}
                     >
-                      Clear year filter ({selectedCycle ? `Cycle ${selectedCycle}` : `Year ${selectedPubYear}`}) <X size={12} aria-hidden="true" />
+                      {l('Clear year filter', 'Effacer le filtre d’année')} ({selectedCycle ? `Cycle ${selectedCycle}` : `${l('Year', 'Année')} ${selectedPubYear}`}) <X size={12} aria-hidden="true" />
                     </button>
                   )}
                 </div>
@@ -558,9 +558,9 @@ export function ResearcherPage({ onHome, onSearcher }: { onHome: () => void; onS
                   <div className="researcher-timeline-card__header">
                     <span className="researcher-timeline-card__title">
                       <BarChart3 size={13} aria-hidden="true" style={{ verticalAlign: -1, marginRight: 5 }} />
-                      Publications by Survey Cycle
+                      {l('Publications by Survey Cycle', 'Publications par cycle d’enquête')}
                     </span>
-                    <span className="researcher-timeline-card__sub">Click cycle year to filter</span>
+                    <span className="researcher-timeline-card__sub">{l('Click cycle year to filter', 'Cliquez sur un cycle pour filtrer')}</span>
                   </div>
                   {cycleStats.length > 0 ? (
                     <div className="researcher-timeline-chart" role="group" aria-label="Survey cycle distribution">
@@ -585,7 +585,7 @@ export function ResearcherPage({ onHome, onSearcher }: { onHome: () => void; onS
                       ))}
                     </div>
                   ) : (
-                    <div className="researcher-timeline-empty">No exact cycles established in reviewed passages</div>
+                    <div className="researcher-timeline-empty">{l('No exact cycles established in reviewed passages', 'Aucun cycle exact établi dans les extraits examinés')}</div>
                   )}
                 </div>
 
@@ -593,9 +593,9 @@ export function ResearcherPage({ onHome, onSearcher }: { onHome: () => void; onS
                   <div className="researcher-timeline-card__header">
                     <span className="researcher-timeline-card__title">
                       <Calendar size={13} aria-hidden="true" style={{ verticalAlign: -1, marginRight: 5 }} />
-                      Publications by Release Year
+                      {l('Publications by Release Year', 'Publications par année de parution')}
                     </span>
-                    <span className="researcher-timeline-card__sub">Click release year to filter</span>
+                    <span className="researcher-timeline-card__sub">{l('Click release year to filter', 'Cliquez sur une année de parution pour filtrer')}</span>
                   </div>
                   {pubYearStats.length > 0 ? (
                     <div className="researcher-timeline-chart" role="group" aria-label="Publication year distribution">
@@ -759,16 +759,16 @@ export function ResearcherPage({ onHome, onSearcher }: { onHome: () => void; onS
                     className="researcher-load-more-btn"
                     onClick={() => setDisplayLimit(prev => prev + 30)}
                   >
-                    Show 30 more works ({shown.length - displayLimit} remaining)
+                    {l('Show 30 more works', 'Afficher 30 autres travaux')} ({shown.length - displayLimit} {l('remaining', 'restants')})
                   </button>
                 </div>
               )}
             </>
           ) : (
             <div className="researcher-empty">
-              <p>No reviewed publications match the selected filters.</p>
+              <p>{l('No reviewed publications match the selected filters.', 'Aucune publication vérifiée ne correspond aux filtres sélectionnés.')}</p>
               <button type="button" className="researcher-reset-btn" onClick={resetFilters}>
-                <RotateCcw size={13} style={{ verticalAlign: '-1px', marginRight: '6px' }} /> Clear all filters
+                <RotateCcw size={13} style={{ verticalAlign: '-1px', marginRight: '6px' }} /> {l('Clear all filters', 'Effacer tous les filtres')}
               </button>
             </div>
           )}
@@ -777,21 +777,19 @@ export function ResearcherPage({ onHome, onSearcher }: { onHome: () => void; onS
 
     <section className="researcher-method" aria-labelledby="researcher-method-title">
           <div>
-            <p className="researcher-kicker">How to read this page</p>
-            <h2 id="researcher-method-title">Evidence before counts</h2>
+            <p className="researcher-kicker">{l('How to read this page', 'Comment lire cette page')}</p>
+            <h2 id="researcher-method-title">{l('Evidence before counts', 'Des preuves avant les chiffres')}</h2>
             <p>
-              A paper citing a survey does not establish data analysis. The Researcher catalogue counts a publication under a survey
-              only when its methods or data section confirms actual microdata analysis. A missing or unstated cycle remains explicitly unresolved
-              rather than being inferred from publication year.
+              {l('A paper citing a survey does not establish data analysis. The Researcher catalogue counts a publication under a survey only when its methods or data section confirms actual microdata analysis. A missing or unstated cycle remains explicitly unresolved rather than being inferred from publication year.', 'La citation d’une enquête ne prouve pas que ses données ont été analysées. Le catalogue Researcher associe une publication à une enquête seulement lorsque sa méthode ou sa section sur les données confirme l’analyse des microdonnées. Un cycle absent ou non précisé demeure indéterminé; il n’est pas déduit de l’année de publication.')}
             </p>
           </div>
           <div className="researcher-method__next">
-            <strong>Next in the pipeline</strong>
+            <strong>{l('Next in the pipeline', 'Prochaine étape')}</strong>
             <p>
-              Automated source intake across OpenAlex and Crossref with whole-word quote grounding, human gating, and durable SQLite WAL staging.
+              {l('Automated source intake across OpenAlex and Crossref with whole-word quote grounding, human gating, and durable SQLite WAL staging.', 'Intégration automatisée des sources OpenAlex et Crossref, avec vérification des citations, revue humaine et préparation fiable des données.')}
             </p>
             <button type="button" onClick={onHome}>
-              <ArrowLeft size={15} aria-hidden="true" /> Back to the Hub
+              <ArrowLeft size={15} aria-hidden="true" /> {l('Back to the Hub', 'Retour à l’accueil')}
             </button>
           </div>
         </section>
