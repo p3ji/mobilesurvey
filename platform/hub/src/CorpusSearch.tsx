@@ -37,7 +37,7 @@ import { CorpusDocumentReader } from './CorpusDocument.js';
 import { CorpusSubjects } from './CorpusSubjects.js';
 import { expandCorpusQuery } from './corpusAiSearch.js';
 import { searchCorpusSemantic } from './corpusSemanticSearch.js';
-import { Check, Plus } from 'lucide-react';
+import { Check, Plus, Search } from 'lucide-react';
 import { classifyHit } from './graphClassifier.js';
 import { groupCorpusHits, type CorpusHitGroup } from './groupCorpusHits.js';
 import { isPlaceholderConcept, renderHitQuestion } from './renderHitQuestion.js';
@@ -992,11 +992,24 @@ export function CorpusSearch({
     <div className="cs cs--railed">
       <CorpusSubjects source={source} selected={subject} onSelect={setSubject} />
       <div className="cs__main">
-      <p className="cs-notice">
-        <strong>Source:</strong> {CORPUS_ATTRIBUTION}
-      </p>
+      <div className="cs-discovery-hero">
+        <div className="cs-discovery-hero__copy">
+          <span className="cs-discovery-hero__eyebrow">STATISTICS CANADA METADATA</span>
+          <h2>Find the variable behind the question.</h2>
+          <p>Move from a research idea to the exact wording, population, response categories, and source record.</p>
+        </div>
+        <div className="cs-discovery-hero__art" aria-hidden="true">
+          <span className="cs-discovery-hero__orbit cs-discovery-hero__orbit--outer" />
+          <span className="cs-discovery-hero__orbit cs-discovery-hero__orbit--inner" />
+          <span className="cs-discovery-hero__node cs-discovery-hero__node--one" />
+          <span className="cs-discovery-hero__node cs-discovery-hero__node--two" />
+          <span className="cs-discovery-hero__node cs-discovery-hero__node--three" />
+          <span className="cs-discovery-hero__core">DATA</span>
+        </div>
+      </div>
 
       <div className="sr-search">
+        <Search className="sr-search__icon" size={21} aria-hidden="true" />
         <input
           ref={inputRef}
           className="sr-search__input"
@@ -1136,6 +1149,10 @@ export function CorpusSearch({
         )}
       </div>
 
+      <p className="cs-notice">
+        <strong>Source:</strong> {CORPUS_ATTRIBUTION}
+      </p>
+
       {error !== null && (
         <div className="cs-error">
           <strong>Search unavailable.</strong> {error}
@@ -1166,22 +1183,18 @@ export function CorpusSearch({
 
       {debounced.trim() === '' && error === null && subject === null && (
         <div className="cs-intro">
-          <p>
-            Search across Statistics Canada data dictionaries — the variables, question wording,
-            universes and response categories published for the microdata files held in the
-            Research Data Centres.
-          </p>
+          <span className="cs-intro__eyebrow">START EXPLORING</span>
+          <h3>Search by topic, question, or variable code.</h3>
+          <p>Explore data dictionaries for microdata files held in the Research Data Centres.</p>
           <p className="cs-intro__try">
-            Try{' '}
-            {['smoking', 'housing tenure', 'marital status', 'hours worked'].map((term, i) => (
+            <strong>Try a search</strong>{' '}
+            {['smoking', 'housing tenure', 'marital status', 'hours worked'].map((term) => (
               <span key={term}>
-                {i > 0 && ', '}
                 <button type="button" className="cs-link" onClick={() => onExample(term)}>
                   {term}
                 </button>
               </span>
             ))}
-            .
           </p>
         </div>
       )}
