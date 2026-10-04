@@ -4,7 +4,6 @@ import {
   BarChart3,
   BookOpen,
   Calendar,
-  CheckCircle2,
   FileText,
   Filter,
   Layers,
@@ -203,6 +202,74 @@ export function ResearcherThemesViz({
           topProgramCount: topProg ? topProg[1] : 0,
         };
       });
+  }, [works]);
+
+  // Average publications per year by theme across the catalog timeline
+  const themeVelocity = useMemo(() => {
+    const years = works.map(w => w.year).filter((y): y is number => typeof y === 'number' && y > 0);
+    const minYear = years.length > 0 ? Math.min(...years) : 2015;
+    const maxYear = years.length > 0 ? Math.max(...years) : 2026;
+    const yearSpan = Math.max(1, maxYear - minYear + 1);
+
+    const counts: Record<string, number> = {};
+    for (const w of works) {
+      const t = w.theme ?? 'other';
+      counts[t] = (counts[t] ?? 0) + 1;
+    }
+
+    const items = Object.entries(counts)
+      .map(([theme, total]) => ({
+        theme,
+        total,
+        avgPerYear: Number((total / yearSpan).toFixed(1)),
+        sharePct: Number(((total / works.length) * 100).toFixed(1)),
+      }))
+      .sort((a, b) => b.total - a.total);
+
+    const totalAvgPerYear = Number((works.length / yearSpan).toFixed(1));
+
+    return {
+      items,
+      minYear,
+      maxYear,
+      yearSpan,
+      totalAvgPerYear,
+    };
+  }, [works]);
+
+  // Dynamic analysis stats for narrative cards
+  const narrativeStats = useMemo(() => {
+    const recentCount = works.filter(w => (w.year ?? 0) >= 2025).length;
+    const recentPct = works.length > 0 ? ((recentCount / works.length) * 100).toFixed(1) : '0';
+
+    const dissertations = works.filter(w => getDocCategory(w.workType) === 'dissertation');
+    const dissHealth = dissertations.filter(w => w.theme === 'health').length;
+    const dissDigital = dissertations.filter(w => w.theme === 'digital society').length;
+
+    const reports = works.filter(w => getDocCategory(w.workType) === 'report');
+    const repLabour = reports.filter(w => w.theme === 'labour').length;
+    const repIncome = reports.filter(w => w.theme === 'income and inequality').length;
+
+    const articles = works.filter(w => getDocCategory(w.workType) === 'article');
+    const artHealth = articles.filter(w => w.theme === 'health').length;
+    const artDigital = articles.filter(w => w.theme === 'digital society').length;
+
+    return {
+      recentCount,
+      recentPct,
+      baselineCount: works.length - recentCount,
+      dissTotal: dissertations.length,
+      dissHealth,
+      dissDigital,
+      dissDigitalPct: dissertations.length > 0 ? ((dissDigital / dissertations.length) * 100).toFixed(1) : '0',
+      repTotal: reports.length,
+      repLabour,
+      repIncome,
+      repEconPct: reports.length > 0 ? (((repLabour + repIncome) / reports.length) * 100).toFixed(0) : '0',
+      artTotal: articles.length,
+      artHealthPct: articles.length > 0 ? ((artHealth / articles.length) * 100).toFixed(1) : '0',
+      artDigitalPct: articles.length > 0 ? ((artDigital / articles.length) * 100).toFixed(1) : '0',
+    };
   }, [works]);
 
   // Determine active years
@@ -745,12 +812,12 @@ export function ResearcherThemesViz({
               </div>
             </div>
             <p>
-              Over <strong>{((408 / works.length) * 100).toFixed(1)}% (408 of {works.length})</strong> of all verified publications in this decade appeared in 2025–2026 alone.
-              The recent release of post-COVID annual files (CCHS 2021–2023, GSS 2021–2023, and LFS microdata) prompted an immediate wave of
+              Over <strong>{narrativeStats.recentPct}% ({narrativeStats.recentCount} of {works.length})</strong> of all verified publications in this catalog appeared in 2025–2026 alone.
+              The recent release of post-COVID annual files (CCHS, GSS, and LFS microdata) prompted an immediate wave of
               investigations assessing healthcare access recovery, mental health, telework conditions, and shifting cost-of-living impacts.
             </p>
             <div className="researcher-analysis-card__stat">
-              <b>408</b> outputs published in last 18 months · <b>{works.length - 408} works</b> in 2015–2024 baseline horizon
+              <b>{narrativeStats.recentCount}</b> outputs published in last 18 months · <b>{narrativeStats.baselineCount} works</b> in 2015–2024 baseline horizon
             </div>
           </div>
 
@@ -765,12 +832,12 @@ export function ResearcherThemesViz({
               </div>
             </div>
             <p>
-              Publication outlets exhibit distinct disciplinary priorities. <strong>Policy & NGO Reports</strong> (37 works from CCPA, C.D. Howe, Fraser Institute, Maytree)
-              concentrate primarily on <strong>Labour (27.0%)</strong> and <strong>Income & Inequality (27.0%)</strong>.
-              In contrast, <strong>Journal Articles</strong> (448 works) focus overwhelmingly on <strong>Health (69.2%)</strong> and <strong>Digital Society (12.3%)</strong>.
+              Publication outlets exhibit distinct disciplinary priorities. <strong>Policy & NGO Reports</strong> ({narrativeStats.repTotal} works from CCPA, C.D. Howe, Fraser Institute, Maytree)
+              concentrate primarily on <strong>Labour ({narrativeStats.repLabour} works)</strong> and <strong>Income & Inequality ({narrativeStats.repIncome} works)</strong>.
+              In contrast, <strong>Journal Articles</strong> ({narrativeStats.artTotal} works) focus overwhelmingly on <strong>Health ({narrativeStats.artHealthPct}%)</strong> and <strong>Digital Society ({narrativeStats.artDigitalPct}%)</strong>.
             </p>
             <div className="researcher-analysis-card__stat">
-              <b>54%</b> of policy reports investigate economic wellbeing & precarious work
+              <b>{narrativeStats.repEconPct}%</b> of policy reports investigate economic wellbeing & precarious work
             </div>
           </div>
 
@@ -781,36 +848,61 @@ export function ResearcherThemesViz({
               </span>
               <div>
                 <h4>Thematic Focus in Graduate Theses</h4>
-                <span className="researcher-analysis-card__kicker">Digital Society & Emerging Tech</span>
+                <span className="researcher-analysis-card__kicker">Graduate & Postdoctoral Research</span>
               </div>
             </div>
             <p>
-              Master's and doctoral dissertations (38 works) concentrate heavily in <strong>Digital Society (73.7%)</strong>.
-              Graduate researchers across Canadian universities have leveraged CIUS, GSS Technology, and CSCSC microdata to model
-              broadband inequities, online trust, algorithmic platform labor, and digital health adoption.
+              Master's and doctoral dissertations ({narrativeStats.dissTotal} works) highlight intensive microdata modeling.
+              While <strong>Health ({narrativeStats.dissHealth} dissertations)</strong> leads overall volume, graduate scholars demonstrate disproportionate focus
+              on <strong>Digital Society ({narrativeStats.dissDigital} dissertations, {narrativeStats.dissDigitalPct}%)</strong>, evaluating algorithmic labour, online privacy, and cybersecurity.
             </p>
             <div className="researcher-analysis-card__stat">
-              <b>28 dissertations</b> evaluating technology adoption, digital divides, and cybersecurity
+              <b>{narrativeStats.dissTotal} dissertations</b> across Canadian universities analyzing StatCan microdata
             </div>
           </div>
 
           <div className="researcher-analysis-card">
             <div className="researcher-analysis-card__header">
-              <span className="researcher-analysis-card__icon" style={{ background: '#dcfce7', color: '#15803d' }}>
-                <CheckCircle2 size={20} aria-hidden="true" />
+              <span className="researcher-analysis-card__icon" style={{ background: '#e0f2fe', color: '#0284c7' }}>
+                <BarChart3 size={20} aria-hidden="true" />
               </span>
               <div>
-                <h4>Verbatim Evidence Disambiguation</h4>
-                <span className="researcher-analysis-card__kicker">Zero-Hallucination Lineage</span>
+                <h4>Average Publications per Year by Theme</h4>
+                <span className="researcher-analysis-card__kicker">Annual Publication Velocity</span>
               </div>
             </div>
             <p>
-              Standard bibliometric pipelines frequently hallucinate survey usage by treating passing citations (e.g. <em>"Statistics Canada reported in 2013..."</em>)
-              as empirical datasets. Researcher's deterministic pipeline requires whole-sentence verbatim methods evidence of microdata analysis,
-              preserving genuine research provenance.
+              Annualized research velocity across the {themeVelocity.minYear}–{themeVelocity.maxYear} timeline ({themeVelocity.yearSpan} years),
+              measuring how frequently Canadian microdata files produce peer-reviewed publications within each core disciplinary domain:
             </p>
+
+            <div className="researcher-velocity-list">
+              {themeVelocity.items.slice(0, 5).map(item => {
+                const conf = getThemeConfig(item.theme);
+                const maxAvg = themeVelocity.items[0]?.avgPerYear || 1;
+                const widthPct = Math.max(8, Math.round((item.avgPerYear / maxAvg) * 100));
+                return (
+                  <div key={item.theme} className="researcher-velocity-row">
+                    <span className="researcher-velocity-name" title={conf.label}>
+                      <span className="researcher-velocity-dot" style={{ backgroundColor: conf.color }} />
+                      {conf.label}
+                    </span>
+                    <div className="researcher-velocity-bar-track" aria-hidden="true">
+                      <div
+                        className="researcher-velocity-bar-fill"
+                        style={{ width: `${widthPct}%`, backgroundColor: conf.color }}
+                      />
+                    </div>
+                    <span className="researcher-velocity-rate">
+                      {item.avgPerYear.toFixed(1)} <small>/ yr</small>
+                    </span>
+                  </div>
+                );
+              })}
+            </div>
+
             <div className="researcher-analysis-card__stat">
-              <b>100%</b> verified linkage precision · <b>0</b> ungrounded cycle claims
+              <b>~{themeVelocity.totalAvgPerYear} publications / year</b> average across all {themeVelocity.items.length} thematic domains ({themeVelocity.minYear}–{themeVelocity.maxYear})
             </div>
           </div>
         </div>
