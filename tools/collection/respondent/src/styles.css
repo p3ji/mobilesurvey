@@ -514,3 +514,18 @@ textarea {
 [dir="rtl"] .eq__progress-fill {
   border-radius: 4px 0 0 4px;
 }
+
+/* Final cascade layer: keep the suite aesthetic consistent with legacy rules above. */
+:root { --bg:#f4f3ee; --panel:#fffefa; --ink:#132c36; --ink-soft:#536870; --line:#dce2de; --brand:#087a78; --brand-dark:#075b5c; --selected:#e3f1ed; --radius:12px; }
+body { background:var(--bg); color:var(--ink); }
+.eq__header { background:#fffefa; border-bottom-color:var(--line); box-shadow:0 4px 18px -18px #153942; }
+.eq__title { color:var(--ink); }
+.eq__progress-track { background:#dce5df; }
+.eq__progress-fill { background:var(--brand); }
+.eq__content { width:min(100% - 36px, 780px); margin:0 auto; padding:30px 0 18px; }
+.eq__nav { background:#fffefa; border-top-color:var(--line); }
+.eq__nav-next, .eq__nav-submit, .gate__btn, .done__restart { background:var(--brand); border-color:var(--brand); border-radius:999px; }
+.eq__nav-next:hover:not(:disabled), .eq__nav-submit:hover:not(:disabled), .gate__btn:hover:not(:disabled) { background:var(--brand-dark); border-color:var(--brand-dark); }
+.gate, .done { background:radial-gradient(circle at 50% 20%, #e0eee8 0, transparent 43%), var(--bg); }
+.gate__card, .done__card { border:1px solid #d5e0db; border-radius:20px; background:#fffefa; box-shadow:0 25px 65px -45px #173740; }
+@media (max-width:640px) { .eq__content { width:min(100% - 28px, 780px); padding-top:22px; } }

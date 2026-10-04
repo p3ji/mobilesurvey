@@ -3582,7 +3582,7 @@ function HomePage({ onNavigate }: { onNavigate: (v: HubView) => void }) {
                 onNavigate('privacy');
               }}
             >
-              Privacy, Security &amp; Ethics Policy
+              Privacy &amp; Demonstration Notice
             </a>
             <a href="mailto:contact@peji.ca?subject=Modular%20Survey%20Tools%20Inquiry">
               Contact &amp; Enterprise Deployments (contact@peji.ca)

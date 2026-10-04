@@ -341,7 +341,7 @@ export function Toolbar({
           href={`${getHubUrl()}#privacy`}
           target="_blank"
           rel="noopener noreferrer"
-          title="Privacy, Security & Research Ethics Policy"
+          title="Privacy &amp; Demonstration Notice"
         >
           🛡 Privacy
         </a>
@@ -445,15 +445,15 @@ export function Toolbar({
             </div>
 
             <div className="designer-modal-footer-note">
-              <span>Read our full </span>
+              <span>Read our </span>
               <a
                 href={`${getHubUrl()}#privacy`}
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                Privacy, Security &amp; Research Ethics Policy
+                Privacy &amp; Demonstration Notice
               </a>
-              <span> for institutional standards and compliance details.</span>
+              <span> for details on local storage and data handling.</span>
             </div>
           </div>
         </div>

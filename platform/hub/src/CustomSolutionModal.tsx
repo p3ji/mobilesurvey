@@ -126,7 +126,7 @@ export function CustomSolutionModal({
           </button>
         </div>
         <div className="modal-footer-note">
-          <span>Read our full </span>
+          <span>Read our </span>
           <a
             href="#privacy"
             onClick={(e) => {
@@ -139,9 +139,9 @@ export function CustomSolutionModal({
               }
             }}
           >
-            Privacy, Security &amp; Research Ethics Policy
+            Privacy &amp; Demonstration Notice
           </a>
-          <span> for institutional standards and compliance details.</span>
+          <span> for details on local storage and data handling.</span>
         </div>
       </div>
     </div>

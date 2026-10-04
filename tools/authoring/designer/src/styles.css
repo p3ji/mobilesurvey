@@ -2823,3 +2823,17 @@ code {
   font-weight: 600;
   text-decoration: underline;
 }
+
+/* Final cascade layer: keep the suite aesthetic consistent with legacy rules above. */
+:root { --bg:#f4f3ee; --panel:#fffefa; --ink:#132c36; --ink-soft:#536870; --line:#dce2de; --brand:#087a78; --brand-dark:#075b5c; --selected:#e3f1ed; --radius:12px; }
+body { background:var(--bg); color:var(--ink); }
+.toolbar { background:#fffefa; border-bottom-color:var(--line); box-shadow:0 4px 18px -18px #153942; }
+.toolbar__brand strong, .toolbar__home { color:var(--brand); }
+.panel { background:#fffefa; }
+.panel--center { background:#f0f1ec; }
+.tabs__list-row { background:#fffefa; border-bottom-color:var(--line); }
+.tabs__trigger[data-state='active'] { color:var(--brand); border-bottom-color:var(--brand); }
+.subpanel, .easymode__card { border-color:var(--line); border-radius:15px; background:#fffefa; box-shadow:0 10px 28px -28px #173740; }
+.easymode__card:hover, .easymode__card--selected { border-color:#70b4a6; }
+.designer-btn-primary, .btn--primary { background:var(--brand); border-color:var(--brand); border-radius:999px; }
+.designer-btn-primary:hover, .btn--primary:hover:not(:disabled) { background:var(--brand-dark); border-color:var(--brand-dark); }
