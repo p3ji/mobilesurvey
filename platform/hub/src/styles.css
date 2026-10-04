@@ -5745,7 +5745,7 @@ code { font-family: var(--mono); font-size: 0.88em; }
 .home-visual__orbit--inner { width: min(57%, 275px); aspect-ratio: 1; border-style: solid; border-color: #b8d8d536; }
 .home-visual__center { position: absolute; left: 50%; top: 50%; translate: -50% -50%; display: flex; flex-direction: column; align-items: center; justify-content: center; width: 172px; height: 172px; border: 1px solid #b8ddd785; border-radius: 50%; background: #d3e9dc; color: #163947; text-align: center; box-shadow: 0 0 0 12px #b5d7cc16, 0 24px 60px #081f2975; }
 .home-visual__center strong { font-size: 17px; line-height: 1.15; letter-spacing: -.035em; }
-.home-visual__glyph { margin-bottom: 4px; font-size: 37px; line-height: 1; color: #10827c; }
+.home-visual__glyph { display: block; width: 37px; height: 37px; margin-bottom: 4px; color: #10827c; flex: none; }
 .home-visual__node { position: absolute; display: flex; align-items: center; gap: 8px; padding: 10px 13px; border: 1px solid #bfe2dc85; border-radius: 12px; background: #f9fbf3; color: #183a45; box-shadow: 0 13px 30px #061d2d5c; font-size: 12px; font-weight: 750; }
 .home-visual__node svg { color: #0b7c78; }
 .home-visual__node--discover { top: 14%; left: 7%; rotate: -5deg; }
@@ -5831,7 +5831,7 @@ code { font-family: var(--mono); font-size: 0.88em; }
   .home-visual__orbit--inner { width: min(60%, 205px); }
   .home-visual__center { width: 148px; height: 148px; }
   .home-visual__center strong { font-size: 14px; }
-  .home-visual__glyph { font-size: 34px; }
+  .home-visual__glyph { width: 34px; height: 34px; }
   .home-visual__node { gap: 5px; padding: 8px 9px; font-size: 11px; }
   .home-visual__node svg { width: 17px; height: 17px; }
   .home-section-kicker { margin-top: 38px; }
