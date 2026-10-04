@@ -3584,8 +3584,8 @@ function HomePage({ onNavigate }: { onNavigate: (v: HubView) => void }) {
             >
               Privacy &amp; Demonstration Notice
             </a>
-            <a href="mailto:contact@peji.ca?subject=Modular%20Survey%20Tools%20Inquiry">
-              Contact &amp; Enterprise Deployments (contact@peji.ca)
+            <a href="mailto:contact@peji.ca?subject=Modular%20Survey%20Tools%20-%20suggestion%20or%20collaboration">
+              Make a suggestion or let’s work together
             </a>
             <a href="https://peji.ca" target="_blank" rel="noopener noreferrer">Made by Peji ↗</a>
           </nav>
