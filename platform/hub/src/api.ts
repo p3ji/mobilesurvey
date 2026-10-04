@@ -30,6 +30,16 @@ function sb(): SupabaseClient {
   return _sb;
 }
 
+/** Append-only newsletter signup. Duplicate addresses receive the same public success state. */
+export async function subscribeToUpdates(email: string, language: 'en' | 'fr'): Promise<void> {
+  if (!SUPABASE_URL || !SUPABASE_KEY) throw new Error('Signup is unavailable in this local preview.');
+  const { error } = await sb().from('newsletter_subscribers').insert({
+    email: email.trim().toLowerCase(),
+    language,
+  });
+  if (error && error.code !== '23505') throw new Error('Unable to save your signup. Please try again.');
+}
+
 // ── App deep links ────────────────────────────────────────────────────────────
 
 function isLocalhost(): boolean {

@@ -23,6 +23,7 @@ import {
   type LanguageCode,
 } from '@mobilesurvey/instrument-schema';
 import { isRtl, QuestionPage } from '@mobilesurvey/respondent-view';
+import { LanguageSwitch, setUiLanguage, useUiLanguage, uiText } from '@mobilesurvey/ui-locale';
 
 // ── component ────────────────────────────────────────────────────────────────
 
@@ -52,6 +53,7 @@ export function SurveyRunner({
   onPersist: (state: RuntimeState, page: number) => void;
   onSubmit: (responses: Record<string, unknown>) => void;
 }) {
+  const uiLanguage = useUiLanguage();
   const [snapshot, send] = useMachine(runtimeMachine, {
     input: {
       instrument,
@@ -69,12 +71,18 @@ export function SurveyRunner({
 
   // Keep the document language and direction in sync with the active locale.
   useEffect(() => {
-    document.documentElement.lang = lang;
+    document.documentElement.lang = uiLanguage === 'fr' ? 'fr-CA' : 'en-CA';
     document.documentElement.dir = dir;
     return () => {
       document.documentElement.removeAttribute('dir');
     };
-  }, [lang, dir]);
+  }, [uiLanguage, dir]);
+
+  useEffect(() => {
+    if (instrument.languages.includes(uiLanguage) && lang !== uiLanguage) {
+      send({ type: 'SET_LANGUAGE', language: uiLanguage });
+    }
+  }, [instrument.languages, send, uiLanguage]);
 
   const result = useMemo(
     () => flattenInstrument(instrument, snapshot.context.state),
@@ -157,16 +165,17 @@ export function SurveyRunner({
     <div className="eq" dir={dir}>
       <header className="eq__header">
         <h1 className="eq__title">{pick(instrument.metadata.title, lang)}</h1>
-        {showSaved ? <span className="eq__saved">✓ Saved</span> : null}
+        {showSaved ? <span className="eq__saved">✓ {uiText(uiLanguage, 'Saved', 'Enregistré')}</span> : null}
         <span className="eq__case">{caseId}</span>
-        <div className="eq__lang" role="group" aria-label="Language">
+        <LanguageSwitch />
+        <div className="eq__lang" role="group" aria-label={uiText(uiLanguage, 'Questionnaire language', 'Langue du questionnaire')}>
           {instrument.languages.map((l) => (
             <button
               key={l}
               type="button"
               className={l === lang ? 'pill pill--active' : 'pill'}
               aria-pressed={l === lang}
-              onClick={() => send({ type: 'SET_LANGUAGE', language: l as LanguageCode })}
+              onClick={() => { send({ type: 'SET_LANGUAGE', language: l as LanguageCode }); if (l === 'en' || l === 'fr') setUiLanguage(l); }}
             >
               {l.toUpperCase()}
             </button>
@@ -180,17 +189,17 @@ export function SurveyRunner({
         aria-valuenow={Math.round(progress)}
         aria-valuemin={0}
         aria-valuemax={100}
-        aria-label={`Survey progress: ${Math.round(progress)}%`}
+        aria-label={`${uiText(uiLanguage, 'Survey progress', 'Progression de l’enquête')} : ${Math.round(progress)}%`}
       >
         <div className="eq__progress-fill" style={{ width: `${progress}%` }} />
       </div>
       <div className="eq__page-label">
         <span className="eq__page-label-left">
-          {resumed && currentPage === initialPage ? 'Resumed · ' : ''}
+          {resumed && currentPage === initialPage ? uiText(uiLanguage, 'Resumed · ', 'Reprise · ') : ''}
           {lang === 'fr' ? 'Page' : 'Page'} {currentPage + 1}{' '}
-          {lang === 'fr' ? 'de' : 'of'} {pages.length}
+          {uiLanguage === 'fr' ? 'de' : 'of'} {pages.length}
           {totalQuestions > 0 && (questionsPerPage[currentPage] ?? 0) > 0 && (
-            <> · Q{questionOffset + 1}–{Math.min(questionOffset + questionsPerPage[currentPage]!, totalQuestions)} of {totalQuestions}</>
+            <> · Q{questionOffset + 1}–{Math.min(questionOffset + questionsPerPage[currentPage]!, totalQuestions)} {uiLanguage === 'fr' ? 'sur' : 'of'} {totalQuestions}</>
           )}
         </span>
         <span className="eq__page-label-pct">{Math.round(progress)}%</span>
@@ -223,12 +232,12 @@ export function SurveyRunner({
           disabled={currentPage === 0}
           onClick={handleBack}
         >
-          {dir === 'rtl' ? '→' : '←'} {lang === 'fr' ? 'Retour' : 'Back'}
+          {dir === 'rtl' ? '→' : '←'} {uiLanguage === 'fr' ? 'Retour' : 'Back'}
         </button>
 
         {blocked ? (
           <span className="eq__nav-hint">
-            {lang === 'fr' ? 'Corrigez les erreurs pour continuer' : 'Fix errors to continue'}
+            {uiLanguage === 'fr' ? 'Corrigez les erreurs pour continuer' : 'Fix errors to continue'}
           </span>
         ) : (
           <span className="eq__nav-spacer" />
@@ -241,10 +250,10 @@ export function SurveyRunner({
           onClick={handleNext}
         >
           {isLastPage
-            ? lang === 'fr'
+            ? uiLanguage === 'fr'
               ? 'Soumettre ✓'
               : 'Submit ✓'
-            : lang === 'fr'
+            : uiLanguage === 'fr'
               ? `Suivant ${dir === 'rtl' ? '←' : '→'}`
               : `Next ${dir === 'rtl' ? '←' : '→'}`}
         </button>

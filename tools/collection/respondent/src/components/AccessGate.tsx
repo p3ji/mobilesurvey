@@ -1,5 +1,6 @@
 /** Access-code entry. Resolves the code against the (mock) CMS before entering the survey. */
 import { useState, type FormEvent } from 'react';
+import { LanguageSwitch, useUiLanguage, uiText } from '@mobilesurvey/ui-locale';
 
 /** The respondent-app manual (GitHub renders the markdown). */
 const HELP_URL =
@@ -12,6 +13,8 @@ export function AccessGate({
   onAuthenticate: (code: string) => Promise<{ ok: boolean; error?: string }>;
   initialError?: string | null;
 }) {
+  const language = useUiLanguage();
+  const l = (en: string, fr: string) => uiText(language, en, fr);
   const [code, setCode] = useState('');
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(initialError ?? null);
@@ -32,13 +35,14 @@ export function AccessGate({
   return (
     <div className="gate">
       <div className="gate__card">
-        <div className="gate__brand">Electronic Questionnaire</div>
-        <h1 className="gate__title">Household &amp; Employment Survey</h1>
-        <p className="gate__sub">Enter the access code from your invitation letter to begin.</p>
+        <LanguageSwitch />
+        <div className="gate__brand">{l('Electronic Questionnaire', 'Questionnaire électronique')}</div>
+        <h1 className="gate__title">{l('Household & Employment Survey', 'Enquête sur les ménages et l’emploi')}</h1>
+        <p className="gate__sub">{l('Enter the access code from your invitation letter to begin.', 'Entrez le code d’accès figurant dans votre lettre d’invitation pour commencer.')}</p>
 
         <form onSubmit={handleSubmit}>
           <label className="gate__label" htmlFor="accessCode">
-            Access code
+            {l('Access code', 'Code d’accès')}
           </label>
           <input
             id="accessCode"
@@ -52,7 +56,7 @@ export function AccessGate({
           />
 
           <button type="submit" className="gate__btn" disabled={busy || !code.trim()}>
-            {busy ? 'Checking…' : 'Begin survey'}
+            {busy ? l('Checking…', 'Vérification…') : l('Begin survey', 'Commencer l’enquête')}
           </button>
         </form>
 
@@ -63,8 +67,7 @@ export function AccessGate({
         )}
 
         <div className="gate__hint">
-          Demo codes: <code>ABC123</code> (Jordan Lee) or <code>DEF456</code> (Marie Tremblay).
-          Progress is saved automatically — re-enter the same code to resume.
+          {language === 'fr' ? <>Codes de démonstration : <code>ABC123</code> (Jordan Lee) ou <code>DEF456</code> (Marie Tremblay). La progression est enregistrée automatiquement; entrez de nouveau le même code pour reprendre.</> : <>Demo codes: <code>ABC123</code> (Jordan Lee) or <code>DEF456</code> (Marie Tremblay). Progress is saved automatically — re-enter the same code to resume.</>}
         </div>
 
         <a
@@ -73,7 +76,7 @@ export function AccessGate({
           target="_blank"
           rel="noopener noreferrer"
         >
-          ? Need help completing the survey?
+          ? {l('Need help completing the survey?', 'Besoin d’aide pour remplir l’enquête?')}
         </a>
       </div>
     </div>

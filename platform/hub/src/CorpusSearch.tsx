@@ -19,6 +19,7 @@
  * one query instead of six, and short enough that it still reads as live.
  */
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useUiLanguage, uiText } from '@mobilesurvey/ui-locale';
 import {
   CORPUS_ATTRIBUTION,
   isHarmonizedContent,
@@ -53,6 +54,16 @@ type LangFilter = 'all' | 'en' | 'fr';
 
 function formatInt(value: number): string {
   return value.toLocaleString('en-CA');
+}
+
+function languageCount(total: number, query: string, page: number, pages: number, language: 'en' | 'fr'): string {
+  const count = total.toLocaleString(language === 'fr' ? 'fr-CA' : 'en-CA');
+  const suffix = pages > 1 ? language === 'fr'
+    ? ` · page ${page} sur ${pages.toLocaleString('fr-CA')}`
+    : ` · page ${page} of ${pages.toLocaleString('en-CA')}` : '';
+  return language === 'fr'
+    ? `${count} notice${total === 1 ? '' : 's'} de variable pour « ${query} »${suffix}`
+    : `${count} variable record${total === 1 ? '' : 's'} for "${query}"${suffix}`;
 }
 
 /** Label for one response category: `1 — Yes (10,137)`. */
@@ -371,6 +382,8 @@ export function CorpusSearch({
   onOpenConcept,
   onOpenGraph,
 }: CorpusSearchProps) {
+  const uiLanguage = useUiLanguage();
+  const l = (en: string, fr: string) => uiText(uiLanguage, en, fr);
   const [query, setQuery] = useState(initialQuery);
   const [debounced, setDebounced] = useState(initialQuery);
   const [lang, setLang] = useState<LangFilter>('all');
@@ -994,9 +1007,9 @@ export function CorpusSearch({
       <div className="cs__main">
       <div className="cs-discovery-hero">
         <div className="cs-discovery-hero__copy">
-          <span className="cs-discovery-hero__eyebrow">STATISTICS CANADA METADATA</span>
-          <h2>Find the data that’s already there.</h2>
-          <p>Search survey data dictionaries to find variables on your topic across programs and years, including data that never appears in published tables.</p>
+          <span className="cs-discovery-hero__eyebrow">{l('STATISTICS CANADA METADATA', 'MÉTADONNÉES DE STATISTIQUE CANADA')}</span>
+          <h2>{l('Find the data that’s already there.', 'Trouvez les données qui existent déjà.')}</h2>
+          <p>{l('Search survey data dictionaries to find variables on your topic across programs and years, including data that never appears in published tables.', 'Parcourez les dictionnaires de données d’enquête pour trouver des variables sur votre sujet, d’un programme et d’une année à l’autre, même lorsque les données ne figurent pas dans les tableaux publiés.')}</p>
         </div>
         <div className="cs-discovery-hero__art" aria-hidden="true">
           <span className="cs-discovery-hero__orbit cs-discovery-hero__orbit--outer" />
@@ -1014,16 +1027,17 @@ export function CorpusSearch({
           ref={inputRef}
           className="sr-search__input"
           type="search"
-          aria-label="Search Statistics Canada variables by concept, question, or variable name"
+          aria-label={l('Search Statistics Canada variables by concept, question, or variable name', 'Rechercher des variables de Statistique Canada par concept, question ou nom de variable')}
           // No sample mnemonic here on purpose: which ones exist depends on what has been
           // loaded, and a placeholder promising `DHHGAGE` when the corpus has no such variable
           // teaches the reader that search is broken.
-          placeholder="Search Statistics Canada variables — a concept, a question, or a variable name"
+          placeholder={l('Search Statistics Canada variables — a concept, a question, or a variable name', 'Rechercher un concept, une question ou un nom de variable')}
           value={query}
           onChange={(e) => setQuery(e.target.value)}
         />
       </div>
-      <p className="cs-search-help">Search includes reviewed equivalents such as “AI” and “artificial intelligence”.</p>
+      <p className="cs-search-help">{l('Search includes reviewed equivalents such as “AI” and “artificial intelligence”.', 'La recherche comprend des équivalents vérifiés, comme « IA » et « intelligence artificielle ».')}</p>
+      {uiLanguage === 'fr' && <p className="cs-search-help">Les notices de variables actuellement indexées sont en anglais. Recherchez d’abord avec des termes anglais.</p>}
       <div className="cs-ai-control">
         <label className="cs-filter cs-filter--check">
           <input type="checkbox" checked={aiEnabled} onChange={(event) => {
@@ -1039,30 +1053,30 @@ export function CorpusSearch({
               setAiError(null);
             }
           }} />
-          <span>Enhance search with AI</span>
+          <span>{l('Enhance search with AI', 'Améliorer la recherche avec l’IA')}</span>
         </label>
         {aiEnabled && (
           <>
             <button type="button" className="btn btn--sm" disabled={aiBusy || query.trim().length < 3} onClick={() => void runAiSearch()}>
-              {aiBusy ? 'Finding related terms…' : 'Find related results'}
+              {aiBusy ? l('Finding related terms…', 'Recherche de termes associés…') : l('Find related results', 'Trouver des résultats associés')}
             </button>
-            <span className="cs-search-help">Runs only when you press the button.</span>
+            <span className="cs-search-help">{l('Runs only when you press the button.', 'Lancez la recherche en appuyant sur le bouton.')}</span>
           </>
         )}
       </div>
-      {aiError && <p className="cs-error" role="alert">{aiError} Standard search still works.</p>}
+      {aiError && <p className="cs-error" role="alert">{aiError} {l('Standard search still works.', 'La recherche standard demeure accessible.')}</p>}
 
       <div className="cs-primary-filters">
         <label className="cs-filter">
-          <span className="cs-filter__label">Survey</span>
+          <span className="cs-filter__label">{l('Survey', 'Enquête')}</span>
           <select value={survey} onChange={(e) => setSurvey(e.target.value)}>
-            <option value="all">All surveys (113 programs · 260 cycles)</option>
+            <option value="all">{l('All surveys (113 programs · 260 cycles)', 'Toutes les enquêtes (113 programmes · 260 cycles)')}</option>
             {groupedSurveys.map((g) => (
               <optgroup
                 key={g.acronym}
                 label={`${g.acronym} (${g.cycles.length} cycle${g.cycles.length === 1 ? '' : 's'} · ${formatInt(g.totalVariables)} vars)`}
               >
-                <option value={g.acronym}>All {g.acronym} cycles</option>
+                <option value={g.acronym}>{l('All', 'Tous les')} {g.acronym} {l('cycles', 'cycles')}</option>
                 {g.cycles.map((s) => (
                   <option key={s.surveyGroup} value={s.surveyGroup}>
                     {s.surveyGroup}
@@ -1078,10 +1092,10 @@ export function CorpusSearch({
         </label>
 
         <label className="cs-filter">
-          <span className="cs-filter__label">Sort results</span>
+          <span className="cs-filter__label">{l('Sort results', 'Trier les résultats')}</span>
           <select value={sortBy} onChange={(e) => setSortBy(e.target.value as 'relevance' | 'recent')}>
-            <option value="relevance">Most relevant</option>
-            <option value="recent">Most recent survey first</option>
+            <option value="relevance">{l('Most relevant', 'Les plus pertinents')}</option>
+            <option value="recent">{l('Most recent survey first', 'Enquêtes les plus récentes d’abord')}</option>
           </select>
         </label>
 
@@ -1090,34 +1104,34 @@ export function CorpusSearch({
           open={moreFiltersOpen}
           onToggle={(e) => setMoreFiltersOpen((e.target as HTMLDetailsElement).open)}
         >
-          <summary className="cs-more-filters__summary" aria-label="Toggle additional search filters">
-            <span>⚙ More filters</span>
+          <summary className="cs-more-filters__summary" aria-label={l('Toggle additional search filters', 'Afficher les filtres de recherche supplémentaires')}>
+            <span>⚙ {l('More filters', 'Autres filtres')}</span>
             {activeFiltersCount > 0 && <span className="cs-filter-badge">{activeFiltersCount}</span>}
           </summary>
           <div className="cs-more-filters__drawer">
             <label className="cs-filter">
-              <span className="cs-filter__label">Language</span>
+              <span className="cs-filter__label">{l('Language', 'Langue des données')}</span>
               <select value={lang} onChange={(e) => setLang(e.target.value as LangFilter)}>
-                <option value="all">Both (English live)</option>
-                <option value="en">English (194k variables)</option>
-                <option value="fr" disabled title="French documents are in source corpus, not yet indexed in Supabase">French (unindexed)</option>
+                <option value="all">{l('Both (English live)', 'Les deux (anglais indexé)')}</option>
+                <option value="en">{l('English (194k variables)', 'Anglais (194 000 variables)')}</option>
+                <option value="fr" disabled title={l('French documents are in source corpus, not yet indexed in Supabase', 'Les documents français figurent dans le corpus source, mais ne sont pas encore indexés')}>{l('French (unindexed)', 'Français (non indexé)')}</option>
               </select>
             </label>
 
             <label className="cs-filter">
-              <span className="cs-filter__label">GSIM Role</span>
+              <span className="cs-filter__label">{l('GSIM Role', 'Rôle GSIM')}</span>
               <select value={roleFilter} onChange={(e) => handleRoleChange(e.target.value as any)}>
-                <option value="all">All Roles</option>
-                <option value="collected">Questions Only</option>
-                <option value="derived">Derived (DV) Only</option>
-                <option value="administrative">Administrative Links</option>
-                <option value="process">Paradata & Weights Only</option>
+                <option value="all">{l('All Roles', 'Tous les rôles')}</option>
+                <option value="collected">{l('Questions Only', 'Questions seulement')}</option>
+                <option value="derived">{l('Derived (DV) Only', 'Variables dérivées seulement')}</option>
+                <option value="administrative">{l('Administrative Links', 'Liens administratifs')}</option>
+                <option value="process">{l('Paradata & Weights Only', 'Paradonnées et poids seulement')}</option>
               </select>
             </label>
 
             <label className="cs-filter cs-filter--check" title="Exclude replicate bootstrap weights (BSW*), flags, and operational paradata">
               <input type="checkbox" checked={hideProcess} onChange={(e) => handleHideProcessChange(e.target.checked)} />
-              <span>Hide paradata / weights</span>
+              <span>{l('Hide paradata / weights', 'Masquer les paradonnées et les poids')}</span>
             </label>
 
             <label
@@ -1129,11 +1143,11 @@ export function CorpusSearch({
                 checked={hideHarmonized}
                 onChange={(e) => setHideHarmonized(e.target.checked)}
               />
-              <span>Hide harmonized content</span>
+              <span>{l('Hide harmonized content', 'Masquer le contenu harmonisé')}</span>
             </label>
 
             <button type="button" className="cs-filter-reset" onClick={clearFilters}>
-              Reset filters
+              {l('Reset filters', 'Réinitialiser les filtres')}
             </button>
           </div>
         </details>
@@ -1143,14 +1157,14 @@ export function CorpusSearch({
           <span className="cs-summary cs-summary--warn">
             Totals and the survey list are unavailable — search still works.{' '}
             <button type="button" className="cs-link" onClick={() => setMetaAttempt((n) => n + 1)}>
-              Retry
+              {l('Retry', 'Réessayer')}
             </button>
           </span>
         )}
       </div>
 
       <p className="cs-notice">
-        <strong>Source:</strong> {CORPUS_ATTRIBUTION}
+        <strong>{l('Source:', 'Source :')}</strong> {uiLanguage === 'fr' ? 'Adapté de la documentation de Statistique Canada, publiée sous la Licence ouverte de Statistique Canada. Cette adaptation n’est pas approuvée par Statistique Canada.' : CORPUS_ATTRIBUTION}
       </p>
 
       {error !== null && (
@@ -1183,11 +1197,11 @@ export function CorpusSearch({
 
       {debounced.trim() === '' && error === null && subject === null && (
         <div className="cs-intro">
-          <span className="cs-intro__eyebrow">START EXPLORING</span>
-          <h3>Search by topic, question, or variable code.</h3>
-          <p>Explore data dictionaries for microdata files held in the Research Data Centres.</p>
+          <span className="cs-intro__eyebrow">{l('START EXPLORING', 'COMMENCEZ VOTRE EXPLORATION')}</span>
+          <h3>{l('Search by topic, question, or variable code.', 'Recherchez par sujet, question ou code de variable.')}</h3>
+          <p>{l('Explore data dictionaries for microdata files held in the Research Data Centres.', 'Explorez les dictionnaires de données des fichiers de microdonnées conservés dans les centres de données de recherche.')}</p>
           <p className="cs-intro__try">
-            <strong>Try a search</strong>{' '}
+            <strong>{l('Try a search', 'Essayez une recherche en anglais')}</strong>{' '}
             {['smoking', 'housing tenure', 'marital status', 'hours worked'].map((term) => (
               <span key={term}>
                 <button type="button" className="cs-link" onClick={() => onExample(term)}>
@@ -1203,18 +1217,16 @@ export function CorpusSearch({
         <>
           <p className="sr-count" aria-live="polite" role="status">
             {busy
-              ? 'Searching…'
+              ? l('Searching…', 'Recherche en cours…')
               : total === 0
-                ? `No results for "${debounced}".`
-                : `${formatInt(total)} variable record${total === 1 ? '' : 's'} for "${
-                    corrected?.to ?? debounced
-                  }"` + (pages > 1 ? ` · page ${page + 1} of ${formatInt(pages)}` : '')}
+                ? l(`No results for "${debounced}".`, `Aucun résultat pour « ${debounced} ».`)
+                : languageCount(total, corrected?.to ?? debounced, page + 1, pages, uiLanguage)}
             {/* A correction the reader can neither see nor refuse is how this pattern goes wrong,
                 so it says what it did and offers the original back. */}
             {!busy && corrected !== null && (
               <span className="cs-corrected">
                 {' '}
-                — corrected from “{corrected.from}”.{' '}
+                — {l('corrected from', 'corrigé à partir de')} « {corrected.from} ».{' '}
                 <button
                   type="button"
                   className="cs-link"
@@ -1223,18 +1235,18 @@ export function CorpusSearch({
                     setCorrected(null);
                   }}
                 >
-                  Search “{corrected.from}” instead
+                  {l(`Search “${corrected.from}” instead`, `Rechercher plutôt « ${corrected.from} »`)}
                 </button>
               </span>
             )}
           </p>
 
-          {!busy && relaxed && <p className="cs-suggest">No results matched every word. Showing records matching at least two search terms.</p>}
+          {!busy && relaxed && <p className="cs-suggest">{l('No results matched every word. Showing records matching at least two search terms.', 'Aucun résultat ne correspond à tous les mots. Voici les notices qui correspondent à au moins deux termes.')}</p>}
 
           {!busy && total === 0 && (lang !== 'all' || survey !== 'all' || codesOnly || subject !== null) && (
             <p className="cs-suggest">
-              The current filters may exclude matching records.{' '}
-              <button type="button" className="cs-link" onClick={clearFilters}>Clear filters</button>
+              {l('The current filters may exclude matching records.', 'Les filtres actuels peuvent exclure des notices pertinentes.')} {' '}
+              <button type="button" className="cs-link" onClick={clearFilters}>{l('Clear filters', 'Effacer les filtres')}</button>
             </p>
           )}
           {!busy && total === 0 && aiDisplayedHits.length === 0 && semanticDisplayedHits.length === 0 && <Suggestions source={source} query={debounced} onPick={onExample} />}

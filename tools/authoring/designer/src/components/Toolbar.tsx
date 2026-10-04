@@ -1,6 +1,7 @@
 /** Top toolbar: title, language toggle, undo/redo, mode toggle, save, export menu, help, render. */
 import { useEffect, useRef, useState, type ChangeEvent } from 'react';
 import { pick } from '@mobilesurvey/runtime-engine';
+import { LanguageSwitch, setUiLanguage, useUiLanguage, uiText } from '@mobilesurvey/ui-locale';
 import { getInstrumentJsonSchema, validateInstrument } from '@mobilesurvey/instrument-schema';
 import { exportDdiXml, exportJsonLd, importDdiXml } from '@mobilesurvey/ddi-xml';
 import { useDesigner } from '../store/instrumentStore.js';
@@ -42,6 +43,8 @@ export function Toolbar({
   mode: 'pro' | 'easy' | 'interviewer';
   onModeChange: (m: 'pro' | 'easy' | 'interviewer') => void;
 }) {
+  const uiLanguage = useUiLanguage();
+  const l = (en: string, fr: string) => uiText(uiLanguage, en, fr);
   const instrument = useDesigner((s) => s.instrument);
   const language = useDesigner((s) => s.language);
   const setLanguage = useDesigner((s) => s.setLanguage);
@@ -181,21 +184,22 @@ export function Toolbar({
   return (
     <header className="toolbar">
       <div className="toolbar__brand">
-        <a href={getHubUrl()} className="toolbar__home" title="Return to survey hub">
+        <a href={getHubUrl()} className="toolbar__home" title={l('Return to survey hub', 'Retour à l’accueil des outils')}>
           <span className="toolbar__mark" aria-hidden="true"><span /><span /><span /><span /></span>
           <strong>Modular Survey Tools</strong>
         </a>
         <h1 className="toolbar__title">{pick(instrument.metadata.title as Record<string, string>, language)}</h1>
       </div>
 
-      <div className="toolbar__group" role="group" aria-label="Language">
+      <LanguageSwitch />
+      <div className="toolbar__group" role="group" aria-label={l('Questionnaire language', 'Langue du questionnaire')}>
         {instrument.languages.map((lang) => (
           <button
             key={lang}
             type="button"
             className={lang === language ? 'pill pill--active' : 'pill'}
             aria-pressed={lang === language}
-            onClick={() => setLanguage(lang)}
+            onClick={() => { setLanguage(lang); if (lang === 'en' || lang === 'fr') setUiLanguage(lang); }}
           >
             {lang.toUpperCase()}
           </button>
@@ -203,11 +207,11 @@ export function Toolbar({
       </div>
 
       <div className="toolbar__group">
-        <button type="button" onClick={undo} disabled={past.length === 0} aria-label="Undo">
-          ↶ Undo
+        <button type="button" onClick={undo} disabled={past.length === 0} aria-label={l('Undo', 'Annuler')}>
+          ↶ {l('Undo', 'Annuler')}
         </button>
-        <button type="button" onClick={redo} disabled={future.length === 0} aria-label="Redo">
-          ↷ Redo
+        <button type="button" onClick={redo} disabled={future.length === 0} aria-label={l('Redo', 'Rétablir')}>
+          ↷ {l('Redo', 'Rétablir')}
         </button>
       </div>
 
@@ -220,7 +224,7 @@ export function Toolbar({
           aria-expanded={modeOpen}
           onClick={() => setModeOpen((o) => !o)}
         >
-          {mode === 'easy' ? 'Easy Mode' : mode === 'interviewer' ? 'Interviewer Mode' : 'Pro Mode'} ▾
+          {mode === 'easy' ? l('Easy Mode', 'Mode simplifié') : mode === 'interviewer' ? l('Interviewer Mode', 'Mode intervieweur') : 'Mode Pro'} ▾
         </button>
         {modeOpen && (
           <div className="toolbar__mode-menu" role="menu">
@@ -230,8 +234,8 @@ export function Toolbar({
               className={mode === 'easy' ? 'toolbar__mode-item toolbar__mode-item--active' : 'toolbar__mode-item'}
               onClick={() => { onModeChange('easy'); setModeOpen(false); }}
             >
-              Easy Mode
-              <span className="toolbar__mode-desc">Flat question list with categories &amp; routing</span>
+              {l('Easy Mode', 'Mode simplifié')}
+              <span className="toolbar__mode-desc">{l('Flat question list with categories & routing', 'Liste de questions avec catégories et cheminement')}</span>
             </button>
             <button
               type="button"
@@ -239,8 +243,8 @@ export function Toolbar({
               className={mode === 'pro' ? 'toolbar__mode-item toolbar__mode-item--active' : 'toolbar__mode-item'}
               onClick={() => { onModeChange('pro'); setModeOpen(false); }}
             >
-              Pro Mode
-              <span className="toolbar__mode-desc">Full tree, variables, expressions, flowchart</span>
+              {l('Pro Mode', 'Mode Pro')}
+              <span className="toolbar__mode-desc">{l('Full tree, variables, expressions, flowchart', 'Arborescence, variables, expressions et organigramme')}</span>
             </button>
             <button
               type="button"
@@ -248,8 +252,8 @@ export function Toolbar({
               className={mode === 'interviewer' ? 'toolbar__mode-item toolbar__mode-item--active' : 'toolbar__mode-item'}
               onClick={() => { onModeChange('interviewer'); setModeOpen(false); }}
             >
-              Interviewer Mode
-              <span className="toolbar__mode-desc">CATI · entry/exit modules · free navigation</span>
+              {l('Interviewer Mode', 'Mode intervieweur')}
+              <span className="toolbar__mode-desc">{l('CATI · entry/exit modules · free navigation', 'ITAO · modules d’entrée et de sortie · navigation libre')}</span>
             </button>
           </div>
         )}
@@ -261,16 +265,16 @@ export function Toolbar({
           className={saveState === 'saved' ? 'toolbar__save toolbar__save--ok' : 'toolbar__save'}
           onClick={save}
           disabled={saveState === 'saving'}
-          aria-label="Save survey locally"
-          title="Save survey locally in your browser storage"
+          aria-label={l('Save survey locally', 'Enregistrer l’enquête localement')}
+          title={l('Save survey locally in your browser storage', 'Enregistrer l’enquête dans votre navigateur')}
         >
           {saveState === 'saving'
-            ? 'Saving…'
+            ? l('Saving…', 'Enregistrement…')
             : saveState === 'saved'
-              ? '✓ Saved locally'
+              ? l('✓ Saved locally', '✓ Enregistré localement')
               : saveState === 'error'
-                ? '⚠ Retry save'
-                : '💾 Save'}
+                ? l('⚠ Retry save', '⚠ Réessayer')
+                : l('💾 Save', '💾 Enregistrer')}
         </button>
       </div>
 
@@ -297,7 +301,7 @@ export function Toolbar({
           aria-haspopup="menu"
           onClick={() => { setExportOpen((o) => !o); setImportError(null); }}
         >
-          Import / Export ▾
+          {l('Import / Export', 'Importer / Exporter')} ▾
         </button>
         {exportOpen && (
           <div className="toolbar__export-menu" role="menu">

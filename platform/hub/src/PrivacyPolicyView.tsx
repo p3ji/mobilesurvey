@@ -4,12 +4,15 @@
  * local-first client storage, and demonstration scope.
  */
 import { ArrowLeft, CheckCircle2, Database, EyeOff, FileText, Lock, Mail, ShieldCheck } from 'lucide-react';
+import { useUiLanguage, uiText } from '@mobilesurvey/ui-locale';
 
 interface PrivacyPolicyViewProps {
   onBack: () => void;
 }
 
 export function PrivacyPolicyView({ onBack }: PrivacyPolicyViewProps) {
+  const language = useUiLanguage();
+  const l = (en: string, fr: string) => uiText(language, en, fr);
   return (
     <div className="privacy-policy-view">
       <header className="privacy-policy-header">
@@ -123,11 +126,19 @@ export function PrivacyPolicyView({ onBack }: PrivacyPolicyViewProps) {
             </ul>
           </section>
 
-          {/* Section 5 */}
           <section className="privacy-section">
             <div className="privacy-section__icon-header">
               <Mail size={20} className="privacy-section__icon" />
-              <h2>5. Contact &amp; Custom Deployment Inquiries</h2>
+              <h2>{l('5. Updates mailing list', '5. Liste de diffusion des mises à jour')}</h2>
+            </div>
+            <p>{l('If you sign up for updates, we store your email address, preferred language, the date of signup, and the consent notice version in a private subscriber list hosted by Supabase. We use your address only to send Modular Survey Tools updates. It is not shown to other visitors. To unsubscribe or request deletion, contact contact@peji.ca.', 'Si vous vous inscrivez aux mises à jour, nous conservons votre adresse courriel, votre langue de préférence, la date de l’inscription et la version de l’avis de consentement dans une liste privée hébergée par Supabase. Nous utilisons votre adresse uniquement pour envoyer des nouvelles de Modular Survey Tools. Les autres visiteurs ne peuvent pas la consulter. Pour vous désabonner ou demander la suppression de votre adresse, écrivez à contact@peji.ca.')}</p>
+          </section>
+
+          {/* Section 6 */}
+          <section className="privacy-section">
+            <div className="privacy-section__icon-header">
+              <Mail size={20} className="privacy-section__icon" />
+              <h2>6. Contact &amp; Custom Deployment Inquiries</h2>
             </div>
             <p>
               If you have any questions about this platform, data handling, or are interested in a dedicated or self-hosted deployment tailored to your organization, please feel free to reach out:

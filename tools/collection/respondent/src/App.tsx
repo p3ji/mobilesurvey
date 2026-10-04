@@ -9,6 +9,7 @@
  * starts immediately. Without a `?survey` param it falls back to the bundled Labour Force survey.
  */
 import { useEffect, useRef, useState } from 'react';
+import { LanguageSwitch, useUiLanguage, uiText } from '@mobilesurvey/ui-locale';
 import { bundledSurvey, isLocalSurvey, surveyCollectsData, type Instrument } from '@mobilesurvey/instrument-schema';
 import {
   createMockSensorServices,
@@ -74,6 +75,9 @@ function anonId(): string {
 }
 
 export function App() {
+  const uiLanguage = useUiLanguage();
+  const l = (en: string, fr: string) => uiText(uiLanguage, en, fr);
+  useEffect(() => { document.documentElement.lang = uiLanguage === 'fr' ? 'fr-CA' : 'en-CA'; }, [uiLanguage]);
   const [phase, setPhase] = useState<'gate' | 'survey' | 'done' | 'already_completed'>('gate');
   const [completedInfo, setCompletedInfo] = useState<{ timestamp: string | null } | null>(null);
   const [gateError, setGateError] = useState<string | null>(null);
@@ -298,11 +302,11 @@ export function App() {
       <div className="app">
         <div className="gate">
           <div className="gate__card">
-            <div className="gate__brand">Electronic Questionnaire</div>
-            <h1 className="gate__title" style={{ marginTop: 12 }}>Survey not found</h1>
+            <LanguageSwitch />
+            <div className="gate__brand">{l('Electronic Questionnaire', 'Questionnaire électronique')}</div>
+            <h1 className="gate__title" style={{ marginTop: 12 }}>{l('Survey not found', 'Enquête introuvable')}</h1>
             <p className="gate__sub" style={{ marginTop: 8 }}>
-              We couldn’t find a survey for “{notFoundId}”. Please check the link from your invitation,
-              or contact whoever sent it to you.
+              {uiLanguage === 'fr' ? <>Nous n’avons pas trouvé l’enquête « {notFoundId} ». Vérifiez le lien de votre invitation ou communiquez avec la personne qui vous l’a envoyé.</> : <>We couldn’t find a survey for “{notFoundId}”. Please check the link from your invitation, or contact whoever sent it to you.</>}
             </p>
           </div>
         </div>
@@ -315,19 +319,19 @@ export function App() {
       <div className="app">
         <div className="gate">
           <div className="gate__card">
-            <div className="gate__brand">Electronic Questionnaire</div>
+            <LanguageSwitch />
+            <div className="gate__brand">{l('Electronic Questionnaire', 'Questionnaire électronique')}</div>
             <div style={{ textAlign: 'center', margin: '24px 0 16px' }}>
               <div style={{ fontSize: '42px', lineHeight: 1, marginBottom: '12px', color: '#16a34a' }}>✓</div>
-              <h1 className="gate__title">Survey already completed</h1>
+              <h1 className="gate__title">{l('Survey already completed', 'Enquête déjà remplie')}</h1>
               <p className="gate__sub" style={{ marginTop: 12 }}>
-                Thank you! Your response for this survey has already been received
+                {l('Thank you! Your response for this survey has already been received', 'Merci! Votre réponse à cette enquête a déjà été reçue')}
                 {completedInfo?.timestamp
                   ? ` on ${new Date(completedInfo.timestamp).toLocaleDateString(undefined, { dateStyle: 'long', timeStyle: 'short' })}`
                   : ''}.
               </p>
               <div className="gate__hint" style={{ marginTop: 20 }}>
-                This invitation link is single-use and your response has been recorded.
-                If you have any questions, please contact your survey coordinator.
+                {l('This invitation link is single-use and your response has been recorded. If you have any questions, please contact your survey coordinator.', 'Ce lien d’invitation ne peut servir qu’une fois et votre réponse a été enregistrée. Pour toute question, communiquez avec la personne responsable de l’enquête.')}
               </div>
             </div>
           </div>
@@ -341,8 +345,9 @@ export function App() {
       <div className="app">
         <div className="gate">
           <div className="gate__card">
-            <div className="gate__brand">Electronic Questionnaire</div>
-            <p className="gate__sub" style={{ marginTop: 12 }}>Loading…</p>
+            <LanguageSwitch />
+            <div className="gate__brand">{l('Electronic Questionnaire', 'Questionnaire électronique')}</div>
+            <p className="gate__sub" style={{ marginTop: 12 }}>{l('Loading…', 'Chargement…')}</p>
           </div>
         </div>
       </div>
@@ -351,7 +356,7 @@ export function App() {
 
   return (
     <div className="app">
-      <a className="skip-link" href="#eq-main">Skip to main content</a>
+      <a className="skip-link" href="#eq-main">{l('Skip to main content', 'Aller au contenu principal')}</a>
       {phase === 'gate' && loaded.requiresAccessCode && (
         <AccessGate onAuthenticate={authenticate} initialError={gateError} />
       )}

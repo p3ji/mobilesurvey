@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
+import { useUiLanguage, uiText } from '@mobilesurvey/ui-locale';
 import * as Tabs from '@radix-ui/react-tabs';
 import { useDesigner } from './store/instrumentStore.js';
 import { currentSurveyId, fetchSurvey } from './lib/surveyApi.js';
@@ -20,6 +21,8 @@ const MIN_RIGHT = 240;
 const MAX_RIGHT = 680;
 
 export default function App() {
+  const uiLanguage = useUiLanguage();
+  const l = (en: string, fr: string) => uiText(uiLanguage, en, fr);
   const [renderMode, setRenderMode] = useState(() => {
     return typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('render') === '1';
   });
@@ -30,6 +33,12 @@ export default function App() {
     return 'pro';
   });
   const [surveyId] = useState<string | null>(currentSurveyId);
+
+  useEffect(() => {
+    document.documentElement.lang = uiLanguage === 'fr' ? 'fr-CA' : 'en-CA';
+    const state = useDesigner.getState();
+    if (state.instrument.languages.includes(uiLanguage)) state.setLanguage(uiLanguage);
+  }, [uiLanguage]);
 
   // Resizable panel widths.
   const [leftW, setLeftW] = useState(300);
@@ -94,21 +103,21 @@ export default function App() {
           {/* Left panel */}
           <section
             className={leftCollapsed ? 'panel panel--left panel--collapsed' : 'panel panel--left'}
-            aria-label="Structure & variables"
+            aria-label={l('Structure & variables', 'Structure et variables')}
             style={{ width: effectiveLeftW, overflow: leftCollapsed ? 'hidden' : undefined }}
           >
             <Tabs.Root defaultValue="structure" className="tabs">
               <div className="tabs__list-row">
-                <Tabs.List className="tabs__list" aria-label="Left panel">
+                <Tabs.List className="tabs__list" aria-label={l('Left panel', 'Panneau de gauche')}>
                   <Tabs.Trigger className="tabs__trigger" value="structure">Structure</Tabs.Trigger>
                   <Tabs.Trigger className="tabs__trigger" value="variables">Variables</Tabs.Trigger>
-                  <Tabs.Trigger className="tabs__trigger" value="library">Library</Tabs.Trigger>
+                  <Tabs.Trigger className="tabs__trigger" value="library">{l('Library', 'Bibliothèque')}</Tabs.Trigger>
                 </Tabs.List>
                 <button
                   type="button"
                   className="panel__collapse-btn"
-                  aria-label="Collapse left panel"
-                  title="Collapse"
+                  aria-label={l('Collapse left panel', 'Réduire le panneau de gauche')}
+                  title={l('Collapse', 'Réduire')}
                   onClick={() => setLeftCollapsed((c) => !c)}
                 >
                   {leftCollapsed ? '▶' : '◀'}
@@ -130,7 +139,7 @@ export default function App() {
           <div
             className="panel-drag"
             role="separator"
-            aria-label="Resize left panel"
+            aria-label={l('Resize left panel', 'Redimensionner le panneau de gauche')}
             onMouseDown={(e) => {
               e.preventDefault();
               if (leftCollapsed) { setLeftCollapsed(false); return; }
@@ -140,7 +149,7 @@ export default function App() {
           />
 
           {/* Center panel */}
-          <section className="panel panel--center" aria-label="Inspector">
+          <section className="panel panel--center" aria-label={l('Inspector', 'Inspecteur')}>
             <Inspector />
           </section>
 
@@ -148,7 +157,7 @@ export default function App() {
           <div
             className="panel-drag"
             role="separator"
-            aria-label="Resize right panel"
+            aria-label={l('Resize right panel', 'Redimensionner le panneau de droite')}
             onMouseDown={(e) => {
               e.preventDefault();
               if (rightCollapsed) { setRightCollapsed(false); return; }
@@ -160,7 +169,7 @@ export default function App() {
           {/* Right panel */}
           <section
             className={rightCollapsed ? 'panel panel--right panel--collapsed' : 'panel panel--right'}
-            aria-label="Preview & specification"
+            aria-label={l('Preview & specification', 'Aperçu et spécification')}
             style={{ width: effectiveRightW, overflow: rightCollapsed ? 'hidden' : undefined }}
           >
             <Tabs.Root defaultValue="preview" className="tabs">
@@ -168,16 +177,16 @@ export default function App() {
                 <button
                   type="button"
                   className="panel__collapse-btn"
-                  aria-label="Collapse right panel"
-                  title="Collapse"
+                  aria-label={l('Collapse right panel', 'Réduire le panneau de droite')}
+                  title={l('Collapse', 'Réduire')}
                   onClick={() => setRightCollapsed((c) => !c)}
                 >
                   {rightCollapsed ? '◀' : '▶'}
                 </button>
-                <Tabs.List className="tabs__list" aria-label="Right panel">
-                  <Tabs.Trigger className="tabs__trigger" value="preview">Preview</Tabs.Trigger>
-                  <Tabs.Trigger className="tabs__trigger" value="flow">Flow</Tabs.Trigger>
-                  <Tabs.Trigger className="tabs__trigger" value="spec">JSON Spec</Tabs.Trigger>
+                <Tabs.List className="tabs__list" aria-label={l('Right panel', 'Panneau de droite')}>
+                  <Tabs.Trigger className="tabs__trigger" value="preview">{l('Preview', 'Aperçu')}</Tabs.Trigger>
+                  <Tabs.Trigger className="tabs__trigger" value="flow">{l('Flow', 'Cheminement')}</Tabs.Trigger>
+                  <Tabs.Trigger className="tabs__trigger" value="spec">{l('JSON Spec', 'Spécification JSON')}</Tabs.Trigger>
                 </Tabs.List>
               </div>
               <Tabs.Content value="preview" className="tabs__content">

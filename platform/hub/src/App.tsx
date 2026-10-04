@@ -2,6 +2,7 @@
  * mobilesurvey hub — module selector home screen + Collector sub-view.
  */
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
+import { LanguageSwitch, useUiLanguage, uiText } from '@mobilesurvey/ui-locale';
 import {
   Accessibility,
   BarChart3,
@@ -61,6 +62,7 @@ import { PrivacyPolicyView } from './PrivacyPolicyView.js';
 import { DataCartView } from './DataCartView.js';
 import { useDataCart } from './useDataCart.js';
 import { ResearcherPage } from './ResearcherPage.js';
+import { UpdatesSignup } from './UpdatesSignup.js';
 import { SurveyDistributeModal } from './SurveyDistributeModal.js';
 import type { CorpusGraphFocus } from './CorpusLineage.js';
 import {
@@ -1073,6 +1075,8 @@ function LocalSurveyCard({
 // ── Collector view ────────────────────────────────────────────────────────────
 
 function CollectorView({ onBack, onPrivacy }: { onBack: () => void; onPrivacy?: () => void }) {
+  const language = useUiLanguage();
+  const l = (en: string, fr: string) => uiText(language, en, fr);
   const [localSurveys, setLocalSurveys] = useState<LocalSurveyRecord[]>(() => listLocalSurveys());
   const [surveys, setSurveys] = useState<SurveySummary[] | null>(null);
   const [online, setOnline] = useState<boolean | null>(null);
@@ -1178,21 +1182,21 @@ function CollectorView({ onBack, onPrivacy }: { onBack: () => void; onPrivacy?: 
       <header className="hub__header">
         <div className="hub__brand">
           <button type="button" className="hub__back" onClick={onBack}>
-            <img src={logo} alt="Back to home" className="hub__back-logo" />
+            <img src={logo} alt={l('Back to home', 'Retour à l’accueil')} className="hub__back-logo" />
           </button>
           <strong>Collector</strong>
-          <span className="hub__sub">Design surveys and test collection</span>
+          <span className="hub__sub">{l('Design surveys and test collection', 'Concevez des enquêtes et testez la collecte')}</span>
         </div>
         <div className="hub__header-right">
           {demoMode ? (
-            <span className="hub__conn hub__conn--demo">● Demo mode</span>
+            <span className="hub__conn hub__conn--demo">● {l('Demo mode', 'Mode démo')}</span>
           ) : (
             <span className={online === false ? 'hub__conn hub__conn--off' : 'hub__conn hub__conn--on'}>
-              {online === false ? '● Offline' : '● Supabase connected'}
+              {online === false ? l('● Offline', '● Hors ligne') : l('● Supabase connected', '● Supabase connecté')}
             </span>
           )}
           <button type="button" className="btn btn--primary" onClick={newSurvey} disabled={creating}>
-            + New survey
+            + {l('New survey', 'Nouvelle enquête')}
           </button>
         </div>
       </header>
@@ -1201,11 +1205,11 @@ function CollectorView({ onBack, onPrivacy }: { onBack: () => void; onPrivacy?: 
         {/* Live Showcase / Bundled Surveys */}
         <section className="hub__section">
           <h2 className="hub__section-title">
-            ● Live collection showcase
-            <span className="hub__section-sub">Official demonstration surveys with sample responses and live analytics</span>
+            ● {l('Live collection showcase', 'Démonstration de collecte en direct')}
+            <span className="hub__section-sub">{l('Official demonstration surveys with sample responses and live analytics', 'Enquêtes de démonstration avec exemples de réponses et analyses en direct')}</span>
           </h2>
           {liveSurveys.length === 0 ? (
-            <p className="hub__empty">No showcase surveys available.</p>
+            <p className="hub__empty">{l('No showcase surveys available.', 'Aucune enquête de démonstration disponible.')}</p>
           ) : (
             <div className="hub__grid">
               {liveSurveys.map((s) => (
@@ -1363,6 +1367,8 @@ function parseSearcherParams(): {
 }
 
 function SearcherView({ onBack, onResearcher }: { onBack: () => void; onResearcher: () => void }) {
+  const language = useUiLanguage();
+  const l = (en: string, fr: string) => uiText(language, en, fr);
   const corpus = useMemo(() => corpusSource(), []);
   const initialParams = useMemo(() => parseSearcherParams(), []);
   const [scope, setScope] = useState<SearchScope>(initialParams.scope);
@@ -1402,15 +1408,15 @@ function SearcherView({ onBack, onResearcher }: { onBack: () => void; onResearch
       <header className="hub__header">
         <div className="hub__brand">
           <button type="button" className="hub__back" onClick={onBack}>
-            <img src={logo} alt="Back to home" className="hub__back-logo" />
+            <img src={logo} alt={l('Back to home', 'Retour à l’accueil')} className="hub__back-logo" />
           </button>
           <strong>Searcher</strong>
-          <span className="hub__sub">Explore Statistics Canada survey metadata</span>
+          <span className="hub__sub">{l('Explore Statistics Canada survey metadata', 'Explorez les métadonnées d’enquête de Statistique Canada')}</span>
         </div>
       </header>
 
       <main className="hub__main sr-main">
-        <div className="sr-scopes" role="tablist" aria-label="Statistics Canada metadata views">
+        <div className="sr-scopes" role="tablist" aria-label={l('Statistics Canada metadata views', 'Vues des métadonnées de Statistique Canada')}>
           <button
             type="button"
             role="tab"
@@ -1420,7 +1426,7 @@ function SearcherView({ onBack, onResearcher }: { onBack: () => void; onResearch
             className={`sr-scope ${scope === 'search' ? 'sr-scope--active' : ''}`}
             onClick={() => setScope('search')}
           >
-            Search
+            {l('Search', 'Rechercher')}
           </button>
           <button
             type="button"
@@ -1436,7 +1442,7 @@ function SearcherView({ onBack, onResearcher }: { onBack: () => void; onResearch
               setScope('graph');
             }}
           >
-            Knowledge Graph
+            {l('Knowledge Graph', 'Graphe de connaissances')}
           </button>
           <button
             type="button"
@@ -1447,7 +1453,7 @@ function SearcherView({ onBack, onResearcher }: { onBack: () => void; onResearch
             className={`sr-scope ${scope === 'about' ? 'sr-scope--active' : ''}`}
             onClick={() => setScope('about')}
           >
-            About
+            {l('About', 'À propos')}
           </button>
           <button
             type="button"
@@ -1458,7 +1464,7 @@ function SearcherView({ onBack, onResearcher }: { onBack: () => void; onResearch
             className={`sr-scope ${scope === 'cart' ? 'sr-scope--active' : ''}`}
             onClick={() => setScope('cart')}
           >
-            Data Cart
+            {l('Data Cart', 'Panier de données')}
             {cartCount > 0 && <span className="sr-cart-badge">{cartCount}</span>}
           </button>
         </div>
@@ -1476,7 +1482,7 @@ function SearcherView({ onBack, onResearcher }: { onBack: () => void; onResearch
             />
           ) : corpus === null ? (
             <div className="cs-error">
-              <strong>Statistics Canada metadata search is unavailable in this deployment.</strong>
+              <strong>{l('Statistics Canada metadata search is unavailable in this deployment.', 'La recherche dans les métadonnées de Statistique Canada n’est pas disponible ici.')}</strong>
             </div>
           ) : scope === 'search' ? (
             <CorpusSearch
@@ -1527,13 +1533,19 @@ const DEMO_OPTIONS = [
 
 function DemoSurveyPicker() {
   const [selected, setSelected] = useState('demo');
+  const language = useUiLanguage();
+  const l = (en: string, fr: string) => uiText(language, en, fr);
+  const demoNames: Record<string, string> = {
+    lfs: 'Enquête sur les ménages et l’emploi',
+    fsep: 'Dépenses et personnel scientifiques fédéraux (démo)',
+    demo: 'Enquête de démonstration des fonctions',
+  };
   return (
     <div className="demo-picker">
       <div className="demo-picker__head">
-        <h2 className="demo-picker__title">Try a demo survey</h2>
+        <h2 className="demo-picker__title">{l('Try a demo survey', 'Essayer une enquête de démonstration')}</h2>
         <p className="demo-picker__sub">
-          Choose an example to explore in the Designer. Only the <strong>Feature Demo Survey</strong> saves responses to Collector;
-          the other examples are for exploration.
+          {language === 'fr' ? <>Choisissez un exemple à explorer dans Designer. Seule l’<strong>enquête de démonstration des fonctions</strong> enregistre les réponses dans Collector; les autres servent à l’exploration.</> : <>Choose an example to explore in the Designer. Only the <strong>Feature Demo Survey</strong> saves responses to Collector; the other examples are for exploration.</>}
         </p>
       </div>
       <div className="demo-picker__options">
@@ -1549,8 +1561,8 @@ function DemoSurveyPicker() {
               checked={selected === s.id}
               onChange={() => setSelected(s.id)}
             />
-            <span className="demo-picker__option-label">{s.label}</span>
-            {s.live && <span className="badge badge--live">● Live</span>}
+            <span className="demo-picker__option-label">{language === 'fr' ? demoNames[s.id] : s.label}</span>
+            {s.live && <span className="badge badge--live">● {l('Live', 'En ligne')}</span>}
           </label>
         ))}
       </div>
@@ -1560,14 +1572,14 @@ function DemoSurveyPicker() {
           className="btn btn--primary"
           onClick={() => window.open(`${DESIGNER_URL}/?survey=${selected}&mode=pro`, '_blank', 'noopener')}
         >
-          Open in Pro Mode
+          {l('Open in Pro Mode', 'Ouvrir en mode Pro')}
         </button>
         <button
           type="button"
           className="btn"
           onClick={() => window.open(`${DESIGNER_URL}/?survey=${selected}&mode=easy`, '_blank', 'noopener')}
         >
-          Open in Easy Mode
+          {l('Open in Easy Mode', 'Ouvrir en mode simplifié')}
         </button>
       </div>
     </div>
@@ -1577,6 +1589,7 @@ function DemoSurveyPicker() {
 // ── Module tile ───────────────────────────────────────────────────────────────
 
 function ModuleTile({ mod }: { mod: ModuleDef }) {
+  const language = useUiLanguage();
   if (mod.status === 'coming-soon') {
     return (
       <button
@@ -1588,7 +1601,7 @@ function ModuleTile({ mod }: { mod: ModuleDef }) {
         <div className="module-tile__body">
           <div className="module-tile__head">
             <span className="module-tile__name">{mod.name}</span>
-            <span className="module-tile__badge">Coming soon</span>
+            <span className="module-tile__badge">{uiText(language, 'Coming soon', 'À venir')}</span>
           </div>
           <p className="module-tile__tagline">{mod.tagline}</p>
           <p className="module-tile__desc">{mod.description}</p>
@@ -1647,6 +1660,8 @@ function ModuleTile({ mod }: { mod: ModuleDef }) {
 // ── Migrator view ─────────────────────────────────────────────────────────────
 
 function MigratorView({ onBack }: { onBack: () => void }) {
+  const language = useUiLanguage();
+  const l = (en: string, fr: string) => uiText(language, en, fr);
   const [rawText, setRawText] = useState('');
   const [titleInput, setTitleInput] = useState('');
   const [agencyInput, setAgencyInput] = useState('');
@@ -1773,41 +1788,34 @@ function MigratorView({ onBack }: { onBack: () => void }) {
       <header className="hub__header">
         <div className="hub__brand">
           <button type="button" className="hub__back" onClick={onBack}>
-            <img src={logo} alt="Back to home" className="hub__back-logo" />
+            <img src={logo} alt={l('Back to home', 'Retour à l’accueil')} className="hub__back-logo" />
           </button>
           <strong>Migrator</strong>
-          <span className="hub__sub">Turn a text questionnaire into a live survey</span>
+          <span className="hub__sub">{l('Turn a text questionnaire into a live survey', 'Transformez un questionnaire texte en enquête interactive')}</span>
         </div>
       </header>
 
       <main className="hub__main migr__main">
         <div className="migr__intro">
-          <p>
-            Paste a plain-text questionnaire below, or upload a <code>.txt</code> or{' '}
-            <code>.pdf</code> file. The engine extracts questions, infers response types, and
-            converts routing hints into skip logic — producing an instrument JSON you can open
-            directly in the Designer. Statistics Canada electronic questionnaires (with
-            &ldquo;Flow condition&rdquo; routing, matrix grids and nested follow-ups) are
-            detected and parsed natively.
-          </p>
+          <p>{language === 'fr' ? <>Collez un questionnaire en texte brut ci-dessous ou importez un fichier <code>.txt</code> ou <code>.pdf</code>. L’outil extrait les questions, déduit les types de réponse et convertit les indications de cheminement en logique de saut. Il produit un instrument JSON que vous pouvez ouvrir dans Designer. Les questionnaires électroniques de Statistique Canada sont également pris en charge.</> : <>Paste a plain-text questionnaire below, or upload a <code>.txt</code> or <code>.pdf</code> file. The engine extracts questions, infers response types, and converts routing hints into skip logic — producing an instrument JSON you can open directly in the Designer. Statistics Canada electronic questionnaires (with &ldquo;Flow condition&rdquo; routing, matrix grids and nested follow-ups) are detected and parsed natively.</>}</p>
         </div>
 
         <div className="migr__body">
           {/* ── Left: input ─────────────────────────────────────────────── */}
           <div className="migr__panel migr__panel--input">
             <div className="migr__field-row">
-              <label className="migr__label" htmlFor="migr-title">Survey title</label>
+              <label className="migr__label" htmlFor="migr-title">{l('Survey title', 'Titre de l’enquête')}</label>
               <input
                 id="migr-title"
                 className="migr__text-input"
                 type="text"
-                placeholder="Auto-detected from text, or enter manually"
+                placeholder={l('Auto-detected from text, or enter manually', 'Détecté automatiquement ou saisi manuellement')}
                 value={titleInput}
                 onChange={e => setTitleInput(e.target.value)}
               />
             </div>
             <div className="migr__field-row">
-              <label className="migr__label" htmlFor="migr-agency">Agency / organisation (optional)</label>
+              <label className="migr__label" htmlFor="migr-agency">{l('Agency / organisation (optional)', 'Organisme (facultatif)')}</label>
               <input
                 id="migr-agency"
                 className="migr__text-input"
@@ -1820,7 +1828,7 @@ function MigratorView({ onBack }: { onBack: () => void }) {
 
             <div className="migr__field-row migr__field-row--grow">
               <div className="migr__label-row">
-                <label className="migr__label" htmlFor="migr-text">Questionnaire text</label>
+              <label className="migr__label" htmlFor="migr-text">{l('Questionnaire text', 'Texte du questionnaire')}</label>
                 <button
                   type="button"
                   className="btn"
@@ -1828,7 +1836,7 @@ function MigratorView({ onBack }: { onBack: () => void }) {
                   disabled={extracting}
                   onClick={() => fileRef.current?.click()}
                 >
-                  {extracting ? 'Reading PDF…' : '⬆ Upload .txt / .pdf'}
+                  {extracting ? l('Reading PDF…', 'Lecture du PDF…') : l('⬆ Upload .txt / .pdf', '⬆ Importer .txt / .pdf')}
                 </button>
                 <input
                   ref={fileRef}
@@ -2031,6 +2039,8 @@ Otherwise, go to Q8.`}</pre>
 // ── Analyzer view ─────────────────────────────────────────────────────────────
 
 function AnalyzerView({ onBack }: { onBack: () => void }) {
+  const language = useUiLanguage();
+  const l = (en: string, fr: string) => uiText(language, en, fr);
   const [surveys, setSurveys] = useState<SurveySummary[] | null>(null);
   const [selected, setSelected] = useState<string | null>(null);
 
@@ -2049,17 +2059,17 @@ function AnalyzerView({ onBack }: { onBack: () => void }) {
       <header className="hub__header">
         <div className="hub__brand">
           <button type="button" className="hub__back" onClick={onBack}>
-            <img src={logo} alt="Back to home" className="hub__back-logo" />
+            <img src={logo} alt={l('Back to home', 'Retour à l’accueil')} className="hub__back-logo" />
           </button>
           <strong>Analyzer</strong>
-          <span className="hub__sub">Response quality and completion metrics</span>
+          <span className="hub__sub">{l('Response quality and completion metrics', 'Qualité des réponses et indicateurs de participation')}</span>
         </div>
       </header>
       <main className="hub__main">
         {surveys === null ? (
-          <p className="hub__loading">Loading surveys…</p>
+          <p className="hub__loading">{l('Loading surveys…', 'Chargement des enquêtes…')}</p>
         ) : surveys.length === 0 ? (
-          <p className="hub__empty">No surveys found. Create and collect responses in the Collector first.</p>
+          <p className="hub__empty">{l('No surveys found. Create and collect responses in the Collector first.', 'Aucune enquête trouvée. Créez une enquête et recueillez des réponses dans Collector.')}</p>
         ) : (
           <>
             <div className="analyzer__tabs" role="tablist">
@@ -2108,17 +2118,19 @@ const TRAINING_RESOURCES: TrainingResource[] = [
 ];
 
 function TrainingView({ onBack }: { onBack: () => void }) {
+  const language = useUiLanguage();
+  const l = (en: string, fr: string) => uiText(language, en, fr);
   return (
     <div className="hub">
       <header className="hub__header">
         <button type="button" className="hub__back" onClick={onBack}>
-          ← Back
+          ← {l('Back', 'Retour')}
         </button>
         <div className="hub__brand">
           <img src={logo} alt="Modular Survey Tools" className="hub__logo" />
           <div className="hub__brand-text">
-            <strong>Training Hub</strong>
-            <span className="hub__sub">Videos, guides, and resources</span>
+            <strong>{l('Training Hub', 'Centre de formation')}</strong>
+            <span className="hub__sub">{l('Videos, guides, and resources', 'Vidéos, guides et ressources')}</span>
           </div>
         </div>
       </header>
@@ -2998,6 +3010,8 @@ function AnnotationsPanel({
 }
 
 function ValidatorView({ onBack }: { onBack: () => void }) {
+  const language = useUiLanguage();
+  const l = (en: string, fr: string) => uiText(language, en, fr);
   const [surveys, setSurveys] = useState<SurveySummary[] | null>(null);
   const [selectedSurveyId, setSelectedSurveyId] = useState<string | null>(null);
   const [instrument, setInstrument] = useState<Instrument | null>(null);
@@ -3140,19 +3154,19 @@ function ValidatorView({ onBack }: { onBack: () => void }) {
   return (
     <div className="hub">
       <header className="hub__header">
-        <button type="button" className="hub__back" onClick={onBack}>← Home</button>
+        <button type="button" className="hub__back" onClick={onBack}>← {l('Home', 'Accueil')}</button>
         <div className="hub__brand">
           <strong>Validator</strong>
-          <span className="hub__sub">Flag, confront, and correct collected data</span>
+          <span className="hub__sub">{l('Flag, confront, and correct collected data', 'Détectez, confrontez et corrigez les données recueillies')}</span>
         </div>
       </header>
       <main className="hub__main">
         {surveys === null ? (
-          <p className="hub__loading">Loading surveys…</p>
+          <p className="hub__loading">{l('Loading surveys…', 'Chargement des enquêtes…')}</p>
         ) : !validatorConfigured() ? (
           <p className="hub__empty">Validator requires Supabase to be configured (VITE_SUPABASE_URL / VITE_SUPABASE_ANON_KEY).</p>
         ) : surveys.length === 0 ? (
-          <p className="hub__empty">No surveys are collecting data yet. Publish a survey in the Collector first.</p>
+          <p className="hub__empty">{l('No surveys are collecting data yet. Publish a survey in the Collector first.', 'Aucune enquête ne recueille encore de données. Publiez d’abord une enquête dans Collector.')}</p>
         ) : (
           <>
             <div className="val__toolbar">
@@ -3166,7 +3180,7 @@ function ValidatorView({ onBack }: { onBack: () => void }) {
                 ))}
               </select>
               <button type="button" className="btn btn--primary" disabled={running || !instrument} onClick={() => void handleRunValidation()}>
-                {running ? 'Running…' : '▶ Run validation'}
+                {running ? l('Running…', 'Exécution…') : l('▶ Run validation', '▶ Lancer la validation')}
               </button>
               {runHistory.length > 1 && (
                 <select
@@ -3295,31 +3309,61 @@ const HOME_GROUPS = [
   {
     id: 'discover',
     title: 'Discover & learn',
+    titleFr: 'Découvrir et apprendre',
     summary: 'Find survey metadata, follow research, and learn the platform.',
+    summaryFr: 'Explorez les métadonnées d’enquête, les recherches et la plateforme.',
     moduleIds: ['searcher', 'researcher', 'trainer'],
   },
   {
     id: 'design',
     title: 'Build a survey',
+    titleFr: 'Créer une enquête',
     summary: 'Start from scratch, import a questionnaire, or explore an example.',
+    summaryFr: 'Partez de zéro, importez un questionnaire ou explorez un exemple.',
     moduleIds: ['designer-easy', 'designer-pro', 'designer-business', 'migrator'],
   },
   {
     id: 'collect',
     title: 'Collect responses',
+    titleFr: 'Recueillir les réponses',
     summary: 'Publish a survey, share its link, and follow collection.',
+    summaryFr: 'Publiez une enquête, partagez son lien et suivez la collecte.',
     moduleIds: ['collector', 'sensor'],
   },
   {
     id: 'review',
     title: 'Review & improve data',
+    titleFr: 'Examiner et améliorer les données',
     summary: 'Explore results and resolve data quality issues.',
+    summaryFr: 'Explorez les résultats et résolvez les problèmes de qualité des données.',
     moduleIds: ['analyzer', 'validator'],
   },
 ];
 
+const HOME_MODULES_FR: Record<string, Pick<ModuleDef, 'name' | 'tagline' | 'description'> & { tag?: string }> = {
+  'designer-pro': { name: 'Designer — Pro', tagline: 'Conception complète de questionnaires', description: 'Créez un questionnaire à partir de zéro ou chargez une démo. Modifiez la structure, le routage conditionnel, les variables et les expressions; visualisez le flux.' },
+  'designer-easy': { name: 'Designer — Mode simplifié', tagline: 'Créez un questionnaire question par question', description: 'Concentrez-vous sur les questions, les catégories et la logique simple pour préparer rapidement un questionnaire.' },
+  collector: { name: 'Collector', tagline: 'Gérez les enquêtes et suivez la participation', description: 'Publiez des enquêtes, partagez leurs liens, suivez la collecte et consultez les réponses reçues.' },
+  searcher: { name: 'Searcher', tagline: 'Explorez les métadonnées d’enquête de Statistique Canada', description: 'Recherchez des variables et des questions, suivez les concepts d’un cycle à l’autre et examinez le graphe de connaissances.' },
+  researcher: { name: 'Researcher', tag: 'Catalogue pilote', tagline: 'Découvrez les travaux qui utilisent les données d’enquête', description: 'Parcourez des publications évaluées provenant de l’extérieur de Statistique Canada, reliées aux enquêtes et cycles analysés.' },
+  migrator: { name: 'Migrator', tag: 'En essai', tagline: 'Transformez un document Word ou texte en enquête', description: 'Collez ou importez un questionnaire. L’outil extrait les questions, déduit les types de réponse et convertit les indications de cheminement en logique de saut.' },
+  trainer: { name: 'Centre de formation', tagline: 'Vidéos et guides pour démarrer', description: 'Regardez une introduction, puis parcourez les guides sur la création d’enquêtes et la gestion de la collecte.' },
+  interviewer: { name: 'Mode intervieweur', tagline: 'Gestion des cas d’interview téléphonique', description: 'Consultez les cas attribués, lancez les interviews et consignez les résultats et les rappels.' },
+  supervisor: { name: 'Tableau de bord du superviseur', tagline: 'Suivez les progrès des intervieweurs', description: 'Consultez les taux de réponse et répartissez les cas dans votre équipe.' },
+  'designer-business': { name: 'Designer — Enquête auprès des entreprises', tag: 'En essai', tagline: 'Formulaires structurés pour les données d’entreprise', description: 'Concevez des tableaux numériques avec totaux en direct, saisie depuis Excel et contrôles d’équilibre.' },
+  analyzer: { name: 'Analyzer', tag: 'En essai', tagline: 'Graphiques et tableaux pour les données recueillies', description: 'Suivez la participation et explorez les distributions de réponses. Exportez les réponses ou les paradonnées en CSV.' },
+  validator: { name: 'Validator', tag: 'En essai', tagline: 'Détectez et corrigez les problèmes de qualité', description: 'Appliquez des contrôles issus des métadonnées et des règles d’analyste; examinez les valeurs aberrantes et priorisez les corrections.' },
+  tester: { name: 'Testeur de questionnaires', tagline: 'Repérez les erreurs de cheminement', description: 'Parcourez automatiquement tous les chemins d’une enquête pour détecter les impasses et les écarts entre conception et affichage.' },
+  sensor: { name: 'Collecte par capteurs', tag: 'En essai', tagline: 'Questions GPS et photo avec consentement', description: 'Recueillez des coordonnées ou des photos avec le consentement du répondant et des contrôles de confidentialité.' },
+  remine: { name: 'Remine', tagline: 'Exploration automatisée de tableaux de données', description: 'Repérez les écarts persistants, les renversements de tendance et les seuils franchis dans les tableaux de données.' },
+  'a11y-auditor': { name: 'Auditeur d’accessibilité', tagline: 'Évaluation des enquêtes selon les WCAG 2.2', description: 'Vérifiez automatiquement les cibles tactiles, la visibilité du focus et les autres exigences d’accessibilité des enquêtes.' },
+  'survey-translator': { name: 'Traducteur de questionnaires', tagline: 'Traduction adaptée à la terminologie statistique', description: 'Préparez une version bilingue des questionnaires en reprenant la terminologie statistique canadienne.' },
+};
+
 function HomePage({ onNavigate }: { onNavigate: (v: HubView) => void }) {
-  const modules = useMemo((): ModuleDef[] => [
+  const language = useUiLanguage();
+  const l = (en: string, fr: string) => uiText(language, en, fr);
+  const modules = useMemo((): ModuleDef[] => ([
     {
       id: 'designer-pro',
       icon: <Layers size={22} />,
@@ -3484,33 +3528,34 @@ function HomePage({ onNavigate }: { onNavigate: (v: HubView) => void }) {
       description: 'Parameter-efficient translation calibrated on 438,000+ StatCan variables: masters official Canadian statistical terminology, question stems, NAICS/NOC classifications, and bilingual DDI schemes.',
       status: 'coming-soon',
     },
-  ], [onNavigate]);
+  ] satisfies ModuleDef[]).map((module) => language === 'fr' ? { ...module, ...HOME_MODULES_FR[module.id] } : module), [onNavigate, language]);
 
   return (
     <div className="hub hub--landing">
       <header className="hub__header hub__header--home">
-        <a className="home-brand" href="#top" aria-label="Modular Survey Tools home">
+        <a className="home-brand" href="#top" aria-label={l('Modular Survey Tools home', 'Accueil de Modular Survey Tools')}>
           <span className="home-brand__mark" aria-hidden="true"><span /><span /><span /><span /></span>
           <span className="home-brand__text"><strong>modular<span>survey</span></strong><small>TOOLS</small></span>
         </a>
-        <nav className="home-nav" aria-label="Main navigation">
-          <a href="#discover">Discover</a>
-          <a href="#design">Design</a>
-          <a href="#collect">Collect</a>
-          <a href="#review">Review</a>
+        <nav className="home-nav" aria-label={l('Main navigation', 'Navigation principale')}>
+          <a href="#discover">{l('Discover', 'Découvrir')}</a>
+          <a href="#design">{l('Design', 'Concevoir')}</a>
+          <a href="#collect">{l('Collect', 'Collecter')}</a>
+          <a href="#review">{l('Review', 'Examiner')}</a>
         </nav>
-        <a className="home-header-cta" href="#try-demo">Try a demo <span aria-hidden="true">↗</span></a>
+        <LanguageSwitch />
+        <a className="home-header-cta" href="#try-demo">{l('Try a demo', 'Essayer une démo')} <span aria-hidden="true">↗</span></a>
       </header>
 
       <main className="hub__main hub__main--home" id="top">
         <section className="home-hero" aria-labelledby="home-hero-title">
           <div className="home-hero__content">
-            <span className="home-eyebrow"><span className="home-eyebrow__dot" /> Open-source survey platform</span>
-            <h1 id="home-hero-title">Less manual work.<br />More room for <em>insight.</em></h1>
-            <p>Connected tools streamline the statistical workflow—from survey design and collection to validation, discovery, and analysis—so teams can spend more time learning from the data.</p>
+            <span className="home-eyebrow"><span className="home-eyebrow__dot" /> {l('Open-source survey platform', 'Plateforme d’enquête à code source ouvert')}</span>
+            <h1 id="home-hero-title">{language === 'fr' ? <>Moins de tâches manuelles.<br />Plus de place pour <em>l’analyse.</em></> : <>Less manual work.<br />More room for <em>insight.</em></>}</h1>
+            <p>{l('Connected tools streamline the statistical workflow—from survey design and collection to validation, discovery, and analysis—so teams can spend more time learning from the data.', 'Des outils connectés simplifient le travail statistique, de la conception et de la collecte à la validation, à la découverte et à l’analyse, pour vous laisser plus de temps pour comprendre les données.')}</p>
             <div className="home-hero__actions">
-              <a className="home-hero__primary" href="#try-demo">Explore a demo <span aria-hidden="true">↗</span></a>
-              <a className="home-hero__secondary" href="#tool-paths">Browse all tools <span aria-hidden="true">↓</span></a>
+              <a className="home-hero__primary" href="#try-demo">{l('Explore a demo', 'Explorer une démo')} <span aria-hidden="true">↗</span></a>
+              <a className="home-hero__secondary" href="#tool-paths">{l('Browse all tools', 'Voir tous les outils')} <span aria-hidden="true">↓</span></a>
             </div>
           </div>
           <div className="home-hero__visual" aria-label="Explore the workflow">
@@ -3520,12 +3565,12 @@ function HomePage({ onNavigate }: { onNavigate: (v: HubView) => void }) {
               <svg className="home-visual__glyph" viewBox="0 0 40 40" fill="none" aria-hidden="true" focusable="false">
                 <path d="M20 4v32M4 20h32M8.7 8.7l22.6 22.6M31.3 8.7 8.7 31.3" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
               </svg>
-              <strong>One connected<br />workflow</strong>
+              <strong>{language === 'fr' ? <>Un flux de travail<br />connecté</> : <>One connected<br />workflow</>}</strong>
             </div>
-            <a className="home-visual__node home-visual__node--discover" href="#discover"><Library size={20} aria-hidden="true" /><span>Discover</span></a>
-            <a className="home-visual__node home-visual__node--design" href="#design"><PenLine size={20} aria-hidden="true" /><span>Design</span></a>
-            <a className="home-visual__node home-visual__node--collect" href="#collect"><LayoutDashboard size={20} aria-hidden="true" /><span>Collect</span></a>
-            <a className="home-visual__node home-visual__node--review" href="#review"><BarChart3 size={20} aria-hidden="true" /><span>Review</span></a>
+            <a className="home-visual__node home-visual__node--discover" href="#discover"><Library size={20} aria-hidden="true" /><span>{l('Discover', 'Découvrir')}</span></a>
+            <a className="home-visual__node home-visual__node--design" href="#design"><PenLine size={20} aria-hidden="true" /><span>{l('Design', 'Concevoir')}</span></a>
+            <a className="home-visual__node home-visual__node--collect" href="#collect"><LayoutDashboard size={20} aria-hidden="true" /><span>{l('Collect', 'Collecter')}</span></a>
+            <a className="home-visual__node home-visual__node--review" href="#review"><BarChart3 size={20} aria-hidden="true" /><span>{l('Review', 'Examiner')}</span></a>
             <span className="home-visual__spark home-visual__spark--one" aria-hidden="true" />
             <span className="home-visual__spark home-visual__spark--two" aria-hidden="true" />
             <span className="home-visual__spark home-visual__spark--three" aria-hidden="true" />
@@ -3533,13 +3578,13 @@ function HomePage({ onNavigate }: { onNavigate: (v: HubView) => void }) {
           </div>
         </section>
 
-        <div className="home-section-kicker"><span>01 / FIND YOUR WAY</span><span>Choose a starting point</span></div>
-        <nav className="tool-paths" id="tool-paths" aria-label="Browse tools by task">
+        <div className="home-section-kicker"><span>{l('01 / FIND YOUR WAY', '01 / TROUVER SA VOIE')}</span><span>{l('Choose a starting point', 'Choisissez un point de départ')}</span></div>
+        <nav className="tool-paths" id="tool-paths" aria-label={l('Browse tools by task', 'Parcourir les outils par tâche')}>
           {HOME_GROUPS.map((group, index) => (
             <a className="tool-paths__link" href={`#${group.id}`} key={group.id}>
               <span className="tool-paths__number">0{index + 1}</span>
-              <span className="tool-paths__title">{group.title}</span>
-              <span className="tool-paths__count">{group.moduleIds.length} tools</span>
+              <span className="tool-paths__title">{l(group.title, group.titleFr)}</span>
+              <span className="tool-paths__count">{group.moduleIds.length} {l('tools', 'outils')}</span>
               <span className="tool-paths__arrow" aria-hidden="true">↗</span>
             </a>
           ))}
@@ -3547,15 +3592,15 @@ function HomePage({ onNavigate }: { onNavigate: (v: HubView) => void }) {
 
         <div id="try-demo" className="home-demo-wrap"><DemoSurveyPicker /></div>
 
-        <div className="home-section-kicker home-section-kicker--tools"><span>02 / THE TOOLKIT</span><span>Built for the full survey lifecycle</span></div>
+        <div className="home-section-kicker home-section-kicker--tools"><span>{l('02 / THE TOOLKIT', '02 / LES OUTILS')}</span><span>{l('Built for the full survey lifecycle', 'Pour tout le cycle de vie des enquêtes')}</span></div>
         <div className="tool-sections">
           {HOME_GROUPS.map((group, index) => (
             <section className="tool-section" id={group.id} key={group.id} aria-labelledby={`${group.id}-title`}>
               <div className="tool-section__heading">
                 <span className="tool-section__number">0{index + 1}</span>
                 <div>
-                  <h2 id={`${group.id}-title`}>{group.title}</h2>
-                  <p>{group.summary}</p>
+                  <h2 id={`${group.id}-title`}>{l(group.title, group.titleFr)}</h2>
+                  <p>{l(group.summary, group.summaryFr)}</p>
                 </div>
               </div>
               <div className={`module-grid${group.id === 'discover' ? '' : ' module-grid--paired'}`}>
@@ -3569,7 +3614,7 @@ function HomePage({ onNavigate }: { onNavigate: (v: HubView) => void }) {
         </div>
 
         <details className="roadmap">
-          <summary>On the roadmap <span>{modules.filter(m => m.status === 'coming-soon').length} planned tools</span></summary>
+          <summary>{l('On the roadmap', 'À venir')} <span>{modules.filter(m => m.status === 'coming-soon').length} {l('planned tools', 'outils prévus')}</span></summary>
           <div className="module-grid module-grid--roadmap">
             {modules.filter(m => m.status === 'coming-soon').map((m) => <ModuleTile key={m.id} mod={m} />)}
           </div>
@@ -3580,9 +3625,9 @@ function HomePage({ onNavigate }: { onNavigate: (v: HubView) => void }) {
         <div className="hub__footer-content">
           <div className="hub__footer-brand">
             <span className="hub__footer-title">Modular Survey Tools</span>
-            <span className="hub__footer-copy">© 2026 Peji. Open-source under MIT License.</span>
+            <span className="hub__footer-copy">© 2026 Peji. {l('Open-source under MIT License.', 'Code source ouvert sous licence MIT.')}</span>
           </div>
-          <nav className="hub__footer-links" aria-label="Footer navigation">
+          <nav className="hub__footer-links" aria-label={l('Footer navigation', 'Navigation de bas de page')}>
             <a
               href="#privacy"
               onClick={(e) => {
@@ -3590,12 +3635,13 @@ function HomePage({ onNavigate }: { onNavigate: (v: HubView) => void }) {
                 onNavigate('privacy');
               }}
             >
-              Privacy &amp; Demonstration Notice
+              {l('Privacy & Demonstration Notice', 'Confidentialité et avis sur la démonstration')}
             </a>
             <a href="mailto:contact@peji.ca?subject=Modular%20Survey%20Tools%20-%20suggestion%20or%20collaboration">
-              Make a suggestion or let’s work together
+              {l('Make a suggestion or let’s work together', 'Faire une suggestion ou collaborer avec nous')}
             </a>
-            <a href="https://peji.ca" target="_blank" rel="noopener noreferrer">Made by Peji ↗</a>
+            <a href="https://peji.ca" target="_blank" rel="noopener noreferrer">{l('Made by Peji', 'Créé par Peji')} ↗</a>
+            <UpdatesSignup />
           </nav>
         </div>
       </footer>
@@ -3626,6 +3672,8 @@ const STATUS_ORDER: Record<CaseStatus, number> = {
 };
 
 function InterviewerView({ onBack }: { onBack: () => void }) {
+  const language = useUiLanguage();
+  const l = (en: string, fr: string) => uiText(language, en, fr);
   const [interviewers, setInterviewers] = useState<InterviewerRow[]>([]);
   const [selectedId, setSelectedId] = useState('');
   const [cases, setCases] = useState<CaseDetail[]>([]);
@@ -3681,8 +3729,8 @@ function InterviewerView({ onBack }: { onBack: () => void }) {
   return (
     <div className="hub">
       <header className="hub__header">
-        <button onClick={onBack} className="hub__back">← Home</button>
-        <h1 style={{ margin: 0, fontSize: 20, fontWeight: 700 }}>Interviewer Mode</h1>
+        <button onClick={onBack} className="hub__back">← {l('Home', 'Accueil')}</button>
+        <h1 style={{ margin: 0, fontSize: 20, fontWeight: 700 }}>{l('Interviewer Mode', 'Mode intervieweur')}</h1>
       </header>
       <main className="hub__main" style={{ maxWidth: 860, margin: '0 auto', padding: '24px 16px' }}>
         {error && <p className="cati__error">{error}</p>}
@@ -3798,6 +3846,8 @@ function InterviewerView({ onBack }: { onBack: () => void }) {
 // ── CATI: Supervisor Dashboard ────────────────────────────────────────────────
 
 function SupervisorView({ onBack }: { onBack: () => void }) {
+  const language = useUiLanguage();
+  const l = (en: string, fr: string) => uiText(language, en, fr);
   const [interviewers, setInterviewers] = useState<InterviewerRow[]>([]);
   const [cases, setCases] = useState<CaseDetail[]>([]);
   const [assignCaseId, setAssignCaseId] = useState('');
@@ -3851,8 +3901,8 @@ function SupervisorView({ onBack }: { onBack: () => void }) {
   return (
     <div className="hub">
       <header className="hub__header">
-        <button onClick={onBack} className="hub__back">← Home</button>
-        <h1 style={{ margin: 0, fontSize: 20, fontWeight: 700 }}>Supervisor Dashboard</h1>
+        <button onClick={onBack} className="hub__back">← {l('Home', 'Accueil')}</button>
+        <h1 style={{ margin: 0, fontSize: 20, fontWeight: 700 }}>{l('Supervisor Dashboard', 'Tableau de bord du superviseur')}</h1>
       </header>
       <main className="hub__main" style={{ maxWidth: 960, margin: '0 auto', padding: '24px 16px' }}>
         {error && <p className="cati__error">{error}</p>}
@@ -3951,6 +4001,9 @@ function SupervisorView({ onBack }: { onBack: () => void }) {
 
 export function App() {
   const [view, setViewState] = useState<HubView>(() => getViewFromUrl());
+  const language = useUiLanguage();
+
+  useEffect(() => { document.documentElement.lang = language === 'fr' ? 'fr-CA' : 'en-CA'; }, [language]);
 
   const setView = useCallback((nextView: HubView) => {
     setViewState(nextView);
@@ -3986,15 +4039,16 @@ export function App() {
     };
   }, []);
 
-  if (view === 'collector') return <CollectorView onBack={() => setView('home')} onPrivacy={() => setView('privacy')} />;
-  if (view === 'searcher') return <SearcherView onBack={() => setView('home')} onResearcher={() => setView('researcher')} />;
-  if (view === 'researcher') return <ResearcherPage onHome={() => setView('home')} onSearcher={() => setView('searcher')} />;
-  if (view === 'trainer') return <TrainingView onBack={() => setView('home')} />;
-  if (view === 'migrator') return <MigratorView onBack={() => setView('home')} />;
-  if (view === 'analyzer') return <AnalyzerView onBack={() => setView('home')} />;
-  if (view === 'interviewer') return <InterviewerView onBack={() => setView('home')} />;
-  if (view === 'supervisor') return <SupervisorView onBack={() => setView('home')} />;
-  if (view === 'validator') return <ValidatorView onBack={() => setView('home')} />;
-  if (view === 'privacy') return <PrivacyPolicyView onBack={() => setView('home')} />;
-  return <HomePage onNavigate={setView} />;
+  if (view === 'home') return <HomePage onNavigate={setView} />;
+  const page = view === 'collector' ? <CollectorView onBack={() => setView('home')} onPrivacy={() => setView('privacy')} />
+    : view === 'searcher' ? <SearcherView onBack={() => setView('home')} onResearcher={() => setView('researcher')} />
+    : view === 'researcher' ? <ResearcherPage onHome={() => setView('home')} onSearcher={() => setView('searcher')} />
+    : view === 'trainer' ? <TrainingView onBack={() => setView('home')} />
+    : view === 'migrator' ? <MigratorView onBack={() => setView('home')} />
+    : view === 'analyzer' ? <AnalyzerView onBack={() => setView('home')} />
+    : view === 'interviewer' ? <InterviewerView onBack={() => setView('home')} />
+    : view === 'supervisor' ? <SupervisorView onBack={() => setView('home')} />
+    : view === 'validator' ? <ValidatorView onBack={() => setView('home')} />
+    : <PrivacyPolicyView onBack={() => setView('home')} />;
+  return <><div className="hub-language-bar"><LanguageSwitch /></div>{page}</>;
 }

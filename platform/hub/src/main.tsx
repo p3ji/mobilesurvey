@@ -3,6 +3,7 @@ import { createRoot } from 'react-dom/client';
 import { App } from './App.jsx';
 import './styles.css';
 import './theme.css';
+import '@mobilesurvey/ui-locale/style.css';
 
 const root = document.getElementById('root');
 if (!root) throw new Error('Root element #root not found');
