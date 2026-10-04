@@ -3513,21 +3513,23 @@ function HomePage({ onNavigate }: { onNavigate: (v: HubView) => void }) {
               <a className="home-hero__secondary" href="#tool-paths">Browse all tools <span aria-hidden="true">↓</span></a>
             </div>
           </div>
-          <div className="home-hero__visual" aria-hidden="true">
-            <div className="home-visual__orbit home-visual__orbit--outer" />
-            <div className="home-visual__orbit home-visual__orbit--inner" />
-            <div className="home-visual__center">
+          <div className="home-hero__visual" aria-label="Explore the workflow">
+            <div className="home-visual__orbit home-visual__orbit--outer" aria-hidden="true" />
+            <div className="home-visual__orbit home-visual__orbit--inner" aria-hidden="true" />
+            <div className="home-visual__center" aria-hidden="true">
               <svg className="home-visual__glyph" viewBox="0 0 40 40" fill="none" aria-hidden="true" focusable="false">
                 <path d="M20 4v32M4 20h32M8.7 8.7l22.6 22.6M31.3 8.7 8.7 31.3" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
               </svg>
               <strong>One connected<br />workflow</strong>
             </div>
-            <div className="home-visual__node home-visual__node--discover"><Library size={20} /><span>Discover</span></div>
-            <div className="home-visual__node home-visual__node--design"><PenLine size={20} /><span>Design</span></div>
-            <div className="home-visual__node home-visual__node--collect"><LayoutDashboard size={20} /><span>Collect</span></div>
-            <div className="home-visual__node home-visual__node--review"><BarChart3 size={20} /><span>Review</span></div>
-            <span className="home-visual__spark home-visual__spark--one" />
-            <span className="home-visual__spark home-visual__spark--two" />
+            <a className="home-visual__node home-visual__node--discover" href="#discover"><Library size={20} aria-hidden="true" /><span>Discover</span></a>
+            <a className="home-visual__node home-visual__node--design" href="#design"><PenLine size={20} aria-hidden="true" /><span>Design</span></a>
+            <a className="home-visual__node home-visual__node--collect" href="#collect"><LayoutDashboard size={20} aria-hidden="true" /><span>Collect</span></a>
+            <a className="home-visual__node home-visual__node--review" href="#review"><BarChart3 size={20} aria-hidden="true" /><span>Review</span></a>
+            <span className="home-visual__spark home-visual__spark--one" aria-hidden="true" />
+            <span className="home-visual__spark home-visual__spark--two" aria-hidden="true" />
+            <span className="home-visual__spark home-visual__spark--three" aria-hidden="true" />
+            <span className="home-visual__spark home-visual__spark--four" aria-hidden="true" />
           </div>
         </section>
 
