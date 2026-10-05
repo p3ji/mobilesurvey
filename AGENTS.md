@@ -27,7 +27,7 @@
 - `ARCHITECTURE.md` — package relationships, ownership boundaries, and instructions for adding or extracting a tool.
 
 ## Current state
-- **Hub scrollytelling (2026-10-04):** On capable desktop browsers, a sticky workflow panel follows the four home-page tool groups and highlights the current stage; its labels remain section links. The original stacked layout is used on phones and for reduced-motion settings.
+- **Hub scroll motion (2026-10-04):** The sticky duplicate workflow panel was removed. On capable devices, the hero labels settle on first scroll and the existing path cards, demo area, headings, and tool cards enter once as they come into view. Content stays in place when scrolling back; reduced-motion and unsupported devices display it statically.
 - **Bilingual UI and updates list (2026-10-04):** A shared EN/FR preference spans Hub, Designer, and respondent entry points; public pages and core controls have French copy, with deeper tool terminology still being translated. The Hub footer has a consented updates signup backed by the append-only `newsletter_subscribers` Supabase table (anon insert only, no public read). New inserts trigger `newsletter-signup-notify`, which sends a Resend alert from and to `contact@peji.ca`; configuration and verification are in `docs/newsletter-notifications.md`.
 - **Phases 1–13 DONE** (full history: Brain note → Log). Latest: Validator V1/V2/V3 complete and verified live end-to-end against Supabase (2026-07-09); all DEPLOYMENT.md §§9b/9c tables live.
 - **Phase 14 IN PROGRESS:** Questionnaire Testing Bot (`tools/testing/questionnaire-bot`). Phases A–C done (path enumeration ×3 strategies, browser-driven scenario execution, HTML report + CLI; 91 tests, 12 real-Chromium).

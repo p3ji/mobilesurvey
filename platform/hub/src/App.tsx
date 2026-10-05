@@ -3338,34 +3338,7 @@ const HOME_GROUPS = [
     summaryFr: 'Explorez les résultats et résolvez les problèmes de qualité des données.',
     moduleIds: ['analyzer', 'validator'],
   },
-] as const;
-
-type HomeStage = (typeof HOME_GROUPS)[number]['id'];
-
-function WorkflowVisual({ language, activeStage, story = false }: { language: 'en' | 'fr'; activeStage?: HomeStage; story?: boolean }) {
-  const l = (en: string, fr: string) => uiText(language, en, fr);
-  const stageClass = (stage: HomeStage) => `home-visual__node home-visual__node--${stage}${activeStage === stage ? ' home-visual__node--active' : ''}`;
-  return (
-    <div className={`home-hero__visual${story ? ' home-hero__visual--story' : ''}`} role="group" aria-label={l('Explore the workflow', 'Explorer le parcours')}>
-      <div className="home-visual__orbit home-visual__orbit--outer" aria-hidden="true" />
-      <div className="home-visual__orbit home-visual__orbit--inner" aria-hidden="true" />
-      <div className="home-visual__center" aria-hidden="true">
-        <svg className="home-visual__glyph" viewBox="0 0 40 40" fill="none" aria-hidden="true" focusable="false">
-          <path d="M20 4v32M4 20h32M8.7 8.7l22.6 22.6M31.3 8.7 8.7 31.3" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-        </svg>
-        <strong>{language === 'fr' ? <>Un flux de travail<br />connecté</> : <>One connected<br />workflow</>}</strong>
-      </div>
-      <a className={stageClass('discover')} href="#discover" aria-current={activeStage === 'discover' ? 'location' : undefined}><Library size={20} aria-hidden="true" /><span>{l('Discover', 'Découvrir')}</span></a>
-      <a className={stageClass('design')} href="#design" aria-current={activeStage === 'design' ? 'location' : undefined}><PenLine size={20} aria-hidden="true" /><span>{l('Design', 'Concevoir')}</span></a>
-      <a className={stageClass('collect')} href="#collect" aria-current={activeStage === 'collect' ? 'location' : undefined}><LayoutDashboard size={20} aria-hidden="true" /><span>{l('Collect', 'Collecter')}</span></a>
-      <a className={stageClass('review')} href="#review" aria-current={activeStage === 'review' ? 'location' : undefined}><BarChart3 size={20} aria-hidden="true" /><span>{l('Review', 'Examiner')}</span></a>
-      <span className="home-visual__spark home-visual__spark--one" aria-hidden="true" />
-      <span className="home-visual__spark home-visual__spark--two" aria-hidden="true" />
-      <span className="home-visual__spark home-visual__spark--three" aria-hidden="true" />
-      <span className="home-visual__spark home-visual__spark--four" aria-hidden="true" />
-    </div>
-  );
-}
+];
 
 const HOME_MODULES_FR: Record<string, Pick<ModuleDef, 'name' | 'tagline' | 'description'> & { tag?: string }> = {
   'designer-pro': { name: 'Designer — Pro', tagline: 'Conception complète de questionnaires', description: 'Créez un questionnaire à partir de zéro ou chargez une démo. Modifiez la structure, le routage conditionnel, les variables et les expressions; visualisez le flux.' },
@@ -3390,24 +3363,37 @@ const HOME_MODULES_FR: Record<string, Pick<ModuleDef, 'name' | 'tagline' | 'desc
 function HomePage({ onNavigate }: { onNavigate: (v: HubView) => void }) {
   const language = useUiLanguage();
   const l = (en: string, fr: string) => uiText(language, en, fr);
-  const [activeStage, setActiveStage] = useState<HomeStage>('discover');
-  const activeGroup = HOME_GROUPS.find((group) => group.id === activeStage) ?? HOME_GROUPS[0];
-
   useEffect(() => {
-    if (!('IntersectionObserver' in window)) return;
+    const root = document.querySelector<HTMLElement>('.hub--landing');
+    if (!root || !('IntersectionObserver' in window)) return;
+    if (!window.matchMedia('(prefers-reduced-motion: no-preference) and (update: fast)').matches) return;
+
     const observer = new IntersectionObserver((entries) => {
-      const inView = entries.filter((entry) => entry.isIntersecting);
-      if (inView.length === 0) return;
-      // When two sections cross the reading band, the incoming section takes focus.
-      inView.sort((a, b) => b.boundingClientRect.top - a.boundingClientRect.top);
-      const stage = inView[0]?.target.id as HomeStage | undefined;
-      if (stage) setActiveStage(stage);
-    }, { rootMargin: '-20% 0px -58% 0px' });
-    HOME_GROUPS.forEach((group) => {
-      const section = document.getElementById(group.id);
-      if (section) observer.observe(section);
-    });
-    return () => observer.disconnect();
+      entries.forEach((entry) => {
+        if (!entry.isIntersecting) return;
+        entry.target.classList.add('is-revealed');
+        observer.unobserve(entry.target);
+      });
+    }, { rootMargin: '0px 0px -10% 0px', threshold: 0.12 });
+    const revealOnFocus = (event: FocusEvent) => {
+      (event.target as Element | null)?.closest('.home-reveal')?.classList.add('is-revealed');
+    };
+    const settleHero = () => {
+      if (window.scrollY <= 40) return;
+      root.classList.add('has-scrolled');
+      window.removeEventListener('scroll', settleHero);
+    };
+    root.classList.add('scroll-reveal-ready');
+    root.querySelectorAll('.home-reveal').forEach((element) => observer.observe(element));
+    root.addEventListener('focusin', revealOnFocus);
+    window.addEventListener('scroll', settleHero, { passive: true });
+    settleHero();
+    return () => {
+      observer.disconnect();
+      root.removeEventListener('focusin', revealOnFocus);
+      window.removeEventListener('scroll', settleHero);
+      root.classList.remove('scroll-reveal-ready', 'has-scrolled');
+    };
   }, []);
   const modules = useMemo((): ModuleDef[] => ([
     {
@@ -3604,13 +3590,30 @@ function HomePage({ onNavigate }: { onNavigate: (v: HubView) => void }) {
               <a className="home-hero__secondary" href="#tool-paths">{l('Browse all tools', 'Voir tous les outils')} <span aria-hidden="true">↓</span></a>
             </div>
           </div>
-          <WorkflowVisual language={language} />
+          <div className="home-hero__visual" aria-label="Explore the workflow">
+            <div className="home-visual__orbit home-visual__orbit--outer" aria-hidden="true" />
+            <div className="home-visual__orbit home-visual__orbit--inner" aria-hidden="true" />
+            <div className="home-visual__center" aria-hidden="true">
+              <svg className="home-visual__glyph" viewBox="0 0 40 40" fill="none" aria-hidden="true" focusable="false">
+                <path d="M20 4v32M4 20h32M8.7 8.7l22.6 22.6M31.3 8.7 8.7 31.3" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+              </svg>
+              <strong>{language === 'fr' ? <>Un flux de travail<br />connecté</> : <>One connected<br />workflow</>}</strong>
+            </div>
+            <a className="home-visual__node home-visual__node--discover" href="#discover"><Library size={20} aria-hidden="true" /><span>{l('Discover', 'Découvrir')}</span></a>
+            <a className="home-visual__node home-visual__node--design" href="#design"><PenLine size={20} aria-hidden="true" /><span>{l('Design', 'Concevoir')}</span></a>
+            <a className="home-visual__node home-visual__node--collect" href="#collect"><LayoutDashboard size={20} aria-hidden="true" /><span>{l('Collect', 'Collecter')}</span></a>
+            <a className="home-visual__node home-visual__node--review" href="#review"><BarChart3 size={20} aria-hidden="true" /><span>{l('Review', 'Examiner')}</span></a>
+            <span className="home-visual__spark home-visual__spark--one" aria-hidden="true" />
+            <span className="home-visual__spark home-visual__spark--two" aria-hidden="true" />
+            <span className="home-visual__spark home-visual__spark--three" aria-hidden="true" />
+            <span className="home-visual__spark home-visual__spark--four" aria-hidden="true" />
+          </div>
         </section>
 
         <div className="home-section-kicker"><span>{l('01 / FIND YOUR WAY', '01 / TROUVER SA VOIE')}</span><span>{l('Choose a starting point', 'Choisissez un point de départ')}</span></div>
         <nav className="tool-paths" id="tool-paths" aria-label={l('Browse tools by task', 'Parcourir les outils par tâche')}>
           {HOME_GROUPS.map((group, index) => (
-            <a className="tool-paths__link" href={`#${group.id}`} key={group.id}>
+            <a className="tool-paths__link home-reveal" href={`#${group.id}`} key={group.id}>
               <span className="tool-paths__number">0{index + 1}</span>
               <span className="tool-paths__title">{l(group.title, group.titleFr)}</span>
               <span className="tool-paths__count">{group.moduleIds.length} {l('tools', 'outils')}</span>
@@ -3619,37 +3622,27 @@ function HomePage({ onNavigate }: { onNavigate: (v: HubView) => void }) {
           ))}
         </nav>
 
-        <div id="try-demo" className="home-demo-wrap"><DemoSurveyPicker /></div>
+        <div id="try-demo" className="home-demo-wrap home-reveal"><DemoSurveyPicker /></div>
 
         <div className="home-section-kicker home-section-kicker--tools"><span>{l('02 / THE TOOLKIT', '02 / LES OUTILS')}</span><span>{l('Built for the full survey lifecycle', 'Pour tout le cycle de vie des enquêtes')}</span></div>
-        <div className="workflow-story">
-          <aside className="workflow-story__aside" aria-label={l('Survey workflow navigation', 'Navigation du parcours d’enquête')}>
-            <span className="workflow-story__eyebrow">{l('FOLLOW THE WORKFLOW', 'SUIVEZ LE PARCOURS')}</span>
-            <WorkflowVisual language={language} activeStage={activeStage} story />
-            <div className="workflow-story__caption" aria-hidden="true">
-              <span>0{HOME_GROUPS.findIndex((group) => group.id === activeStage) + 1} / 04</span>
-              <strong>{l(activeGroup.title, activeGroup.titleFr)}</strong>
-            </div>
-          </aside>
-          <div className="tool-sections">
-            {HOME_GROUPS.map((group, index) => (
-              <section className="tool-section" id={group.id} key={group.id} aria-labelledby={`${group.id}-title`} data-active={activeStage === group.id}>
-                <div className="tool-section__heading">
-                  <span className="tool-section__number">0{index + 1}</span>
-                  <div>
-                    <h2 id={`${group.id}-title`}>{l(group.title, group.titleFr)}</h2>
-                    <p>{l(group.summary, group.summaryFr)}</p>
-                  </div>
+        <div className="tool-sections">
+          {HOME_GROUPS.map((group, index) => (
+            <section className="tool-section home-reveal" id={group.id} key={group.id} aria-labelledby={`${group.id}-title`}>
+              <div className="tool-section__heading">
+                <span className="tool-section__number">0{index + 1}</span>
+                <div>
+                  <h2 id={`${group.id}-title`}>{l(group.title, group.titleFr)}</h2>
+                  <p>{l(group.summary, group.summaryFr)}</p>
                 </div>
-                <div className={`module-grid${group.id === 'discover' ? '' : ' module-grid--paired'}`}>
-                  {group.moduleIds.map((id) => {
-                    const mod = modules.find((item) => item.id === id);
-                    return mod ? <ModuleTile key={mod.id} mod={mod} /> : null;
-                  })}
-                </div>
-              </section>
-            ))}
-          </div>
+              </div>
+              <div className={`module-grid${group.id === 'discover' ? '' : ' module-grid--paired'}`}>
+                {group.moduleIds.map((id) => {
+                  const mod = modules.find((item) => item.id === id);
+                  return mod ? <ModuleTile key={mod.id} mod={mod} /> : null;
+                })}
+              </div>
+            </section>
+          ))}
         </div>
 
         <details className="roadmap">
