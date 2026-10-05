@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { matchesTextualRange, expandRangeToken, findComponentSiblings, renderVerifiedSql, isPublishableEdge, isTextuallyGrounded, type CandidateEdgeRow } from '../reviewer.js';
+import { matchesTextualRange, expandRangeToken, findComponentSiblings, renderVerifiedSql, renderChunkSql, mapPublishableEdges, isPublishableEdge, isTextuallyGrounded, type CandidateEdgeRow } from '../reviewer.js';
 import { parseAliasBlocks } from '../aliases.js';
 
 describe('matchesTextualRange', () => {
@@ -68,6 +68,31 @@ describe('verified SQL export', () => {
     const sql = renderVerifiedSql([humanEdge]);
     expect(sql).toContain("case when i.extraction_method = 'human_review' then 'human_verified' else 'ai_inferred' end");
     expect(sql).toContain("case when i.extraction_method = 'human_review' then 'human_suggestion_accept' else 'reviewer_agent_v1' end");
+  });
+
+  it('splits the payload into self-contained idempotent chunks for CLI size limits', () => {
+    const edges = Array.from({ length: 5 }, (_, i) => ({
+      target_var_name: `TGT${i}`, source_var_name: 'AGE', survey_group: 'CCHS_ESCC',
+      cycle: '2019', derivation_type: 'recode', expression_summary: `s${i}`,
+      raw_evidence: 'Derived from AGE.', extraction_method: 'llm_qwen3.6-35b-a3b',
+      confidence: 0.9, review_status: 'verified',
+    })) as CandidateEdgeRow[];
+
+    const payload = mapPublishableEdges(edges);
+    expect(payload).toHaveLength(5);
+    expect(payload[0]).toMatchObject({ target_var_name: 'TGT0', ai_model: 'qwen3.6-35b-a3b' });
+
+    // Each chunk is a complete, independently importable statement with the same conflict arbiter.
+    const a = renderChunkSql(payload.slice(0, 2));
+    const b = renderChunkSql(payload.slice(2));
+    for (const sql of [a, b]) {
+      expect(sql).toContain('jsonb_to_recordset');
+      expect(sql).toContain('on conflict (target_record_id, (upper(btrim(source_var_name)))) do nothing');
+    }
+    // Chunk headers report their own row counts; the full render matches the legacy single-file shape.
+    expect(a).toMatch(/pairs in this chunk: 2/);
+    expect(b).toMatch(/pairs in this chunk: 3/);
+    expect(renderVerifiedSql(edges)).toContain('jsonb_to_recordset');
   });
 });
 

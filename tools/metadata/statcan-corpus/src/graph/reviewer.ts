@@ -13,7 +13,7 @@ import { DatabaseSync } from 'node:sqlite';
 import crypto from 'node:crypto';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { writeFileSync } from 'node:fs';
+import { mkdirSync, rmSync, writeFileSync } from 'node:fs';
 import { buildOccurrenceLookup, edgeDedupeKey, ensureEdgeDedupeSchema } from './queue.js';
 import { buildQuestionNameAliasIndex } from './aliases.js';
 
@@ -22,6 +22,10 @@ const PACKAGE_DIR = path.resolve(HERE, '..', '..');
 const DB_PATH = path.join(PACKAGE_DIR, 'out', 'derivation_queue.db');
 const SAMPLE_DOC_PATH = path.join(PACKAGE_DIR, 'out', 'human_review_sample_10.md');
 const SQL_EXPORT_PATH = path.join(PACKAGE_DIR, 'out', 'verified_edges.sql');
+/** Chunked export: rows per file. ~450 rows ≈ 700 KB of jsonb — well under the CLI's request limit. */
+export const EXPORT_CHUNK_ROWS = 450;
+const CHUNK_DIR = path.join(PACKAGE_DIR, 'out', 'verified_chunks');
+const CHUNK_MANIFEST_PATH = path.join(CHUNK_DIR, 'manifest.json');
 
 export interface CandidateEdgeRow {
   edge_id: string;
@@ -576,17 +580,32 @@ export class ReviewerAgent {
   }
 
   /**
-   * Export verified candidate edges to a Supabase-ready SQL migration file
+   * Export verified candidate edges to Supabase-ready SQL migration files. The full-corpus
+   * payload exceeds the CLI's request-size limit (413 on one ~3.5 MB jsonb literal), so it is
+   * split into self-contained idempotent chunks under `out/verified_chunks/` plus a manifest
+   * carrying the total publishable count for the publisher's change detection.
    */
   public exportVerifiedToSQL(): string {
     const verified = this.db
       .prepare(`SELECT * FROM candidate_edge WHERE review_status = 'verified'`)
       .all() as unknown as CandidateEdgeRow[];
 
-    const sql = renderVerifiedSql(verified);
-    writeFileSync(SQL_EXPORT_PATH, sql, 'utf8');
-    console.log(`Exported ${verified.filter(isPublishableEdge).length} publishable pairs from ${verified.length} auto-verified candidates to: ${SQL_EXPORT_PATH}`);
-    return SQL_EXPORT_PATH;
+    const payload = mapPublishableEdges(verified.filter(isPublishableEdge));
+    rmSync(CHUNK_DIR, { recursive: true, force: true });
+    mkdirSync(CHUNK_DIR, { recursive: true });
+
+    const chunks: string[] = [];
+    for (let i = 0; i < payload.length; i += EXPORT_CHUNK_ROWS) {
+      const file = path.join(CHUNK_DIR, `chunk_${Math.floor(i / EXPORT_CHUNK_ROWS) + 1}.sql`);
+      writeFileSync(file, renderChunkSql(payload.slice(i, i + EXPORT_CHUNK_ROWS)), 'utf8');
+      chunks.push(path.basename(file));
+    }
+    // Keep the legacy single-file export for small corpora and diffing.
+    writeFileSync(SQL_EXPORT_PATH, renderVerifiedSql(verified), 'utf8');
+    const manifest = { total: payload.length, chunkRows: EXPORT_CHUNK_ROWS, files: chunks };
+    writeFileSync(CHUNK_MANIFEST_PATH, JSON.stringify(manifest, null, 2) + '\n', 'utf8');
+    console.log(`Exported ${payload.length} publishable pairs from ${verified.length} auto-verified candidates to: ${CHUNK_DIR} (${chunks.length} chunk(s))`);
+    return CHUNK_DIR;
   }
 }
 
@@ -598,7 +617,12 @@ export class ReviewerAgent {
  */
 export function renderVerifiedSql(verified: readonly CandidateEdgeRow[]): string {
   const publishable = verified.filter(isPublishableEdge);
-  const payload = publishable.map((edge) => ({
+  return renderChunkSql(mapPublishableEdges(publishable));
+}
+
+/** Map publishable edges to the flat payload rows the import CTE consumes. */
+export function mapPublishableEdges(edges: readonly CandidateEdgeRow[]): Record<string, unknown>[] {
+  return edges.map((edge) => ({
     target_var_name: edge.target_var_name,
     source_var_name: edge.source_var_name,
     survey_group: edge.survey_group,
@@ -611,9 +635,18 @@ export function renderVerifiedSql(verified: readonly CandidateEdgeRow[]): string
     ai_model: edge.extraction_method.replace(/^llm_/, '') || 'qwen3.8-27b',
     confidence: edge.confidence,
   }));
+}
+
+/**
+ * One importable statement for a slice of payload rows. The full-corpus export exceeds the
+ * Supabase CLI's request-size limit (413 on a single ~3.5 MB jsonb literal), so callers split
+ * the payload into chunks small enough to ship individually; each chunk is self-contained and
+ * idempotent (same conflict arbiter).
+ */
+export function renderChunkSql(payload: readonly Record<string, unknown>[]): string {
   const literal = JSON.stringify(payload).replace(/'/g, "''");
   return `-- Reviewed AI-inferred lineage; apply after sql/derivation_edges.sql.
--- Input logical pairs: ${verified.length}; publishable direct-input pairs: ${publishable.length}.
+-- Publishable direct-input pairs in this chunk: ${payload.length}.
 -- Mixed-provenance school records, identifiers, analogies and ambiguous notes are withheld.
 -- Exact survey/cycle/document/name resolution skips missing English counterparts and same-name pairs.
 -- Re-running is safe because idx_derivation_target_source_name_unique is the conflict arbiter.
