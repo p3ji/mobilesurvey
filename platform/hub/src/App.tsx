@@ -11,6 +11,7 @@ import {
   FlaskConical,
   GraduationCap,
   Headphones,
+  Database,
   Languages,
   LayoutDashboard,
   Layers,
@@ -1591,12 +1592,8 @@ function DemoSurveyPicker() {
 function ModuleTile({ mod }: { mod: ModuleDef }) {
   const language = useUiLanguage();
   if (mod.status === 'coming-soon') {
-    return (
-      <button
-        type="button"
-        className="module-tile module-tile--soon"
-        disabled
-      >
+    const soonBody = (
+      <>
         <span className="module-tile__icon" aria-hidden="true">{mod.icon}</span>
         <div className="module-tile__body">
           <div className="module-tile__head">
@@ -1606,6 +1603,22 @@ function ModuleTile({ mod }: { mod: ModuleDef }) {
           <p className="module-tile__tagline">{mod.tagline}</p>
           <p className="module-tile__desc">{mod.description}</p>
         </div>
+      </>
+    );
+    if (mod.href) {
+      return (
+        <a href={mod.href} className="module-tile module-tile--soon" target="_blank" rel="noopener noreferrer">
+          {soonBody}
+        </a>
+      );
+    }
+    return (
+      <button
+        type="button"
+        className="module-tile module-tile--soon"
+        disabled
+      >
+        {soonBody}
       </button>
     );
   }
@@ -3358,6 +3371,8 @@ const HOME_MODULES_FR: Record<string, Pick<ModuleDef, 'name' | 'tagline' | 'desc
   remine: { name: 'Remine', tagline: 'Exploration automatisée de tableaux de données', description: 'Repérez les écarts persistants, les renversements de tendance et les seuils franchis dans les tableaux de données.' },
   'a11y-auditor': { name: 'Auditeur d’accessibilité', tagline: 'Évaluation des enquêtes selon les WCAG 2.2', description: 'Vérifiez automatiquement les cibles tactiles, la visibilité du focus et les autres exigences d’accessibilité des enquêtes.' },
   'survey-translator': { name: 'Traducteur de questionnaires', tagline: 'Traduction adaptée à la terminologie statistique', description: 'Préparez une version bilingue des questionnaires en reprenant la terminologie statistique canadienne.' },
+  'related-data': { name: 'Chercheur de données connexes', tagline: 'Trouvez des enquêtes et données hors Statistique Canada à combiner', description: 'Étend la base de recherche aux enquêtes et autres sources de données de ouvert.canada.ca afin de repérer des synergies et des possibilités de combinaison. Des essais évaluent si les modèles d’IA Jev, un nouveau modèle de classification, améliorent l’efficacité de la recherche.' },
+  'open-stats-lab': { name: 'Open Stats Lab', tagline: 'Résultats de l’expérience de visibilité en ligne', description: 'Expériences sur la visibilité des statistiques officielles en ligne. Premier résultat publié : l’expérience de visibilité (ouvre le rapport complet).' },
 };
 
 function HomePage({ onNavigate }: { onNavigate: (v: HubView) => void }) {
@@ -3559,6 +3574,23 @@ function HomePage({ onNavigate }: { onNavigate: (v: HubView) => void }) {
       tagline: 'LoRA fine-tuned model for statistical language',
       description: 'Parameter-efficient translation calibrated on 438,000+ StatCan variables: masters official Canadian statistical terminology, question stems, NAICS/NOC classifications, and bilingual DDI schemes.',
       status: 'coming-soon',
+    },
+    {
+      id: 'related-data',
+      icon: <Database size={22} />,
+      name: 'Related Data Searcher',
+      tagline: 'Find non-StatCan surveys and data to combine',
+      description: 'Expands the search database to surveys and other data sources on open.canada.ca (including non-Statistics Canada surveys) to reveal synergies and opportunities for data combination. Experiments are under way to test whether Jev AI models, a new classification model, improve search efficiency.',
+      status: 'coming-soon',
+    },
+    {
+      id: 'open-stats-lab',
+      icon: <FlaskConical size={22} />,
+      name: 'Open Stats Lab',
+      tagline: 'Results of the search visibility experiment',
+      description: 'Experiments on how official statistics surface online. First published: the results of the visibility experiment (opens the full report).',
+      status: 'coming-soon',
+      href: 'https://civik.peji.ca/stats/report/',
     },
   ] satisfies ModuleDef[]).map((module) => language === 'fr' ? { ...module, ...HOME_MODULES_FR[module.id] } : module), [onNavigate, language]);
 

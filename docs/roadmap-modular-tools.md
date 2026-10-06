@@ -90,3 +90,18 @@ Generic commercial machine translation (DeepL, Google Translate, base LLMs) freq
 4. **Integration with Modular Survey Suite:**
    - Local on-device inference via GGUF/Ollama or lightweight Node/Python runner.
    - Direct integration into `@mobilesurvey/designer`: authors drafting in English click "Generate Official French Translation" to immediately populate the bilingual DDI `label.fr` and `instruction.fr` fields with certified agency phrasing.
+
+---
+
+## 4. Related Data Searcher (added 2026-10-06)
+
+- **Scope:** Extend the Searcher database beyond Statistics Canada to surveys and other data sources catalogued on open.canada.ca (e.g. non-StatCan surveys).
+- **Goal:** Identify synergies and opportunities for data combination across sources.
+- **Experiment:** Testing whether Jev AI models (a new classification model) improve search efficiency (compare against the lexical baseline and the Qdrant vector sidecar per `docs/search-evaluation.md`).
+- **Hub:** roadmap tile `related-data`.
+
+## 5. Open Stats Lab (added 2026-10-06)
+
+- **Scope:** Experiments on how official statistics surface online.
+- **First result:** Search visibility experiment report: https://civik.peji.ca/stats/report/
+- **Hub:** roadmap tile `open-stats-lab` links to the report. Separate from the AI-visibility study code in the `stats` repo; no shared code is implied.
