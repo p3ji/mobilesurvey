@@ -648,7 +648,8 @@ export function renderChunkSql(payload: readonly Record<string, unknown>[]): str
   return `-- Reviewed AI-inferred lineage; apply after sql/derivation_edges.sql.
 -- Publishable direct-input pairs in this chunk: ${payload.length}.
 -- Mixed-provenance school records, identifiers, analogies and ambiguous notes are withheld.
--- Exact survey/cycle/document/name resolution skips missing English counterparts and same-name pairs.
+-- Exact survey/cycle/document/name resolution is preferred; names with no exact-cycle row
+-- fall back to the group's cycle-less rows (e.g. CVCS/NGES/SOLMP carry NULL cycles).
 -- Re-running is safe because idx_derivation_target_source_name_unique is the conflict arbiter.
 with incoming as materialized (
   select * from jsonb_to_recordset('${literal}'::jsonb) as i (
@@ -661,17 +662,48 @@ with incoming as materialized (
     from corpus_variable v
    where v.lang = 'en'
      and v.survey_group in (select distinct survey_group from incoming)
-), source_choice as (
-  select distinct on (survey_group, cycle, path, name_key)
-         survey_group, cycle, path, name_key, record_id
-    from english order by survey_group, cycle, path, name_key, record_id
+), target_exact as (
+  -- Preferred: the exact-cycle row for this edge's target name.
+  select distinct on (e.survey_group, e.name_key) e.survey_group, e.name_key, e.record_id, e.path
+    from english e join incoming i on i.survey_group = e.survey_group
+                   and upper(btrim(i.target_var_name)) = e.name_key
+                   and e.cycle is not distinct from i.cycle
+    order by e.survey_group, e.name_key, e.path, e.record_id
+), target_fallback as (
+  -- Cycle-tolerant: any row for the name when no exact-cycle row exists.
+  select distinct on (survey_group, name_key) survey_group, name_key, record_id, path
+    from english order by survey_group, name_key, path, record_id
+), source_exact as (
+  -- Preferred: exact-cycle rows for this edge's source name; the correlated select below
+  -- picks the same-document row first, then any other. Kept un-deduplicated on purpose.
+  select e.survey_group, e.name_key, e.cycle, e.record_id, e.path
+    from english e join incoming i on i.survey_group = e.survey_group
+                   and upper(btrim(i.source_var_name)) = e.name_key
+                   and e.cycle is not distinct from i.cycle
+), source_fallback as (
+  -- Cycle-tolerant: any row for the name when no exact-cycle row exists.
+  select distinct on (survey_group, name_key) survey_group, name_key, record_id, path
+    from english order by survey_group, name_key, path, record_id
 )
 insert into corpus_derivation_edge (
   target_record_id, source_record_id, source_var_name, survey_group, cycle,
   data_authority, ai_model, ai_auditor, derivation_type,
   ai_expression_summary, statcan_verbatim_note, extraction_method, confidence, review_status
 )
-select target.record_id, source.record_id, i.source_var_name, i.survey_group, i.cycle,
+select coalesce(te.record_id, tfb.record_id),
+       coalesce(
+         (select se2.record_id from source_exact se2
+           where se2.survey_group = i.survey_group and se2.name_key = upper(btrim(i.source_var_name))
+             and se2.cycle is not distinct from i.cycle
+             and se2.path is not distinct from coalesce(te.path, tfb.path)
+          order by (se2.path is null), se2.record_id limit 1),
+         (select se3.record_id from source_exact se3
+           where se3.survey_group = i.survey_group and se3.name_key = upper(btrim(i.source_var_name))
+             and se3.cycle is not distinct from i.cycle
+          order by (se3.path is null), se3.path, se3.record_id limit 1),
+         sfb.record_id
+       ),
+       i.source_var_name, i.survey_group, i.cycle,
        case when i.extraction_method = 'human_review' then 'human_verified' else 'ai_inferred' end,
        i.ai_model,
        case when i.extraction_method = 'human_review' then 'human_suggestion_accept' else 'reviewer_agent_v1' end,
@@ -679,14 +711,20 @@ select target.record_id, source.record_id, i.source_var_name, i.survey_group, i.
        i.ai_expression_summary, i.statcan_verbatim_note, i.extraction_method,
        i.confidence, 'verified'
   from incoming i
-  join english target on target.survey_group = i.survey_group
-                     and target.cycle is not distinct from i.cycle
-                     and target.name_key = upper(btrim(i.target_var_name))
-  join source_choice source on source.survey_group = i.survey_group
-                           and source.cycle is not distinct from i.cycle
-                           and source.path = target.path
-                           and source.name_key = upper(btrim(i.source_var_name))
+  left join target_exact te on te.survey_group = i.survey_group
+                            and te.name_key = upper(btrim(i.target_var_name))
+  left join target_fallback tfb on tfb.survey_group = i.survey_group
+                                and tfb.name_key = upper(btrim(i.target_var_name))
+                                and te.record_id is null
+  left join source_fallback sfb on sfb.survey_group = i.survey_group
+                                and sfb.name_key = upper(btrim(i.source_var_name))
  where upper(btrim(i.target_var_name)) <> upper(btrim(i.source_var_name))
+   and coalesce(te.record_id, tfb.record_id) is not null
+   and (exists (select 1 from source_exact se4
+                 where se4.survey_group = i.survey_group
+                   and se4.name_key = upper(btrim(i.source_var_name))
+                   and se4.cycle is not distinct from i.cycle)
+        or sfb.record_id is not null)
 on conflict (target_record_id, (upper(btrim(source_var_name)))) do nothing;
 `;
 }

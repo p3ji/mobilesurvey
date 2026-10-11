@@ -37,8 +37,10 @@ describe('verified SQL export', () => {
     } as CandidateEdgeRow;
     const sql = renderVerifiedSql([edge]);
     expect(sql).toContain("v.lang = 'en'");
-    expect(sql).toContain('source.path = target.path');
-    expect(sql).toContain('target.cycle is not distinct from i.cycle');
+    // Exact-cycle preference with a cycle-tolerant fallback for groups whose rows carry NULL cycles.
+    expect(sql).toContain('e.cycle is not distinct from i.cycle');
+    expect(sql).toContain('target_fallback as (');
+    expect(sql).toContain('source_fallback as (');
     expect(sql).toContain('on conflict (target_record_id, (upper(btrim(source_var_name)))) do nothing');
     expect(sql).toContain("Child''s age");
     expect(sql).not.toContain('edge_id');
