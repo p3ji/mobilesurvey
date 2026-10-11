@@ -77,16 +77,16 @@ as $$
     when coalesce(p_concept, '') ~* '(^|\y)(DV\s*[-–—:]|derived variable|\(D\)|\(G\)|grouped|group[eé]e?s?)|[-–—]\s*(derived|\(D\)|\(G\)|grouped|group[eé]e?s?)|\(D\)$'
       or p_name ~* '^[A-Z]{2,4}G[A-Z0-9]+$'
       or p_name ~* 'DV'
-      or p_name ~* '^[A-Z]{2,4}D[A-Z0-9]{2,}$'
+      or p_name ~* '^[A-Z]{2,4}D[0-9]+[A-Z0-9]*$'
       or coalesce(p_note, '') ~* '^(based on|derived from|calcul[eé]|selon|compos[eé])|see documentation on derived variables'
       then 'derived'
 
     -- 3. Origin: administrative
-    when coalesce(p_concept, '') ~* '\b(T1FF|CRA|IMDB|vital statistics|health administrative|hospital discharge|tax data|administrative file|donn[eé]es fiscales|registre)\b'
-      or coalesce(p_note, '') ~* '\b(T1FF|CRA|IMDB|vital statistics|health administrative|hospital discharge|tax data|administrative file|donn[eé]es fiscales|registre)\b'
+    when coalesce(p_concept, '') ~* '(\y(T1FF|CRA|IMDB|vital statistics|health administrative|hospital discharge|tax data|administrative file|donn[eé]es fiscales|registre)\y|^(census|nhs|recensement|enm)\s*[-–—:])'
+      or coalesce(p_note, '') ~* '(\y(T1FF|CRA|IMDB|vital statistics|health administrative|hospital discharge|tax data|administrative file|donn[eé]es fiscales|registre)\y|data for this variable were obtained from (the respondent[''’]s answers in )?(the )?([0-9]{4} )?(census|national household survey|nhs)|donn[eé]es pour cette variable ont [eé]t[eé] obtenues|obtenues [aà] partir (des r[eé]ponses )?du recensement|recensement de la population|enqu[eê]te nationale aupr[eè]s des m[eé]nages)'
       or coalesce(p_survey_group, '') ~* '(VITAL|TAX|T1FF)'
       or p_name ~* '^GEO'
-      or coalesce(p_concept, '') ~* '\b(province|postal code)\b'
+      or coalesce(p_concept, '') ~* '\y(province|postal code)\y'
       then 'administrative'
 
     -- 4. Default: collected

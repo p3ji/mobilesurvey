@@ -33,7 +33,7 @@ const DERIVED_CONCEPT_REGEX = /(\s*-\s*\(D\)$|\(D\)$|\s*-\s*D$|\(derived\)$|\bde
  * Exported so the deterministic G-suffix extractor (grouped.ts) shares this exact rule.
  */
 export const GROUPED_CONCEPT_REGEX = /(\s*-\s*\(G\)$|\(G\)$|\s*-\s*G$|\bgrouped\b|\bgroup[eé]e?s?\b)/i;
-const ADMIN_LINKAGE_REGEX = /\b(T1FF|CRA|IMDB|vital statistics|health administrative|hospital discharge|tax data|administrative file|donn[eé]es fiscales|registre)\b/i;
+const ADMIN_LINKAGE_REGEX = /\b(T1FF|CRA|IMDB|vital statistics|health administrative|hospital discharge|tax data|administrative file|donn[eé]es fiscales|registre)\b|data for this variable were obtained from (?:the respondent['’]s answers in )?(?:the )?(?:[0-9]{4} )?(?:census|national household survey|nhs)|donn[eé]es pour cette variable ont [eé]t[eé] obtenues|obtenues [aà] partir (?:des r[eé]ponses )?du recensement|recensement de la population|enqu[eê]te nationale aupr[eè]s des m[eé]nages|^(?:census|nhs|recensement|enm)\s*[-–—:]/i;
 
 export function classifyVariableRole(v: CorpusVariable): RoleEvidence {
   const name = v.name.trim().toUpperCase();
@@ -60,7 +60,7 @@ export function classifyVariableRole(v: CorpusVariable): RoleEvidence {
     derivationConfidence = 0.99;
     derivationRule = 'statcan_derived_concept_flag';
     derivationDetails = `Concept contains StatCan standard derived marker: '${concept}'`;
-  } else if (name.includes('DV') || /^[A-Z]{2,4}D[A-Z0-9]{2,}$/.test(name) || name.endsWith('_DV') || name.endsWith('DV')) {
+  } else if (name.includes('DV') || /^[A-Z]{2,4}D[0-9]+[A-Z0-9]*$/.test(name) || name.endsWith('_DV') || name.endsWith('DV')) {
     derivation = 'derived';
     derivationConfidence = 0.95;
     derivationRule = 'statcan_derived_name_convention';

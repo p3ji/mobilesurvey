@@ -72,4 +72,44 @@ describe('classifyHit', () => {
     );
     expect(imp.role).toBe('process');
   });
+
+  it('correctly classifies Census and NHS external linkages as administrative', () => {
+    const tenure = classifyHit(
+      mockMeta({
+        variableName: 'TENUR',
+        surveyGroup: 'CSD_ECI_2017',
+        note: 'Data for this variable were obtained from the respondent’s answers in the 2016 Census of Population. Refers to whether the household owns or rents their private dwelling.',
+      }),
+      'Census - Housing: Tenure'
+    );
+    expect(tenure.role).toBe('administrative');
+    expect(tenure.origin).toBe('administrative');
+    expect(tenure.derivation).toBe('base');
+
+    const bedrm = classifyHit(
+      mockMeta({
+        variableName: 'BEDRM',
+        surveyGroup: 'APS_EAPA_2012',
+        note: 'Data for this variable were obtained from the respondent’s answers in the 2011 National Household Survey (NHS).',
+      }),
+      'NHS - Number of bedrooms'
+    );
+    expect(bedrm.role).toBe('administrative');
+    expect(bedrm.origin).toBe('administrative');
+  });
+
+  it('preserves collected role for questions that merely cite Census comparability', () => {
+    const comp = classifyHit(
+      mockMeta({
+        variableName: 'MARSTAT',
+        surveyGroup: 'CCHS_ESCC',
+        note: 'Definition is comparable to the 2016 Census of Population dictionary.',
+      }),
+      'Marital status of respondent',
+      'What is your marital status?'
+    );
+    expect(comp.role).toBe('collected');
+    expect(comp.origin).toBe('collected');
+  });
 });
+

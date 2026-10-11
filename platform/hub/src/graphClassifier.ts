@@ -23,7 +23,7 @@ const SYSTEM_ID_REGEX = /^(SAMPLEID|PERSONID|MASTERID|HHID|RECID|VERDATE|REFPER|
 const CCHS_INCLUSION_FLAG_REGEX = /^DO[A-Z]{3}$/i;
 const DERIVED_CONCEPT_REGEX = /(?:^|\b)(?:DV\s*[-–—:]|derived variable|variable d[eé]riv[eé]e|\(D\)|\(G\)|grouped|group[eé]e?s?)|[-–—]\s*(?:derived|\(D\)|\(G\)|grouped|group[eé]e?s?)|\(D\)$/i;
 const GROUPED_CONCEPT_REGEX = /(\s*-\s*\(G\)$|\(G\)$|\s*-\s*G$|\bgrouped\b|\bgroup[eé]e?s?\b)/i;
-const ADMIN_LINKAGE_REGEX = /\b(T1FF|CRA|IMDB|vital statistics|health administrative|hospital discharge|tax data|administrative file|donn[eé]es fiscales|registre)\b/i;
+const ADMIN_LINKAGE_REGEX = /\b(T1FF|CRA|IMDB|vital statistics|health administrative|hospital discharge|tax data|administrative file|donn[eé]es fiscales|registre)\b|data for this variable were obtained from (?:the respondent['’]s answers in )?(?:the )?(?:[0-9]{4} )?(?:census|national household survey|nhs)|donn[eé]es pour cette variable ont [eé]t[eé] obtenues|obtenues [aà] partir (?:des r[eé]ponses )?du recensement|recensement de la population|enqu[eê]te nationale aupr[eè]s des m[eé]nages|^(?:census|nhs|recensement|enm)\s*[-–—:]/i;
 const DERIVATION_LEAD_REGEX = /(?:based on|derived from:?|calcul[eé] [aà] partir de|compos[eé] de|selon)\s+([^.]+)/i;
 
 const STOPWORDS = new Set([
@@ -122,7 +122,7 @@ export function classifyHit(meta: CorpusMeta, label?: string, questionText?: str
     isPumfGrouped ||
     derivedInputs.length > 0 ||
     name.includes('DV') ||
-    /^[A-Z]{2,4}D[A-Z0-9]{2,}$/i.test(name) ||
+    /^[A-Z]{2,4}D[0-9]+[A-Z0-9]*$/i.test(name) ||
     /^(?:based on|derived from|calcul[eé]|selon|compos[eé])|see documentation on derived variables/i.test(note)
   ) {
     derivation = 'derived';
