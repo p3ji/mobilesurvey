@@ -226,10 +226,32 @@ export async function runOrchestratedBatch(options: {
   }
 }
 
+async function waitForUtcMidnightReset() {
+  const now = new Date();
+  const target = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() + 1, 0, 0, 15));
+  let diffMs = target.getTime() - now.getTime();
+  if (diffMs > 0) {
+    console.log(`[Orchestrator] Waiting ${(diffMs / 3600000).toFixed(2)} hours until UTC midnight reset (${target.toISOString()})...`);
+    while (diffMs > 0) {
+      const waitChunk = Math.min(diffMs, 60_000);
+      await new Promise(r => setTimeout(r, waitChunk));
+      diffMs = target.getTime() - Date.now();
+    }
+    console.log(`[Orchestrator] UTC midnight reached! Starting drain.`);
+  }
+}
+
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
   const epochName = process.env.BATCH_EPOCH || 'Historical Expansion (2015–2019)';
   const yearFilter = process.env.YEAR_FILTER || 'publication_year:2015|2016|2017|2018|2019';
-  runOrchestratedBatch({ epochName, yearFilter })
+  const shouldWait = process.argv.includes('--wait-for-reset') || process.env.WAIT_FOR_RESET === 'true';
+
+  (async () => {
+    if (shouldWait) {
+      await waitForUtcMidnightReset();
+    }
+    return runOrchestratedBatch({ epochName, yearFilter });
+  })()
     .then(st => console.log('\n[Orchestrator] Batch Finished Successfully:', st))
     .catch(err => {
       console.error('\n[Orchestrator] Batch Failed:', err);
