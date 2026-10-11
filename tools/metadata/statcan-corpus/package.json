@@ -22,6 +22,7 @@
     "corpus:subjects": "tsx src/cli.ts subjects",
     "corpus:queue": "tsx src/graph/queue.ts",
     "corpus:review": "tsx src/graph/reviewer.ts",
+    "corpus:orchestrate": "tsx src/graph/orchestrator.ts",
     "corpus:grouped": "tsx src/graph/grouped.ts",
     "corpus:counterpart": "tsx src/graph/counterpart.ts",
     "corpus:publish": "bash scripts/publish-derivation.sh",

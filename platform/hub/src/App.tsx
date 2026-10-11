@@ -295,6 +295,7 @@ function detectFields(rows: ResponseRow[]): FieldAnalysis[] {
 }
 
 function ResponseChart({ rows }: { rows: ResponseRow[] }) {
+  const language = useUiLanguage();
   const pts = buildChartPoints(rows);
   if (pts.length === 0) return null;
   const W = 480, H = 110, PL = 28, PR = 8, PT = 8, PB = 22;
@@ -340,12 +341,13 @@ function ResponseChart({ rows }: { rows: ResponseRow[] }) {
           </text>
         )}
       </svg>
-      <p className="dash__chart-caption">Cumulative submissions over time</p>
+      <p className="dash__chart-caption">{uiText(language, 'Cumulative submissions over time', 'Réponses soumises cumulées au fil du temps')}</p>
     </div>
   );
 }
 
 function FieldCard({ field }: { field: FieldAnalysis }) {
+  const language = useUiLanguage();
   const n = field.values.length;
   if (field.type === 'numeric') {
     const maxBin = Math.max(...(field.bins ?? [1]));
@@ -353,7 +355,7 @@ function FieldCard({ field }: { field: FieldAnalysis }) {
       <div className="dash__field">
         <span className="dash__field-name">{field.label}</span>
         <span className="dash__field-value">{field.avg!.toFixed(1)}</span>
-        <span className="dash__field-sub">avg · {field.min}–{field.max} range · n={n}</span>
+        <span className="dash__field-sub">{uiText(language, 'avg', 'moy.')} · {uiText(language, 'range', 'plage')} {field.min}–{field.max} · n={n}</span>
         <div className="dash__hist">
           {(field.bins ?? []).map((b, i) => (
             <div key={i} className={`dash__hist-bar${b === maxBin ? ' dash__hist-bar--peak' : ''}`}
@@ -369,7 +371,7 @@ function FieldCard({ field }: { field: FieldAnalysis }) {
       <div className="dash__field">
         <span className="dash__field-name">{field.label}</span>
         <span className="dash__field-value">{pct}%</span>
-        <span className="dash__field-sub">answered yes · n={n}</span>
+        <span className="dash__field-sub">{uiText(language, 'answered yes', 'ont répondu oui')} · n={n}</span>
         <div className="dash__bool-bar"><div className="dash__bool-fill" style={{ width: `${pct}%` }} /></div>
       </div>
     );
@@ -422,12 +424,13 @@ function flattenQuestionsForFunnel(instrument: Instrument): FunnelItem[] {
 }
 
 function CompletionFunnel({ instrument, rows }: { instrument: Instrument; rows: ResponseRow[] }) {
+  const language = useUiLanguage();
   const items = flattenQuestionsForFunnel(instrument);
   if (items.length === 0 || rows.length === 0) return null;
   const total = rows.length;
   return (
     <div className="dash__section">
-      <h4 className="dash__section-title">Question completion</h4>
+      <h4 className="dash__section-title">{uiText(language, 'Question completion', 'Taux de réponse par question')}</h4>
       <div className="dash__funnel">
         {items.map((item) => {
           const key = item.varName + '@';
@@ -635,6 +638,7 @@ function AttachmentThumb({ refPath }: { refPath: string }) {
 }
 
 function SubmissionRow({ row, events, instrument }: { row: ResponseRow; events: SurveyParadataRow[]; instrument: Instrument | null }) {
+  const language = useUiLanguage();
   const dur = row.durationMs != null ? `${Math.round(row.durationMs / 1000)}s` : '—';
   const ts = new Date(row.submittedAt).toLocaleString(undefined, {
     month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit',
@@ -647,7 +651,7 @@ function SubmissionRow({ row, events, instrument }: { row: ResponseRow; events: 
         <span className="dash__sub-ts">{ts}</span>
         <span className="dash__sub-dur">{dur}</span>
         <span className={`badge badge--${row.completed ? 'published' : 'draft'}`} style={{ marginLeft: 'auto' }}>
-          {row.completed ? 'Complete' : 'Partial'}
+          {row.completed ? uiText(language, 'Complete', 'Complète') : uiText(language, 'Partial', 'Partielle')}
         </span>
       </summary>
       {photos.length > 0 && (
@@ -659,7 +663,7 @@ function SubmissionRow({ row, events, instrument }: { row: ResponseRow; events: 
       )}
       <div className="dash__sub-events">
         {events.length === 0 ? (
-          <p style={{ color: 'var(--ink-soft)', fontSize: 12, margin: '4px 0' }}>No paradata recorded.</p>
+          <p style={{ color: 'var(--ink-soft)', fontSize: 12, margin: '4px 0' }}>{uiText(language, 'No paradata recorded.', 'Aucune paradonnée enregistrée.')}</p>
         ) : (
           <table className="dash__event-table">
             <tbody>
@@ -681,6 +685,8 @@ function SubmissionRow({ row, events, instrument }: { row: ResponseRow; events: 
 }
 
 function CollectionDashboard({ surveyId }: { surveyId: string }) {
+  const language = useUiLanguage();
+  const l = (en: string, fr: string) => uiText(language, en, fr);
   const [rows, setRows] = useState<ResponseRow[] | null>(null);
   const [paradata, setParadata] = useState<SurveyParadataRow[] | null>(null);
   const [instrument, setInstrument] = useState<Instrument | null>(null);
@@ -693,7 +699,7 @@ function CollectionDashboard({ surveyId }: { surveyId: string }) {
       .finally(() => setLoading(false));
   }, [surveyId]);
 
-  if (loading) return <p className="dash__empty">Loading…</p>;
+  if (loading) return <p className="dash__empty">{l('Loading…', 'Chargement…')}</p>;
   const r = rows ?? [], p = paradata ?? [];
 
   const total = r.length;
@@ -781,15 +787,15 @@ function CollectionDashboard({ surveyId }: { surveyId: string }) {
       <div className="dash__kpis">
         <div className="dash__kpi">
           <span className="dash__kpi-value">{total}</span>
-          <span className="dash__kpi-label">Respondents</span>
+          <span className="dash__kpi-label">{l('Respondents', 'Répondants')}</span>
         </div>
         <div className="dash__kpi">
           <span className="dash__kpi-value">{avgDurationSec != null ? `${avgDurationSec}s` : '—'}</span>
-          <span className="dash__kpi-label">Avg duration</span>
+          <span className="dash__kpi-label">{l('Avg duration', 'Durée moyenne')}</span>
         </div>
         <div className="dash__kpi">
           <span className="dash__kpi-value">{completionPct != null ? `${completionPct}%` : '—'}</span>
-          <span className="dash__kpi-label">Completion rate</span>
+          <span className="dash__kpi-label">{l('Completion rate', 'Taux d’achèvement')}</span>
         </div>
       </div>
 
@@ -801,7 +807,7 @@ function CollectionDashboard({ surveyId }: { surveyId: string }) {
         <DemoAnalyzer rows={r} />
       ) : analyzerFields.length > 0 && (
         <div className="dash__section">
-          <h4 className="dash__section-title">Analyzer preview</h4>
+          <h4 className="dash__section-title">{l('Analyzer preview', 'Aperçu d’Analyzer')}</h4>
           <div className="dash__fields">
             {analyzerFields.map((f) => <FieldCard key={f.key} field={f} />)}
           </div>
@@ -810,25 +816,25 @@ function CollectionDashboard({ surveyId }: { surveyId: string }) {
 
       <div className="dash__section">
         <div className="dash__section-head">
-          <h4 className="dash__section-title">Recent submissions</h4>
+          <h4 className="dash__section-title">{l('Recent submissions', 'Réponses récemment soumises')}</h4>
           <div style={{ display: 'flex', gap: 6 }}>
             <button type="button" className="btn" style={{ fontSize: 12, padding: '4px 10px' }}
               onClick={exportResponsesCsv} disabled={r.length === 0}>
-              ↓ Responses CSV
+              ↓ {l('Responses CSV', 'Réponses CSV')}
             </button>
             <button type="button" className="btn" style={{ fontSize: 12, padding: '4px 10px' }}
-              title="Replace PII-tagged variable values with [REDACTED]"
+              title={l('Replace PII-tagged variable values with [REDACTED]', 'Remplacer les valeurs des variables marquées comme renseignements personnels par [REDACTED]')}
               onClick={exportRedactedCsv} disabled={r.length === 0 || !instrument}>
-              ↓ Redacted CSV
+              ↓ {l('Redacted CSV', 'CSV caviardé')}
             </button>
             <button type="button" className="btn" style={{ fontSize: 12, padding: '4px 10px' }}
               onClick={exportCSV} disabled={p.length === 0}>
-              ↓ Paradata CSV
+              ↓ {l('Paradata CSV', 'Paradonnées CSV')}
             </button>
           </div>
         </div>
         {total === 0 ? (
-          <p className="dash__empty">No submissions yet.</p>
+          <p className="dash__empty">{l('No submissions yet.', 'Aucune réponse soumise pour le moment.')}</p>
         ) : (
           <div className="dash__submissions">
             {r.slice(0, 10).map((row) => (
@@ -861,6 +867,8 @@ function SurveyCard({
   isLocal?: boolean;
   extraActions?: ReactNode;
 }) {
+  const language = useUiLanguage();
+  const l = (en: string, fr: string) => uiText(language, en, fr);
   const [copied, setCopied] = useState(false);
   const [busy, setBusy] = useState(false);
   const [showResponses, setShowResponses] = useState(false);
@@ -885,7 +893,7 @@ function SurveyCard({
   };
 
   const remove = async () => {
-    if (!confirm(`Delete "${survey.title}"? This cannot be undone.`)) return;
+    if (!confirm(l(`Delete "${survey.title}"? This cannot be undone.`, `Supprimer « ${survey.title} »? Cette action est irréversible.`))) return;
     setBusy(true);
     try {
       await deleteSurvey(survey.id);
@@ -900,27 +908,27 @@ function SurveyCard({
         <h3 className="card__title">{survey.title}</h3>
         <div className="card__badges">
           {isLocal && (
-            <span className="badge badge--local" title="Stored privately in this browser — never sent to a server">
-              🔒 This device
+            <span className="badge badge--local" title={l('Stored privately in this browser — never sent to a server', 'Enregistrée dans ce navigateur seulement — jamais envoyée à un serveur')}>
+              🔒 {l('This device', 'Cet appareil')}
             </span>
           )}
-          {isLive && <span className="badge badge--live">● Live</span>}
-          <span className={`badge badge--${survey.status}`}>{survey.status}</span>
+          {isLive && <span className="badge badge--live">● {l('Live', 'En ligne')}</span>}
+          <span className={`badge badge--${survey.status}`}>{survey.status === 'published' ? l('published', 'publiée') : l('draft', 'brouillon')}</span>
         </div>
       </div>
 
       <div className="card__meta">
-        <span>{survey.questionCount} questions</span>
+        <span>{survey.questionCount} {l('questions', 'questions')}</span>
         <span>·</span>
-        <span>{survey.requiresAccessCode ? '🔒 access code' : '🌐 open'}</span>
+        <span>{survey.requiresAccessCode ? l('🔒 access code', '🔒 code d’accès') : l('🌐 open', '🌐 accès libre')}</span>
         {survey.anonymized && (
           <>
             <span>·</span>
-            <span>🛡 anonymized</span>
+            <span>{l('🛡 anonymized', '🛡 anonymisée')}</span>
           </>
         )}
         <span>·</span>
-        <span>{survey.responseCount} response{survey.responseCount === 1 ? '' : 's'}</span>
+        <span>{survey.responseCount} {language === 'fr' ? (survey.responseCount === 1 ? 'réponse' : 'réponses') : `response${survey.responseCount === 1 ? '' : 's'}`}</span>
       </div>
 
       {!readOnly && (
@@ -928,50 +936,50 @@ function SurveyCard({
           <label className="toggle">
             <input type="checkbox" checked={survey.requiresAccessCode} disabled={busy}
               onChange={(e) => patch({ requiresAccessCode: e.target.checked })} />
-            Require access code
+            {l('Require access code', 'Exiger un code d’accès')}
           </label>
           <label className="toggle">
             <input type="checkbox" checked={survey.status === 'published'} disabled={busy}
               onChange={(e) => patch({ status: e.target.checked ? 'published' : 'draft' })} />
-            Published
+            {l('Published', 'Publiée')}
           </label>
         </div>
       )}
 
       <div className="card__link">
-        <span className="card__link-label">Respondent link</span>
+        <span className="card__link-label">{l('Respondent link', 'Lien pour les répondants')}</span>
         <code className="card__link-url">{link}</code>
         <div className="card__link-actions">
-          <button type="button" onClick={copyLink}>{copied ? '✓ Copied' : '⎘ Copy'}</button>
-          <button type="button" onClick={() => setShowDistribute(true)}>🔗 Distribute…</button>
-          <a className="btn-link" href={link} target="_blank" rel="noopener noreferrer">Launch ↗</a>
+          <button type="button" onClick={copyLink}>{copied ? l('✓ Copied', '✓ Copié') : l('⎘ Copy', '⎘ Copier')}</button>
+          <button type="button" onClick={() => setShowDistribute(true)}>🔗 {l('Distribute…', 'Diffuser…')}</button>
+          <a className="btn-link" href={link} target="_blank" rel="noopener noreferrer">{l('Launch ↗', 'Ouvrir ↗')}</a>
         </div>
         {isLocal && (
           <span className="card__link-note">
-            Works in this browser only — responses are stored on this device.
+            {l('Works in this browser only — responses are stored on this device.', 'Fonctionne uniquement dans ce navigateur — les réponses sont enregistrées sur cet appareil.')}
           </span>
         )}
       </div>
 
       <div className="card__actions">
         <a className="btn btn--primary" href={designerLink(survey.id)} target="_blank" rel="noopener noreferrer">
-          ✎ Edit in Designer
+          ✎ {l('Edit in Designer', 'Modifier dans Designer')}
         </a>
         <button
           type="button"
           className="btn"
           onClick={() => setShowDistribute(true)}
         >
-          🔗 Share &amp; Distribute
+          🔗 {l('Share & Distribute', 'Partager et diffuser')}
         </button>
         {onClone && (
           <button
             type="button"
             className="btn btn--secondary"
             onClick={onClone}
-            title="Clone this template to your local workspace"
+            title={l('Clone this template to your local workspace', 'Copier ce modèle dans votre espace de travail local')}
           >
-            📑 Clone to Workspace
+            📑 {l('Clone to Workspace', 'Copier dans l’espace de travail')}
           </button>
         )}
         {!readOnly && (
@@ -979,11 +987,11 @@ function SurveyCard({
             <button type="button"
               className={`btn ${showResponses ? 'btn--active' : ''}`}
               onClick={() => setShowResponses((v) => !v)}>
-              {showResponses ? '▲ Hide responses' : `▼ Responses (${survey.responseCount})`}
+              {showResponses ? l('▲ Hide responses', '▲ Masquer les réponses') : l(`▼ Responses (${survey.responseCount})`, `▼ Réponses (${survey.responseCount})`)}
             </button>
             {extraActions}
             <button type="button" className="btn btn--danger" onClick={remove} disabled={busy}>
-              Delete
+              {l('Delete', 'Supprimer')}
             </button>
           </>
         )}
@@ -1030,6 +1038,8 @@ function LocalSurveyCard({
   onOpenSolutionModal: (title: string, surveyId: string) => void;
   onChange: () => void;
 }) {
+  const language = useUiLanguage();
+  const l = (en: string, fr: string) => uiText(language, en, fr);
   const duplicate = () => {
     cloneLocalSurvey(survey.id);
     onChange();
@@ -1053,19 +1063,19 @@ function LocalSurveyCard({
       onChange={onChange}
       extraActions={
         <>
-          <button type="button" className="btn btn--subtle" onClick={exportJson} title="Download the questionnaire as JSON">
-            ⬇ Export
+          <button type="button" className="btn btn--subtle" onClick={exportJson} title={l('Download the questionnaire as JSON', 'Télécharger le questionnaire en JSON')}>
+            ⬇ {l('Export', 'Exporter')}
           </button>
-          <button type="button" className="btn btn--subtle" onClick={duplicate} title="Duplicate this survey">
-            📑 Copy
+          <button type="button" className="btn btn--subtle" onClick={duplicate} title={l('Duplicate this survey', 'Dupliquer cette enquête')}>
+            📑 {l('Copy', 'Copier')}
           </button>
           <button
             type="button"
             className="btn btn--highlight"
             onClick={() => onOpenSolutionModal(survey.title, survey.id)}
-            title="Collect real data from many respondents with a hosted deployment"
+            title={l('Collect real data from many respondents with a hosted deployment', 'Recueillir des données réelles auprès de nombreux répondants grâce à un déploiement hébergé')}
           >
-            ✉ Host this for real…
+            ✉ {l('Host this for real…', 'Héberger cette enquête…')}
           </button>
         </>
       }
@@ -1134,7 +1144,7 @@ function CollectorView({ onBack, onPrivacy }: { onBack: () => void; onPrivacy?: 
   }, [refresh, refreshLocal]);
 
   const newSurvey = async () => {
-    const title = prompt('Name your new survey', 'Untitled survey');
+    const title = prompt(l('Name your new survey', 'Nommez votre nouvelle enquête'), l('Untitled survey', 'Enquête sans titre'));
     if (!title) return;
     setCreating(true);
     try {
@@ -1148,7 +1158,7 @@ function CollectorView({ onBack, onPrivacy }: { onBack: () => void; onPrivacy?: 
   };
 
   const cloneToWorkspace = (surveyId: string, title: string) => {
-    const cloned = cloneLocalSurvey(surveyId, `${title} (My Copy)`);
+    const cloned = cloneLocalSurvey(surveyId, `${title} ${l('(My Copy)', '(Ma copie)')}`);
     if (cloned) {
       refreshLocal();
       window.open(designerLink(cloned.id), '_blank', 'noopener');
@@ -1231,8 +1241,8 @@ function CollectorView({ onBack, onPrivacy }: { onBack: () => void; onPrivacy?: 
         {demoSurveys.length > 0 && (
           <section className="hub__section">
             <h2 className="hub__section-title">
-              Designer demos
-              <span className="hub__section-sub">Complex skip logic, rosters, and tables — clone one into My Surveys to start building</span>
+              {l('Designer demos', 'Démonstrations de Designer')}
+              <span className="hub__section-sub">{l('Complex skip logic, rosters, and tables — clone one into My Surveys to start building', 'Enchaînements complexes, listes de membres et tableaux — copiez une enquête dans Mes enquêtes pour commencer.')}</span>
             </h2>
             <div className="hub__grid">
               {demoSurveys.map((s) => (
@@ -1253,22 +1263,20 @@ function CollectorView({ onBack, onPrivacy }: { onBack: () => void; onPrivacy?: 
           <div className="hub__workspace-header">
             <div>
               <h2 className="hub__section-title">
-                🔒 My Surveys
+                🔒 {l('My Surveys', 'Mes enquêtes')}
                 <span className="hub__section-sub">
-                  Surveys you created or cloned · saved in this browser only, never uploaded
+                  {l('Surveys you created or cloned · saved in this browser only, never uploaded', 'Enquêtes créées ou copiées · enregistrées uniquement dans ce navigateur, sans téléversement')}
                 </span>
               </h2>
             </div>
             <button type="button" className="btn btn--primary" onClick={newSurvey} disabled={creating}>
-              + New survey
+              + {l('New survey', 'Nouvelle enquête')}
             </button>
           </div>
 
           {localSurveys.length === 0 ? (
             <div className="hub__notice" style={{ textAlign: 'left', lineHeight: '1.6' }}>
-              <strong>No surveys yet.</strong> Create a new survey, or use “Clone to Workspace” on a demo above.
-              Everything works here — editing, publishing, access codes, distribution, test responses and the
-              response dashboard — and it all stays on this device.
+              {language === 'fr' ? <><strong>Aucune enquête pour le moment.</strong> Créez une enquête ou utilisez « Copier dans l’espace de travail » sur une démonstration ci-dessus. Vous pouvez la modifier, la publier, définir des codes d’accès, la diffuser, soumettre des réponses d’essai et consulter le tableau de bord des réponses. Tout reste sur cet appareil.</> : <><strong>No surveys yet.</strong> Create a new survey, or use “Clone to Workspace” on a demo above. Everything works here — editing, publishing, access codes, distribution, test responses and the response dashboard — and it all stays on this device.</>}
             </div>
           ) : (
             <div className="hub__grid">
@@ -1288,9 +1296,7 @@ function CollectorView({ onBack, onPrivacy }: { onBack: () => void; onPrivacy?: 
           )}
 
           <div className="hub__notice" style={{ textAlign: 'left', lineHeight: '1.6', marginTop: 16 }}>
-            <strong>Need to collect real data from many respondents?</strong> This demo keeps your work in your
-            browser. For a hosted deployment — shared team workspace, central database, CATI, or custom
-            integrations —{' '}
+            {language === 'fr' ? <><strong>Vous devez recueillir des données réelles auprès de nombreux répondants?</strong> Cette démonstration conserve votre travail dans votre navigateur. Pour un déploiement hébergé — espace de travail partagé, base de données centrale, ITAO ou intégrations personnalisées — </> : <><strong>Need to collect real data from many respondents?</strong> This demo keeps your work in your browser. For a hosted deployment — shared team workspace, central database, CATI, or custom integrations — </>}
             <button
               type="button"
               className="btn-link"
@@ -1300,7 +1306,7 @@ function CollectorView({ onBack, onPrivacy }: { onBack: () => void; onPrivacy?: 
                 setSolutionModalOpen(true);
               }}
             >
-              get in touch
+              {l('get in touch', 'communiquez avec nous')}
             </button>
             .
           </div>

@@ -117,6 +117,7 @@ function Suggestions({
   query: string;
   onPick: (term: string) => void;
 }) {
+  const language = useUiLanguage();
   const [terms, setTerms] = useState<CorpusSuggestion[] | null>(null);
 
   useEffect(() => {
@@ -135,14 +136,13 @@ function Suggestions({
   if (terms.length === 0) {
     return (
       <p className="cs-suggest cs-suggest--none">
-        No close match in the corpus vocabulary either — Statistics Canada may simply use different
-        wording for this. Try a related term, or browse <strong>Concepts over time</strong>.
+        {language === 'fr' ? <>Aucune correspondance proche dans le vocabulaire du corpus. Statistique Canada emploie peut-être un autre terme. Essayez un terme connexe ou consultez <strong>Évolution des concepts</strong>.</> : <>No close match in the corpus vocabulary either — Statistics Canada may simply use different wording for this. Try a related term, or browse <strong>Concepts over time</strong>.</>}
       </p>
     );
   }
   return (
     <p className="cs-suggest">
-      Words the corpus does use:{' '}
+      {uiText(language, 'Words the corpus does use:', 'Termes présents dans le corpus :')}{' '}
       {terms.map((t, i) => (
         <span key={t.term}>
           {i > 0 && ', '}
@@ -175,6 +175,8 @@ function CorpusHit({
   onOpenConcept?: (id: string) => void;
   onOpenGraph?: (focus: CorpusGraphFocus) => void;
 }) {
+  const language = useUiLanguage();
+  const l = (en: string, fr: string) => uiText(language, en, fr);
   const meta = hit.entry.corpus as CorpusMeta | undefined;
   if (meta === undefined) return null;
 
@@ -234,35 +236,35 @@ function CorpusHit({
         </h3>
         <span
           className={`cs-hit__kind cs-hit__kind--${classification.role}`}
-          title={`GSIM: ${classification.origin} origin, ${classification.derivation} status`}
+          title={l(`GSIM: ${classification.origin} origin, ${classification.derivation} status`, `GSIM : origine ${classification.origin}, état ${classification.derivation}`)}
         >
           {classification.role === 'collected'
-            ? 'Question'
+            ? l('Question', 'Question')
             : classification.role === 'derived'
-              ? 'Derived DV'
+              ? l('Derived DV', 'Variable dérivée')
               : classification.role === 'administrative'
-                ? 'Admin Link'
-                : 'Paradata / Weight'}
+                ? l('Admin Link', 'Lien administratif')
+                : l('Paradata / Weight', 'Paradonnées / poids')}
         </span>
         {classification.isGrouped && (
-          <span className="cs-hit__badge--grouped" title="PUMF Grouped Recode">
-            PUMF (G)
+          <span className="cs-hit__badge--grouped" title={l('PUMF Grouped Recode', 'Recodage groupé du FMGD')}>
+            {l('PUMF (G)', 'FMGD (G)')}
           </span>
         )}
         {isSelectAll && (
           <span
             className="cs-hit__badge--select-all"
-            title="Multi-select item: part of a 'Select all that apply' question battery"
+            title={l("Multi-select item: part of a 'Select all that apply' question battery", 'Élément à choix multiples : fait partie d’une série de questions « Sélectionnez toutes les réponses qui s’appliquent »')}
           >
-            Select all
+            {l('Select all', 'Choix multiples')}
           </span>
         )}
         {isHarmonized && (
           <span
             className="cs-hit__badge--harmonized"
-            title="StatCan Harmonized Content: core sociodemographic question standard across household surveys"
+            title={l('StatCan Harmonized Content: core sociodemographic question standard across household surveys', 'Contenu harmonisé de Statistique Canada : questions sociodémographiques normalisées pour les enquêtes auprès des ménages')}
           >
-            Harmonized
+            {l('Harmonized', 'Harmonisé')}
           </span>
         )}
         <span className="cs-hit__survey">
@@ -274,19 +276,19 @@ function CorpusHit({
           type="button"
           className={`cs-cart-btn ${isInCart ? 'cs-cart-btn--active' : ''}`}
           onClick={handleCartToggle}
-          title={isInCart ? `Remove ${meta.variableName} from Data Cart` : `Save ${meta.variableName} to Data Cart`}
-          aria-label={isInCart ? `Remove ${meta.variableName} from Data Cart` : `Save ${meta.variableName} to Data Cart`}
+          title={isInCart ? l(`Remove ${meta.variableName} from Data Cart`, `Retirer ${meta.variableName} du panier de données`) : l(`Save ${meta.variableName} to Data Cart`, `Ajouter ${meta.variableName} au panier de données`)}
+          aria-label={isInCart ? l(`Remove ${meta.variableName} from Data Cart`, `Retirer ${meta.variableName} du panier de données`) : l(`Save ${meta.variableName} to Data Cart`, `Ajouter ${meta.variableName} au panier de données`)}
           aria-pressed={isInCart}
         >
           {isInCart ? (
             <>
               <Check size={12} aria-hidden="true" style={{ verticalAlign: -1, marginRight: 4 }} />
-              <span>In cart</span>
+              <span>{l('In cart', 'Dans le panier')}</span>
             </>
           ) : (
             <>
               <Plus size={12} aria-hidden="true" style={{ verticalAlign: -1, marginRight: 4 }} />
-              <span>Add to cart</span>
+              <span>{l('Add to cart', 'Ajouter au panier')}</span>
             </>
           )}
         </button>
@@ -297,20 +299,20 @@ function CorpusHit({
 
       {inputs.length > 0 && (
         <div className="cs-hit__lineage">
-          <span className="cs-hit__lineage-label">Inputs linked from source notes:</span>
+          <span className="cs-hit__lineage-label">{l('Inputs linked from source notes:', 'Variables d’entrée liées selon les notes sources :')}</span>
           {inputs.map((input) => (
             <button
               key={input.edgeId}
               type="button"
               className="cs-hit__lineage-btn"
               onClick={() => onSelectVar?.(input.sourceVarName)}
-              title={`Search for source variable ${input.sourceVarName}`}
+              title={l(`Search for source variable ${input.sourceVarName}`, `Rechercher la variable source ${input.sourceVarName}`)}
             >
               <code>{input.sourceVarName}</code>
             </button>
           ))}
           <details className="cs-hit__lineage-evidence">
-            <summary>Why these links?</summary>
+            <summary>{l('Why these links?', 'Pourquoi ces liens?')}</summary>
             {[...new Set(inputs.map((input) => input.statcanNote))].map((note) => (
               <p key={note}>{note}</p>
             ))}
@@ -320,12 +322,12 @@ function CorpusHit({
 
       {meta.universe !== undefined && (
         <p className="cs-hit__field">
-          <span className="cs-hit__field-name">Universe</span> {meta.universe}
+          <span className="cs-hit__field-name">{l('Universe', 'Univers')}</span> {meta.universe}
         </p>
       )}
       {meta.note !== undefined && (
         <p className="cs-hit__field">
-          <span className="cs-hit__field-name">Note</span> {meta.note}
+          <span className="cs-hit__field-name">{l('Note', 'Note')}</span> {meta.note}
         </p>
       )}
 
@@ -334,7 +336,7 @@ function CorpusHit({
       {(conceptId !== undefined || graphTargets.length > 0) && <div className="cs-hit__connections">
         {conceptId !== undefined && (
           <button type="button" className="cs-link" onClick={() => onOpenConcept?.(conceptId)}>
-            View concept over time ↗
+            {l('View concept over time ↗', 'Voir l’évolution du concept ↗')}
           </button>
         )}
         {graphTargets.length > 0 && <button type="button" className="cs-link" onClick={() => onOpenGraph?.({
@@ -1155,7 +1157,7 @@ export function CorpusSearch({
         {summary !== null && <span className="cs-summary">{summary}</span>}
         {metaError !== null && (
           <span className="cs-summary cs-summary--warn">
-            Totals and the survey list are unavailable — search still works.{' '}
+            {l('Totals and the survey list are unavailable — search still works.', 'Les totaux et la liste des enquêtes sont indisponibles; la recherche fonctionne toujours.')} {' '}
             <button type="button" className="cs-link" onClick={() => setMetaAttempt((n) => n + 1)}>
               {l('Retry', 'Réessayer')}
             </button>
@@ -1169,20 +1171,20 @@ export function CorpusSearch({
 
       {error !== null && (
         <div className="cs-error">
-          <strong>Search unavailable.</strong> {error}
+          <strong>{l('Search unavailable.', 'Recherche indisponible.')}</strong> {error}
           <br />
-          The corpus tables may not be applied to this Supabase project yet — see DEPLOYMENT.md §9e.
+          {l('The corpus tables may not be applied to this Supabase project yet — see DEPLOYMENT.md §9e.', 'Les tables du corpus ne sont peut-être pas encore installées dans ce projet Supabase — voir DEPLOYMENT.md §9e.')}
         </div>
       )}
 
       {debounced.trim() === '' && error === null && subject !== null && (
         <div className="cs-subject-preview">
           <div className="cs-subject-preview__header">
-            <h3>Recent variables in {subject}</h3>
-            <p>5 most recent records in this category from published Statistics Canada survey cycles.</p>
+            <h3>{l(`Recent variables in ${subject}`, `Variables récentes dans ${subject}`)}</h3>
+            <p>{l('5 most recent records in this category from published Statistics Canada survey cycles.', 'Les cinq notices les plus récentes de cette catégorie provenant des cycles d’enquête publiés de Statistique Canada.')}</p>
           </div>
           {recentSubjectLoading && (
-            <p className="cs-suggest" role="status">Loading recent variables in {subject}…</p>
+            <p className="cs-suggest" role="status">{l(`Loading recent variables in ${subject}…`, `Chargement des variables récentes dans ${subject}…`)}</p>
           )}
           {!recentSubjectLoading && recentSubjectHits.length > 0 && (
             <div className="sr-results">
@@ -1190,7 +1192,7 @@ export function CorpusSearch({
             </div>
           )}
           {!recentSubjectLoading && recentSubjectHits.length === 0 && (
-            <p className="cs-suggest">No recent records found for this category.</p>
+            <p className="cs-suggest">{l('No recent records found for this category.', 'Aucune notice récente dans cette catégorie.')}</p>
           )}
         </div>
       )}
@@ -1253,22 +1255,22 @@ export function CorpusSearch({
 
           {displayedHits.length === 0 && hits.length > 0 && (
             <p className="cs-suggest">
-              All {hits.length} matches on this page were hidden by active filters (GSIM Role, Paradata, or Harmonized Content).{' '}
-              <button type="button" className="cs-link" onClick={clearFilters}>Clear filters</button>
+              {l(`All ${hits.length} matches on this page were hidden by active filters (GSIM Role, Paradata, or Harmonized Content).`, `Les ${hits.length} résultats de cette page sont masqués par les filtres actifs (rôle GSIM, paradonnées ou contenu harmonisé).`)}{' '}
+              <button type="button" className="cs-link" onClick={clearFilters}>{l('Clear filters', 'Effacer les filtres')}</button>
             </p>
           )}
 
           {lineageError && hits.length > 0 && (
-            <p className="cs-suggest">Linked inputs are temporarily unavailable; search results still work.</p>
+            <p className="cs-suggest">{l('Linked inputs are temporarily unavailable; search results still work.', 'Les variables d’entrée liées sont temporairement indisponibles; les résultats de recherche restent accessibles.')}</p>
           )}
 
           {graphError && hits.length > 0 && (
-            <p className="cs-suggest">Graph connections are temporarily unavailable; variable records can still open the graph view.</p>
+            <p className="cs-suggest">{l('Graph connections are temporarily unavailable; variable records can still open the graph view.', 'Les liens du graphe sont temporairement indisponibles; les notices de variables peuvent toujours ouvrir le graphe.')}</p>
           )}
 
           {aiEnabled && aiQuery === debounced.replace(/\s+/g, ' ').trim() && (
-            <section className="cs-ai-results" aria-label="AI expanded search results">
-              <h3>Related results from AI search</h3>
+            <section className="cs-ai-results" aria-label={l('AI expanded search results', 'Résultats de recherche élargis par l’IA')}>
+              <h3>{l('Related results from AI search', 'Résultats connexes de la recherche par IA')}</h3>
               <p>{formatInt(aiTotal)} distinct variable record{aiTotal === 1 ? '' : 's'} match the suggested terms{subject === null ? ' across all subjects' : ` in ${subject}`}{hideProcess || roleFilter !== 'all' ? ', before GSIM Role / Paradata filtering' : ''}.
                 {aiTotal > PAGE_SIZE ? ` Showing page ${aiPage + 1} of ${formatInt(Math.ceil(aiTotal / PAGE_SIZE))}.` : ''}
                 {' '}Subjects are tagged at the survey level and can overlap; counts across subjects should not be added together.</p>

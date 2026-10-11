@@ -15,6 +15,7 @@ import type { CorpusGraphFocus } from './CorpusLineage.js';
 import { CorpusConcepts } from './CorpusConcepts.js';
 import summaryData from './data/knowledgeGraphSummary.json';
 import imdbLinks from './data/surveyImdbLinks.json';
+import { useUiLanguage, uiText } from '@mobilesurvey/ui-locale';
 
 /** Acronym → Statistics Canada IMDB (Surveys and statistical programs) record page. */
 const IMDB_BY_ACRONYM: Record<string, { sdds: string; url: string }> = imdbLinks;
@@ -36,6 +37,9 @@ export function CorpusGraphExplorer({
   initialConceptId,
   initialTab,
 }: CorpusGraphExplorerProps) {
+  const language = useUiLanguage();
+  const l = (en: string, fr: string) => uiText(language, en, fr);
+  const count = (value: number) => value.toLocaleString(language === 'fr' ? 'fr-CA' : 'en-CA');
   const [tab, setTab] = useState<ExplorerTab>(
     initialTab ?? (initialGraphFocus ? 'lineage' : initialConceptId ? 'concepts' : 'surveys')
   );
@@ -68,46 +72,45 @@ export function CorpusGraphExplorer({
       {/* Header Metric Strip */}
       <header className="kg-header">
         <div className="kg-header__title-block">
-          <h2 className="kg-header__title">Statistics Canada Knowledge Graph</h2>
+          <h2 className="kg-header__title">{l('Statistics Canada Knowledge Graph', 'Graphe de connaissances de Statistique Canada')}</h2>
           <span className="kg-header__badge">GSIM 2D · DDI 3.3 · W3C PROV-O</span>
         </div>
         <p className="kg-header__sub">
-          Complete machine-readable census of <strong>{summaryData.totalVariables.toLocaleString()} variables</strong> across{' '}
-          <strong>{summaryData.totalSurveys} survey programs</strong> and <strong>{summaryData.totalCycles} collection cycles</strong>.
+          {language === 'fr' ? <>Inventaire complet lisible par machine de <strong>{count(summaryData.totalVariables)} variables</strong> couvrant <strong>{summaryData.totalSurveys} programmes d’enquête</strong> et <strong>{summaryData.totalCycles} cycles de collecte</strong>.</> : <>Complete machine-readable census of <strong>{count(summaryData.totalVariables)} variables</strong> across <strong>{summaryData.totalSurveys} survey programs</strong> and <strong>{summaryData.totalCycles} collection cycles</strong>.</>}
         </p>
 
         <div className="kg-metrics">
           <div className="kg-metric">
             <span className="kg-metric__val">{summaryData.totalVariables.toLocaleString()}</span>
-            <span className="kg-metric__lbl">Variables Classified</span>
+            <span className="kg-metric__lbl">{l('Variables Classified', 'Variables classées')}</span>
           </div>
           <div className="kg-metric">
             <span className="kg-metric__val">{summaryData.totalSurveys}</span>
-            <span className="kg-metric__lbl">Survey Programs</span>
+            <span className="kg-metric__lbl">{l('Survey Programs', 'Programmes d’enquête')}</span>
           </div>
           <div className="kg-metric">
             <span className="kg-metric__val">{summaryData.globalStats.roles.collected.toLocaleString()}</span>
-            <span className="kg-metric__lbl">Direct Questions (80.8%)</span>
+            <span className="kg-metric__lbl">{l('Direct Questions (80.8%)', 'Questions directes (80,8 %)')}</span>
           </div>
           <div className="kg-metric">
             <span className="kg-metric__val">{summaryData.globalStats.roles.derived.toLocaleString()}</span>
-            <span className="kg-metric__lbl">Derived Indicators (10.7%)</span>
+            <span className="kg-metric__lbl">{l('Derived Indicators (10.7%)', 'Indicateurs dérivés (10,7 %)')}</span>
           </div>
           <div className="kg-metric">
             <span className="kg-metric__val">{summaryData.globalStats.roles.administrative.toLocaleString()}</span>
-            <span className="kg-metric__lbl">Admin / Tax Links (2.6%)</span>
+            <span className="kg-metric__lbl">{l('Admin / Tax Links (2.6%)', 'Données administratives et fiscales (2,6 %)')}</span>
           </div>
           <div className="kg-metric">
             <span className="kg-metric__val">{summaryData.globalStats.roles.process.toLocaleString()}</span>
-            <span className="kg-metric__lbl">Replicate Weights (5.8%)</span>
+            <span className="kg-metric__lbl">{l('Replicate Weights (5.8%)', 'Poids de rééchantillonnage (5,8 %)')}</span>
           </div>
           <div className="kg-metric">
             <span className="kg-metric__val">{summaryData.globalStats.derivationsExtracted.toLocaleString()}</span>
-            <span className="kg-metric__lbl" title="Detected references in the local corpus; these are not all verified or published as graph links.">Detected Note References</span>
+            <span className="kg-metric__lbl" title={l('Detected references in the local corpus; these are not all verified or published as graph links.', 'Références détectées dans le corpus local; elles ne sont pas toutes vérifiées ni publiées comme liens dans le graphe.')}>{l('Detected Note References', 'Références repérées dans les notes')}</span>
           </div>
           <div className="kg-metric">
             <span className="kg-metric__val">{summaryData.globalStats.pumfGroupedCount.toLocaleString()}</span>
-            <span className="kg-metric__lbl">PUMF Recodes - (G)</span>
+            <span className="kg-metric__lbl">{l('PUMF Recodes - (G)', 'Recodages du FMGD – (G)')}</span>
           </div>
         </div>
       </header>
@@ -121,7 +124,7 @@ export function CorpusGraphExplorer({
           className={`kg-tab ${tab === 'surveys' ? 'kg-tab--active' : ''}`}
           onClick={() => setTab('surveys')}
         >
-          Survey Programs & Cycles ({summaryData.totalSurveys})
+          {l('Survey Programs & Cycles', 'Programmes d’enquête et cycles')} ({summaryData.totalSurveys})
         </button>
         <button
           type="button"
@@ -130,7 +133,7 @@ export function CorpusGraphExplorer({
           className={`kg-tab ${tab === 'concepts' ? 'kg-tab--active' : ''}`}
           onClick={() => setTab('concepts')}
         >
-          Concepts Over Time
+          {l('Concepts Over Time', 'Évolution des concepts')}
         </button>
         <button
           type="button"
@@ -139,7 +142,7 @@ export function CorpusGraphExplorer({
           className={`kg-tab ${tab === 'lineage' ? 'kg-tab--active' : ''}`}
           onClick={() => setTab('lineage')}
         >
-          Derivation Lineage DAG (PROV-O)
+          {l('Derivation Lineage DAG (PROV-O)', 'Filiation des variables dérivées (PROV-O)')}
         </button>
       </nav>
 
@@ -150,24 +153,24 @@ export function CorpusGraphExplorer({
             <input
               type="search"
               className="kg-search-input"
-              placeholder="Filter by acronym, title, or module (e.g. 'income', 'health', 'CIS', 'LFS', 'APS')..."
+              placeholder={l("Filter by acronym, title, or module (e.g. 'income', 'health', 'CIS', 'LFS', 'APS')...", "Filtrer par sigle, titre ou module (p. ex. « revenu », « santé », CIS, LFS, APS)…")}
               value={surveyFilter}
               onChange={(e) => setSurveyFilter(e.target.value)}
             />
-            <span className="kg-pane__count">Showing {filteredSurveys.length} of {summaryData.totalSurveys} programs</span>
+            <span className="kg-pane__count">{l(`Showing ${filteredSurveys.length} of ${summaryData.totalSurveys} programs`, `${filteredSurveys.length} programmes sur ${summaryData.totalSurveys}`)}</span>
           </div>
 
           <div className="kg-table-wrap">
             <table className="kg-table">
               <thead>
                 <tr>
-                  <th>Acronym</th>
-                  <th>Survey Program / Collection Title</th>
-                  <th style={{ textAlign: 'right' }}>Variables</th>
-                  <th style={{ textAlign: 'center' }}>Cycles</th>
-                  <th style={{ textAlign: 'right' }} title="Average substantive variables per cycle (excludes replicate bootstrap weights)">Avg Var / Cycle</th>
-                  <th>GSIM Composition (Collected / Derived / Admin / Process)</th>
-                  <th style={{ textAlign: 'center' }}>Actions</th>
+                  <th>{l('Acronym', 'Sigle')}</th>
+                  <th>{l('Survey Program / Collection Title', 'Programme d’enquête / titre de la collecte')}</th>
+                  <th style={{ textAlign: 'right' }}>{l('Variables', 'Variables')}</th>
+                  <th style={{ textAlign: 'center' }}>{l('Cycles', 'Cycles')}</th>
+                  <th style={{ textAlign: 'right' }} title={l('Average substantive variables per cycle (excludes replicate bootstrap weights)', 'Nombre moyen de variables de fond par cycle (hors poids bootstrap)')}>{l('Avg Var / Cycle', 'Moy. var. / cycle')}</th>
+                  <th>{l('GSIM Composition (Collected / Derived / Admin / Process)', 'Composition GSIM (recueillies / dérivées / administratives / processus)')}</th>
+                  <th style={{ textAlign: 'center' }}>{l('Actions', 'Actions')}</th>
                 </tr>
               </thead>
               <tbody>
@@ -194,7 +197,7 @@ export function CorpusGraphExplorer({
                               href={imdb.url}
                               target="_blank"
                               rel="noreferrer noopener"
-                              title={`Open the Statistics Canada IMDB record for ${s.acronym} (record ${imdb.sdds})`}
+                              title={l(`Open the Statistics Canada IMDB record for ${s.acronym} (record ${imdb.sdds})`, `Ouvrir la fiche de Statistique Canada pour ${s.acronym} (numéro ${imdb.sdds})`)}
                             >
                               {s.acronym}&nbsp;↗
                             </a>
@@ -208,7 +211,7 @@ export function CorpusGraphExplorer({
                         {isExpanded && (
                           <div className="kg-survey-detail">
                             <div className="kg-cycles-list">
-                              <span className="kg-cycles-label">Cycles ({s.cycles.length}):</span>
+                              <span className="kg-cycles-label">{l('Cycles', 'Cycles')} ({s.cycles.length}) :</span>
                               {s.cycles.map((c) => (
                                 <span key={c} className="kg-cycle-pill">
                                   {c}
@@ -216,11 +219,11 @@ export function CorpusGraphExplorer({
                               ))}
                             </div>
                             <div className="kg-detail-stats">
-                              <span>PUMF Grouped Recodes: <strong>{s.pumfGroupedCount}</strong></span>
-                              <span>Primary Identifiers: <strong>{s.identifierCount}</strong></span>
-                              <span>Derivation Links: <strong>{s.derivationsExtracted}</strong></span>
+                              <span>{l('PUMF Grouped Recodes', 'Recodages groupés du FMGD')} : <strong>{s.pumfGroupedCount}</strong></span>
+                              <span>{l('Primary Identifiers', 'Identifiants principaux')} : <strong>{s.identifierCount}</strong></span>
+                              <span>{l('Derivation Links', 'Liens de dérivation')} : <strong>{s.derivationsExtracted}</strong></span>
                               {bootstrapCount > 0 && (
-                                <span>Replicate Bootstrap Weights: <strong>{bootstrapCount.toLocaleString()}</strong></span>
+                                <span>{l('Replicate Bootstrap Weights', 'Poids bootstrap')} : <strong>{count(bootstrapCount)}</strong></span>
                               )}
                             </div>
                           </div>
@@ -232,25 +235,25 @@ export function CorpusGraphExplorer({
                         <span
                           title={
                             bootstrapCount > 0
-                              ? `${substantiveTotal.toLocaleString()} substantive variables across ${numCycles} cycle${numCycles === 1 ? '' : 's'} (excludes ${bootstrapCount.toLocaleString()} replicate bootstrap weights)`
-                              : `${substantiveTotal.toLocaleString()} variables across ${numCycles} cycle${numCycles === 1 ? '' : 's'}`
+                              ? l(`${count(substantiveTotal)} substantive variables across ${numCycles} cycle${numCycles === 1 ? '' : 's'} (excludes ${count(bootstrapCount)} replicate bootstrap weights)`, `${count(substantiveTotal)} variables de fond sur ${numCycles} cycles (hors ${count(bootstrapCount)} poids bootstrap)`)
+                              : l(`${count(substantiveTotal)} variables across ${numCycles} cycle${numCycles === 1 ? '' : 's'}`, `${count(substantiveTotal)} variables sur ${numCycles} cycles`)
                           }
                         >
                           {avgVarsPerCycle.toLocaleString()}
                         </span>
                       </td>
                       <td>
-                        <div className="kg-bar-stack" title={`Collected: ${pCol}%, Derived: ${pDer}%, Admin: ${pAdm}%, Process: ${pPrc}%`}>
+                        <div className="kg-bar-stack" title={l(`Collected: ${pCol}%, Derived: ${pDer}%, Admin: ${pAdm}%, Process: ${pPrc}%`, `Recueillies : ${pCol} %, dérivées : ${pDer} %, administratives : ${pAdm} %, processus : ${pPrc} %`)}>
                           <div className="kg-bar kg-bar--col" style={{ width: `${pCol}%` }} />
                           <div className="kg-bar kg-bar--der" style={{ width: `${pDer}%` }} />
                           <div className="kg-bar kg-bar--adm" style={{ width: `${pAdm}%` }} />
                           <div className="kg-bar kg-bar--prc" style={{ width: `${pPrc}%` }} />
                         </div>
                         <div className="kg-bar-legend">
-                          <span>{pCol}% Qs</span>
-                          <span>{pDer}% DV</span>
+                          <span>{pCol}% {l('Qs', 'quest.')}</span>
+                          <span>{pDer}% {l('DV', 'var. dér.')}</span>
                           {Number(pAdm) > 0 && <span>{pAdm}% Adm</span>}
-                          {Number(pPrc) > 0 && <span>{pPrc}% Wts</span>}
+                          {Number(pPrc) > 0 && <span>{pPrc}% {l('Wts', 'poids')}</span>}
                         </div>
                       </td>
                       <td style={{ textAlign: 'center' }}>
@@ -260,16 +263,16 @@ export function CorpusGraphExplorer({
                             className="kg-btn kg-btn--sm"
                             onClick={() => setExpandedSurvey(isExpanded ? null : s.acronym)}
                           >
-                            {isExpanded ? 'Hide' : 'Cycles'}
+                            {isExpanded ? l('Hide', 'Masquer') : l('Cycles', 'Cycles')}
                           </button>
                           {onSelectSearch && (
                             <button
                               type="button"
                               className="kg-btn kg-btn--sm kg-btn--primary"
                               onClick={() => onSelectSearch('', s.acronym)}
-                              title={`Search all ${s.acronym} variables`}
+                              title={l(`Search all ${s.acronym} variables`, `Rechercher toutes les variables de ${s.acronym}`)}
                             >
-                              Search ↗
+                              {l('Search ↗', 'Rechercher ↗')}
                             </button>
                           )}
                         </div>
@@ -287,14 +290,14 @@ export function CorpusGraphExplorer({
       {tab === 'concepts' && (
         <section className="kg-pane">
           <p className="kg-pane__desc">
-            Examples showcasing how Statistics Canada measures subject-matter concepts across cycles and decades — question wording changes, category additions, and series breaks. To explore a specific topic or question, search directly in the <strong>Search</strong> tab.
+            {language === 'fr' ? <>Exemples de la façon dont Statistique Canada mesure des concepts au fil des cycles et des décennies : changements dans le libellé des questions, ajout de catégories et ruptures de série. Pour explorer un sujet ou une question, utilisez l’onglet <strong>Rechercher</strong>.</> : <>Examples showcasing how Statistics Canada measures subject-matter concepts across cycles and decades — question wording changes, category additions, and series breaks. To explore a specific topic or question, search directly in the <strong>Search</strong> tab.</>}
           </p>
 
           <div className="kg-dag-searcher-callout" style={{ maxWidth: 680, marginBottom: 16 }}>
             <div className="kg-dag-searcher-callout__body">
-              <strong>Looking for a specific concept or topic?</strong>
+              <strong>{l('Looking for a specific concept or topic?', 'Vous cherchez un concept ou un sujet précis?')}</strong>
               <p>
-                Browse the examples below to see longitudinal concept continuity, or search any keyword in <strong>Search</strong> to jump directly to matching variables and their timelines.
+                {language === 'fr' ? <>Parcourez les exemples ci-dessous pour suivre l’évolution des concepts, ou saisissez un mot-clé dans <strong>Rechercher</strong> pour accéder aux variables correspondantes et à leur chronologie.</> : <>Browse the examples below to see longitudinal concept continuity, or search any keyword in <strong>Search</strong> to jump directly to matching variables and their timelines.</>}
               </p>
             </div>
             {onSelectSearch && (
@@ -303,7 +306,7 @@ export function CorpusGraphExplorer({
                 className="kg-btn kg-btn--sm kg-btn--primary kg-dag-searcher-callout__btn"
                 onClick={() => onSelectSearch('')}
               >
-                Go to Search ↗
+                {l('Go to Search ↗', 'Aller à la recherche ↗')}
               </button>
             )}
           </div>

@@ -1107,6 +1107,12 @@ export class SupabaseCorpusSource {
     );
     if (response.status === 404) return [];
     if (!response.ok) {
+      if (response.status === 400) {
+        const body = await response.text().catch(() => '');
+        if (body.includes('NoSuchKey') || body.includes('not_found') || body.includes('404')) {
+          return [];
+        }
+      }
       throw new Error(`Document text unavailable: ${response.status} ${response.statusText}`);
     }
     const chunk = (await response.json()) as { pages?: CorpusDocumentPage[] };
