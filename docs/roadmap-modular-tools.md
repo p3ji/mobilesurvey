@@ -105,3 +105,40 @@ Generic commercial machine translation (DeepL, Google Translate, base LLMs) freq
 - **Scope:** Experiments on how official statistics surface online.
 - **First result:** Search visibility experiment report: https://civik.peji.ca/stats/report/
 - **Hub:** roadmap tile `open-stats-lab` links to the report. Separate from the AI-visibility study code in the `stats` repo; no shared code is implied.
+
+---
+
+## 6. Phase 25: T15.4 Derived Variable Specification Ingestion Engine *(DONE — 2026-10-12)*
+
+- **Workspace package:** `tools/metadata/statcan-corpus` (`src/graph/derived-specs.ts` / `@mobilesurvey/statcan-corpus`)
+- **Survey Step:** Post-collection Documentation & Computational Lineage Extraction
+- **Primary Interfaces:** CLI pipeline (`pnpm corpus:derived-specs`), Supabase `corpus_derivation_edge`, Hub Graph Explorer
+- **Input → Output:** 44 English `T15.4` Derived Variable Specification PDF manuals (`CCHS_ESCC`, `CHMS_ECMS`, `CCAHS_ECSAC`, `SAHCPDP_EASSPPP`, `SCMH_ECSM`, `SLCDC_EPMCC`) → 6,013 parsed DV blocks and **10,948 verified DAG edges** across 28 `(surveyGroup, cycle)` pairs.
+
+### Core Concept & Problem Solved
+Previously, the derivation extraction queue mined only `T15.2`/`T15.6` data dictionaries. Statistics Canada also publishes dedicated **Derived Variable Specification Books (`T15.4`)** containing multi-page tables, SAS/SPSS algorithms, and `Temporary Reformat` blocks for clinical and socioeconomic indices. Phase 25 extracts all 44 English `T15.4` PDFs into `out/documents/`, parses standard (`Variable name:` / `Based on:`), numbered CCAHS, and `Temporary Reformat` layouts, resolves CCHS 2022–2024 3-digit $\rightarrow$ 2-digit question renumberings with a $\ge 0.70$ semantic concept guard, and enforces the Two-Clause Epistemic Transparency Contract (`Evidence from data dictionary: "..."; AI interpretation and action: ...`).
+
+---
+
+## 7. Phase 26: Questionnaire-to-Dataset Variable Concordance Resolver *(DONE — 2026-10-12)*
+
+- **Workspace package:** `tools/metadata/statcan-corpus` (`src/graph/concordance.ts` / `@mobilesurvey/statcan-corpus`)
+- **Survey Step:** Data Dictionary Harmonization & Questionnaire Concordance
+- **Primary Interfaces:** CLI pipeline (`pnpm corpus:concordance`), SQLite `derivation_queue.db`, Supabase `corpus_derivation_edge`
+- **Input → Output:** Dictionary `Question Name:` headers, explicit `"corresponds to question X"` notes, and structural CAPI/CATI code transforms → **832 newly verified concordance edges** across 47 survey groups + **387 quarantined self-referential/routing false positives**.
+
+### Core Concept & Problem Solved
+In many surveys, derivation notes cite CAPI/CATI collection question codes (`SED_Q12M`, `RRS_Q12`, `C19_Q18B`, `LTC_Q05_01`, `ED_Q01A`) rather than the published analytical column names (`SED12M`, `RRS_12`, `C19_18B`, `LTC05_01`, `ED1Q001`). Phase 26 resolves these across 47 survey groups while quarantining 320 self-referential question codes (e.g. `ME_25D <- ME_Q25` where `ME_25D` is option D of battery `ME_Q25`) and 67 routing notes. Combined with Phase 25, live verified derivation lineage in Supabase `corpus_derivation_edge` expanded from 14,233 to **26,680 verified links across 131 survey cycles (+87.5%)**.
+
+---
+
+## 8. Phase 27: Cross-Cycle Concept Continuity & Longitudinal Lineage Mesh *(DONE — 2026-10-12)*
+
+- **Workspace package:** `tools/metadata/statcan-corpus` (`src/graph/continuity.ts`), `platform/hub` (`src/CorpusConcepts.tsx`)
+- **Survey Step:** Longitudinal Harmonization & Multi-Cycle Comparability
+- **Primary Interfaces:** CLI pipeline (`pnpm corpus:continuity`), Hub Knowledge Graph Explorer (`#searcher?scope=concepts`), Supabase `sql/concept_continuity.sql` & `sql/concept_continuity_mesh.sql`
+- **Input → Output:** 230,034 English variable occurrences across multi-cycle programs → **2,086 cross-cycle continuity bridges** across 32 survey programs (**1,759 live links** in Supabase `corpus_concept_continuity`).
+
+### Core Concept & Problem Solved
+While exact DDI cascade clustering (`cluster.ts`) places identical `(meaning, universe)` occurrences onto a single timeline, any shift in universe (`universe_shift`: 1,464), wording/universe evolution (`wording_and_universe_evolution`: 598), concept relabeling (`concept_relabel`: 18), or CCHS 3-digit to 2-digit renumbering (`cycle_renumbering`: 6) creates a separate `l:ConceptualVariable` group so populations are never silently merged. Phase 27 connects consecutive distinct `conceptual_variable_id` epochs along each longitudinal series with full Two-Clause attribution (`Evidence from data dictionary: "..."; AI interpretation and action: ...`).
+

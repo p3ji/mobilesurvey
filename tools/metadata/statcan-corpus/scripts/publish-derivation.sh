@@ -1,29 +1,35 @@
 #!/usr/bin/env bash
 # Publish auto-verified derivation edges from the local queue to Supabase.
-# Idempotent: reviewer audit re-verifies candidates in place; export rewrites
-# out/verified_edges.sql; import upserts on deterministic edge_id/dedupe_key.
-# Safe to run repeatedly while the extraction worker is still draining — each
-# pass publishes whatever has been verified since the last pass.
+# Idempotent: export rewrites out/verified_chunks/chunk_*.sql; import upserts on
+# deterministic (target_record_id, upper(btrim(source_var_name))).
 set -euo pipefail
-cd "$(dirname "$0")/.."
+PKG_DIR="$(cd "$(dirname "$0")/.." && pwd)"
+REPO_ROOT="$(cd "$PKG_DIR/../../.." && pwd)"
+cd "$PKG_DIR"
 
-echo "==> Reviewer audit (auto-verify candidates)"
-pnpm corpus:review -- audit
+echo "==> Export publishable SQL chunks"
+npx tsx src/graph/reviewer.ts export
 
-echo "==> Export publishable SQL"
-pnpm corpus:review -- export
-
-SQL_FILE="out/verified_edges.sql"
-if [[ ! -s "$SQL_FILE" ]]; then
-  echo "No verified edges to publish ($SQL_FILE empty). Done."
+CHUNK_DIR="$PKG_DIR/out/verified_chunks"
+if [[ ! -d "$CHUNK_DIR" ]]; then
+  echo "No verified chunks directory found ($CHUNK_DIR). Done."
   exit 0
 fi
 
-echo "==> Import into Supabase (linked project)"
-supabase db query --linked -f "$SQL_FILE" >/dev/null
+CHUNKS=("$CHUNK_DIR"/chunk_*.sql)
+TOTAL="${#CHUNKS[@]}"
+echo "==> Importing $TOTAL chunk(s) into Supabase (linked project)..."
+IDX=0
+for f in $(ls -v "$CHUNK_DIR"/chunk_*.sql); do
+  IDX=$((IDX + 1))
+  echo "  [$IDX/$TOTAL] $(basename "$f")"
+  (cd "$REPO_ROOT" && supabase db query --linked -f "$f" >/dev/null)
+done
+
 echo "Published. Live counts:"
 cat > /tmp/derivation_counts.sql <<'EOF'
 select 'total_edges' as k, count(*)::text as v from corpus_derivation_edge
-union all select 'verified', count(*)::text from corpus_derivation_edge where review_status='verified';
+union all select 'verified', count(*)::text from corpus_derivation_edge where review_status='verified'
+union all select 'programs_with_verified', count(distinct survey_group)::text from corpus_derivation_edge where review_status='verified';
 EOF
-supabase db query --linked -f /tmp/derivation_counts.sql
+(cd "$REPO_ROOT" && supabase db query --linked -f /tmp/derivation_counts.sql)

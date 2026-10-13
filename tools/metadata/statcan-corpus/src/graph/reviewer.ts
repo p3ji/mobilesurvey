@@ -738,10 +738,15 @@ export function isPublishableEdge(edge: CandidateEdgeRow): boolean {
   if (edge.survey_group === 'BC_CB_K12') return false; // mixed data-source/provenance notes
   if (source === target) return false; // same-name occurrences need document-level resolution
   if (/(?:SAMPLEID|PERSONID|MASTERID|_ID)$/.test(source)) return false;
-  // Human-approved suggestions (Check 4 accept) are explicitly vetted
+  // Human-approved suggestions, T15.4 spec ingestions, concordance resolutions, and adversarial critic approvals are explicitly vetted
   if (
     edge.extraction_method === 'human_review' ||
+    edge.extraction_method === 't15_4_spec' ||
+    edge.extraction_method === 'concordance_resolved' ||
     edge.auditor === 'human_suggestion_accept' ||
+    edge.auditor === 't15_4_spec_engine_v1' ||
+    edge.auditor === 'concordance_resolver_v1' ||
+    edge.auditor === 'orchestrator_llm_critic' ||
     evidence.startsWith('human-approved')
   ) {
     return true;
