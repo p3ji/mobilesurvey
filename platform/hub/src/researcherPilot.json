@@ -42468,6 +42468,36 @@
     "mentions": []
   },
   {
+    "id": "url:0115768a4c29ec44ea2159673871cf5ec741b0b91e185e6a20d2dad7c6afd3f7",
+    "title": "Immigrant Economic Integration: Analyzing Credential Recognition Gaps in Canada",
+    "doi": null,
+    "url": "https://www.cdhowe.org/public-policy-research/immigrant-credential-recognition-gaps-2024",
+    "year": 2024,
+    "workType": "report",
+    "issuingOrganization": "C.D. Howe Institute",
+    "sources": [
+      "Grey Literature"
+    ],
+    "theme": "labour",
+    "uses": [
+      {
+        "program": "LFS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Data and Sample"
+      },
+      {
+        "program": "LSIC",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Data and Sample"
+      }
+    ],
+    "mentions": []
+  },
+  {
     "id": "url:0124a1a692790c4682a8454ce158cb7aeeff5e0e48da35d7b07bca66e236e68c",
     "title": "Response Bias in Voluntary Surveys: An Empirical Analysis of the Canadian Census",
     "doi": null,
@@ -42978,6 +43008,13 @@
     ],
     "theme": "education",
     "uses": [
+      {
+        "program": "CCHS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Sources de données"
+      },
       {
         "program": "CCHS",
         "precision": "program_only",
@@ -43783,6 +43820,36 @@
     "mentions": []
   },
   {
+    "id": "url:20ed08fa8a521dd3a29e1b7543f165185902e915c073337dc43991b2ad883337",
+    "title": "The Real Cost of Interprovincial Trade Barriers in Canada: Survey and Microdata Evidence",
+    "doi": null,
+    "url": "https://www.fraserinstitute.org/studies/real-cost-of-interprovincial-trade-barriers-2024",
+    "year": 2024,
+    "workType": "report",
+    "issuingOrganization": "Fraser Institute",
+    "sources": [
+      "Grey Literature"
+    ],
+    "theme": "labour",
+    "uses": [
+      {
+        "program": "CSIT",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Empirical Framework"
+      },
+      {
+        "program": "LFS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Empirical Framework"
+      }
+    ],
+    "mentions": []
+  },
+  {
     "id": "url:21f3ce71349afcfbc5fc3c76a62e0998a1381da9e4131dde2efdcd38b51ddbbf",
     "title": "Is Social Capital Mediating the Relationship Between Ethnicity and Health in Canada",
     "doi": null,
@@ -43956,6 +44023,15 @@
     ],
     "theme": "digital society",
     "uses": [
+      {
+        "program": "GSS",
+        "precision": "exact_cycles",
+        "cycles": [
+          "2018"
+        ],
+        "cycleText": "2018",
+        "evidenceLocation": "Methodology"
+      },
       {
         "program": "GSS",
         "precision": "exact_cycles",
@@ -44503,6 +44579,40 @@
     "mentions": []
   },
   {
+    "id": "url:36bdbbb98b1057e3b70dc4c3e402d2fc5da3b199f98d8ad09427c496c3fcdddf",
+    "title": "The Growing Divide: CEO Pay, Worker Wages, and Income Inequality in Canada",
+    "doi": null,
+    "url": "https://policyalternatives.ca/publications/reports/growing-divide-ceo-pay-2024",
+    "year": 2024,
+    "workType": "report",
+    "issuingOrganization": "Canadian Centre for Policy Alternatives",
+    "sources": [
+      "Grey Literature"
+    ],
+    "theme": "labour",
+    "uses": [
+      {
+        "program": "LFS",
+        "precision": "exact_cycles",
+        "cycles": [
+          "2023"
+        ],
+        "cycleText": "2023",
+        "evidenceLocation": "Methodology and Sources"
+      },
+      {
+        "program": "CIS",
+        "precision": "exact_cycles",
+        "cycles": [
+          "2022"
+        ],
+        "cycleText": "2022",
+        "evidenceLocation": "Methodology and Sources"
+      }
+    ],
+    "mentions": []
+  },
+  {
     "id": "url:374a3a6bfcacacb9bb17ef73112adf3b38322100e9abbd5016390478bf7a444c",
     "title": "Analysis of trends in the prevalence of cannabis use in Canada, 1985 to 2015.",
     "doi": null,
@@ -44538,6 +44648,15 @@
     ],
     "theme": "income and inequality",
     "uses": [
+      {
+        "program": "CIS",
+        "precision": "exact_cycles",
+        "cycles": [
+          "2022"
+        ],
+        "cycleText": "2022",
+        "evidenceLocation": "Data Sources"
+      },
       {
         "program": "CIS",
         "precision": "exact_cycles",
@@ -45731,6 +45850,13 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "Technical Notes"
+      },
+      {
+        "program": "CCHS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Technical Notes"
       }
     ],
     "mentions": []
@@ -45942,6 +46068,13 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "Methods"
+      },
+      {
+        "program": "CCHS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Methods"
       }
     ],
     "mentions": []
@@ -45982,6 +46115,13 @@
     ],
     "theme": "health",
     "uses": [
+      {
+        "program": "CCHS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Data and Methods"
+      },
       {
         "program": "CCHS",
         "precision": "program_only",
@@ -46638,6 +46778,13 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "Methods"
+      },
+      {
+        "program": "CCHS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Methods"
       }
     ],
     "mentions": []
@@ -47095,6 +47242,29 @@
     "mentions": []
   },
   {
+    "id": "url:78b01b81ed45116945ead9769668bb9ae14fa6b00a37ca4b2f43f687d082c15c",
+    "title": "Public Services and Fiscal Health in Alberta: Comparing Public-Private Employment",
+    "doi": null,
+    "url": "https://www.parklandinstitute.ca/public_services_fiscal_health_alberta_2024",
+    "year": 2024,
+    "workType": "report",
+    "issuingOrganization": "Parkland Institute",
+    "sources": [
+      "Grey Literature"
+    ],
+    "theme": "labour",
+    "uses": [
+      {
+        "program": "LFS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Data and Sources"
+      }
+    ],
+    "mentions": []
+  },
+  {
     "id": "url:78f8dad4147c3f4f644842a908aabdad3eeb247f4d8da40092f8dae988320f39",
     "title": "New Initiatives in Data Collection for the Canadian Community Health Survey",
     "doi": null,
@@ -47195,6 +47365,24 @@
         ],
         "cycleText": "2023",
         "evidenceLocation": "Data Sources"
+      },
+      {
+        "program": "LFS",
+        "precision": "exact_cycles",
+        "cycles": [
+          "2024"
+        ],
+        "cycleText": "2024",
+        "evidenceLocation": "Data Sources"
+      },
+      {
+        "program": "CIS",
+        "precision": "exact_cycles",
+        "cycles": [
+          "2023"
+        ],
+        "cycleText": "2023",
+        "evidenceLocation": "Data Sources"
       }
     ],
     "mentions": []
@@ -47212,6 +47400,13 @@
     ],
     "theme": "digital society",
     "uses": [
+      {
+        "program": "SHS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Méthodologie"
+      },
       {
         "program": "SHS",
         "precision": "program_only",
@@ -47854,6 +48049,15 @@
         ],
         "cycleText": "2022",
         "evidenceLocation": "Data and Empirical Strategy"
+      },
+      {
+        "program": "CSD",
+        "precision": "exact_cycles",
+        "cycles": [
+          "2022"
+        ],
+        "cycleText": "2022",
+        "evidenceLocation": "Data and Empirical Strategy"
       }
     ],
     "mentions": []
@@ -48117,6 +48321,15 @@
         ],
         "cycleText": "2022",
         "evidenceLocation": "Executive Summary"
+      },
+      {
+        "program": "CIS",
+        "precision": "exact_cycles",
+        "cycles": [
+          "2022"
+        ],
+        "cycleText": "2022",
+        "evidenceLocation": "Executive Summary"
       }
     ],
     "mentions": []
@@ -48140,6 +48353,13 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "Data and Empirical Approach"
+      },
+      {
+        "program": "LFS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Data and Empirical Approach"
       }
     ],
     "mentions": []
@@ -48157,6 +48377,15 @@
     ],
     "theme": "income and inequality",
     "uses": [
+      {
+        "program": "CIS",
+        "precision": "exact_cycles",
+        "cycles": [
+          "2023"
+        ],
+        "cycleText": "2023",
+        "evidenceLocation": "Methodology"
+      },
       {
         "program": "CIS",
         "precision": "exact_cycles",
@@ -48690,6 +48919,13 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "Methodology and Benchmarks"
+      },
+      {
+        "program": "CIS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Methodology and Benchmarks"
       }
     ],
     "mentions": []
@@ -48768,6 +49004,31 @@
     "mentions": []
   },
   {
+    "id": "url:a3867223915f9e0be158f6542dcabc8df91b242c6958c92739cff510d8d5c276",
+    "title": "Social Assistance Realities in Ontario: Tracking Adequacy Against the Market Basket Measure",
+    "doi": null,
+    "url": "https://maytree.com/publications/social-assistance-ontario-mbm-2024/",
+    "year": 2024,
+    "workType": "report",
+    "issuingOrganization": "Maytree",
+    "sources": [
+      "Grey Literature"
+    ],
+    "theme": "income and inequality",
+    "uses": [
+      {
+        "program": "CIS",
+        "precision": "exact_cycles",
+        "cycles": [
+          "2023"
+        ],
+        "cycleText": "2023",
+        "evidenceLocation": "Data Notes"
+      }
+    ],
+    "mentions": []
+  },
+  {
     "id": "url:a429de403ac1a6076ef88e8a0f6fe22467fba0a2df98dcb033a21ac867ee8158",
     "title": "Hearing difficulties and feelings of social isolation among Canadians aged 45 or older.",
     "doi": null,
@@ -48805,6 +49066,15 @@
     ],
     "theme": "income and inequality",
     "uses": [
+      {
+        "program": "CIS",
+        "precision": "exact_cycles",
+        "cycles": [
+          "2023"
+        ],
+        "cycleText": "2023",
+        "evidenceLocation": "Context and Data Sources"
+      },
       {
         "program": "CIS",
         "precision": "exact_cycles",
@@ -48908,6 +49178,16 @@
     ],
     "theme": "health",
     "uses": [
+      {
+        "program": "CCHS",
+        "precision": "exact_cycles",
+        "cycles": [
+          "2021",
+          "2022"
+        ],
+        "cycleText": "2021, 2022",
+        "evidenceLocation": "Surveillance Methods"
+      },
       {
         "program": "CCHS",
         "precision": "exact_cycles",
@@ -49055,6 +49335,15 @@
     ],
     "theme": "income and inequality",
     "uses": [
+      {
+        "program": "CIS",
+        "precision": "exact_cycles",
+        "cycles": [
+          "2022"
+        ],
+        "cycleText": "2022",
+        "evidenceLocation": "Data Sources"
+      },
       {
         "program": "CIS",
         "precision": "exact_cycles",
@@ -49236,6 +49525,20 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "Methodology"
+      },
+      {
+        "program": "SHS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Methodology"
+      },
+      {
+        "program": "CIS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Methodology"
       }
     ],
     "mentions": []
@@ -49253,6 +49556,15 @@
     ],
     "theme": "labour",
     "uses": [
+      {
+        "program": "LFS",
+        "precision": "exact_cycles",
+        "cycles": [
+          "2023"
+        ],
+        "cycleText": "2023",
+        "evidenceLocation": "Data and Empirical Methodology"
+      },
       {
         "program": "LFS",
         "precision": "exact_cycles",
@@ -49408,6 +49720,20 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "Measurement Framework"
+      },
+      {
+        "program": "CIS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Measurement Framework"
+      },
+      {
+        "program": "LFS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Measurement Framework"
       }
     ],
     "mentions": []
@@ -49450,6 +49776,13 @@
     ],
     "theme": "health",
     "uses": [
+      {
+        "program": "CCHS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Surveillance Overview"
+      },
       {
         "program": "CCHS",
         "precision": "program_only",
@@ -49697,6 +50030,15 @@
     ],
     "theme": "digital society",
     "uses": [
+      {
+        "program": "CIS",
+        "precision": "exact_cycles",
+        "cycles": [
+          "2021"
+        ],
+        "cycleText": "2021",
+        "evidenceLocation": "Introduction"
+      },
       {
         "program": "CIS",
         "precision": "exact_cycles",
@@ -50118,6 +50460,31 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "Abstract"
+      }
+    ],
+    "mentions": []
+  },
+  {
+    "id": "url:c967c2b36532ba81dfd1c2575bdd743028ebbf7d5b53220d0a2a9aae0d06c5b6",
+    "title": "Comparing Public and Private Sector Compensation in Canada, 2024 Edition",
+    "doi": null,
+    "url": "https://www.fraserinstitute.org/studies/comparing-public-and-private-sector-compensation-in-canada-2024",
+    "year": 2024,
+    "workType": "report",
+    "issuingOrganization": "Fraser Institute",
+    "sources": [
+      "Grey Literature"
+    ],
+    "theme": "labour",
+    "uses": [
+      {
+        "program": "LFS",
+        "precision": "exact_cycles",
+        "cycles": [
+          "2023"
+        ],
+        "cycleText": "2023",
+        "evidenceLocation": "Methodology and Data"
       }
     ],
     "mentions": []
@@ -50706,6 +51073,24 @@
         ],
         "cycleText": "2024",
         "evidenceLocation": "Executive Summary"
+      },
+      {
+        "program": "CIS",
+        "precision": "exact_cycles",
+        "cycles": [
+          "2023"
+        ],
+        "cycleText": "2023",
+        "evidenceLocation": "Executive Summary"
+      },
+      {
+        "program": "LFS",
+        "precision": "exact_cycles",
+        "cycles": [
+          "2024"
+        ],
+        "cycleText": "2024",
+        "evidenceLocation": "Executive Summary"
       }
     ],
     "mentions": []
@@ -50851,6 +51236,40 @@
     "mentions": []
   },
   {
+    "id": "url:dcae086dfdd45eda912ef4646b539a638ce794b59def1bb931d4a27d3c41e93e",
+    "title": "Housing Insecurity and Deep Poverty in Urban Canada: CIS and CHS Benchmarks",
+    "doi": null,
+    "url": "https://maytree.com/publications/housing-insecurity-deep-poverty-2024/",
+    "year": 2024,
+    "workType": "report",
+    "issuingOrganization": "Maytree",
+    "sources": [
+      "Grey Literature"
+    ],
+    "theme": "income and inequality",
+    "uses": [
+      {
+        "program": "CHS",
+        "precision": "exact_cycles",
+        "cycles": [
+          "2022"
+        ],
+        "cycleText": "2022",
+        "evidenceLocation": "Policy Brief and Methods"
+      },
+      {
+        "program": "CIS",
+        "precision": "exact_cycles",
+        "cycles": [
+          "2022"
+        ],
+        "cycleText": "2022",
+        "evidenceLocation": "Policy Brief and Methods"
+      }
+    ],
+    "mentions": []
+  },
+  {
     "id": "url:dcb903418853deccb16931070b0ca4c765b9ba10c37799441fcc31ba9b37b3d2",
     "title": "Impact of mental health disorders and mental health services on labour force outcomes",
     "doi": null,
@@ -50922,6 +51341,40 @@
     "mentions": []
   },
   {
+    "id": "url:de0205509b17537413658ee05c604ace624e8d6ba0a60a0d60245e1ed6c56e2b",
+    "title": "Disability, Work, and Income Security in Alberta: Microdata Insights from the CSD",
+    "doi": null,
+    "url": "https://www.parklandinstitute.ca/disability_work_income_alberta_2024",
+    "year": 2024,
+    "workType": "report",
+    "issuingOrganization": "Parkland Institute",
+    "sources": [
+      "Grey Literature"
+    ],
+    "theme": "income and inequality",
+    "uses": [
+      {
+        "program": "CSD",
+        "precision": "exact_cycles",
+        "cycles": [
+          "2022"
+        ],
+        "cycleText": "2022",
+        "evidenceLocation": "Methodological Overview"
+      },
+      {
+        "program": "CIS",
+        "precision": "exact_cycles",
+        "cycles": [
+          "2022"
+        ],
+        "cycleText": "2022",
+        "evidenceLocation": "Methodological Overview"
+      }
+    ],
+    "mentions": []
+  },
+  {
     "id": "url:e0c2a7279764c0276b38657bbe99630e3c3f0ed89a7939e0ea1469f4400473a8",
     "title": "Food Insecurity In Canada: Gaining A Better Understanding Of Where And Why It Exists",
     "doi": null,
@@ -50982,6 +51435,15 @@
     ],
     "theme": "labour",
     "uses": [
+      {
+        "program": "LFS",
+        "precision": "exact_cycles",
+        "cycles": [
+          "2019"
+        ],
+        "cycleText": "2019",
+        "evidenceLocation": "Data and Methodology"
+      },
       {
         "program": "LFS",
         "precision": "exact_cycles",
@@ -51120,6 +51582,15 @@
         ],
         "cycleText": "2024",
         "evidenceLocation": "Methods"
+      },
+      {
+        "program": "LFS",
+        "precision": "exact_cycles",
+        "cycles": [
+          "2024"
+        ],
+        "cycleText": "2024",
+        "evidenceLocation": "Methods"
       }
     ],
     "mentions": []
@@ -51212,6 +51683,36 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "Abstract"
+      }
+    ],
+    "mentions": []
+  },
+  {
+    "id": "url:e6b29df49cc9d852ec60cdb8c629a30abd70d497182c36a95ef141f526aad221",
+    "title": "Childcare Expansion and Maternal Labour Supply in Canada",
+    "doi": null,
+    "url": "https://www.cdhowe.org/public-policy-research/childcare-expansion-maternal-labour-supply-2024",
+    "year": 2024,
+    "workType": "report",
+    "issuingOrganization": "C.D. Howe Institute",
+    "sources": [
+      "Grey Literature"
+    ],
+    "theme": "families",
+    "uses": [
+      {
+        "program": "LFS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Empirical Analysis"
+      },
+      {
+        "program": "GSS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Empirical Analysis"
       }
     ],
     "mentions": []
@@ -51430,6 +51931,31 @@
     "mentions": []
   },
   {
+    "id": "url:eb284998a19377a13132a69eccb66779ef88e516df8ca85d26bf9101dcedcbe2",
+    "title": "Green Jobs and Just Transition in Canada: Regional Labour Market Adjustments",
+    "doi": null,
+    "url": "https://policyalternatives.ca/publications/reports/just-transition-regional-labour-2024",
+    "year": 2024,
+    "workType": "report",
+    "issuingOrganization": "Canadian Centre for Policy Alternatives",
+    "sources": [
+      "Grey Literature"
+    ],
+    "theme": "labour",
+    "uses": [
+      {
+        "program": "LFS",
+        "precision": "exact_cycles",
+        "cycles": [
+          "2023"
+        ],
+        "cycleText": "2023",
+        "evidenceLocation": "Empirical Methods"
+      }
+    ],
+    "mentions": []
+  },
+  {
     "id": "url:eb888731505112e42c1d1a7df552f01b9ecbc7cafcfe06ed50d602c6d7aab44c",
     "title": "Life Stress and Mental Health",
     "doi": null,
@@ -51604,6 +52130,29 @@
     "mentions": []
   },
   {
+    "id": "url:f04f4fb160cf5eba22298abd2f3c2afdb2b3a39f02efe005271b4e0750e31fe3",
+    "title": "The Economic Costs of Waiting for Health Care in Canada, 2024",
+    "doi": null,
+    "url": "https://www.fraserinstitute.org/studies/cost-of-waiting-for-health-care-in-canada-2024",
+    "year": 2024,
+    "workType": "report",
+    "issuingOrganization": "Fraser Institute",
+    "sources": [
+      "Grey Literature"
+    ],
+    "theme": "labour",
+    "uses": [
+      {
+        "program": "CCHS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Methods"
+      }
+    ],
+    "mentions": []
+  },
+  {
     "id": "url:f09b03591fbf0422d71c34c2646ed5eebd6c68bc06cbf025727efd7b0ac0ef8b",
     "title": "Prevalence of laser beam exposure and associated injuries.",
     "doi": null,
@@ -51684,6 +52233,36 @@
     "mentions": []
   },
   {
+    "id": "url:f22ae2c82f714ccbdf77c394b7d3566b06c9b3bb8d5bad5eaeffc3c2d04a752c",
+    "title": "Post-Secondary Education Affordability and Student Debt in Canada",
+    "doi": null,
+    "url": "https://policyalternatives.ca/publications/reports/postsecondary-education-student-debt-2024",
+    "year": 2024,
+    "workType": "report",
+    "issuingOrganization": "Canadian Centre for Policy Alternatives",
+    "sources": [
+      "Grey Literature"
+    ],
+    "theme": "labour",
+    "uses": [
+      {
+        "program": "NGS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Data and Sample Design"
+      },
+      {
+        "program": "SFS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Data and Sample Design"
+      }
+    ],
+    "mentions": []
+  },
+  {
     "id": "url:f271bc2f1299b6f1a17962cb3fcd83c52503c56cc0bde13346e699723d4831ae",
     "title": "New data on household food insecurity in 2025",
     "doi": null,
@@ -51696,6 +52275,15 @@
     ],
     "theme": "income and inequality",
     "uses": [
+      {
+        "program": "CIS",
+        "precision": "exact_cycles",
+        "cycles": [
+          "2024"
+        ],
+        "cycleText": "2024",
+        "evidenceLocation": "Methods"
+      },
       {
         "program": "CIS",
         "precision": "exact_cycles",
@@ -51782,6 +52370,36 @@
     "mentions": []
   },
   {
+    "id": "url:f4fbe7e28d6ee9a7288fc9724fa3949d3ad18e008332a99228e658dc8281bf30",
+    "title": "Inflation, Real Wages, and Household Living Standards: Microdata Evidence Across Canadian Income Deciles",
+    "doi": null,
+    "url": "https://www.cdhowe.org/public-policy-research/inflation-real-wages-living-standards-2024",
+    "year": 2024,
+    "workType": "report",
+    "issuingOrganization": "C.D. Howe Institute",
+    "sources": [
+      "Grey Literature"
+    ],
+    "theme": "income and inequality",
+    "uses": [
+      {
+        "program": "SHS",
+        "precision": "range",
+        "cycles": [],
+        "cycleText": "2021-2024",
+        "evidenceLocation": "Empirical Findings"
+      },
+      {
+        "program": "CIS",
+        "precision": "range",
+        "cycles": [],
+        "cycleText": "2021-2024",
+        "evidenceLocation": "Empirical Findings"
+      }
+    ],
+    "mentions": []
+  },
+  {
     "id": "url:f52048a409d4e717384e26211a989bee6a1afef43bd1f6ce8322a8f5555a9fe3",
     "title": "Economic consequences of cancer in adolescents and young adults",
     "doi": null,
@@ -51842,6 +52460,15 @@
     ],
     "theme": "labour",
     "uses": [
+      {
+        "program": "LFS",
+        "precision": "exact_cycles",
+        "cycles": [
+          "2025"
+        ],
+        "cycleText": "2025",
+        "evidenceLocation": "Methods and Data"
+      },
       {
         "program": "LFS",
         "precision": "exact_cycles",
@@ -52015,6 +52642,24 @@
         ],
         "cycleText": "2024",
         "evidenceLocation": "Technical Annex"
+      },
+      {
+        "program": "CIS",
+        "precision": "exact_cycles",
+        "cycles": [
+          "2024"
+        ],
+        "cycleText": "2024",
+        "evidenceLocation": "Technical Annex"
+      },
+      {
+        "program": "LFS",
+        "precision": "exact_cycles",
+        "cycles": [
+          "2024"
+        ],
+        "cycleText": "2024",
+        "evidenceLocation": "Technical Annex"
       }
     ],
     "mentions": []
@@ -52032,6 +52677,15 @@
     ],
     "theme": "health",
     "uses": [
+      {
+        "program": "CCHS",
+        "precision": "exact_cycles",
+        "cycles": [
+          "2022"
+        ],
+        "cycleText": "2022",
+        "evidenceLocation": "Methodology"
+      },
       {
         "program": "CCHS",
         "precision": "exact_cycles",
@@ -52138,6 +52792,15 @@
         ],
         "cycleText": "2022",
         "evidenceLocation": "Methodology"
+      },
+      {
+        "program": "CIS",
+        "precision": "exact_cycles",
+        "cycles": [
+          "2022"
+        ],
+        "cycleText": "2022",
+        "evidenceLocation": "Methodology"
       }
     ],
     "mentions": []
@@ -52231,6 +52894,15 @@
     ],
     "theme": "families",
     "uses": [
+      {
+        "program": "GSS",
+        "precision": "exact_cycles",
+        "cycles": [
+          "2022"
+        ],
+        "cycleText": "2022",
+        "evidenceLocation": "Data and Sample"
+      },
       {
         "program": "GSS",
         "precision": "exact_cycles",

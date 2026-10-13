@@ -129,6 +129,15 @@ async function main() {
         jobs += q.seed(source, model); works++;
       }
       console.log(JSON.stringify({ worksRead: works, jobsAdded: jobs }));
+    } else if (command === 'seed-grey') {
+      const candidates = getGreyLiteratureCandidates();
+      const sources = assembleCandidates(candidates);
+      let jobs = 0;
+      for (const s of sources) {
+        jobs += q.seed(s, 'deterministic');
+      }
+      const reprocessRes = q.reprocessDeterministic();
+      console.log(JSON.stringify({ greyCandidates: candidates.length, uniqueSources: sources.length, jobsSeeded: jobs, ...reprocessRes }));
     } else if (command === 'reprocess-deterministic' || (command === 'run-deterministic' && (args.includes('--all') || args.includes('--reprocess')))) {
       const res = q.reprocessDeterministic();
       console.log(JSON.stringify({ status: 'completed', reprocessed: res.reprocessed, claimsUpdated: res.claimsUpdated }));
