@@ -51,7 +51,7 @@ export interface CriticDecision {
   confidence: number;
   counter_hypothesis: string;
   rationale: string;
-  source: 'deterministic' | 'llm_critic';
+  source: 'deterministic' | 'llm_critic' | 'gemini_escalation';
 }
 
 /**
@@ -73,6 +73,17 @@ export function evaluateDeterministicFilter(
       confidence: 1.0,
       counter_hypothesis: 'Self-referential loop: target variable cannot derive from itself.',
       rationale: 'Target variable and source variable are identical.',
+      source: 'deterministic',
+    };
+  }
+
+  // Check 1b: Pure numeric literals or code values (e.g. -3, 99, 1)
+  if (/^[-+]?\d+$/.test(sourceUpper)) {
+    return {
+      classification: 'prose_phrase',
+      confidence: 1.0,
+      counter_hypothesis: 'Numeric code or category constant extracted rather than questionnaire mnemonic.',
+      rationale: `Source token '${sourceVarName}' is a numeric literal/code value.`,
       source: 'deterministic',
     };
   }
@@ -396,14 +407,105 @@ Respond ONLY with a JSON object: {"verdict": "target_mismatch" | "routing_filter
 }
 
 /**
+ * Tier 2: Gemini Escalation Arbitrator Client (gemini-3.8-flash)
+ */
+export class GeminiCriticClient {
+  private apiKey?: string;
+  private model: string;
+
+  constructor(
+    apiKey: string | undefined = process.env.GEMINI_API_KEY,
+    model: string = process.env.GEMINI_MODEL || 'gemini-3.8-flash'
+  ) {
+    this.apiKey = apiKey;
+    this.model = model;
+  }
+
+  public isAvailable(): boolean {
+    return Boolean(this.apiKey && this.apiKey.trim().length > 0);
+  }
+
+  public async evaluateNeedsReview(
+    targetVar: string,
+    sourceVar: string,
+    evidence: string
+  ): Promise<CriticDecision> {
+    if (!this.apiKey) {
+      throw new Error('GEMINI_API_KEY is not configured for Tier 2 escalation.');
+    }
+
+    const systemPrompt = `You are the Statistics Canada Derived Variable Escalation Arbitrator (Tier 2).
+Evaluate whether a candidate derivation edge (Target <- Source) represents a genuine computational dependency or a false-positive artifact.
+
+Valid classifications:
+- "valid_dependency": Source is a genuine computational variable input required to calculate Target.
+- "routing_filter": Source is merely a universe skip condition, respondent filter (PMK/Proxy), or interview routing rule.
+- "target_mismatch": Source is an unassociated category option pointer, simultaneous exclusion, or unrelated battery note.
+- "internal_processing_file": Note explicitly indicates the variable is on an internal processing file, unreleased master file, or not on public file.
+- "admin_register": Source is an external administrative file (tax, census geography) joined during post-collection processing.
+- "prose_phrase": Source token is descriptive prose text or non-variable label (e.g. "TOTAL", "INCOME").
+
+Respond with strict JSON ONLY:
+{
+  "classification": "valid_dependency" | "routing_filter" | "target_mismatch" | "internal_processing_file" | "admin_register" | "prose_phrase",
+  "confidence": float (0.0 to 1.0),
+  "counter_hypothesis": string,
+  "rationale": "one concise sentence explaining verdict"
+}`;
+
+    const userPrompt = `Target: ${targetVar}. Candidate Source: ${sourceVar}. Evidence note: "${evidence}"`;
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/${this.model}:generateContent?key=${this.apiKey}`;
+
+    const resp = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        system_instruction: { parts: [{ text: systemPrompt }] },
+        contents: [{ parts: [{ text: userPrompt }] }],
+        generationConfig: {
+          response_mime_type: 'application/json',
+          temperature: 0.0,
+        },
+      }),
+    });
+
+    if (!resp.ok) {
+      throw new Error(`Gemini API failed with status ${resp.status}: ${await resp.text()}`);
+    }
+
+    const data = (await resp.json()) as any;
+    const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
+    if (!text) {
+      throw new Error('No content returned from Gemini API.');
+    }
+
+    const clean = text.replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/, '').trim();
+    const parsed = JSON.parse(clean);
+
+    return {
+      classification: parsed.classification || 'valid_dependency',
+      confidence: typeof parsed.confidence === 'number' ? parsed.confidence : 0.95,
+      counter_hypothesis: parsed.counter_hypothesis || parsed.classification,
+      rationale: parsed.rationale || 'Adjudicated by Gemini 3.8 Flash escalation arbitrator.',
+      source: 'gemini_escalation',
+    };
+  }
+}
+
+/**
  * Main Orchestrator Class
  */
 export class LineageOrchestrator {
   private db: DatabaseSync;
   private critic: LocalCriticClient;
+  private geminiCritic: GeminiCriticClient;
   private writeLock: Promise<void> = Promise.resolve();
 
-  constructor(dbPath: string = DB_PATH, critic?: LocalCriticClient) {
+  constructor(
+    dbPath: string = DB_PATH,
+    critic?: LocalCriticClient,
+    geminiCritic?: GeminiCriticClient
+  ) {
     this.db = new DatabaseSync(dbPath);
     try {
       this.db.exec('PRAGMA busy_timeout = 15000;');
@@ -411,6 +513,7 @@ export class LineageOrchestrator {
       // ignore
     }
     this.critic = critic || new LocalCriticClient();
+    this.geminiCritic = geminiCritic || new GeminiCriticClient();
   }
 
   private async safeWrite(fn: () => void): Promise<void> {
@@ -566,7 +669,9 @@ export class LineageOrchestrator {
     let rejectedAdmin = 0;
     let rejectedRouting = 0;
     let retainedNeedsReview = 0;
+    let escalatedToGemini = 0;
     const findings: Array<{ edge: CandidateEdgeRow; decision: CriticDecision }> = [];
+    const escalationQueue: Array<{ edge: CandidateEdgeRow; localDecision: CriticDecision }> = [];
 
     const concurrency = options.concurrency || 4;
     let nextIdx = 0;
@@ -603,6 +708,30 @@ export class LineageOrchestrator {
               rationale: `Retained in needs_review due to LLM error: ${err.message}`,
               source: 'llm_critic',
             };
+          }
+        }
+
+        // Step 2b: Tier 2 Gemini Escalation if ambiguous, low confidence, or disputed
+        if (
+          decision &&
+          decision.source === 'llm_critic' &&
+          (decision.confidence < 0.85 || decision.classification === 'target_mismatch')
+        ) {
+          if (this.geminiCritic.isAvailable()) {
+            try {
+              const escalatedDecision = await this.geminiCritic.evaluateNeedsReview(
+                edge.target_var_name,
+                edge.source_var_name,
+                edge.raw_evidence
+              );
+              decision = escalatedDecision;
+              escalatedToGemini++;
+            } catch (err: any) {
+              console.warn(`  [WARN] Gemini escalation error on ${edge.target_var_name}: ${err.message}`);
+              escalationQueue.push({ edge, localDecision: decision });
+            }
+          } else {
+            escalationQueue.push({ edge, localDecision: decision });
           }
         }
 
@@ -709,6 +838,14 @@ export class LineageOrchestrator {
     console.log(`  Rejected (Admin Register): ${rejectedAdmin}`);
     console.log(`  Rejected (Routing Filter): ${rejectedRouting}`);
     console.log(`  Retained in Needs_Review:  ${retainedNeedsReview}`);
+    if (escalatedToGemini > 0) {
+      console.log(`  Arbitrated by Gemini:      ${escalatedToGemini}`);
+    }
+    if (escalationQueue.length > 0) {
+      const queueFile = path.join(PACKAGE_DIR, 'out', 'escalation_queue.json');
+      writeFileSync(queueFile, JSON.stringify(escalationQueue, null, 2), 'utf8');
+      console.log(`  Escalation queue saved:    ${queueFile} (${escalationQueue.length} items flagged for Tier 2)`);
+    }
 
     if (options.outputReport) {
       this.writeAdjudicationReport(
