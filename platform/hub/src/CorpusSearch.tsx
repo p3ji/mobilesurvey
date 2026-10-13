@@ -313,8 +313,23 @@ function CorpusHit({
           ))}
           <details className="cs-hit__lineage-evidence">
             <summary>{l('Why these links?', 'Pourquoi ces liens?')}</summary>
-            {[...new Set(inputs.map((input) => input.statcanNote))].map((note) => (
-              <p key={note}>{note}</p>
+            {inputs.map((input) => (
+              <div key={input.edgeId} className="cs-hit__lineage-item" style={{ marginBottom: '0.5rem' }}>
+                <p style={{ margin: '0.2rem 0' }}>
+                  <strong>{l('Evidence from data dictionary:', 'Preuve du dictionnaire de données :')}</strong>{' '}
+                  <span style={{ fontStyle: 'italic' }}>"{input.statcanNote}"</span>
+                </p>
+                {input.expressionSummary && (
+                  <p style={{ margin: '0.2rem 0' }}>
+                    <strong>
+                      {input.dataAuthority === 'ai_inferred'
+                        ? l('AI interpretation and action:', 'Interprétation et action IA :')
+                        : l('Rule interpretation and action:', 'Interprétation de règle et action :')}
+                    </strong>{' '}
+                    <span>{input.expressionSummary}</span>
+                  </p>
+                )}
+              </div>
             ))}
           </details>
         </div>

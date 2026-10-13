@@ -293,6 +293,16 @@ export function extractDeterministic(
         }
       }
 
+      // Determine whether survey is explicitly identified as Statistics Canada or provisional
+      const isStatCanExplicit =
+        /\b(?:statistics\s+canada|statistique\s+canada|statcan|stat\s+can)\b/iu.test(quote) ||
+        /\b(?:statistics\s+canada|statistique\s+canada|statcan|stat\s+can)\b/iu.test(passage) ||
+        /canad/iu.test(matchedAlias) ||
+        /\b(?:pumf|rdc|research\s+data\s+centre|centre\s+de\s+donn[ée]es\s+de\s+recherche)\b/iu.test(quote) ||
+        (source.issuingOrganization ? /statistics\s+canada|statistique\s+canada|statcan/i.test(source.issuingOrganization) : false);
+
+      const certainty: 'verified' | 'provisional' = isStatCanExplicit ? 'verified' : 'provisional';
+
       claims.push({
         surveyText: matchedAlias,
         program: candidate.program,
@@ -302,6 +312,8 @@ export function extractDeterministic(
         exactCycles,
         quote,
         location: source.passageLocation,
+        certainty,
+        statCanExplicit: isStatCanExplicit,
       });
 
       break; // Found best matching alias for this program

@@ -4,6 +4,7 @@ import type {
   CorpusLineageTarget,
   SupabaseCorpusSource,
 } from '@mobilesurvey/metadata-registry';
+import { useUiLanguage, uiText } from '@mobilesurvey/ui-locale';
 import { CorpusLineageDiagram } from './CorpusLineageDiagram.js';
 import { lineageEvidence } from './lineageEvidence.js';
 import featuredDataRaw from './data/featuredDerivations.json';
@@ -27,6 +28,8 @@ interface CorpusLineageProps {
 }
 
 export function CorpusLineage({ source, onSelectSearch, initialFocus }: CorpusLineageProps) {
+  const language = useUiLanguage();
+  const l = (en: string, fr: string) => uiText(language, en, fr);
   const initialTarget = initialFocus?.targets[0] ?? null;
   const [filter, setFilter] = useState<'all' | 'pumf' | 'multi'>('all');
   const [selected, setSelected] = useState<CorpusLineageTarget | null>(
@@ -284,13 +287,13 @@ export function CorpusLineage({ source, onSelectSearch, initialFocus }: CorpusLi
               ))}
               {summaries.length > 0 && (
                 <div className="kg-dag-evidence">
-                  <h4 className="kg-dag-evidence__title">Inferred derivation summary</h4>
+                  <h4 className="kg-dag-evidence__title">{l('AI interpretation and action', 'Interprétation et action IA')}</h4>
                   {summaries.map((summary) => <p className="kg-dag-evidence__quote" key={summary}>{summary}</p>)}
                 </div>
               )}
               {notes.length > 0 && (
                 <div className="kg-dag-evidence">
-                  <h4 className="kg-dag-evidence__title">Source documentation notes</h4>
+                  <h4 className="kg-dag-evidence__title">{l('Evidence from data dictionary (verbatim)', 'Preuve du dictionnaire de données (verbatim)')}</h4>
                   {notes.map((note) => <blockquote className="kg-dag-evidence__quote" key={note}>{note}</blockquote>)}
                 </div>
               )}

@@ -11,6 +11,8 @@ interface PilotUse {
   cycles: string[];
   cycleText: string;
   evidenceLocation: string;
+  certainty?: 'verified' | 'provisional';
+  statCanExplicit?: boolean;
 }
 
 interface PilotWork {
@@ -100,6 +102,7 @@ export function ResearcherPage({ onHome, onSearcher }: { onHome: () => void; onS
   const [selectedSurveys, setSelectedSurveys] = useState<string[]>(initialSurveys);
   const [selectedTheme, setSelectedTheme] = useState<string>('all');
   const [selectedPrecision, setSelectedPrecision] = useState<string>('all');
+  const [selectedCertainty, setSelectedCertainty] = useState<'all' | 'verified' | 'provisional'>('all');
   const [selectedYearWindow, setSelectedYearWindow] = useState<'all' | 'recent' | 'historical'>('all');
   const [selectedType, setSelectedType] = useState<string>('all');
   const [selectedCycle, setSelectedCycle] = useState<string | null>(null);
@@ -212,6 +215,9 @@ export function ResearcherPage({ onHome, onSearcher }: { onHome: () => void; onS
       if (selectedTheme !== 'all' && work.theme?.toLowerCase() !== selectedTheme.toLowerCase()) return false;
       // Precision filter
       if (selectedPrecision !== 'all' && !work.uses.some(use => use.precision === selectedPrecision)) return false;
+      // Certainty filter
+      if (selectedCertainty === 'verified' && !work.uses.some(u => (u.certainty ?? (u.statCanExplicit !== false ? 'verified' : 'provisional')) === 'verified')) return false;
+      if (selectedCertainty === 'provisional' && !work.uses.some(u => (u.certainty ?? (u.statCanExplicit !== false ? 'verified' : 'provisional')) === 'provisional')) return false;
       // Year window filter
       if (selectedYearWindow === 'recent' && (work.year ?? 0) < 2025) return false;
       if (selectedYearWindow === 'historical' && (work.year ?? 0) >= 2025) return false;
@@ -246,7 +252,7 @@ export function ResearcherPage({ onHome, onSearcher }: { onHome: () => void; onS
       if (sortOption === 'year_asc') return (a.year ?? 0) - (b.year ?? 0);
       return a.title.localeCompare(b.title);
     });
-  }, [query, selectedSurveys, selectedTheme, selectedPrecision, selectedYearWindow, selectedType, selectedCycle, selectedPubYear, sortOption]);
+  }, [query, selectedSurveys, selectedTheme, selectedPrecision, selectedCertainty, selectedYearWindow, selectedType, selectedCycle, selectedPubYear, sortOption]);
 
   const recentCount = useMemo(() => works.filter(w => (w.year ?? 0) >= 2025).length, []);
   const reportsCount = useMemo(() => works.filter(w => w.workType === 'report').length, []);
@@ -279,6 +285,7 @@ export function ResearcherPage({ onHome, onSearcher }: { onHome: () => void; onS
     setSelectedSurveys([]);
     setSelectedTheme('all');
     setSelectedPrecision('all');
+    setSelectedCertainty('all');
     setSelectedYearWindow('all');
     setSelectedType('all');
     setSelectedCycle(null);
@@ -516,6 +523,20 @@ export function ResearcherPage({ onHome, onSearcher }: { onHome: () => void; onS
 
               <select
                 className="researcher-select"
+                value={selectedCertainty}
+                onChange={e => {
+                  setSelectedCertainty(e.target.value as any);
+                  setDisplayLimit(30);
+                }}
+                aria-label={l('Filter by survey attribution certainty', 'Filtrer selon la certitude d’attribution de l’enquête')}
+              >
+                <option value="all">{l('All Certainty Levels', 'Tous les niveaux de certitude')}</option>
+                <option value="verified">{l('✓ Verified StatCan Only', '✓ StatCan vérifié seulement')}</option>
+                <option value="provisional">{l('⚠ Provisional (Canadian Policy Context)', '⚠ Provisoire (contexte canadien)')}</option>
+              </select>
+
+              <select
+                className="researcher-select"
                 value={sortOption}
                 onChange={e => setSortOption(e.target.value as any)}
                 aria-label={l('Sort publications', 'Trier les publications')}
@@ -659,7 +680,13 @@ export function ResearcherPage({ onHome, onSearcher }: { onHome: () => void; onS
                 <button type="button" onClick={() => setSelectedPubYear(null)} aria-label="Remove publication year filter">×</button>
               </span>
             )}
-            {(selectedSurveys.length > 0 || selectedTheme !== 'all' || selectedPrecision !== 'all' || selectedYearWindow !== 'all' || selectedType !== 'all' || selectedCycle !== null || selectedPubYear !== null || query.trim()) && (
+            {selectedCertainty !== 'all' && (
+              <span className="researcher-active-filter-badge">
+                Attribution: {selectedCertainty === 'verified' ? 'Verified StatCan' : 'Provisional'}
+                <button type="button" onClick={() => setSelectedCertainty('all')} aria-label="Remove attribution filter">×</button>
+              </span>
+            )}
+            {(selectedSurveys.length > 0 || selectedTheme !== 'all' || selectedPrecision !== 'all' || selectedCertainty !== 'all' || selectedYearWindow !== 'all' || selectedType !== 'all' || selectedCycle !== null || selectedPubYear !== null || query.trim()) && (
               <button type="button" onClick={resetFilters} style={{ marginLeft: '12px', background: 'none', border: 'none', color: '#0284c7', cursor: 'pointer', fontSize: '11px', fontWeight: 700 }}>
                 Reset all filters
               </button>
@@ -706,9 +733,45 @@ export function ResearcherPage({ onHome, onSearcher }: { onHome: () => void; onS
                     <div className="researcher-result__uses">
                       {work.uses.map((use, index) => (
                         <div className="researcher-use" key={`${use.program}-${index}`}>
-                          <div>
+                          <div style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: '6px' }}>
                             <strong>{use.program}</strong>
                             <span>{programNames[use.program] ?? use.program}</span>
+                            {use.certainty === 'provisional' || use.statCanExplicit === false ? (
+                              <span
+                                className="researcher-badge researcher-badge--provisional"
+                                title={l(
+                                  'Provisional: Mentions survey in Canadian policy context without explicit "Statistics Canada" prefix in quote',
+                                  'Provisoire : Mention de l’enquête dans un contexte canadien sans préfixe explicite « Statistique Canada »'
+                                )}
+                                style={{
+                                  background: '#fff3cd',
+                                  color: '#856404',
+                                  border: '1px solid #ffeeba',
+                                  fontSize: '11px',
+                                  padding: '1px 6px',
+                                  borderRadius: '4px',
+                                  fontWeight: 600,
+                                }}
+                              >
+                                ⚠ {l('Provisional Attribution', 'Attribution provisoire')}
+                              </span>
+                            ) : (
+                              <span
+                                className="researcher-badge researcher-badge--verified"
+                                title={l('Verified: Explicitly identified as Statistics Canada survey', 'Vérifié : Identifié explicitement comme enquête de Statistique Canada')}
+                                style={{
+                                  background: '#e8f5e9',
+                                  color: '#2e7d32',
+                                  border: '1px solid #c8e6c9',
+                                  fontSize: '11px',
+                                  padding: '1px 6px',
+                                  borderRadius: '4px',
+                                  fontWeight: 600,
+                                }}
+                              >
+                                ✓ {l('Verified StatCan', 'Vérifié StatCan')}
+                              </span>
+                            )}
                           </div>
                           <p>{cycleLabel(use)}</p>
                           <div className="researcher-use__footer">

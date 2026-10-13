@@ -617,7 +617,7 @@ export class LineageOrchestrator {
                 updateStmt.run(
                   'rejected',
                   0.05,
-                  `Adversarial Critic: Rejected as prose phrase. ${decision.rationale}`,
+                  `Evidence from data dictionary: "${edge.raw_evidence}"; AI interpretation and action: Rejected as prose phrase. ${decision.rationale}`,
                   `adversarial_critic_${decision.source}`,
                   edge.edge_id
                 );
@@ -632,7 +632,7 @@ export class LineageOrchestrator {
                 updateStmt.run(
                   'rejected',
                   0.05,
-                  `Adversarial Critic: Rejected as unpublished internal processing / master file item. ${decision.rationale}`,
+                  `Evidence from data dictionary: "${edge.raw_evidence}"; AI interpretation and action: Rejected as unpublished internal processing / master file item. ${decision.rationale}`,
                   `adversarial_critic_${decision.source}`,
                   edge.edge_id
                 );
@@ -647,7 +647,7 @@ export class LineageOrchestrator {
                 updateStmt.run(
                   'rejected',
                   0.05,
-                  `Adversarial Critic: Rejected as external administrative register or census code. ${decision.rationale}`,
+                  `Evidence from data dictionary: "${edge.raw_evidence}"; AI interpretation and action: Rejected as external administrative register or census code. ${decision.rationale}`,
                   `adversarial_critic_${decision.source}`,
                   edge.edge_id
                 );
@@ -662,7 +662,7 @@ export class LineageOrchestrator {
                 updateStmt.run(
                   'rejected',
                   0.05,
-                  `Adversarial Critic: Rejected as interview routing condition or respondent filter. ${decision.rationale}`,
+                  `Evidence from data dictionary: "${edge.raw_evidence}"; AI interpretation and action: Rejected as interview routing condition or respondent filter. ${decision.rationale}`,
                   `adversarial_critic_${decision.source}`,
                   edge.edge_id
                 );
@@ -680,7 +680,7 @@ export class LineageOrchestrator {
                 updateStmt.run(
                   'needs_review',
                   decision.confidence,
-                  `Adversarial Critic: Valid dependency confirmed, but source variable is not in published public file (likely master file item). ${decision.rationale}`,
+                  `Evidence from data dictionary: "${edge.raw_evidence}"; AI interpretation and action: Valid dependency confirmed, but source variable is not in published public file (likely master file item). ${decision.rationale}`,
                   `adversarial_critic_${decision.source}`,
                   edge.edge_id
                 );
@@ -784,7 +784,7 @@ export class LineageOrchestrator {
         if (!options.dryRun) {
           updateStmt.run(
             decision.confidence,
-            `Tier 0 Deterministic: Rejected as ${decision.classification}. ${decision.rationale}`,
+            `Evidence from data dictionary: "${edge.raw_evidence}"; Rule interpretation and action: Rejected as ${decision.classification}. ${decision.rationale}`,
             'deterministic_tier0',
             edge.edge_id
           );

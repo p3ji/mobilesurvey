@@ -8,6 +8,8 @@ interface ReviewedClaim {
   cycleText: string;
   location: string;
   quote: string;
+  certainty?: 'verified' | 'provisional';
+  statCanExplicit?: boolean;
 }
 
 interface ReviewedWork {
@@ -39,6 +41,8 @@ export interface PublicPilotWork {
     cycles: string[];
     cycleText: string;
     evidenceLocation: string;
+    certainty: 'verified' | 'provisional';
+    statCanExplicit: boolean;
   }>;
   mentions: Array<{ program: string; evidenceLocation: string }>;
 }
@@ -71,13 +75,23 @@ export function publicPreview(rows: object[], minYear: number = 2015): PublicPil
           claim.precision === 'program_only' && work.claims.some(other =>
             other.role === 'analyzed' && other.program === claim.program && other.precision !== 'program_only'
           )
-        )).map(claim => ({
-          program: claim.program,
-          precision: claim.precision,
-          cycles: claim.exactCycles,
-          cycleText: claim.cycleText,
-          evidenceLocation: claim.location,
-        })),
+        )).map(claim => {
+          const isExplicit = claim.statCanExplicit ?? (
+            /\b(?:statistics\s+canada|statistique\s+canada|statcan|stat\s+can)\b/i.test(claim.quote) ||
+            /canad/i.test(claim.program) ||
+            Boolean(work.issuingOrganization && /statistics\s+canada|statistique\s+canada|statcan/i.test(work.issuingOrganization))
+          );
+          const cert = claim.certainty ?? (isExplicit ? 'verified' : 'provisional');
+          return {
+            program: claim.program,
+            precision: claim.precision,
+            cycles: claim.exactCycles,
+            cycleText: claim.cycleText,
+            evidenceLocation: claim.location,
+            certainty: cert,
+            statCanExplicit: isExplicit,
+          };
+        }),
         mentions: work.claims.filter(claim => claim.role === 'background_mention').map(claim => ({
           program: claim.program,
           evidenceLocation: claim.location,

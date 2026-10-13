@@ -32,6 +32,8 @@ export interface Claim {
   exactCycles: string[];
   quote: string;
   location: string;
+  certainty?: 'verified' | 'provisional';
+  statCanExplicit?: boolean;
 }
 
 export interface Extraction {
