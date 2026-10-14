@@ -1130,19 +1130,37 @@ export class SupabaseCorpusSource {
    */
   async suggest(
     query: string,
-    { limit = 5, minSimilarity = 0.3, signal }: { limit?: number; minSimilarity?: number; signal?: AbortSignal } = {},
+    { limit = 5, minSimilarity = 0.5, signal }: { limit?: number; minSimilarity?: number; signal?: AbortSignal } = {},
   ): Promise<CorpusSuggestion[]> {
     const trimmed = query.trim();
     if (trimmed === '') return [];
     const rows = await this.rpc<
       Array<{ term: string; records: number; similarity: number; score: number }>
-    >('corpus_suggest', { q: trimmed, min_similarity: minSimilarity, max_rows: limit }, signal);
-    return rows.map((r) => ({
-      term: r.term,
-      records: r.records,
-      similarity: r.similarity,
-      score: r.score,
-    }));
+    >('corpus_suggest', { q: trimmed, min_similarity: minSimilarity, max_rows: Math.max(limit * 2, 10) }, signal);
+
+    // Prioritize spelling similarity as the primary sorting criterion, with corpus frequency
+    // acting as a tiebreaker for terms of comparable similarity. This prevents high-frequency
+    // generic terms (e.g. "information" or "used") from overpowering genuine close-similarity
+    // corrections (e.g. "misinformation" or "cyber-bullying").
+    const scored = rows.map((r) => {
+      const balancedScore = Math.pow(r.similarity, 2.5) * (1 + 0.1 * Math.log(Math.max(1, r.records)));
+      return {
+        term: r.term,
+        records: r.records,
+        similarity: r.similarity,
+        score: balancedScore,
+      };
+    });
+
+    scored.sort((a, b) => {
+      // Significant difference in spelling similarity (>= 0.05) strictly decides the rank
+      if (Math.abs(b.similarity - a.similarity) >= 0.05) {
+        return b.similarity - a.similarity;
+      }
+      return b.score - a.score;
+    });
+
+    return scored.slice(0, limit);
   }
 
   /**

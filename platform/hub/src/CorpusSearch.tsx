@@ -764,9 +764,13 @@ export function CorpusSearch({
         // Nothing found, and the reader has not insisted on this spelling: ask the vocabulary
         // whether they meant something else, and if the answer is confident, run it. A zero-result
         // page with a suggestion printed underneath makes the reader do the work twice.
-        if (result.total === 0 && debounced !== literal) {
-          const [best] = await source.suggest(debounced, { limit: 1, signal: controller.signal });
-          if (best !== undefined) {
+        // Auto-retry is only appropriate for single words with high confidence (similarity >= 0.65).
+        // Multi-word phrases should never be hijacked by a single word; they cleanly fall through to
+        // searchRelaxed below.
+        const isSingleWord = !debounced.includes(' ') && !debounced.includes('-');
+        if (result.total === 0 && debounced !== literal && isSingleWord) {
+          const [best] = await source.suggest(debounced, { limit: 1, minSimilarity: 0.65, signal: controller.signal });
+          if (best !== undefined && best.similarity >= 0.65) {
             const retry = await source.search(best.term, {
               sort: sortBy,
               ...(lang === 'all' ? {} : { lang }),
