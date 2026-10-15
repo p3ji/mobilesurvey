@@ -8,7 +8,7 @@ import { validateSource, type CandidateWork, type SourceWork } from './model.js'
 import { publicPreview } from './public-preview.js';
 import { harvestOpenAlexAll, searchOpenAlex } from './adapters/openalex.js';
 import { fetchCrossrefDoi, searchCrossref } from './adapters/crossref.js';
-import { fetchCrdcnPage, parseCrdcnHtml } from './adapters/crdcn.js';
+import { fetchCrdcnPage, parseCrdcnHtml, harvestCrdcnPublications } from './adapters/crdcn.js';
 import { assembleCandidates } from './adapters/discovery.js';
 import { evaluateExtractionAgainstGold, type GoldRecord } from './evaluation.js';
 import { extractDeterministic } from './deterministic.js';
@@ -311,6 +311,39 @@ async function main() {
           writeFileSync(outFile, JSON.stringify(candidate) + '\n', { flag: 'w' });
         }
       }
+    } else if (command === 'harvest-crdcn') {
+      const sitemapsArg = getArgValue('--sitemaps');
+      const indices = sitemapsArg ? sitemapsArg.split(',').map(Number) : [6, 7];
+      const limit = Number(getArgValue('--limit') ?? 500);
+      const minYear = Number(getArgValue('--min-year') ?? 2015);
+      const maxYear = Number(getArgValue('--max-year') ?? 2026);
+      const outFile = getArgValue('--out') ?? path.join(ROOT, 'out', 'crdcn_harvest.jsonl');
+
+      const candidates = await harvestCrdcnPublications({
+        sitemapIndices: indices,
+        minYear,
+        maxYear,
+        maxRecords: limit,
+        queue: q,
+        concurrency: 4,
+      });
+
+      writeFileSync(outFile, candidates.map(c => JSON.stringify(c)).join('\n') + '\n', { flag: 'w' });
+      const assembled = assembleCandidates(candidates);
+      let seeded = 0;
+      for (const s of assembled) {
+        seeded += q.seed(s, 'deterministic');
+      }
+
+      const reprocessRes = q.reprocessDeterministic();
+
+      console.log(JSON.stringify({
+        crdcnHarvested: candidates.length,
+        uniqueAssembled: assembled.length,
+        jobsSeeded: seeded,
+        ...reprocessRes,
+        path: outFile
+      }));
     } else if (command === 'assemble') {
       const candidateFiles = args.filter(a => !a.startsWith('--'));
       const outFile = getArgValue('--out');
@@ -333,7 +366,7 @@ async function main() {
       const report = evaluateExtractionAgainstGold(goldRecords, reviewed);
       console.log(JSON.stringify(report, null, 2));
     } else {
-      throw new Error('Commands: seed | run | status | report | audit | reset-failed | review | approve | reject | export | preview | discover-openalex | harvest-recent | enrich-crossref | parse-crdcn | assemble | evaluate');
+      throw new Error('Commands: seed | run | status | report | audit | reset-failed | review | approve | reject | export | preview | discover-openalex | harvest-recent | enrich-crossref | parse-crdcn | harvest-crdcn | harvest-pan-canadian | assemble | evaluate');
     }
   } finally {
     q.close();

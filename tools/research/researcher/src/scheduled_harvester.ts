@@ -3,6 +3,7 @@ import { fileURLToPath } from 'node:url';
 import { execSync } from 'node:child_process';
 import { ResearchQueue } from './queue.js';
 import { harvestPanCanadianJurisdictions } from './adapters/pan_canadian_harvester.js';
+import { harvestCrdcnPublications } from './adapters/crdcn.js';
 import { assembleCandidates } from './adapters/discovery.js';
 import { publicPreview } from './public-preview.js';
 import fs from 'node:fs';
@@ -45,6 +46,16 @@ export async function runScheduledPolicyCrawler(options: {
     console.log('[Step 1/5] Harvesting Pan-Canadian Jurisdictions (Federal, Provincial, CMA, NGO)...');
     const candidates = await harvestPanCanadianJurisdictions();
     console.log(`  ✓ Collected ${candidates.length} candidate reports and data packages.`);
+
+    // 1b. Harvest CRDCN recent publications
+    console.log('\n[Step 1b/5] Harvesting CRDCN recent publications (Sitemaps 6 & 7)...');
+    try {
+      const crdcnCandidates = await harvestCrdcnPublications({ sitemapIndices: [6, 7], minYear: 2015, maxRecords: 200, queue: q });
+      candidates.push(...crdcnCandidates);
+      console.log(`  ✓ Collected ${crdcnCandidates.length} CRDCN candidate works.`);
+    } catch {
+      console.log('  ⚠ CRDCN recent harvest skipped or timed out.');
+    }
 
     // 2. Assemble and Deduplicate
     console.log('\n[Step 2/5] Deduplicating and validating Canadian jurisdiction...');
