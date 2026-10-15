@@ -48,6 +48,33 @@ Do **not** attempt to traverse all OpenAlex or Crossref works for this use case.
 
 Abstract availability and republication rights differ. [Crossref says some deposited abstracts remain under publisher/author copyright](https://www.crossref.org/documentation/retrieve-metadata/), and [OpenAlex does not ship plaintext abstracts for legal reasons](https://help.openalex.org/data/works/attributes/). Store an abstract's source, language, rights status, and text when reuse is permitted; otherwise keep the link and a short original topic description for public display. Do not assume that an API returning text grants republication rights. Full article text is a temporary/local extraction input where access permits, not a default public database field.
 
+### Pan-Canadian Multi-Tier Jurisdictional Scanning (Shipped 2026-10-15)
+
+To systematically monitor outside governmental and civic microdata use across Canada without commercial DOI dependencies, `tools/research/researcher/src/adapters/pan_canadian_harvester.ts` implements a normalized 4-tier scanning engine:
+
+1. **Tier 1 (Federal Portals & Departments)**:
+   - Central CKAN query against `open.canada.ca` (`package_search`) targeting 16 bilingual canonical survey phrases.
+   - Strict `isStatisticsCanadaPublication` exclusion gate that filters out agency self-citations to isolate outside departmental analyses (Health Canada, ESDC, PHAC, CMHC, NRCan, Indigenous Services Canada).
+2. **Tier 2 (Provinces & Territories)**:
+   - **Ontario**: `data.ontario.ca` (CKAN) & Public Health Ontario (PHO).
+   - **Quebec**: `donneesquebec.ca/recherche` (CKAN) & Institut national de santé publique du Québec (INSPQ).
+   - **British Columbia**: `catalogue.data.gov.bc.ca` (CKAN) & BC Centre for Disease Control (BCCDC).
+   - **Alberta**: `open.alberta.ca` (CKAN) & Alberta Health Services.
+   - **Nova Scotia**: `data.novascotia.ca` (Socrata SODA API).
+   - **Manitoba, Saskatchewan, New Brunswick, PEI, Newfoundland & Territories**: Registry-backed scheduled crawling and open publications ingestion.
+3. **Tier 3 (Census Metropolitan Areas - CMAs)**:
+   - Major CMA open data portals:
+     - **Toronto CMA**: `ckan0.cf.opendata.inter.prod-toronto.ca` (CKAN) + Peel Region Open Data.
+     - **Montreal CMA**: `donnees.montreal.ca` (CKAN).
+     - **Calgary CMA**: `data.calgary.ca` (Socrata).
+     - **Edmonton CMA**: `data.edmonton.ca` (Socrata).
+     - **Winnipeg CMA**: `data.winnipeg.ca` (Socrata).
+     - **Ottawa CMA**: `open.ottawa.ca` (DCAT-AP).
+4. **Tier 4 (National & Regional Policy Think Tanks / NGOs)**:
+   - Curated research briefs and whitepapers from 44 Canadian policy institutions (PROOF, Food Banks Canada, CCPA, Wellesley Institute, Maytree, C.D. Howe, Fraser Institute, IRPP, Parkland Institute, Vanier Institute, Broadbent Institute, IRIS, Canadian Women's Foundation, Canadian Urban Institute, MHCC, CCSA).
+
+All non-agency records undergo positive Canadian grounding (`isCanadianGrounded`), foreign jurisdiction exclusion (`hasForeignDisqualifier`), zero-hallucination quote verification, and dual certainty attribution (`verified` StatCan vs `provisional` Canadian policy context).
+
 ## Source expansion and monitoring
 
 The current adapters and `adapter_checkpoint` table support bounded discovery, parsing, and response caching. They do **not** yet constitute a recurring crawler: CLI runs are manual, cached search responses can become stale, and there is no source registry, durable query-window watermark, or alert for a source that stops updating. Grow this as a set of monitored integrations rather than a single broad crawl. All schedules below are starting hypotheses to tune from source yield, access terms, API limits, and reviewer capacity; they are not active jobs.

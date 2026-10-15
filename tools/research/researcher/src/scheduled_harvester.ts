@@ -2,7 +2,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { execSync } from 'node:child_process';
 import { ResearchQueue } from './queue.js';
-import { harvestAllCanadianPolicyLiterature } from './adapters/policy_harvester.js';
+import { harvestPanCanadianJurisdictions } from './adapters/pan_canadian_harvester.js';
 import { assembleCandidates } from './adapters/discovery.js';
 import { publicPreview } from './public-preview.js';
 import fs from 'node:fs';
@@ -41,12 +41,9 @@ export async function runScheduledPolicyCrawler(options: {
   const q = new ResearchQueue(dbPath);
 
   try {
-    // 1. Harvest policy sources
-    console.log('[Step 1/5] Harvesting Canadian NGOs, Think Tanks, Municipal and Federal Portals...');
-    const candidates = await harvestAllCanadianPolicyLiterature({
-      includeFederalOpenData: true,
-      maxOpenDataRowsPerQuery: 30,
-    });
+    // 1. Harvest Pan-Canadian sources (Federal, Provincial, CMA, NGO)
+    console.log('[Step 1/5] Harvesting Pan-Canadian Jurisdictions (Federal, Provincial, CMA, NGO)...');
+    const candidates = await harvestPanCanadianJurisdictions();
     console.log(`  ✓ Collected ${candidates.length} candidate reports and data packages.`);
 
     // 2. Assemble and Deduplicate

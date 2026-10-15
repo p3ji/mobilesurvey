@@ -14,6 +14,7 @@ import { evaluateExtractionAgainstGold, type GoldRecord } from './evaluation.js'
 import { extractDeterministic } from './deterministic.js';
 import { getGreyLiteratureCandidates } from './adapters/grey-literature.js';
 import { harvestAllCanadianPolicyLiterature } from './adapters/policy_harvester.js';
+import { harvestPanCanadianJurisdictions } from './adapters/pan_canadian_harvester.js';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const dbPath = process.env.RESEARCHER_DB ?? path.join(ROOT, 'out', 'researcher.db');
@@ -148,6 +149,15 @@ async function main() {
       }
       const reprocessRes = q.reprocessDeterministic();
       console.log(JSON.stringify({ policyCandidates: candidates.length, uniqueSources: sources.length, jobsSeeded: jobs, ...reprocessRes }));
+    } else if (command === 'harvest-pan-canadian') {
+      const candidates = await harvestPanCanadianJurisdictions();
+      const sources = assembleCandidates(candidates);
+      let jobs = 0;
+      for (const s of sources) {
+        jobs += q.seed(s, 'deterministic');
+      }
+      const reprocessRes = q.reprocessDeterministic();
+      console.log(JSON.stringify({ panCanadianCandidates: candidates.length, uniqueSources: sources.length, jobsSeeded: jobs, ...reprocessRes }));
     } else if (command === 'reprocess-deterministic' || (command === 'run-deterministic' && (args.includes('--all') || args.includes('--reprocess')))) {
       const res = q.reprocessDeterministic();
       console.log(JSON.stringify({ status: 'completed', reprocessed: res.reprocessed, claimsUpdated: res.claimsUpdated }));

@@ -103,6 +103,7 @@ export function ResearcherPage({ onHome, onSearcher }: { onHome: () => void; onS
   const [selectedTheme, setSelectedTheme] = useState<string>('all');
   const [selectedPrecision, setSelectedPrecision] = useState<string>('all');
   const [selectedCertainty, setSelectedCertainty] = useState<'all' | 'verified' | 'provisional'>('all');
+  const [selectedJurisdiction, setSelectedJurisdiction] = useState<'all' | 'federal' | 'provincial' | 'cma' | 'ngo' | 'academic'>('all');
   const [selectedYearWindow, setSelectedYearWindow] = useState<'all' | 'recent' | 'historical'>('all');
   const [selectedType, setSelectedType] = useState<string>('all');
   const [selectedCycle, setSelectedCycle] = useState<string | null>(null);
@@ -218,6 +219,19 @@ export function ResearcherPage({ onHome, onSearcher }: { onHome: () => void; onS
       // Certainty filter
       if (selectedCertainty === 'verified' && !work.uses.some(u => (u.certainty ?? (u.statCanExplicit !== false ? 'verified' : 'provisional')) === 'verified')) return false;
       if (selectedCertainty === 'provisional' && !work.uses.some(u => (u.certainty ?? (u.statCanExplicit !== false ? 'verified' : 'provisional')) === 'provisional')) return false;
+      // Jurisdiction filter
+      if (selectedJurisdiction !== 'all') {
+        const hasTier = work.sources.some(s => {
+          const src = s.toLowerCase();
+          if (selectedJurisdiction === 'federal') return src.includes('federal') || src.includes('open.canada.ca');
+          if (selectedJurisdiction === 'provincial') return src.includes('provincial') || src.includes('ontario') || src.includes('quebec') || src.includes('british columbia') || src.includes('alberta') || src.includes('nova scotia') || src.includes('new brunswick') || src.includes('yukon') || src.includes('gnwt');
+          if (selectedJurisdiction === 'cma') return src.includes('cma') || src.includes('toronto') || src.includes('montreal') || src.includes('vancouver') || src.includes('calgary') || src.includes('edmonton') || src.includes('winnipeg') || src.includes('ottawa') || src.includes('halifax') || src.includes('waterloo');
+          if (selectedJurisdiction === 'ngo') return src.includes('grey literature') || work.workType === 'report';
+          if (selectedJurisdiction === 'academic') return src.includes('openalex') || src.includes('crdcn') || work.workType === 'article';
+          return false;
+        });
+        if (!hasTier) return false;
+      }
       // Year window filter
       if (selectedYearWindow === 'recent' && (work.year ?? 0) < 2025) return false;
       if (selectedYearWindow === 'historical' && (work.year ?? 0) >= 2025) return false;
@@ -533,6 +547,23 @@ export function ResearcherPage({ onHome, onSearcher }: { onHome: () => void; onS
                 <option value="all">{l('All Certainty Levels', 'Tous les niveaux de certitude')}</option>
                 <option value="verified">{l('✓ Verified StatCan Only', '✓ StatCan vérifié seulement')}</option>
                 <option value="provisional">{l('⚠ Provisional (Canadian Policy Context)', '⚠ Provisoire (contexte canadien)')}</option>
+              </select>
+
+              <select
+                className="researcher-select"
+                value={selectedJurisdiction}
+                onChange={e => {
+                  setSelectedJurisdiction(e.target.value as any);
+                  setDisplayLimit(30);
+                }}
+                aria-label={l('Filter by jurisdiction tier', 'Filtrer selon l’échelon juridictionnel')}
+              >
+                <option value="all">{l('All Jurisdictions & Tiers', 'Tous les échelons et juridictions')}</option>
+                <option value="federal">{l('Federal Portals', 'Portails fédéraux')}</option>
+                <option value="provincial">{l('Provinces & Territories', 'Provinces et territoires')}</option>
+                <option value="cma">{l('Census Metropolitan Areas (CMAs)', 'Régions métropolitaines (RMR)')}</option>
+                <option value="ngo">{l('Policy NGOs & Think Tanks', 'ONG et instituts d’analyse')}</option>
+                <option value="academic">{l('Academic & Peer-Reviewed', 'Recherche universitaire')}</option>
               </select>
 
               <select

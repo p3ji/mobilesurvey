@@ -160,6 +160,11 @@ const BACKGROUND_MENTION_PATTERNS: RegExp[] = [
   /\b(?:as\s+reported|as\s+noted|as\s+documented|as\s+estimated)\s+by\b/i,
   /\b(?:see|cf\.)\s+(?:also\s+)?(?:statistics\s+canada|statistique\s+canada|statcan)\b/i,
   /\b(?:cited|referenced)\s+in\b/i,
+  // Prior research review vs primary analysis
+  /\b(?:previous|prior|past|other)\s+(?:studies|research|authors|literature|work|reports?)\s+(?:have|has)\s+(?:drawn|used|analyzed|analysed|relied|examined)\b/i,
+  /\b(?:prior|previous|past|other)\s+(?:studies|research|work)\s+using\b/i,
+  /\b(?:has|have)\s+been\s+(?:examined|studied|investigated|analyzed|analysed|evaluated)\s+using\b/i,
+  /\busing\s+data\s+from\s+[\w\s-]{1,30}\s*\([A-Z][a-z]+(?:\s+et\s+al\.)?,\s*\d{4}\)/i,
 ];
 
 const ACTIVE_ANALYSIS_PATTERNS: RegExp[] = [
@@ -298,8 +303,11 @@ export function extractDeterministic(
         /\b(?:statistics\s+canada|statistique\s+canada|statcan|stat\s+can)\b/iu.test(quote) ||
         /\b(?:statistics\s+canada|statistique\s+canada|statcan|stat\s+can)\b/iu.test(passage) ||
         /canad/iu.test(matchedAlias) ||
+        /\b(?:canadian|canada|canadienne?s?)\s+[\w\s-]{0,25}(?:survey|enqu[êe]te|sample|microdata|data)\b/iu.test(quote) ||
         /\b(?:pumf|rdc|research\s+data\s+centre|centre\s+de\s+donn[ée]es\s+de\s+recherche)\b/iu.test(quote) ||
-        (source.issuingOrganization ? /statistics\s+canada|statistique\s+canada|statcan/i.test(source.issuingOrganization) : false);
+        /\bcycle\s+\d+\b/iu.test(quote) ||
+        (candidate.program === 'NHS' && quote.includes('2011')) ||
+        Boolean(source.issuingOrganization && /statistics\s+canada|statistique\s+canada|statcan/i.test(source.issuingOrganization));
 
       const certainty: 'verified' | 'provisional' = isStatCanExplicit ? 'verified' : 'provisional';
 

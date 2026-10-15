@@ -481,8 +481,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       },
       {
         "program": "SHS",
@@ -490,8 +490,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       },
       {
         "program": "CCHS",
@@ -551,8 +551,8 @@
         ],
         "cycleText": "2011",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -715,8 +715,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -765,8 +765,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -951,8 +951,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -1053,8 +1053,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -1156,8 +1156,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       },
       {
         "program": "GSS",
@@ -1165,8 +1165,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -1190,8 +1190,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -1242,8 +1242,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -1294,8 +1294,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -1592,8 +1592,8 @@
         ],
         "cycleText": "2015",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -1617,8 +1617,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -2922,8 +2922,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -3234,8 +3234,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -3551,8 +3551,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -4320,8 +4320,8 @@
         ],
         "cycleText": "2011",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -4796,8 +4796,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "Title",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -4973,8 +4973,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -4998,8 +4998,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -5150,8 +5150,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "Title",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -5619,8 +5619,8 @@
         ],
         "cycleText": "2003, 2008, 2013",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -5757,8 +5757,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -5782,8 +5782,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -5834,8 +5834,8 @@
         ],
         "cycleText": "2007",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -5911,8 +5911,8 @@
         ],
         "cycleText": "2012",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -6819,8 +6819,8 @@
         ],
         "cycleText": "2008",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -6898,8 +6898,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -6948,8 +6948,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -6973,8 +6973,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -6998,8 +6998,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -7025,8 +7025,8 @@
         ],
         "cycleText": "2009",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -7102,8 +7102,8 @@
         ],
         "cycleText": "2016",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -7315,8 +7315,8 @@
         ],
         "cycleText": "2012",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -7392,8 +7392,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -7417,8 +7417,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -7702,8 +7702,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -8261,8 +8261,8 @@
         ],
         "cycleText": "2012",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -8392,8 +8392,8 @@
         ],
         "cycleText": "2011",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -8629,8 +8629,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -8894,8 +8894,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -9196,8 +9196,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -9630,8 +9630,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -9682,8 +9682,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -9911,8 +9911,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -9961,8 +9961,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -10011,8 +10011,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -10063,8 +10063,8 @@
         ],
         "cycleText": "2012",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -10192,8 +10192,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -10292,8 +10292,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -10317,8 +10317,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -10367,8 +10367,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       },
       {
         "program": "GSS",
@@ -10376,8 +10376,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -10709,8 +10709,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -12119,8 +12119,8 @@
         ],
         "cycleText": "2011",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -12146,8 +12146,8 @@
         ],
         "cycleText": "2011",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -12223,8 +12223,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -12276,8 +12276,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -12360,8 +12360,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -12537,8 +12537,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -12562,8 +12562,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -12587,8 +12587,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -12694,8 +12694,8 @@
         ],
         "cycleText": "2012",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -12719,8 +12719,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -12771,8 +12771,8 @@
         ],
         "cycleText": "2018",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -12853,8 +12853,8 @@
         ],
         "cycleText": "2010",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -13125,8 +13125,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -13150,8 +13150,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -13242,8 +13242,8 @@
         ],
         "cycleText": "2011",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -13292,8 +13292,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -13451,8 +13451,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -13675,8 +13675,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -13700,8 +13700,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -13750,8 +13750,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -13850,8 +13850,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -14614,8 +14614,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -14639,8 +14639,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -14664,8 +14664,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -14806,8 +14806,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -14831,8 +14831,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -14856,8 +14856,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -15006,8 +15006,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -15108,8 +15108,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -15631,8 +15631,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -16332,8 +16332,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -16411,8 +16411,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       },
       {
         "program": "LFS",
@@ -16420,8 +16420,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -17334,8 +17334,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -17359,8 +17359,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -17509,8 +17509,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -17559,8 +17559,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -18215,8 +18215,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -18367,8 +18367,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -18392,8 +18392,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -18419,8 +18419,8 @@
         ],
         "cycleText": "2012",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -18444,8 +18444,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -18469,8 +18469,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -18609,8 +18609,8 @@
         "cycles": [],
         "cycleText": "2008-2009",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -18686,8 +18686,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -18711,8 +18711,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -19742,8 +19742,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -19767,8 +19767,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -19792,8 +19792,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -19872,8 +19872,8 @@
         ],
         "cycleText": "2009, 2014",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -19897,8 +19897,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -19922,8 +19922,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -20103,8 +20103,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -20214,8 +20214,8 @@
         "cycles": [],
         "cycleText": "2012-2020",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       },
       {
         "program": "LISA",
@@ -20223,8 +20223,8 @@
         "cycles": [],
         "cycleText": "2012-2020",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -20556,8 +20556,8 @@
         ],
         "cycleText": "2011",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -20739,8 +20739,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -20789,8 +20789,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -21587,8 +21587,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -21806,8 +21806,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -21896,8 +21896,8 @@
         ],
         "cycleText": "2017",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -22466,8 +22466,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       },
       {
         "program": "LFS",
@@ -22475,8 +22475,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -24634,8 +24634,8 @@
         "cycles": [],
         "cycleText": "2006 to 2012",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -24819,8 +24819,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -25240,8 +25240,8 @@
         "cycles": [],
         "cycleText": "cycle 1 to 4",
         "evidenceLocation": "Abstract > Data and methods",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       },
       {
         "program": "CCHS",
@@ -25326,8 +25326,8 @@
         ],
         "cycleText": "2004",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -25541,8 +25541,8 @@
         ],
         "cycleText": "2016",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -25791,8 +25791,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       },
       {
         "program": "GSS",
@@ -25800,8 +25800,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -25852,8 +25852,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -26111,8 +26111,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -26326,8 +26326,8 @@
         ],
         "cycleText": "2013",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -27978,8 +27978,8 @@
         ],
         "cycleText": "2012",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       },
       {
         "program": "GSS",
@@ -27989,8 +27989,8 @@
         ],
         "cycleText": "2012",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -28316,8 +28316,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -28553,8 +28553,8 @@
         ],
         "cycleText": "2011",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -28682,8 +28682,8 @@
         ],
         "cycleText": "2011",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -28759,8 +28759,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -28811,8 +28811,8 @@
         ],
         "cycleText": "2011",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -28838,8 +28838,8 @@
         ],
         "cycleText": "2011",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -28865,8 +28865,8 @@
         ],
         "cycleText": "2011",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -28890,8 +28890,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -28976,8 +28976,8 @@
         ],
         "cycleText": "2011",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -29028,8 +29028,8 @@
         ],
         "cycleText": "2011",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -29107,8 +29107,8 @@
         ],
         "cycleText": "1998",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -29186,8 +29186,8 @@
         ],
         "cycleText": "2011",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -29211,8 +29211,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -29367,8 +29367,8 @@
         ],
         "cycleText": "2006",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -30038,8 +30038,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -30063,8 +30063,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -30088,8 +30088,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -30165,8 +30165,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "Title",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -30217,8 +30217,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "Title",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -30353,8 +30353,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -30801,8 +30801,8 @@
         ],
         "cycleText": "2012",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -30853,8 +30853,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -30962,8 +30962,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -31121,8 +31121,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -31585,8 +31585,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -33016,8 +33016,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       },
       {
         "program": "GSS",
@@ -33025,8 +33025,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -33264,8 +33264,8 @@
         "cycles": [],
         "cycleText": "2015-2019",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -33445,8 +33445,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -33497,8 +33497,8 @@
         ],
         "cycleText": "2011",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -34950,8 +34950,8 @@
         ],
         "cycleText": "2011",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -34975,8 +34975,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -35054,8 +35054,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -35126,8 +35126,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -35291,8 +35291,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -35972,8 +35972,8 @@
         "cycles": [],
         "cycleText": "2003 to 2016",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -36022,8 +36022,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -36149,8 +36149,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -36351,8 +36351,8 @@
         "cycles": [],
         "cycleText": "2007-2013",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -36401,8 +36401,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -36426,8 +36426,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -36480,8 +36480,8 @@
         ],
         "cycleText": "1997",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -36557,8 +36557,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -36585,8 +36585,8 @@
         ],
         "cycleText": "1999, 2005",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -36714,8 +36714,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -36941,8 +36941,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       },
       {
         "program": "LFS",
@@ -36950,8 +36950,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -37009,8 +37009,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -37034,8 +37034,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -37084,8 +37084,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -37134,8 +37134,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -37363,8 +37363,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -37779,8 +37779,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -38219,8 +38219,8 @@
         "cycles": [],
         "cycleText": "2004-2005",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -38244,8 +38244,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -38269,8 +38269,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -39157,8 +39157,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       },
       {
         "program": "GSS",
@@ -39166,8 +39166,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -39191,8 +39191,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -39401,8 +39401,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -40379,8 +40379,8 @@
         ],
         "cycleText": "2014",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -40456,8 +40456,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -40515,8 +40515,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -40540,8 +40540,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -40632,8 +40632,8 @@
         ],
         "cycleText": "2011",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -40670,8 +40670,8 @@
         ],
         "cycleText": "2011",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -40695,8 +40695,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -40720,8 +40720,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -40747,8 +40747,8 @@
         ],
         "cycleText": "2011",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -40983,8 +40983,8 @@
         ],
         "cycleText": "2010",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -41166,8 +41166,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -41218,8 +41218,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -41383,8 +41383,8 @@
         ],
         "cycleText": "2011",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -41464,8 +41464,8 @@
         ],
         "cycleText": "2011",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -41985,8 +41985,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -42010,8 +42010,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -42898,8 +42898,8 @@
         ],
         "cycleText": "2011",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -42925,8 +42925,8 @@
         ],
         "cycleText": "2012",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -43052,8 +43052,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -43478,8 +43478,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -43698,8 +43698,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -43822,8 +43822,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -43924,8 +43924,8 @@
         ],
         "cycleText": "2017",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       },
       {
         "program": "CCHS",
@@ -44110,8 +44110,8 @@
         "cycles": [],
         "cycleText": "2007 to 2012",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -44273,8 +44273,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       },
       {
         "program": "CHS",
@@ -44282,8 +44282,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -44952,8 +44952,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       },
       {
         "program": "CHMS",
@@ -44961,8 +44961,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -45147,8 +45147,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -45197,8 +45197,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       },
       {
         "program": "GSS",
@@ -45504,8 +45504,8 @@
         ],
         "cycleText": "2002, 2007",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -45667,8 +45667,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -46232,8 +46232,8 @@
         ],
         "cycleText": "2011",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       },
       {
         "program": "CCHS",
@@ -46404,8 +46404,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -46567,6 +46567,31 @@
     "mentions": []
   },
   {
+    "id": "url:06fddad2fa6c913c274446cffcfd24a20bdaa36dc380f538a229c32573b75fc3",
+    "title": "Census 2021 Home Language",
+    "doi": null,
+    "url": "https://rowopendata-rmw.opendata.arcgis.com/datasets/KitchenerGIS::census-2021-home-language",
+    "year": 2023,
+    "workType": "report",
+    "issuingOrganization": "Region of Waterloo",
+    "sources": [
+      "Region of Waterloo Open Data (CMA)"
+    ],
+    "theme": "other",
+    "uses": [
+      {
+        "program": "CSD",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Region of Waterloo Open Data - Catalog Description",
+        "certainty": "verified",
+        "statCanExplicit": true
+      }
+    ],
+    "mentions": []
+  },
+  {
     "id": "url:07510c195c7e605502a200a6402b44a45ab6ff23484b4a975580cbe672c366dc",
     "title": "Three Essays on the Labour Costs of Caring for Elderly Parents in Canada",
     "doi": null,
@@ -46684,6 +46709,31 @@
     "mentions": []
   },
   {
+    "id": "url:08322349e9a5258ee84911313d0d9c72868e3b301b0fdc777f5788a6bf4c94a0",
+    "title": "Canadian Community Health Survey (CCHS) Pooled Demographic and Income Data",
+    "doi": null,
+    "url": "https://catalogue.data.gov.bc.ca/dataset/c4370f63-173d-4bf2-bd2b-2f81c83e8322/resource/5ca3d2ab-11ca-4d48-9373-6e4ef4113a4e/download/1197511_1197356_cchs_median_income_2022-24.xlsx",
+    "year": 2025,
+    "workType": "report",
+    "issuingOrganization": "BC Stats",
+    "sources": [
+      "BC Data Catalogue (PROVINCIAL)"
+    ],
+    "theme": "digital society",
+    "uses": [
+      {
+        "program": "CCHS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "BC Data Catalogue - Description",
+        "certainty": "verified",
+        "statCanExplicit": true
+      }
+    ],
+    "mentions": []
+  },
+  {
     "id": "url:083f8581c47b0dd76300305da77cb3218bd4753c3df215c5c52625055f6907dd",
     "title": "Social capital and sense of belonging among immigrant groups in Canada",
     "doi": null,
@@ -46706,6 +46756,31 @@
         "evidenceLocation": "Abstract",
         "certainty": "provisional",
         "statCanExplicit": false
+      }
+    ],
+    "mentions": []
+  },
+  {
+    "id": "url:0933135e7942e33efb6758bafdad49dbf7925dbaa6679a7442ec03f5e0d3cfc8",
+    "title": "Canadian Survey on Disability (CSD) 2022",
+    "doi": null,
+    "url": "https://catalogue.data.gov.bc.ca/dataset/eb2edb1e-0bd4-4a4a-a1cf-71dcc74e735e/resource/9bf96fab-26f0-4afa-8b2c-72838e0cc721/download/scs913_csd2022_table1.xlsx",
+    "year": 2025,
+    "workType": "report",
+    "issuingOrganization": "BC Stats",
+    "sources": [
+      "BC Data Catalogue (PROVINCIAL)"
+    ],
+    "theme": "health",
+    "uses": [
+      {
+        "program": "CSD",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "BC Data Catalogue - Description",
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -46756,8 +46831,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -47100,6 +47175,31 @@
     "mentions": []
   },
   {
+    "id": "url:108e9ee8395eb0ab9e58226cda63c3b373697f66d9c10099bb0dbe0a1668dc68",
+    "title": "Labour force survey - educational attainment by census metropolitan area",
+    "doi": null,
+    "url": "https://data.ontario.ca/dataset/9071d395-9bf5-4c10-9c8d-bc39c51ff056",
+    "year": 2020,
+    "workType": "report",
+    "issuingOrganization": "Economic Development, Job Creation and Trade",
+    "sources": [
+      "Ontario Data Catalogue (PROVINCIAL)"
+    ],
+    "theme": "labour",
+    "uses": [
+      {
+        "program": "LFS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Ontario Data Catalogue - Description",
+        "certainty": "provisional",
+        "statCanExplicit": false
+      }
+    ],
+    "mentions": []
+  },
+  {
     "id": "url:109c3489c027aa35974a734abc83d4656af2e6376a4925f4ae9dc9cc243f748d",
     "title": "La santé mentale des minorités visibles à Montréal au prisme de l’hostilité du quartier",
     "doi": null,
@@ -47145,8 +47245,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -47439,8 +47539,8 @@
         ],
         "cycleText": "2011",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -47546,6 +47646,31 @@
     "mentions": []
   },
   {
+    "id": "url:19b66626a196afe3253b374f30f0ea963d2474fcddb9a6aee9fe4a44c58e69f3",
+    "title": "Census 2021 Immigration",
+    "doi": null,
+    "url": "https://rowopendata-rmw.opendata.arcgis.com/datasets/KitchenerGIS::census-2021-immigration",
+    "year": 2023,
+    "workType": "report",
+    "issuingOrganization": "Region of Waterloo",
+    "sources": [
+      "Region of Waterloo Open Data (CMA)"
+    ],
+    "theme": "immigration",
+    "uses": [
+      {
+        "program": "CSD",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Region of Waterloo Open Data - Catalog Description",
+        "certainty": "verified",
+        "statCanExplicit": true
+      }
+    ],
+    "mentions": []
+  },
+  {
     "id": "url:1a318b31b5fb180cf23c6a51fb6a278639b10c58af753e87b3f62ac6870910db",
     "title": "The Gender Gap in Household Labour: Differences between Married and Cohabiting People in Canada",
     "doi": null,
@@ -47591,6 +47716,31 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
+      }
+    ],
+    "mentions": []
+  },
+  {
+    "id": "url:1b2a12f3aab4a12b5ddcab7756cc7f7d42a571456c6fd77326ad4c8ffdf56bc9",
+    "title": "Labour force estimates by sex, age groups, education level, immigrant status, Canada and provinces (annual average) (2018)",
+    "doi": null,
+    "url": "https://open.alberta.ca/dataset/6150c7be-34dc-443d-bfcb-c7f751d0deed/resource/7b8484d6-5fe6-4334-a053-360733e4d120/download/g0114_01_imm_annual_4.ivt",
+    "year": 2019,
+    "workType": "report",
+    "issuingOrganization": "Education",
+    "sources": [
+      "Alberta Open Data Portal (PROVINCIAL)"
+    ],
+    "theme": "labour",
+    "uses": [
+      {
+        "program": "LFS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Alberta Open Data Portal - Description",
         "certainty": "verified",
         "statCanExplicit": true
       }
@@ -47692,8 +47842,8 @@
         ],
         "cycleText": "2011",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -47884,8 +48034,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "Empirical Framework",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -47936,8 +48086,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -48002,6 +48152,31 @@
     "mentions": []
   },
   {
+    "id": "url:2512a50d151d617cf20ab13386f79692daf06237cec2096e1256717d2e5f9e28",
+    "title": "Labour market notes [2019]",
+    "doi": null,
+    "url": "https://open.alberta.ca/dataset/9ffc8f50-67a1-4b1c-8329-1f4c580ebdc9/resource/9c816b24-a6fa-4e19-928e-92ff5a3ef9d9/download/tbf-labour-market-notes-2019-12.pdf",
+    "year": 2021,
+    "workType": "report",
+    "issuingOrganization": "Treasury Board and Finance",
+    "sources": [
+      "Alberta Open Data Portal (PROVINCIAL)"
+    ],
+    "theme": "digital society",
+    "uses": [
+      {
+        "program": "LFS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Alberta Open Data Portal - Description",
+        "certainty": "verified",
+        "statCanExplicit": true
+      }
+    ],
+    "mentions": []
+  },
+  {
     "id": "url:251a868f987fd0b5707792782a1154ad1a7aecf8fd93f34d41ff497c2450e54b",
     "title": "Young men and women without a high school diploma",
     "doi": null,
@@ -48020,8 +48195,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       },
       {
         "program": "CIS",
@@ -48065,6 +48240,31 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
+      }
+    ],
+    "mentions": []
+  },
+  {
+    "id": "url:255caeb7d2e638836d3b664aa952701654927472348ddc7a20bc19b286f0c2b8",
+    "title": "Employment Rates for Off-Reserve Aboriginal and Non-Aboriginal People, Alberta",
+    "doi": null,
+    "url": "https://open.alberta.ca/dataset/1d0ff3cc-c741-4151-ad75-c306951ecf0a/resource/5aa272e9-2184-4c76-84bb-9f651cd30452/download/0714201528empratesoff-reserveaborandnon-aborabonepage.pdf",
+    "year": 2023,
+    "workType": "report",
+    "issuingOrganization": "Government of Alberta",
+    "sources": [
+      "Government of Canada Open Data (FEDERAL)"
+    ],
+    "theme": "labour",
+    "uses": [
+      {
+        "program": "LFS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Government of Canada Open Data - Description",
         "certainty": "provisional",
         "statCanExplicit": false
       }
@@ -48119,8 +48319,8 @@
         ],
         "cycleText": "2018",
         "evidenceLocation": "Methodology",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       },
       {
         "program": "GSS",
@@ -48130,8 +48330,8 @@
         ],
         "cycleText": "2018",
         "evidenceLocation": "Methodology",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -48189,6 +48389,33 @@
     "mentions": []
   },
   {
+    "id": "url:278beddcba810e3f0d5149b6465b9964bea1313e5b1643f6626b9f681de1912f",
+    "title": "Contribution of persons with disabilities to Alberta’s economy – 2022",
+    "doi": null,
+    "url": "https://open.alberta.ca/dataset/43886a20-cba3-4f5b-837c-056a575edfc9/resource/512c7329-2d90-4366-be97-a944b04290e5/download/tbf-contribution-persons-with-disabilities-albertas-economy-2022.pdf",
+    "year": 2024,
+    "workType": "report",
+    "issuingOrganization": "Treasury Board and Finance",
+    "sources": [
+      "Alberta Open Data Portal (PROVINCIAL)"
+    ],
+    "theme": "labour",
+    "uses": [
+      {
+        "program": "CSD",
+        "precision": "exact_cycles",
+        "cycles": [
+          "2022"
+        ],
+        "cycleText": "2022",
+        "evidenceLocation": "Alberta Open Data Portal - Description",
+        "certainty": "verified",
+        "statCanExplicit": true
+      }
+    ],
+    "mentions": []
+  },
+  {
     "id": "url:27e3cc125dcd82951c29aabacffc61bbc94c73ceedd13a9c8b810e1fac281c70",
     "title": "The Life Satisfaction of Immigrants in Canada: Does Time of Arrival Matter?",
     "doi": null,
@@ -48207,8 +48434,33 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
+      }
+    ],
+    "mentions": []
+  },
+  {
+    "id": "url:284c89b418f9f51d161110a382ce2cb69d4488230d0d74f25611f9797cd1fd8b",
+    "title": "Labour Force Survey (LFS) Monthly and Annual",
+    "doi": null,
+    "url": "https://catalogue.data.gov.bc.ca/dataset/466ddecd-2701-4e97-84fb-df60bd5aca95/resource/8a8f349e-0350-4168-91a4-22bca3b428e8/download/earnings_and_employment_trends_data_tables.pdf",
+    "year": 2024,
+    "workType": "report",
+    "issuingOrganization": "Government of British Columbia",
+    "sources": [
+      "Government of Canada Open Data (FEDERAL)+BC Data Catalogue (PROVINCIAL)"
+    ],
+    "theme": "labour",
+    "uses": [
+      {
+        "program": "LFS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Government of Canada Open Data - Description",
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -48222,7 +48474,8 @@
     "workType": "report",
     "issuingOrganization": "Government of British Columbia",
     "sources": [
-      "Federal Open Data (open.canada.ca)"
+      "Federal Open Data (open.canada.ca)",
+      "Government of Canada Open Data (FEDERAL)+BC Data Catalogue (PROVINCIAL)"
     ],
     "theme": "health",
     "uses": [
@@ -48275,6 +48528,31 @@
     "mentions": []
   },
   {
+    "id": "url:28f150e95452486684dd5e04301d597a72218e4284e04ccf7167ff964304422e",
+    "title": "Statistics Canada survey data",
+    "doi": null,
+    "url": "https://data.ontario.ca/dataset/c4e18cc3-6761-4973-8c31-e7c7340dbcb9",
+    "year": 2020,
+    "workType": "report",
+    "issuingOrganization": "Labour, Training and Skills Development",
+    "sources": [
+      "Ontario Data Catalogue (PROVINCIAL)"
+    ],
+    "theme": "labour",
+    "uses": [
+      {
+        "program": "LFS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Ontario Data Catalogue - Description",
+        "certainty": "provisional",
+        "statCanExplicit": false
+      }
+    ],
+    "mentions": []
+  },
+  {
     "id": "url:2988e271c87e68dfc620a01ce8ff1cbea5e4730388b33fad7f47fa120b30c48e",
     "title": "Depression and suicidal ideation among Canadians aged 15 to 24.",
     "doi": null,
@@ -48320,6 +48598,31 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
+      }
+    ],
+    "mentions": []
+  },
+  {
+    "id": "url:2a36bd3ac8af8ac1182c1e05753cb952e1fff3ce22804940d82aaeab991bf9ba",
+    "title": "Labour market notes [2023]",
+    "doi": null,
+    "url": "https://open.alberta.ca/dataset/7124f6a2-9de2-44ec-a30b-3430aca3a4cd/resource/de3bb946-7bd7-4b45-a0ee-0312d279b50e/download/tbf-labour-market-notes-2023-12.pdf",
+    "year": 2023,
+    "workType": "report",
+    "issuingOrganization": "Treasury Board and Finance",
+    "sources": [
+      "Alberta Open Data Portal (PROVINCIAL)"
+    ],
+    "theme": "digital society",
+    "uses": [
+      {
+        "program": "LFS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Alberta Open Data Portal - Description",
         "certainty": "verified",
         "statCanExplicit": true
       }
@@ -48773,8 +49076,8 @@
         ],
         "cycleText": "2023",
         "evidenceLocation": "Methodology and Sources",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       },
       {
         "program": "CIS",
@@ -49064,8 +49367,33 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
+      }
+    ],
+    "mentions": []
+  },
+  {
+    "id": "url:3ea0650bfd2c144ef463323dd5a26e9af6e051dd1c7c201a20374e4bca9b2984",
+    "title": "Annual Labour Force Characteristics and Employment from Labour Force Survey (LFS)",
+    "doi": null,
+    "url": "https://catalogue.data.gov.bc.ca/dataset/29c14c71-f468-461d-80d4-91b71fd2336c/resource/29407aa0-38cb-4802-83b0-89eddca3b59c/download/0823_11-tables.zip",
+    "year": 2024,
+    "workType": "report",
+    "issuingOrganization": "BC Stats",
+    "sources": [
+      "BC Data Catalogue (PROVINCIAL)"
+    ],
+    "theme": "digital society",
+    "uses": [
+      {
+        "program": "LFS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "BC Data Catalogue - Description",
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -49143,8 +49471,8 @@
         ],
         "cycleText": "2011",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -49457,8 +49785,33 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
+      }
+    ],
+    "mentions": []
+  },
+  {
+    "id": "url:45d5eb6d8a0dfb354f362a57ce831b5b683f9919959dab93015180d561e76f59",
+    "title": "Annual Labour Force Characteristics and Wages by Disability Status from Labour Force Survey (LFS)",
+    "doi": null,
+    "url": "https://catalogue.data.gov.bc.ca/dataset/6084ff6e-a363-449a-97b3-87e36b14d1d7/resource/c4a5b508-b348-4753-b1e3-81e91dac74d8/download/table-1175037-bc-request2_employment.xlsx",
+    "year": 2025,
+    "workType": "report",
+    "issuingOrganization": "BC Stats",
+    "sources": [
+      "BC Data Catalogue (PROVINCIAL)"
+    ],
+    "theme": "digital society",
+    "uses": [
+      {
+        "program": "LFS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "BC Data Catalogue - Description",
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -49484,8 +49837,8 @@
         ],
         "cycleText": "2010",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -49509,8 +49862,8 @@
         "cycles": [],
         "cycleText": "2007-2013",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -49670,6 +50023,31 @@
     "mentions": []
   },
   {
+    "id": "url:4c920a03df1123e35c3b4e97c62cba68efa9b04f62e9f9786df5226c559db437",
+    "title": "Census 2021 Ethnic Culture",
+    "doi": null,
+    "url": "https://rowopendata-rmw.opendata.arcgis.com/datasets/KitchenerGIS::census-2021-ethnic-culture",
+    "year": 2023,
+    "workType": "report",
+    "issuingOrganization": "Region of Waterloo",
+    "sources": [
+      "Region of Waterloo Open Data (CMA)"
+    ],
+    "theme": "immigration",
+    "uses": [
+      {
+        "program": "CSD",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Region of Waterloo Open Data - Catalog Description",
+        "certainty": "verified",
+        "statCanExplicit": true
+      }
+    ],
+    "mentions": []
+  },
+  {
     "id": "url:4c96bb7a4d673c9866eb25c139b9100998f9f24bba10d6d15a123ff9db37cfcd",
     "title": "Digital Divide: A Typology of Internet Users in Canada",
     "doi": null,
@@ -49690,6 +50068,31 @@
         ],
         "cycleText": "2022",
         "evidenceLocation": "What we did",
+        "certainty": "verified",
+        "statCanExplicit": true
+      }
+    ],
+    "mentions": []
+  },
+  {
+    "id": "url:4db8738f1c5932ff260cad2ee1447ca79a20e153f3ec8c039457565d42623692",
+    "title": "Census 2021 Labour",
+    "doi": null,
+    "url": "https://rowopendata-rmw.opendata.arcgis.com/datasets/KitchenerGIS::census-2021-labour",
+    "year": 2023,
+    "workType": "report",
+    "issuingOrganization": "Region of Waterloo",
+    "sources": [
+      "Region of Waterloo Open Data (CMA)"
+    ],
+    "theme": "labour",
+    "uses": [
+      {
+        "program": "CSD",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Region of Waterloo Open Data - Catalog Description",
         "certainty": "verified",
         "statCanExplicit": true
       }
@@ -49849,6 +50252,31 @@
     "mentions": []
   },
   {
+    "id": "url:528beeab4e652a2ddaba4d11dcfe8d3bebdf7b1d6d23bca657fce1550324dcc4",
+    "title": "Census 2021 Indigenous",
+    "doi": null,
+    "url": "https://rowopendata-rmw.opendata.arcgis.com/datasets/KitchenerGIS::census-2021-indigenous",
+    "year": 2023,
+    "workType": "report",
+    "issuingOrganization": "Region of Waterloo",
+    "sources": [
+      "Region of Waterloo Open Data (CMA)"
+    ],
+    "theme": "other",
+    "uses": [
+      {
+        "program": "CSD",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Region of Waterloo Open Data - Catalog Description",
+        "certainty": "verified",
+        "statCanExplicit": true
+      }
+    ],
+    "mentions": []
+  },
+  {
     "id": "url:529a7ca11492ca106e5fd8ffec0e164c5dccef0575273d709c7f9d1d3502a062",
     "title": "Identifying Dietary Fibre and Protein Intakes and their Food Sources in a Pre-dialysis Adult Population",
     "doi": null,
@@ -49952,6 +50380,31 @@
     "mentions": []
   },
   {
+    "id": "url:551b3846f81ad34e03e4277bae6c2dd2ce058cda34b9fcaf554f373d90332218",
+    "title": "Annual Labour Force Characteristics by Education and Age from Labour Force Survey (LFS)",
+    "doi": null,
+    "url": "https://catalogue.data.gov.bc.ca/dataset/ac455b26-4b0e-45d8-963e-0e8a099abbc3/resource/9606d42e-24c2-44d9-9c22-231bfde6f230/download/0325_01-table-1a.ivt",
+    "year": 2025,
+    "workType": "report",
+    "issuingOrganization": "BC Stats",
+    "sources": [
+      "BC Data Catalogue (PROVINCIAL)"
+    ],
+    "theme": "digital society",
+    "uses": [
+      {
+        "program": "LFS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "BC Data Catalogue - Description",
+        "certainty": "verified",
+        "statCanExplicit": true
+      }
+    ],
+    "mentions": []
+  },
+  {
     "id": "url:55b86dd8bd1cc7e5c9958674529db5cd450f0452b30142efd8366a6fe31c3f05",
     "title": "The Association Between Chronic Low Back Pain and Poor Sleep Quality Among Adults Aged 60 Years and Older",
     "doi": null,
@@ -50047,8 +50500,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -50106,8 +50559,8 @@
         "cycles": [],
         "cycleText": "2009-2010",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -50169,8 +50622,8 @@
         ],
         "cycleText": "2011",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -50473,6 +50926,31 @@
     "mentions": []
   },
   {
+    "id": "url:5f2673f0be38b02b374962c6c3508ab01164f567d0f981132febe37002caee96",
+    "title": "Labour market notes [2025]",
+    "doi": null,
+    "url": "https://open.alberta.ca/dataset/08c8fe6e-6e46-4e74-b478-07fd57501a3e/resource/4a7663fa-ec10-4a49-8911-f01694af595b/download/tbf-labour-market-notes-2025-12.pdf",
+    "year": 2025,
+    "workType": "report",
+    "issuingOrganization": "Treasury Board and Finance",
+    "sources": [
+      "Alberta Open Data Portal (PROVINCIAL)"
+    ],
+    "theme": "digital society",
+    "uses": [
+      {
+        "program": "LFS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Alberta Open Data Portal - Description",
+        "certainty": "verified",
+        "statCanExplicit": true
+      }
+    ],
+    "mentions": []
+  },
+  {
     "id": "url:5feab0801127f788905c9be47b1cb3d72c8f4445e4a2aa563a6bf29aef3f97b5",
     "title": "Prescription Medication Gaps Among Non-Standard and Part-Time Workers in Canada",
     "doi": null,
@@ -50690,6 +51168,33 @@
     "mentions": []
   },
   {
+    "id": "url:63811a66f850dffc4ae31479ac002c2e2b92a4fded7807fa81e129215130f56f",
+    "title": "The 2008-2022 Total Diet Study Food Consumption Tables (2015 CCHS-Nutrition)",
+    "doi": null,
+    "url": "https://open.canada.ca/data/dataset/ac573724-2f77-4f75-a2f4-c416d79cf130/resource/e5b9eced-3528-4f31-a9a5-a5b0bbd12195/download/1.-2008-2022-tds-food-consumption-table-cchs-2015_en_v3_2023-06-27.xlsx",
+    "year": 2023,
+    "workType": "report",
+    "issuingOrganization": "Health Canada",
+    "sources": [
+      "Government of Canada Open Data (FEDERAL)"
+    ],
+    "theme": "health",
+    "uses": [
+      {
+        "program": "CCHS",
+        "precision": "exact_cycles",
+        "cycles": [
+          "2015"
+        ],
+        "cycleText": "2015",
+        "evidenceLocation": "Government of Canada Open Data - Description",
+        "certainty": "verified",
+        "statCanExplicit": true
+      }
+    ],
+    "mentions": []
+  },
+  {
     "id": "url:64665a05dadaeb136e94a0d5577feea32444c77023c99e221e3e0486206602fc",
     "title": "The distribution and determinants of catastrophic out-of-pocket prescription drug expenditures in Canada",
     "doi": null,
@@ -50812,8 +51317,8 @@
         ],
         "cycleText": "2013",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -50839,8 +51344,8 @@
         ],
         "cycleText": "1994",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -50944,8 +51449,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -50971,6 +51476,31 @@
         ],
         "cycleText": "2014",
         "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
+      }
+    ],
+    "mentions": []
+  },
+  {
+    "id": "url:696017e7490c32ce3757c89e627a66f07931bfdd5b0030e7bbc14e352895cc97",
+    "title": "Labour market notes [2021]",
+    "doi": null,
+    "url": "https://open.alberta.ca/dataset/6ce8baf7-74dd-4955-80c5-ead827d38690/resource/63f69f4c-317c-4581-bbfd-56da8cd0b62a/download/tbf-labour-market-notes-2021-12-03.pdf",
+    "year": 2021,
+    "workType": "report",
+    "issuingOrganization": "Treasury Board and Finance",
+    "sources": [
+      "Alberta Open Data Portal (PROVINCIAL)"
+    ],
+    "theme": "digital society",
+    "uses": [
+      {
+        "program": "LFS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Alberta Open Data Portal - Description",
         "certainty": "verified",
         "statCanExplicit": true
       }
@@ -51084,6 +51614,31 @@
     "mentions": []
   },
   {
+    "id": "url:6d1bdd9f14cbd482410d4e453f54b8298f75e168afd878483791a82d74b95960",
+    "title": "Labour Force Survey estimates, wages by National Occupational Classification for Alberta (March 2016 to September 2018)",
+    "doi": null,
+    "url": "https://open.alberta.ca/documentation/beyond-20-20-ivt-browser-simplified-user-guide",
+    "year": 2024,
+    "workType": "report",
+    "issuingOrganization": "Government of Alberta",
+    "sources": [
+      "Government of Canada Open Data (FEDERAL)"
+    ],
+    "theme": "labour",
+    "uses": [
+      {
+        "program": "LFS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Government of Canada Open Data - Description",
+        "certainty": "verified",
+        "statCanExplicit": true
+      }
+    ],
+    "mentions": []
+  },
+  {
     "id": "url:6e2bc73e23e5b4c353f091af55789ce98402fe935ee8773b8186654a63bcde94",
     "title": "The Economic And Health Burden Of Chronic Pain In Ontario",
     "doi": null,
@@ -51154,8 +51709,8 @@
         ],
         "cycleText": "2011",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -51179,8 +51734,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -51213,6 +51768,33 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "Methods",
+        "certainty": "verified",
+        "statCanExplicit": true
+      }
+    ],
+    "mentions": []
+  },
+  {
+    "id": "url:6fe952da9c27a2c108afe8f33ad4e956328ca77c86cbf037fa10177e83726195",
+    "title": "Total usual nutrient intakes from foods and dietary supplements (2015 CCHS – Nutrition)",
+    "doi": null,
+    "url": "https://open.canada.ca/data/dataset/b76e912b-8b28-48a2-aee8-a69e6e570678/resource/9e4aa51d-d8b8-4898-973c-7df610f1344e/download/2-_read_me_-_cchs_nutrition_-_total_usual_intake_tables_en1.pdf",
+    "year": 2025,
+    "workType": "report",
+    "issuingOrganization": "Health Canada",
+    "sources": [
+      "Government of Canada Open Data (FEDERAL)"
+    ],
+    "theme": "health",
+    "uses": [
+      {
+        "program": "CCHS",
+        "precision": "exact_cycles",
+        "cycles": [
+          "2015"
+        ],
+        "cycleText": "2015",
+        "evidenceLocation": "Government of Canada Open Data - Description",
         "certainty": "verified",
         "statCanExplicit": true
       }
@@ -51390,8 +51972,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -51417,8 +51999,8 @@
         ],
         "cycleText": "2010",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -51705,8 +52287,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -51782,8 +52364,8 @@
         ],
         "cycleText": "2010",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -51834,8 +52416,8 @@
         ],
         "cycleText": "2024",
         "evidenceLocation": "Data Sources",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       },
       {
         "program": "CIS",
@@ -51856,8 +52438,8 @@
         ],
         "cycleText": "2024",
         "evidenceLocation": "Data Sources",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       },
       {
         "program": "CIS",
@@ -52236,6 +52818,31 @@
     "mentions": []
   },
   {
+    "id": "url:81fbd093cff71cf44e987363d4dc0dfaccce7f108a15cb6dffaf9a9a0f436130",
+    "title": "Labour market notes [2022]",
+    "doi": null,
+    "url": "https://open.alberta.ca/dataset/6c48fa24-75d8-4bec-8502-b4c7d479dba7/resource/fb90a978-481a-4b51-99e6-4ff80f78a49b/download/tbf-labour-market-notes-2022-12.pdf",
+    "year": 2022,
+    "workType": "report",
+    "issuingOrganization": "Treasury Board and Finance",
+    "sources": [
+      "Alberta Open Data Portal (PROVINCIAL)"
+    ],
+    "theme": "digital society",
+    "uses": [
+      {
+        "program": "LFS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Alberta Open Data Portal - Description",
+        "certainty": "verified",
+        "statCanExplicit": true
+      }
+    ],
+    "mentions": []
+  },
+  {
     "id": "url:83090d862ff3c8123cd5401cc801831fd9c73ae11335a2e0b0592bfe31f4fc8d",
     "title": "Grip strength reference values for Canadians aged 6 to 79: Canadian Health Measures Survey, 2007 to 2013.",
     "doi": null,
@@ -52306,6 +52913,31 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
+      }
+    ],
+    "mentions": []
+  },
+  {
+    "id": "url:8463eda0a97e41288b3e05600f2dcdbbb8ec9854552e900bd7fb796060f19844",
+    "title": "Census 2021 Language",
+    "doi": null,
+    "url": "https://rowopendata-rmw.opendata.arcgis.com/datasets/KitchenerGIS::census-2021-language",
+    "year": 2023,
+    "workType": "report",
+    "issuingOrganization": "Region of Waterloo",
+    "sources": [
+      "Region of Waterloo Open Data (CMA)"
+    ],
+    "theme": "other",
+    "uses": [
+      {
+        "program": "CSD",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Region of Waterloo Open Data - Catalog Description",
         "certainty": "verified",
         "statCanExplicit": true
       }
@@ -52663,6 +53295,31 @@
     "mentions": []
   },
   {
+    "id": "url:8c69f3f0afa3ed98cb2eab5d7d9b1151f7db041bf0c587ab73503f0abdf0c297",
+    "title": "Census 2021 Housing",
+    "doi": null,
+    "url": "https://rowopendata-rmw.opendata.arcgis.com/datasets/KitchenerGIS::census-2021-housing",
+    "year": 2023,
+    "workType": "report",
+    "issuingOrganization": "Region of Waterloo",
+    "sources": [
+      "Region of Waterloo Open Data (CMA)"
+    ],
+    "theme": "housing",
+    "uses": [
+      {
+        "program": "CSD",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Region of Waterloo Open Data - Catalog Description",
+        "certainty": "verified",
+        "statCanExplicit": true
+      }
+    ],
+    "mentions": []
+  },
+  {
     "id": "url:8c7f7072fa7610b1c9abfe30c6518cbe1671210834f62c00f56c9bb55f9d5174",
     "title": "Bisphenol A and child and youth behaviour: Canadian Health Measures Survey 2007 to 2011.",
     "doi": null,
@@ -52681,8 +53338,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -52941,6 +53598,31 @@
     "mentions": []
   },
   {
+    "id": "url:95ff7cdf95a3e40db964804fae9ff39c1d70a15cfd1c818ed8dc39ab725145c4",
+    "title": "Census 2021 Official Languages",
+    "doi": null,
+    "url": "https://rowopendata-rmw.opendata.arcgis.com/datasets/KitchenerGIS::census-2021-official-languages",
+    "year": 2023,
+    "workType": "report",
+    "issuingOrganization": "Region of Waterloo",
+    "sources": [
+      "Region of Waterloo Open Data (CMA)"
+    ],
+    "theme": "other",
+    "uses": [
+      {
+        "program": "CSD",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Region of Waterloo Open Data - Catalog Description",
+        "certainty": "verified",
+        "statCanExplicit": true
+      }
+    ],
+    "mentions": []
+  },
+  {
     "id": "url:9613bce00488d2dfc2e58fe05cbbdfb206859d38cf78560a7f587f653cf7ac32",
     "title": "Poverty Report Card 2025: Assessing Poverty Across Canada",
     "doi": null,
@@ -52997,8 +53679,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -53063,6 +53745,31 @@
     "mentions": []
   },
   {
+    "id": "url:97f7f3f7d0d0f97dfd1e2cfe707cbf495f405e37a6d7b20046bab7af93b48d0e",
+    "title": "2011 Census and National Housing Survey Sub Area",
+    "doi": null,
+    "url": "https://open.ottawa.ca/documents/ottawa::2011-census-and-national-housing-survey-sub-area",
+    "year": 2019,
+    "workType": "report",
+    "issuingOrganization": "City of Ottawa",
+    "sources": [
+      "City of Ottawa Open Data (CMA)"
+    ],
+    "theme": "digital society",
+    "uses": [
+      {
+        "program": "NHS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "City of Ottawa Open Data - Catalog Description",
+        "certainty": "verified",
+        "statCanExplicit": true
+      }
+    ],
+    "mentions": []
+  },
+  {
     "id": "url:981c69c4a25d074b5faedf5ed7a87b720f06365af69fa1e6dffadbb5bebd2eb4",
     "title": "Using a Betabinomial distribution to estimate the prevalence of adherence to physical activity guidelines among children and youth.",
     "doi": null,
@@ -53108,8 +53815,8 @@
         ],
         "cycleText": "2011",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -53165,6 +53872,31 @@
     "mentions": []
   },
   {
+    "id": "url:9a577adbf2bdd7d87337a2866c1252b83e2cf6ca6ea919a00d4e13a03b2bf67d",
+    "title": "Labour market notes [2020]",
+    "doi": null,
+    "url": "https://open.alberta.ca/dataset/02edb3a8-8a3b-4162-a74c-eaa6de1b7320/resource/09a780a7-f387-487d-bdfa-bc02b3c77081/download/tbf-labour-market-notes-2020-12.pdf",
+    "year": 2015,
+    "workType": "report",
+    "issuingOrganization": "Treasury Board and Finance",
+    "sources": [
+      "Alberta Open Data Portal (PROVINCIAL)"
+    ],
+    "theme": "digital society",
+    "uses": [
+      {
+        "program": "LFS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Alberta Open Data Portal - Description",
+        "certainty": "verified",
+        "statCanExplicit": true
+      }
+    ],
+    "mentions": []
+  },
+  {
     "id": "url:9ab220ea48cfa7ce64d7adae99d2e95b9c258ee980f663e92107a705b680c5d8",
     "title": "Diet Quality in Relation to Income, Education, and Food Insecurity among Canadian Adults",
     "doi": null,
@@ -53210,8 +53942,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -53302,7 +54034,8 @@
     "workType": "report",
     "issuingOrganization": "Health Canada",
     "sources": [
-      "Federal Open Data (open.canada.ca)"
+      "Federal Open Data (open.canada.ca)",
+      "Government of Canada Open Data (FEDERAL)"
     ],
     "theme": "health",
     "uses": [
@@ -53443,6 +54176,31 @@
         ],
         "cycleText": "2011",
         "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
+      }
+    ],
+    "mentions": []
+  },
+  {
+    "id": "url:a02709f1075fa6a44651d7eafd549027f0c13986c6ba58dde7c7ec933580e785",
+    "title": "Annual Labour Force Characteristics and Wages from Labour Force Survey (LFS)",
+    "doi": null,
+    "url": "https://catalogue.data.gov.bc.ca/dataset/c4e574f0-1d25-46c8-a78f-5276305cb4f7/resource/ba2930de-0606-470c-9ae1-89e41b732f4f/download/0223_03-table-1.ivt",
+    "year": 2024,
+    "workType": "report",
+    "issuingOrganization": "BC Stats",
+    "sources": [
+      "BC Data Catalogue (PROVINCIAL)"
+    ],
+    "theme": "digital society",
+    "uses": [
+      {
+        "program": "LFS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "BC Data Catalogue - Description",
         "certainty": "verified",
         "statCanExplicit": true
       }
@@ -53843,6 +54601,34 @@
     "mentions": []
   },
   {
+    "id": "url:a71cce3d8775ec3985383eb41d2629f2f59c5a1493cc65cb9e58026177440264",
+    "title": "Usual Intakes from Food for Energy, Nutrients and Other Dietary Components ",
+    "doi": null,
+    "url": "https://open.canada.ca/data/dataset/31599960-2c1e-4d90-a9d9-979ad0e1abb4/resource/ce446c74-0c3c-4f52-ba35-48f19d438d58/download/2-updated-usual-intakes-from-food-en_2024-11-26.csv",
+    "year": 2020,
+    "workType": "report",
+    "issuingOrganization": "Health Canada",
+    "sources": [
+      "Government of Canada Open Data (FEDERAL)"
+    ],
+    "theme": "health",
+    "uses": [
+      {
+        "program": "CCHS",
+        "precision": "exact_cycles",
+        "cycles": [
+          "2004",
+          "2015"
+        ],
+        "cycleText": "2004, 2015",
+        "evidenceLocation": "Government of Canada Open Data - Description",
+        "certainty": "verified",
+        "statCanExplicit": true
+      }
+    ],
+    "mentions": []
+  },
+  {
     "id": "url:a7355062b0dfabeb27cbb7bf78a6eb1d938fae79316d1cd02edaf3cca8839db9",
     "title": "Population Health Surveillance: Chronic Disease Risk Factors in British Columbia",
     "doi": null,
@@ -53901,8 +54687,33 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
+      }
+    ],
+    "mentions": []
+  },
+  {
+    "id": "url:a76a2b7116271abf2cfdb1f2001704a77cbc3dc7b8c12293854d1fac733b4ae3",
+    "title": "Market Basket Measure for Alberta",
+    "doi": null,
+    "url": "https://open.alberta.ca/dataset/b8aac51b-5eb2-400f-81d8-75c9548b4d27/resource/abe67d03-5e24-4c63-a1e7-ae20caaccc6c/download/tbf-osi-market-basket-measure-for-alberta-2020-2024.pdf",
+    "year": 2026,
+    "workType": "report",
+    "issuingOrganization": "Treasury Board and Finance",
+    "sources": [
+      "Alberta Open Data Portal (PROVINCIAL)"
+    ],
+    "theme": "income and inequality",
+    "uses": [
+      {
+        "program": "CIS",
+        "precision": "range",
+        "cycles": [],
+        "cycleText": "2020-2024",
+        "evidenceLocation": "Alberta Open Data Portal - Description",
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -54014,6 +54825,31 @@
     "mentions": []
   },
   {
+    "id": "url:aa01433bdee410d46831b03fe041c8f48bd82e9acc75f89b6da93c2135db5bbc",
+    "title": "Labour market notes [2026]",
+    "doi": null,
+    "url": "https://open.alberta.ca/dataset/1292675f-dc63-4796-a02b-9457f88bab72/resource/1374024d-0d0f-4cc3-8d23-36196b9d7072/download/tbf-labour-market-notes-2026-10.pdf",
+    "year": 2026,
+    "workType": "report",
+    "issuingOrganization": "Treasury Board and Finance",
+    "sources": [
+      "Alberta Open Data Portal (PROVINCIAL)"
+    ],
+    "theme": "digital society",
+    "uses": [
+      {
+        "program": "LFS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Alberta Open Data Portal - Description",
+        "certainty": "verified",
+        "statCanExplicit": true
+      }
+    ],
+    "mentions": []
+  },
+  {
     "id": "url:aa0916c2984fd7619c131d6e4bacfa091251ea088a9e9e82c4a77cb526b7dfa8",
     "title": "2024 Report Card on Child and Family Poverty in Canada: Eradicate Poverty Now",
     "doi": null,
@@ -54052,6 +54888,31 @@
     "mentions": []
   },
   {
+    "id": "url:aa196d238014cdbb844bdb1cceea47e9bf72159e9a7cec5b8c3e922c491cbfad",
+    "title": "Prevalence of Current Daily Smokers by Sex, Alberta",
+    "doi": null,
+    "url": "https://open.alberta.ca/dataset/452846ba-55fb-4bc8-beee-2fd934f228bb/resource/04edffc8-00a9-4449-a8f8-07c6d722d08d/download/06022015prevalenceofcurrentdailysmokersonepage.pdf",
+    "year": 2023,
+    "workType": "report",
+    "issuingOrganization": "Government of Alberta",
+    "sources": [
+      "Government of Canada Open Data (FEDERAL)"
+    ],
+    "theme": "health",
+    "uses": [
+      {
+        "program": "CCHS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Government of Canada Open Data - Description",
+        "certainty": "verified",
+        "statCanExplicit": true
+      }
+    ],
+    "mentions": []
+  },
+  {
     "id": "url:aa392d0abeb900c188259155507797b053f53a8a6faf60c2f29041dc54aea2e8",
     "title": "Cultural and leadership determinants of innovation in public sector: evidence from Canadian public service",
     "doi": null,
@@ -54070,8 +54931,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -54150,8 +55011,8 @@
         ],
         "cycleText": "2006",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -54225,8 +55086,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "Methodology",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       },
       {
         "program": "CIS",
@@ -54243,8 +55104,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "Methodology",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       },
       {
         "program": "CIS",
@@ -54252,6 +55113,31 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "Methodology",
+        "certainty": "verified",
+        "statCanExplicit": true
+      }
+    ],
+    "mentions": []
+  },
+  {
+    "id": "url:ae6bdfc0b9cfe925d41569540a95a338b35dce8b5e923e593c26c9472de018b3",
+    "title": "Census 2021 Family Marital",
+    "doi": null,
+    "url": "https://rowopendata-rmw.opendata.arcgis.com/datasets/KitchenerGIS::census-2021-family-marital",
+    "year": 2023,
+    "workType": "report",
+    "issuingOrganization": "Region of Waterloo",
+    "sources": [
+      "Region of Waterloo Open Data (CMA)"
+    ],
+    "theme": "immigration",
+    "uses": [
+      {
+        "program": "CSD",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Region of Waterloo Open Data - Catalog Description",
         "certainty": "verified",
         "statCanExplicit": true
       }
@@ -54315,8 +55201,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -54399,6 +55285,31 @@
     "mentions": []
   },
   {
+    "id": "url:b13ae04c235629c7088eea3fb10e6f699accccd16ec24e323f380f11c0506c78",
+    "title": "Health Indicator - Small Area Prevalence Estimates for Selected Indicators - Age-Standardized",
+    "doi": null,
+    "url": "http://www.ahw.gov.ab.ca/IHDA_Retrieval/redirectToURL.do?cat=101&subCat=467",
+    "year": 2018,
+    "workType": "report",
+    "issuingOrganization": "Government of Alberta",
+    "sources": [
+      "Government of Canada Open Data (FEDERAL)"
+    ],
+    "theme": "health",
+    "uses": [
+      {
+        "program": "CCHS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Government of Canada Open Data - Description",
+        "certainty": "verified",
+        "statCanExplicit": true
+      }
+    ],
+    "mentions": []
+  },
+  {
     "id": "url:b28cbc9c38550e850612669bdd4555251c575d32119042757e486b98a6bb335c",
     "title": "Economic Immigrants in Gateway Cities: Factors Involved in Their Initial Location and Onward Migration Decisions",
     "doi": null,
@@ -54451,8 +55362,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "Measurement Framework",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       },
       {
         "program": "CIS",
@@ -54469,8 +55380,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "Measurement Framework",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -54673,7 +55584,8 @@
     "workType": "report",
     "issuingOrganization": "Employment and Social Development Canada",
     "sources": [
-      "Federal Open Data (open.canada.ca)"
+      "Federal Open Data (open.canada.ca)",
+      "Government of Canada Open Data (FEDERAL)"
     ],
     "theme": "labour",
     "uses": [
@@ -54883,7 +55795,8 @@
     "workType": "report",
     "issuingOrganization": "Public Health Agency of Canada",
     "sources": [
-      "Federal Open Data (open.canada.ca)"
+      "Federal Open Data (open.canada.ca)",
+      "Government of Canada Open Data (FEDERAL)"
     ],
     "theme": "health",
     "uses": [
@@ -55165,8 +56078,8 @@
         ],
         "cycleText": "2011",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -55190,8 +56103,35 @@
         "cycles": [],
         "cycleText": "2006 to 2016",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
+      }
+    ],
+    "mentions": []
+  },
+  {
+    "id": "url:c577d1224ab96aa946e12925de701a01abf278e610c3c51a02ca4a3d5da605e3",
+    "title": "Food Consumption Table (2015 CCHS Nutrition)",
+    "doi": null,
+    "url": "https://open.canada.ca/data/dataset/a9c18c37-b7b9-48ce-ac1d-b40a65bafa9e/resource/bcadbf76-19f6-43fa-b383-0f74382d7495/download/fct2015_babyfood_final.csv",
+    "year": 2019,
+    "workType": "report",
+    "issuingOrganization": "Health Canada",
+    "sources": [
+      "Government of Canada Open Data (FEDERAL)"
+    ],
+    "theme": "health",
+    "uses": [
+      {
+        "program": "CCHS",
+        "precision": "exact_cycles",
+        "cycles": [
+          "2015"
+        ],
+        "cycleText": "2015",
+        "evidenceLocation": "Government of Canada Open Data - Description",
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -55230,7 +56170,8 @@
     "workType": "report",
     "issuingOrganization": "Government and Municipalities of Québec",
     "sources": [
-      "Federal Open Data (open.canada.ca)"
+      "Federal Open Data (open.canada.ca)",
+      "Government of Canada Open Data (FEDERAL)"
     ],
     "theme": "health",
     "uses": [
@@ -55317,6 +56258,33 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
+      }
+    ],
+    "mentions": []
+  },
+  {
+    "id": "url:c87bb429f4a2b08a78edc2ff2e6872307b3ac1f59746ae67707a9f6169875a97",
+    "title": "2006 2011 Census and 2011 National Household Survey",
+    "doi": null,
+    "url": "https://open.ottawa.ca/documents/ottawa::2006-2011-census-and-2011-national-household-survey",
+    "year": 2018,
+    "workType": "report",
+    "issuingOrganization": "City of Ottawa",
+    "sources": [
+      "City of Ottawa Open Data (CMA)"
+    ],
+    "theme": "digital society",
+    "uses": [
+      {
+        "program": "NHS",
+        "precision": "exact_cycles",
+        "cycles": [
+          "2011"
+        ],
+        "cycleText": "2011",
+        "evidenceLocation": "City of Ottawa Open Data - Catalog Description",
         "certainty": "verified",
         "statCanExplicit": true
       }
@@ -55480,8 +56448,33 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
+      }
+    ],
+    "mentions": []
+  },
+  {
+    "id": "url:cb27af101c92e3bf90a78d7175d7ef45c9d393b82db8abbacea39c645bee41bc",
+    "title": "Labour Force Survey Estimates by Aboriginal Status, Age Group 18 to 34, Postsecondary enrollment in Alberta, 8 month averages (2011-2018)",
+    "doi": null,
+    "url": "https://open.alberta.ca/dataset/9769fa10-603b-4996-a130-e36e67de1441/resource/7eb1a768-0f7e-40f8-8d36-21ffb75106d7/download/alberta_aboriginal_postsec-2011-2018.xlsx",
+    "year": 2019,
+    "workType": "report",
+    "issuingOrganization": "Treasury Board and Finance",
+    "sources": [
+      "Alberta Open Data Portal (PROVINCIAL)"
+    ],
+    "theme": "labour",
+    "uses": [
+      {
+        "program": "LFS",
+        "precision": "range",
+        "cycles": [],
+        "cycleText": "2011 to 2018",
+        "evidenceLocation": "Alberta Open Data Portal - Description",
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -55885,8 +56878,33 @@
         ],
         "cycleText": "2010",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
+      }
+    ],
+    "mentions": []
+  },
+  {
+    "id": "url:d00fc616780780f4348d2fd7bcb1c59b3fde5f8d781bcf0492f39889c9162e0b",
+    "title": "Labour Force Survey (LFS) Median Wages by Detailed Demographics",
+    "doi": null,
+    "url": "https://catalogue.data.gov.bc.ca/dataset/e91c33e7-9355-4a12-b5af-73ba7d83e257/resource/0a08eb05-fb67-4ceb-b691-d78bd969a52f/download/0124_03-table-1.xlsx",
+    "year": 2025,
+    "workType": "report",
+    "issuingOrganization": "BC Stats",
+    "sources": [
+      "BC Data Catalogue (PROVINCIAL)"
+    ],
+    "theme": "digital society",
+    "uses": [
+      {
+        "program": "LFS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "BC Data Catalogue - Description",
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -55973,8 +56991,42 @@
         ],
         "cycleText": "2020",
         "evidenceLocation": "Data Sources",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
+      }
+    ],
+    "mentions": []
+  },
+  {
+    "id": "url:d5c82b43d949e4decc3b23d6987808de4e2e0f2e703b41e8671a91fb22f4cbb5",
+    "title": "Labour Force Survey",
+    "doi": null,
+    "url": "https://ckan0.cf.opendata.inter.prod-toronto.ca/dataset/97c25f5b-7542-40d4-b7fa-ef46e9442016/resource/cdccdd49-0f9a-4033-89c7-818fa687a6d8/download/lfs_ivt_annual.zip",
+    "year": 2022,
+    "workType": "report",
+    "issuingOrganization": "City of Toronto",
+    "sources": [
+      "Open Data Toronto (CMA)"
+    ],
+    "theme": "labour",
+    "uses": [
+      {
+        "program": "LFS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Open Data Toronto - Description",
+        "certainty": "verified",
+        "statCanExplicit": true
+      },
+      {
+        "program": "LFS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Open Data Toronto - Description",
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -56036,8 +57088,8 @@
         ],
         "cycleText": "2024",
         "evidenceLocation": "Executive Summary",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       },
       {
         "program": "CIS",
@@ -56058,8 +57110,8 @@
         ],
         "cycleText": "2024",
         "evidenceLocation": "Executive Summary",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -56298,8 +57350,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -56363,6 +57415,31 @@
         ],
         "cycleText": "2022",
         "evidenceLocation": "Methodological Overview",
+        "certainty": "verified",
+        "statCanExplicit": true
+      }
+    ],
+    "mentions": []
+  },
+  {
+    "id": "url:e05e972ca8391a3b55b379a40fd14309f1d2f4e96aec99572d00ea79682dc136",
+    "title": "Census 2021 Income",
+    "doi": null,
+    "url": "https://rowopendata-rmw.opendata.arcgis.com/datasets/KitchenerGIS::census-2021-income",
+    "year": 2023,
+    "workType": "report",
+    "issuingOrganization": "Region of Waterloo",
+    "sources": [
+      "Region of Waterloo Open Data (CMA)"
+    ],
+    "theme": "income and inequality",
+    "uses": [
+      {
+        "program": "CSD",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Region of Waterloo Open Data - Catalog Description",
         "certainty": "verified",
         "statCanExplicit": true
       }
@@ -56485,6 +57562,31 @@
     "mentions": []
   },
   {
+    "id": "url:e509fe3c399b3bf67afb82a6a544d98d35b8e735127dc5b34721f385d58b5124",
+    "title": "Portrait des arrondissements sur les limitations d’activités, 2021",
+    "doi": null,
+    "url": "https://donnees.montreal.ca/dataset/9c111138-96af-47d8-b889-bc494cbeb2e4/resource/d52634ba-53be-4a60-ac95-51133bb6de01/download/rappot-limitations-d-activites-ahuntsic-cartierville.html",
+    "year": 2024,
+    "workType": "report",
+    "issuingOrganization": "Ville de Montréal",
+    "sources": [
+      "Données ouvertes Montréal (CMA)"
+    ],
+    "theme": "digital society",
+    "uses": [
+      {
+        "program": "CSD",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Données ouvertes Montréal - Description",
+        "certainty": "provisional",
+        "statCanExplicit": false
+      }
+    ],
+    "mentions": []
+  },
+  {
     "id": "url:e539849d7b373bef191cfd050bf699d7d4a0536a2e3c2a62dfde6e064965716d",
     "title": "Examination of the Association Between Diabetes, Depression, and Suicidality with a Special Focus on the Indigenous Canadian Population",
     "doi": null,
@@ -56537,6 +57639,31 @@
     "mentions": []
   },
   {
+    "id": "url:e563672a91c576b9f62fe3e413cc66b78127cd16be059e8b97619672d73ef607",
+    "title": "Annual Employees Earning Minimum Wage or Less and Incidence Rate from Labour Force Survey (LFS)",
+    "doi": null,
+    "url": "https://catalogue.data.gov.bc.ca/dataset/88157729-2e98-4a5a-9dfe-cc6677c8f108/resource/6339604e-eca0-44ab-8803-088fb1bacdb1/download/0125_11-table-1.ivt",
+    "year": 2025,
+    "workType": "report",
+    "issuingOrganization": "BC Stats",
+    "sources": [
+      "BC Data Catalogue (PROVINCIAL)"
+    ],
+    "theme": "labour",
+    "uses": [
+      {
+        "program": "LFS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "BC Data Catalogue - Description",
+        "certainty": "verified",
+        "statCanExplicit": true
+      }
+    ],
+    "mentions": []
+  },
+  {
     "id": "url:e56e3575e21917a5585daf6f9a4144976b6eccf641755f480f2a29c6fae4517f",
     "title": "Decolonizing bodies: a First Nations perspective on the determinants of urban indigenous health and wellness in Canada",
     "doi": null,
@@ -56568,8 +57695,8 @@
         ],
         "cycleText": "2011",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -57082,6 +58209,31 @@
     "mentions": []
   },
   {
+    "id": "url:ec3986f680eeeecbb0ad432acda47722b400dae7741c230c74706199838bca0d",
+    "title": "Census 2021 Work Commuting",
+    "doi": null,
+    "url": "https://rowopendata-rmw.opendata.arcgis.com/datasets/KitchenerGIS::census-2021-work-commuting",
+    "year": 2023,
+    "workType": "report",
+    "issuingOrganization": "Region of Waterloo",
+    "sources": [
+      "Region of Waterloo Open Data (CMA)"
+    ],
+    "theme": "other",
+    "uses": [
+      {
+        "program": "CSD",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Region of Waterloo Open Data - Catalog Description",
+        "certainty": "verified",
+        "statCanExplicit": true
+      }
+    ],
+    "mentions": []
+  },
+  {
     "id": "url:ec80e81719535f46dbc7a4ba4d27ca709a90b625a7442011a6dd0fe272ba5220",
     "title": "Living Arrangements and Intergenerational Support Among Immigrant and Canadian-born Seniors",
     "doi": null,
@@ -57100,8 +58252,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       },
       {
         "program": "NHS",
@@ -57109,8 +58261,33 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
+      }
+    ],
+    "mentions": []
+  },
+  {
+    "id": "url:ed8f9847901a3688c3512a02769116f61b44aa5affe2c6c9a367936baba11e5c",
+    "title": "Census 2021 Education Mobility",
+    "doi": null,
+    "url": "https://rowopendata-rmw.opendata.arcgis.com/datasets/KitchenerGIS::census-2021-education-mobility",
+    "year": 2023,
+    "workType": "report",
+    "issuingOrganization": "Region of Waterloo",
+    "sources": [
+      "Region of Waterloo Open Data (CMA)"
+    ],
+    "theme": "education",
+    "uses": [
+      {
+        "program": "CSD",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Region of Waterloo Open Data - Catalog Description",
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -57265,6 +58442,31 @@
         ],
         "cycleText": "2014",
         "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
+      }
+    ],
+    "mentions": []
+  },
+  {
+    "id": "url:f09fdd6cc8026d0b3cdacc3fac5f30cecc6416b8f243739b91064bbe657cc7e3",
+    "title": "Census 2021 Visible Minority",
+    "doi": null,
+    "url": "https://rowopendata-rmw.opendata.arcgis.com/datasets/KitchenerGIS::census-2021-visible-minority",
+    "year": 2023,
+    "workType": "report",
+    "issuingOrganization": "Region of Waterloo",
+    "sources": [
+      "Region of Waterloo Open Data (CMA)"
+    ],
+    "theme": "other",
+    "uses": [
+      {
+        "program": "CSD",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Region of Waterloo Open Data - Catalog Description",
         "certainty": "verified",
         "statCanExplicit": true
       }
@@ -57430,6 +58632,31 @@
     "mentions": []
   },
   {
+    "id": "url:f3198096d1970272891c8a1b0b0737602d6b5b5f431aa707763b8eeb9e906756",
+    "title": "Labour market notes [2024]",
+    "doi": null,
+    "url": "https://open.alberta.ca/dataset/ba485553-c779-4370-8edf-849184183edd/resource/e535444d-3729-4671-aa90-298d8844b530/download/tbf-labour-market-notes-2024-12.pdf",
+    "year": 2024,
+    "workType": "report",
+    "issuingOrganization": "Treasury Board and Finance",
+    "sources": [
+      "Alberta Open Data Portal (PROVINCIAL)"
+    ],
+    "theme": "digital society",
+    "uses": [
+      {
+        "program": "LFS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Alberta Open Data Portal - Description",
+        "certainty": "verified",
+        "statCanExplicit": true
+      }
+    ],
+    "mentions": []
+  },
+  {
     "id": "url:f3629d94e45acfe0672c442c728621dfd8c7c776703540c37c467caec9d5f3b2",
     "title": "Physical activity levels and modes of physical activity among Canadian adults with obstructive respiratory disease",
     "doi": null,
@@ -57502,8 +58729,8 @@
         "cycles": [],
         "cycleText": "2021-2024",
         "evidenceLocation": "Empirical Findings",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       },
       {
         "program": "CIS",
@@ -57563,6 +58790,33 @@
         ],
         "cycleText": "2014",
         "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
+      }
+    ],
+    "mentions": []
+  },
+  {
+    "id": "url:f69f8dc452becd3624b0e892d0123eda007133cd39b628ed8d8fb5fbdede3e8d",
+    "title": "The Food Consumption Table (2004 CCHS, cycle 2.2)",
+    "doi": null,
+    "url": "https://open.canada.ca/data/dataset/b18d19c9-f0d4-455b-b3eb-4cc38d6a3c53/resource/bb9ad1a6-c7ba-4b0a-bb8c-231b13228d1f/download/food-group-list-fct-cchs-2004.pdf",
+    "year": 2018,
+    "workType": "report",
+    "issuingOrganization": "Health Canada",
+    "sources": [
+      "Government of Canada Open Data (FEDERAL)"
+    ],
+    "theme": "health",
+    "uses": [
+      {
+        "program": "CCHS",
+        "precision": "exact_cycles",
+        "cycles": [
+          "2004"
+        ],
+        "cycleText": "2004",
+        "evidenceLocation": "Government of Canada Open Data - Description",
         "certainty": "verified",
         "statCanExplicit": true
       }
@@ -57784,8 +59038,8 @@
         ],
         "cycleText": "2024",
         "evidenceLocation": "Technical Annex",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       },
       {
         "program": "CIS",
@@ -57806,8 +59060,35 @@
         ],
         "cycleText": "2024",
         "evidenceLocation": "Technical Annex",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
+      }
+    ],
+    "mentions": []
+  },
+  {
+    "id": "url:fa88c136333b2ab8024277ea825a3ed9879695d7387d38470e43449ba756da1b",
+    "title": "Food Source Contribution Table (2015 CCHS Nutrition)",
+    "doi": null,
+    "url": "https://open.canada.ca/data/dataset/b166b1c1-0313-4706-8cca-f464f6fc7086/resource/30613e02-c3c9-4e81-9527-01879d46f95b/download/1-updated-fsct-dataset-and-supporting-information-foods-and-recipes-2015-cchs-nutrition.xlsx",
+    "year": 2023,
+    "workType": "report",
+    "issuingOrganization": "Health Canada",
+    "sources": [
+      "Government of Canada Open Data (FEDERAL)"
+    ],
+    "theme": "health",
+    "uses": [
+      {
+        "program": "CCHS",
+        "precision": "exact_cycles",
+        "cycles": [
+          "2015"
+        ],
+        "cycleText": "2015",
+        "evidenceLocation": "Government of Canada Open Data - Description",
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -58108,8 +59389,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "Abstract",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
