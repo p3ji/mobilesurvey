@@ -6,7 +6,8 @@
   "scripts": {
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
-    "researcher": "tsx src/cli.ts"
+    "researcher": "tsx src/cli.ts",
+    "harvest:exhaust-12year": "tsx src/run_12year_exhaust_harvest.ts"
   },
   "devDependencies": {
     "@types/node": "^22.10.2",
