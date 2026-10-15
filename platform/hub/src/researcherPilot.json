@@ -693,8 +693,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -1221,8 +1221,8 @@
         "cycles": [],
         "cycleText": "2006 to 2015",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -1246,8 +1246,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -1911,8 +1911,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -1946,8 +1946,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -1972,8 +1972,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -2048,8 +2048,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -3408,8 +3408,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       },
       {
         "program": "SHS",
@@ -3417,8 +3417,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -4096,8 +4096,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -4853,8 +4853,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -4968,8 +4968,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -5733,8 +5733,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -5832,8 +5832,8 @@
         ],
         "cycleText": "2016",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       },
       {
         "program": "GSS",
@@ -5841,8 +5841,8 @@
         "cycles": [],
         "cycleText": "2016 to 2016",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -6111,8 +6111,8 @@
         ],
         "cycleText": "2017",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       },
       {
         "program": "CNICS",
@@ -6122,8 +6122,8 @@
         ],
         "cycleText": "2017",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -6975,8 +6975,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -7480,8 +7480,8 @@
         ],
         "cycleText": "2010",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -8171,8 +8171,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       },
       {
         "program": "PSIS",
@@ -8180,8 +8180,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -8282,8 +8282,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -9161,8 +9161,8 @@
         ],
         "cycleText": "2018",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -9850,8 +9850,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -10031,8 +10031,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -10508,8 +10508,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -11459,8 +11459,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -15305,8 +15305,8 @@
         ],
         "cycleText": "1991, 2001",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -15399,8 +15399,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -15450,8 +15450,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -15699,8 +15699,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -15809,8 +15809,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       },
       {
         "program": "LISA",
@@ -15818,8 +15818,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -17220,8 +17220,8 @@
         ],
         "cycleText": "2014",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -19472,8 +19472,8 @@
         "cycles": [],
         "cycleText": "2012 to 2015",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -20670,8 +20670,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -20695,8 +20695,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -22436,8 +22436,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -22872,8 +22872,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -23155,8 +23155,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -23363,8 +23363,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -23473,8 +23473,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -24507,8 +24507,8 @@
         ],
         "cycleText": "2017",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -26470,8 +26470,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -27516,8 +27516,8 @@
         ],
         "cycleText": "2019",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -30861,8 +30861,8 @@
         "cycles": [],
         "cycleText": "2012 to 2020",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -31088,8 +31088,8 @@
         "cycles": [],
         "cycleText": "2012 to 2020",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -33450,8 +33450,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -40509,8 +40509,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -40559,8 +40559,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       },
       {
         "program": "CCHS",
@@ -40654,8 +40654,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -40679,8 +40679,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -42414,8 +42414,8 @@
         ],
         "cycleText": "2017",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       },
       {
         "program": "APS",
@@ -42425,8 +42425,8 @@
         ],
         "cycleText": "2017",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -43231,8 +43231,8 @@
         ],
         "cycleText": "2017",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -45371,8 +45371,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       },
       {
         "program": "GSS",
@@ -45380,8 +45380,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -46007,8 +46007,8 @@
         "cycles": [],
         "cycleText": "2016 to 2016",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -48183,8 +48183,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -50318,8 +50318,8 @@
         "cycles": [],
         "cycleText": "2012 to 2020",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -50554,8 +50554,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -50606,8 +50606,8 @@
         ],
         "cycleText": "2010",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -50656,8 +50656,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -50708,8 +50708,8 @@
         "cycles": [],
         "cycleText": "2012 to 2020",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -50758,8 +50758,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -51065,8 +51065,8 @@
         "cycles": [],
         "cycleText": "2000 to 2000",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -51115,8 +51115,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -51199,8 +51199,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       },
       {
         "program": "SHS",
@@ -51208,8 +51208,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -51319,8 +51319,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -51446,8 +51446,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -51471,8 +51471,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -51507,8 +51507,8 @@
         "cycles": [],
         "cycleText": "2000 to 2000",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -51532,8 +51532,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -51557,8 +51557,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       },
       {
         "program": "APS",
@@ -51566,8 +51566,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -51725,8 +51725,8 @@
         "cycles": [],
         "cycleText": "2000 to 2000",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -52024,8 +52024,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -52083,8 +52083,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -52731,8 +52731,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -52790,8 +52790,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -52824,8 +52824,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -52874,8 +52874,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -53125,8 +53125,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -53150,8 +53150,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -53627,8 +53627,8 @@
         "cycles": [],
         "cycleText": "2000 to 2000",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -54114,8 +54114,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -54164,8 +54164,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -54422,8 +54422,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -54510,8 +54510,8 @@
         ],
         "cycleText": "2012",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -54535,8 +54535,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -54560,8 +54560,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -54940,8 +54940,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -54965,8 +54965,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -54990,8 +54990,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -55105,8 +55105,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -55130,8 +55130,8 @@
         "cycles": [],
         "cycleText": "2000 to 2000",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -55155,8 +55155,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -55180,8 +55180,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -55409,8 +55409,8 @@
         "cycles": [],
         "cycleText": "2000 to 2000",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -55700,8 +55700,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -55956,8 +55956,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -56074,8 +56074,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -56099,8 +56099,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -56185,8 +56185,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       },
       {
         "program": "GSS",
@@ -56194,8 +56194,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -56221,8 +56221,8 @@
         ],
         "cycleText": "2009",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       },
       {
         "program": "NHS",
@@ -56257,8 +56257,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       },
       {
         "program": "GSS",
@@ -56266,8 +56266,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -56656,8 +56656,8 @@
         "cycles": [],
         "cycleText": "2007-2011",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -56753,8 +56753,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -56973,8 +56973,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -57061,8 +57061,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -57237,8 +57237,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -57287,8 +57287,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -57312,8 +57312,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -57425,8 +57425,8 @@
         "cycles": [],
         "cycleText": "2000 to 2000",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -57552,8 +57552,8 @@
         ],
         "cycleText": "2013",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       },
       {
         "program": "NHS",
@@ -57647,8 +57647,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -57758,8 +57758,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -57871,8 +57871,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -58009,8 +58009,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -58127,8 +58127,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -58625,8 +58625,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -58810,8 +58810,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -58869,8 +58869,8 @@
         "cycles": [],
         "cycleText": "2000 to 2000",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -58894,8 +58894,8 @@
         "cycles": [],
         "cycleText": "2000 to 2000",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       },
       {
         "program": "GSS",
@@ -58903,8 +58903,8 @@
         "cycles": [],
         "cycleText": "2000 to 2000",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -58958,8 +58958,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       },
       {
         "program": "IMDB",
@@ -58967,8 +58967,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -59302,8 +59302,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -59436,8 +59436,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -59461,8 +59461,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -59522,8 +59522,8 @@
         "cycles": [],
         "cycleText": "2012 to 2020",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       },
       {
         "program": "LISA",
@@ -59531,8 +59531,8 @@
         "cycles": [],
         "cycleText": "2012 to 2020",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -59606,8 +59606,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -59885,8 +59885,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -59910,8 +59910,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -60123,8 +60123,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -60173,8 +60173,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -60223,8 +60223,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -60323,8 +60323,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -60400,8 +60400,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -60452,8 +60452,8 @@
         ],
         "cycleText": "2018",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -60502,8 +60502,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -60855,8 +60855,8 @@
         "cycles": [],
         "cycleText": "2000 to 2000",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -60880,8 +60880,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -61009,8 +61009,8 @@
         ],
         "cycleText": "2012",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       },
       {
         "program": "PIAAC",
@@ -61018,8 +61018,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       },
       {
         "program": "LISA",
@@ -61029,8 +61029,8 @@
         ],
         "cycleText": "2012",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -61079,8 +61079,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -61156,8 +61156,8 @@
         ],
         "cycleText": "2012",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -61271,8 +61271,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -61416,8 +61416,8 @@
         "cycles": [],
         "cycleText": "2000 to 2000",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -62110,8 +62110,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -62137,8 +62137,8 @@
         ],
         "cycleText": "2012",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -62171,8 +62171,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -62330,8 +62330,8 @@
         "cycles": [],
         "cycleText": "2012 to 2020",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -62631,8 +62631,8 @@
         "cycles": [],
         "cycleText": "2000 to 2000",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -62685,8 +62685,8 @@
         ],
         "cycleText": "2012",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       },
       {
         "program": "LISA",
@@ -62694,8 +62694,8 @@
         "cycles": [],
         "cycleText": "2012 to 2020",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -62719,8 +62719,8 @@
         "cycles": [],
         "cycleText": "2012 to 2020",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -62771,8 +62771,8 @@
         ],
         "cycleText": "2012",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       },
       {
         "program": "APS",
@@ -62782,8 +62782,8 @@
         ],
         "cycleText": "2012",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -63055,8 +63055,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       },
       {
         "program": "NGS",
@@ -63064,8 +63064,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -63116,8 +63116,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -63299,8 +63299,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       },
       {
         "program": "PIAAC",
@@ -63308,8 +63308,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -63492,8 +63492,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -63594,8 +63594,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -63621,8 +63621,8 @@
         ],
         "cycleText": "2012",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -63732,8 +63732,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       },
       {
         "program": "LFS",
@@ -63741,8 +63741,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -63766,8 +63766,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -63791,8 +63791,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -63895,8 +63895,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -63920,8 +63920,8 @@
         "cycles": [],
         "cycleText": "2012 to 2020",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -64368,8 +64368,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -64565,8 +64565,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -64753,8 +64753,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -64991,8 +64991,8 @@
         "cycles": [],
         "cycleText": "2000 to 2000",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -65154,8 +65154,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -65218,8 +65218,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -65320,8 +65320,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -65506,8 +65506,8 @@
         "cycles": [],
         "cycleText": "2000 to 2000",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -65608,8 +65608,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -65847,8 +65847,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -66189,8 +66189,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": [
@@ -66480,8 +66480,8 @@
         "cycles": [],
         "cycleText": "2000 to 2000",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -66684,8 +66684,8 @@
         "cycles": [],
         "cycleText": "2000 to 2000",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -66709,8 +66709,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -67057,8 +67057,8 @@
         ],
         "cycleText": "2012",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -67143,8 +67143,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       },
       {
         "program": "IMDB",
@@ -67363,8 +67363,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -67388,8 +67388,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -67440,8 +67440,8 @@
         ],
         "cycleText": "2016",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -67605,8 +67605,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -67680,8 +67680,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -67793,8 +67793,8 @@
         "cycles": [],
         "cycleText": "2000 to 2000",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -67879,8 +67879,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -68088,8 +68088,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -68113,8 +68113,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -68222,8 +68222,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -68299,8 +68299,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -68324,8 +68324,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -68471,8 +68471,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       },
       {
         "program": "NGS",
@@ -68480,8 +68480,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -68505,8 +68505,8 @@
         "cycles": [],
         "cycleText": "2000 to 2000",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -68555,8 +68555,8 @@
         "cycles": [],
         "cycleText": "2012 to 2020",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -68580,8 +68580,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -68605,8 +68605,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -68630,8 +68630,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -68730,8 +68730,8 @@
         "cycles": [],
         "cycleText": "2000 to 2000",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -68834,8 +68834,8 @@
         ],
         "cycleText": "2012",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -68859,8 +68859,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -69128,8 +69128,8 @@
         "cycles": [],
         "cycleText": "2000 to 2000",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -69178,8 +69178,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -69508,8 +69508,8 @@
         ],
         "cycleText": "2001",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -69533,8 +69533,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       },
       {
         "program": "NGS",
@@ -69542,8 +69542,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -69642,8 +69642,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -69692,8 +69692,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -69717,8 +69717,8 @@
         "cycles": [],
         "cycleText": "2000 to 2000",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -69778,8 +69778,8 @@
         "cycles": [],
         "cycleText": "2000 to 2000",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -69803,8 +69803,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -69880,8 +69880,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -70504,8 +70504,8 @@
         ],
         "cycleText": "2017",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -70563,8 +70563,8 @@
         "cycles": [],
         "cycleText": "2000 to 2000",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -70728,8 +70728,8 @@
         ],
         "cycleText": "2006",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -70868,8 +70868,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -71080,8 +71080,8 @@
         ],
         "cycleText": "2012",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -71105,8 +71105,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -71325,8 +71325,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -71637,8 +71637,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -71767,8 +71767,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -71894,8 +71894,8 @@
         "cycles": [],
         "cycleText": "2009 to 2019",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -71919,8 +71919,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       },
       {
         "program": "NHS",
@@ -72032,8 +72032,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -72091,8 +72091,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -72141,8 +72141,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -72191,8 +72191,8 @@
         "cycles": [],
         "cycleText": "2000 to 2000",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -72279,8 +72279,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -72499,8 +72499,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -72524,8 +72524,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -72879,8 +72879,8 @@
         ],
         "cycleText": "2011",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -73106,8 +73106,8 @@
         "cycles": [],
         "cycleText": "2000 to 2000",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -73372,8 +73372,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -73397,8 +73397,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -73501,8 +73501,8 @@
         "cycles": [],
         "cycleText": "2000 to 2000",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -73790,8 +73790,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -74000,8 +74000,8 @@
         ],
         "cycleText": "2012",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -74050,8 +74050,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -74155,8 +74155,8 @@
         "cycles": [],
         "cycleText": "2005 to 2019",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       },
       {
         "program": "HES",
@@ -74164,8 +74164,8 @@
         "cycles": [],
         "cycleText": "2005 to 2019",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -74239,8 +74239,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -74323,8 +74323,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -74421,8 +74421,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -74448,8 +74448,8 @@
         ],
         "cycleText": "2017",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -74507,8 +74507,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -74532,8 +74532,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -74584,8 +74584,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -74763,8 +74763,8 @@
         ],
         "cycleText": "2017",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -74797,8 +74797,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -75051,8 +75051,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -75110,8 +75110,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -75196,8 +75196,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       },
       {
         "program": "GSS",
@@ -75205,8 +75205,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -75280,8 +75280,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -75305,8 +75305,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -75483,8 +75483,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -75562,8 +75562,8 @@
         ],
         "cycleText": "2001",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -75637,8 +75637,8 @@
         "cycles": [],
         "cycleText": "2000 to 2000",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -75750,8 +75750,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -75838,8 +75838,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -75888,8 +75888,8 @@
         "cycles": [],
         "cycleText": "2000-2012",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -75976,8 +75976,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -76485,8 +76485,8 @@
         ],
         "cycleText": "2013",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       },
       {
         "program": "CNICS",
@@ -76496,8 +76496,8 @@
         ],
         "cycleText": "2013",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -76650,8 +76650,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -76675,8 +76675,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -76966,8 +76966,8 @@
         ],
         "cycleText": "2014",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       },
       {
         "program": "GSS",
@@ -76975,8 +76975,8 @@
         "cycles": [],
         "cycleText": "2000 to 2000",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -77000,8 +77000,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -77054,8 +77054,8 @@
         ],
         "cycleText": "2008",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -77115,8 +77115,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -77377,8 +77377,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       },
       {
         "program": "PIAAC",
@@ -77386,8 +77386,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -77470,8 +77470,8 @@
         "cycles": [],
         "cycleText": "2000 to 2000",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -77556,8 +77556,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -77581,8 +77581,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       },
       {
         "program": "APS",
@@ -77590,8 +77590,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -77715,8 +77715,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -77880,8 +77880,8 @@
         ],
         "cycleText": "2012",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -77991,8 +77991,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -78043,8 +78043,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       },
       {
         "program": "LFS",
@@ -78052,8 +78052,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -78303,8 +78303,8 @@
         "cycles": [],
         "cycleText": "2012 to 2020",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -78355,8 +78355,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -78414,8 +78414,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -78547,8 +78547,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -78597,8 +78597,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -78622,8 +78622,8 @@
         "cycles": [],
         "cycleText": "2000 to 2000",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -78647,8 +78647,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -78672,8 +78672,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -78697,8 +78697,8 @@
         "cycles": [],
         "cycleText": "2012 to 2020",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -78722,8 +78722,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -78750,8 +78750,8 @@
         ],
         "cycleText": "2012, 2017",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -78802,8 +78802,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       },
       {
         "program": "SHS",
@@ -78811,8 +78811,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -78836,8 +78836,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -79143,8 +79143,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -79168,8 +79168,8 @@
         "cycles": [],
         "cycleText": "2000 to 2000",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -79358,8 +79358,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -80200,8 +80200,8 @@
         ],
         "cycleText": "2012",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -80300,8 +80300,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       },
       {
         "program": "RAIS",
@@ -80309,8 +80309,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -80368,8 +80368,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       },
       {
         "program": "PIAAC",
@@ -80377,8 +80377,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -80569,8 +80569,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -80687,8 +80687,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -80739,8 +80739,8 @@
         ],
         "cycleText": "2012",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -81006,8 +81006,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -81031,8 +81031,8 @@
         "cycles": [],
         "cycleText": "2000 to 2000",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -81203,8 +81203,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -81255,8 +81255,8 @@
         ],
         "cycleText": "2011",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       },
       {
         "program": "GSS",
@@ -81264,8 +81264,8 @@
         "cycles": [],
         "cycleText": "2000 to 2000",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -81637,8 +81637,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -81716,8 +81716,8 @@
         ],
         "cycleText": "2012",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -81741,8 +81741,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -82001,8 +82001,8 @@
         "cycles": [],
         "cycleText": "2012 to 2020",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -82076,8 +82076,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       },
       {
         "program": "NGS",
@@ -82085,8 +82085,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -82235,8 +82235,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -82294,8 +82294,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -82319,8 +82319,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -82548,8 +82548,8 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
-        "certainty": "provisional",
-        "statCanExplicit": false
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []

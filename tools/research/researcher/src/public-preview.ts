@@ -77,9 +77,10 @@ export function publicPreview(rows: object[], minYear: number = 2015): PublicPil
           )
         )).map(claim => {
           const isExplicit = claim.statCanExplicit ?? (
+            work.sources.some(s => s.source === 'CRDCN' || (s.url && s.url.includes('crdcn.ca'))) ||
             /\b(?:statistics\s+canada|statistique\s+canada|statcan|stat\s+can)\b/i.test(claim.quote) ||
             /canad/i.test(claim.program) ||
-            Boolean(work.issuingOrganization && /statistics\s+canada|statistique\s+canada|statcan/i.test(work.issuingOrganization))
+            Boolean(work.issuingOrganization && /statistics\s+canada|statistique\s+canada|statcan|crdcn|research\s+data\s+centre/i.test(work.issuingOrganization))
           );
           const cert = claim.certainty ?? (isExplicit ? 'verified' : 'provisional');
           return {

@@ -299,7 +299,10 @@ export function extractDeterministic(
       }
 
       // Determine whether survey is explicitly identified as Statistics Canada or provisional
+      // Note: All CRDCN works are by mandate analyses of Statistics Canada microdata conducted in secure Research Data Centres.
       const isStatCanExplicit =
+        source.source === 'CRDCN' ||
+        (Boolean(source.url) && source.url.includes('crdcn.ca')) ||
         /\b(?:statistics\s+canada|statistique\s+canada|statcan|stat\s+can)\b/iu.test(quote) ||
         /\b(?:statistics\s+canada|statistique\s+canada|statcan|stat\s+can)\b/iu.test(passage) ||
         /canad/iu.test(matchedAlias) ||
@@ -307,7 +310,7 @@ export function extractDeterministic(
         /\b(?:pumf|rdc|research\s+data\s+centre|centre\s+de\s+donn[ée]es\s+de\s+recherche)\b/iu.test(quote) ||
         /\bcycle\s+\d+\b/iu.test(quote) ||
         (candidate.program === 'NHS' && quote.includes('2011')) ||
-        Boolean(source.issuingOrganization && /statistics\s+canada|statistique\s+canada|statcan/i.test(source.issuingOrganization));
+        Boolean(source.issuingOrganization && /statistics\s+canada|statistique\s+canada|statcan|crdcn|research\s+data\s+centre/i.test(source.issuingOrganization));
 
       const certainty: 'verified' | 'provisional' = isStatCanExplicit ? 'verified' : 'provisional';
 
