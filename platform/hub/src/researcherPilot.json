@@ -25,6 +25,31 @@
     "mentions": []
   },
   {
+    "id": "doi:10.1001/jamanetworkopen.2020.4669",
+    "title": "Development and Validation of the Chronic Disease Population Risk Tool (CDPoRT) to Predict Incidence of Adult Chronic Disease",
+    "doi": "10.1001/jamanetworkopen.2020.4669",
+    "url": "https://doi.org/10.1001/jamanetworkopen.2020.4669",
+    "year": 2020,
+    "workType": "article",
+    "issuingOrganization": "American Medical Association",
+    "sources": [
+      "OpenAlex"
+    ],
+    "theme": "health",
+    "uses": [
+      {
+        "program": "CCHS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
+      }
+    ],
+    "mentions": []
+  },
+  {
     "id": "doi:10.1001/jamanetworkopen.2021.21443",
     "title": "Trends and Regional Variation in Prevalence of Cardiovascular Risk Factors and Association With Socioeconomic Status in Canada, 2005-2016",
     "doi": "10.1001/jamanetworkopen.2021.21443",
@@ -218,6 +243,31 @@
     "uses": [
       {
         "program": "CCHS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
+      }
+    ],
+    "mentions": []
+  },
+  {
+    "id": "doi:10.1002/ajim.23283",
+    "title": "Metabolic health measurements of shift workers in a national cross‐sectional study: Results from the Canadian Health Measures Survey",
+    "doi": "10.1002/ajim.23283",
+    "url": "https://doi.org/10.1002/ajim.23283",
+    "year": 2021,
+    "workType": "article",
+    "issuingOrganization": "Wiley",
+    "sources": [
+      "OpenAlex"
+    ],
+    "theme": "health",
+    "uses": [
+      {
+        "program": "CHMS",
         "precision": "program_only",
         "cycles": [],
         "cycleText": "",
@@ -474,6 +524,31 @@
         "evidenceLocation": "Abstract",
         "certainty": "verified",
         "statCanExplicit": true
+      }
+    ],
+    "mentions": []
+  },
+  {
+    "id": "doi:10.1002/ets2.12097",
+    "title": "The Prediction of Labor Force Status: Implications From International Adult Skill Assessments",
+    "doi": "10.1002/ets2.12097",
+    "url": "https://doi.org/10.1002/ets2.12097",
+    "year": 2016,
+    "workType": "article",
+    "issuingOrganization": "Wiley",
+    "sources": [
+      "OpenAlex"
+    ],
+    "theme": "education",
+    "uses": [
+      {
+        "program": "PIAAC",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Abstract",
+        "certainty": "provisional",
+        "statCanExplicit": false
       }
     ],
     "mentions": []
@@ -834,7 +909,7 @@
     "url": "https://doi.org/10.1007/978-3-030-67345-1_3",
     "year": 2021,
     "workType": "book-chapter",
-    "issuingOrganization": null,
+    "issuingOrganization": "Springer Nature",
     "sources": [
       "OpenAlex"
     ],
@@ -1096,6 +1171,31 @@
         "evidenceLocation": "Abstract",
         "certainty": "provisional",
         "statCanExplicit": false
+      }
+    ],
+    "mentions": []
+  },
+  {
+    "id": "doi:10.1007/s00296-020-04571-y",
+    "title": "Association between daily level of objective physical activity and C-Reactive protein in a representative national sample of adults with self-reported diagnosed arthritis or fibromyalgia",
+    "doi": "10.1007/s00296-020-04571-y",
+    "url": "https://doi.org/10.1007/s00296-020-04571-y",
+    "year": 2020,
+    "workType": "article",
+    "issuingOrganization": "Springer Science+Business Media",
+    "sources": [
+      "OpenAlex"
+    ],
+    "theme": "health",
+    "uses": [
+      {
+        "program": "CHMS",
+        "precision": "range",
+        "cycles": [],
+        "cycleText": "cycle 1-3",
+        "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -1581,6 +1681,31 @@
     "mentions": []
   },
   {
+    "id": "doi:10.1007/s10903-020-01135-x",
+    "title": "Immigrant Status and Unmet Home Care Needs: Results from the Canadian Community Health Survey",
+    "doi": "10.1007/s10903-020-01135-x",
+    "url": "https://doi.org/10.1007/s10903-020-01135-x",
+    "year": 2021,
+    "workType": "article",
+    "issuingOrganization": "Springer Science+Business Media",
+    "sources": [
+      "OpenAlex"
+    ],
+    "theme": "health",
+    "uses": [
+      {
+        "program": "CCHS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Title",
+        "certainty": "verified",
+        "statCanExplicit": true
+      }
+    ],
+    "mentions": []
+  },
+  {
     "id": "doi:10.1007/s10903-022-01352-6",
     "title": "The Role of Immigrant Admission Classes on the Health and Well-being of Immigrants and Refugees in Canada: A Scoping Review - Canadian Research Data Centre Network",
     "doi": "10.1007/s10903-022-01352-6",
@@ -1608,6 +1733,33 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
+        "certainty": "verified",
+        "statCanExplicit": true
+      }
+    ],
+    "mentions": []
+  },
+  {
+    "id": "doi:10.1007/s10943-020-01169-3",
+    "title": "Godless in the Great White North: Assessing the Health of Canadian Atheists Using Data from the 2011/2012 Canadian Community Health Survey",
+    "doi": "10.1007/s10943-020-01169-3",
+    "url": "https://doi.org/10.1007/s10943-020-01169-3",
+    "year": 2021,
+    "workType": "article",
+    "issuingOrganization": "Springer Science+Business Media",
+    "sources": [
+      "OpenAlex"
+    ],
+    "theme": "health",
+    "uses": [
+      {
+        "program": "CCHS",
+        "precision": "exact_cycles",
+        "cycles": [
+          "2012"
+        ],
+        "cycleText": "2012",
+        "evidenceLocation": "Title",
         "certainty": "verified",
         "statCanExplicit": true
       }
@@ -1817,14 +1969,15 @@
   },
   {
     "id": "doi:10.1007/s11482-022-10065-9",
-    "title": "Determinants of Life Satisfaction and Self-Perceived Health in Nationally Representative Population-Based Samples, Canada, 2009 to 2018 - Canadian Research Data Centre Network",
+    "title": "Determinants of Life Satisfaction and Self-Perceived Health in Nationally Representative Population-Based Samples, Canada, 2009 to 2018",
     "doi": "10.1007/s11482-022-10065-9",
     "url": "https://crdcn.ca/publication/determinants-of-life-satisfaction-and-self-perceived-health-in-nationally-representative-population-based-samples-canada-2009-to-2018/",
     "year": 2022,
     "workType": "article",
-    "issuingOrganization": "Applied Research in Quality of Life",
+    "issuingOrganization": "Springer Science+Business Media",
     "sources": [
-      "CRDCN"
+      "CRDCN",
+      "OpenAlex"
     ],
     "theme": "digital society",
     "uses": [
@@ -1919,12 +2072,12 @@
   },
   {
     "id": "doi:10.1007/s12134-022-00965-y",
-    "title": "Forms of Capital in the Economic Integration of Immigrants in Canada - Canadian Research Data Centre Network",
+    "title": "Forms of Capital in the Economic Integration of Immigrants in Canada",
     "doi": "10.1007/s12134-022-00965-y",
     "url": "https://doi.org/10.1007/s12134-022-00965-y",
-    "year": 2023,
+    "year": 2022,
     "workType": "article",
-    "issuingOrganization": "Journal of International Migration and Integration",
+    "issuingOrganization": "Springer Science+Business Media",
     "sources": [
       "CRDCN",
       "OpenAlex"
@@ -2004,6 +2157,31 @@
     "mentions": []
   },
   {
+    "id": "doi:10.1007/s13209-017-0169-6",
+    "title": "Introduction to the special issue on the Survey of Adult Skills (PIAAC)",
+    "doi": "10.1007/s13209-017-0169-6",
+    "url": "https://doi.org/10.1007/s13209-017-0169-6",
+    "year": 2017,
+    "workType": "article",
+    "issuingOrganization": "Springer Nature",
+    "sources": [
+      "OpenAlex"
+    ],
+    "theme": "digital society",
+    "uses": [
+      {
+        "program": "PIAAC",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Abstract",
+        "certainty": "provisional",
+        "statCanExplicit": false
+      }
+    ],
+    "mentions": []
+  },
+  {
     "id": "doi:10.1007/s13524-015-0371-8",
     "title": "Ethnic Variations in Immigrant Poverty Exit and Female Employment: The Missing Link",
     "doi": "10.1007/s13524-015-0371-8",
@@ -2030,12 +2208,12 @@
   },
   {
     "id": "doi:10.1007/s40615-022-01301-x",
-    "title": "Mind the Gap: What Factors Determine the Worse Health Status of Indigenous Women Relative to Men Living Off-Reserve in Canada? - Canadian Research Data Centre Network",
+    "title": "Mind the Gap: What Factors Determine the Worse Health Status of Indigenous Women Relative to Men Living Off-Reserve in Canada?",
     "doi": "10.1007/s40615-022-01301-x",
     "url": "https://doi.org/10.1007/s40615-022-01301-x",
     "year": 2022,
     "workType": "article",
-    "issuingOrganization": "Journal of Racial and Ethnic Health Disparities",
+    "issuingOrganization": "Springer Science+Business Media",
     "sources": [
       "CRDCN",
       "OpenAlex"
@@ -2129,6 +2307,31 @@
         "evidenceLocation": "Abstract",
         "certainty": "provisional",
         "statCanExplicit": false
+      }
+    ],
+    "mentions": []
+  },
+  {
+    "id": "doi:10.1007/s43678-021-00204-w",
+    "title": "Association between mood disorders and frequent emergency department use: a cross-sectional study",
+    "doi": "10.1007/s43678-021-00204-w",
+    "url": "https://doi.org/10.1007/s43678-021-00204-w",
+    "year": 2021,
+    "workType": "article",
+    "issuingOrganization": "Springer Nature",
+    "sources": [
+      "OpenAlex"
+    ],
+    "theme": "health",
+    "uses": [
+      {
+        "program": "CCHS",
+        "precision": "range",
+        "cycles": [],
+        "cycleText": "2015-2016",
+        "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -2656,6 +2859,58 @@
     "mentions": []
   },
   {
+    "id": "doi:10.1016/j.cjco.2020.07.013",
+    "title": "The Canadian Alliance for Healthy Hearts and Minds: How Well Does It Reflect the Canadian Population?",
+    "doi": "10.1016/j.cjco.2020.07.013",
+    "url": "https://doi.org/10.1016/j.cjco.2020.07.013",
+    "year": 2020,
+    "workType": "article",
+    "issuingOrganization": "Elsevier BV",
+    "sources": [
+      "OpenAlex"
+    ],
+    "theme": "health",
+    "uses": [
+      {
+        "program": "CCHS",
+        "precision": "exact_cycles",
+        "cycles": [
+          "2015"
+        ],
+        "cycleText": "2015",
+        "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
+      }
+    ],
+    "mentions": []
+  },
+  {
+    "id": "doi:10.1016/j.cjco.2022.09.007",
+    "title": "The Impact of Low-Density Lipoprotein Equation Changes on Cholesterol Treatment in Canada",
+    "doi": "10.1016/j.cjco.2022.09.007",
+    "url": "https://doi.org/10.1016/j.cjco.2022.09.007",
+    "year": 2022,
+    "workType": "article",
+    "issuingOrganization": "Elsevier BV",
+    "sources": [
+      "OpenAlex"
+    ],
+    "theme": "health",
+    "uses": [
+      {
+        "program": "CHMS",
+        "precision": "range",
+        "cycles": [],
+        "cycleText": "2017 to 2020",
+        "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
+      }
+    ],
+    "mentions": []
+  },
+  {
     "id": "doi:10.1016/j.cjco.2024.05.012",
     "title": "Prevalence, Patient Awareness, Treatment, and Control of Hypertension in Canadian Adults With Common Comorbidities - Canadian Research Data Centre Network",
     "doi": "10.1016/j.cjco.2024.05.012",
@@ -3066,12 +3321,12 @@
   },
   {
     "id": "doi:10.1016/j.envint.2019.105190",
-    "title": "Association of water fluoride and urinary fluoride concentrations with attention deficit hyperactivity disorder in Canadian youth - Canadian Research Data Centre Network",
+    "title": "Association of water fluoride and urinary fluoride concentrations with attention deficit hyperactivity disorder in Canadian youth",
     "doi": "10.1016/j.envint.2019.105190",
     "url": "https://doi.org/10.1016/j.envint.2019.105190",
     "year": 2019,
     "workType": "article",
-    "issuingOrganization": "Environment International",
+    "issuingOrganization": "Elsevier BV",
     "sources": [
       "CRDCN",
       "OpenAlex"
@@ -3093,6 +3348,56 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
+        "certainty": "verified",
+        "statCanExplicit": true
+      }
+    ],
+    "mentions": []
+  },
+  {
+    "id": "doi:10.1016/j.envint.2020.106121",
+    "title": "Associations between blood volatile organic compounds, and changes in hematologic and biochemical profiles, in a population-based study",
+    "doi": "10.1016/j.envint.2020.106121",
+    "url": "https://doi.org/10.1016/j.envint.2020.106121",
+    "year": 2020,
+    "workType": "article",
+    "issuingOrganization": "Elsevier BV",
+    "sources": [
+      "OpenAlex"
+    ],
+    "theme": "health",
+    "uses": [
+      {
+        "program": "CHMS",
+        "precision": "range",
+        "cycles": [],
+        "cycleText": "2012 to 2015",
+        "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
+      }
+    ],
+    "mentions": []
+  },
+  {
+    "id": "doi:10.1016/j.envint.2020.106229",
+    "title": "Associations among urinary triclosan and bisphenol A concentrations and serum sex steroid hormone measures in the Canadian and U.S. Populations",
+    "doi": "10.1016/j.envint.2020.106229",
+    "url": "https://doi.org/10.1016/j.envint.2020.106229",
+    "year": 2020,
+    "workType": "article",
+    "issuingOrganization": "Elsevier BV",
+    "sources": [
+      "OpenAlex"
+    ],
+    "theme": "health",
+    "uses": [
+      {
+        "program": "CHMS",
+        "precision": "range",
+        "cycles": [],
+        "cycleText": "2012-2015",
+        "evidenceLocation": "Abstract",
         "certainty": "verified",
         "statCanExplicit": true
       }
@@ -3390,12 +3695,12 @@
   },
   {
     "id": "doi:10.1016/j.healthpol.2022.12.005",
-    "title": "Decomposition of socioeconomic inequalities in catastrophic out-of-pocket expenditure for healthcare in Canada - Canadian Research Data Centre Network",
+    "title": "Decomposition of socioeconomic inequalities in catastrophic out-of-pocket expenditure for healthcare in Canada",
     "doi": "10.1016/j.healthpol.2022.12.005",
     "url": "https://doi.org/10.1016/j.healthpol.2022.12.005",
-    "year": 2023,
+    "year": 2022,
     "workType": "article",
-    "issuingOrganization": "Health Policy",
+    "issuingOrganization": "Elsevier BV",
     "sources": [
       "CRDCN",
       "OpenAlex"
@@ -3637,6 +3942,56 @@
     "mentions": []
   },
   {
+    "id": "doi:10.1016/j.ijheh.2020.113451",
+    "title": "Regional variations in human chemical exposures in Canada: A case study using biomonitoring data from the Canadian Health Measures Survey for the provinces of Quebec and Ontario",
+    "doi": "10.1016/j.ijheh.2020.113451",
+    "url": "https://doi.org/10.1016/j.ijheh.2020.113451",
+    "year": 2020,
+    "workType": "article",
+    "issuingOrganization": "Elsevier BV",
+    "sources": [
+      "OpenAlex"
+    ],
+    "theme": "health",
+    "uses": [
+      {
+        "program": "CHMS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Title",
+        "certainty": "verified",
+        "statCanExplicit": true
+      }
+    ],
+    "mentions": []
+  },
+  {
+    "id": "doi:10.1016/j.ijheh.2021.113704",
+    "title": "Exposure Load: Using biomonitoring data to quantify multi-chemical exposure burden in a population",
+    "doi": "10.1016/j.ijheh.2021.113704",
+    "url": "https://doi.org/10.1016/j.ijheh.2021.113704",
+    "year": 2021,
+    "workType": "article",
+    "issuingOrganization": "Elsevier BV",
+    "sources": [
+      "OpenAlex"
+    ],
+    "theme": "health",
+    "uses": [
+      {
+        "program": "CHMS",
+        "precision": "range",
+        "cycles": [],
+        "cycleText": "2012-2015",
+        "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
+      }
+    ],
+    "mentions": []
+  },
+  {
     "id": "doi:10.1016/j.ijheh.2024.114406",
     "title": "Analysis of chemical exposures in racial populations in Canada: An investigation based on the Canadian health measures survey",
     "doi": "10.1016/j.ijheh.2024.114406",
@@ -3758,6 +4113,33 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "Title",
+        "certainty": "verified",
+        "statCanExplicit": true
+      }
+    ],
+    "mentions": []
+  },
+  {
+    "id": "doi:10.1016/j.jadr.2020.100021",
+    "title": "The association of recreational and non-recreational physical activity with mental health: A Canadian cross-sectional analysis.",
+    "doi": "10.1016/j.jadr.2020.100021",
+    "url": "https://doi.org/10.1016/j.jadr.2020.100021",
+    "year": 2020,
+    "workType": "article",
+    "issuingOrganization": "Elsevier BV",
+    "sources": [
+      "OpenAlex"
+    ],
+    "theme": "health",
+    "uses": [
+      {
+        "program": "CCHS",
+        "precision": "exact_cycles",
+        "cycles": [
+          "2016"
+        ],
+        "cycleText": "2016",
+        "evidenceLocation": "Abstract",
         "certainty": "verified",
         "statCanExplicit": true
       }
@@ -3967,6 +4349,31 @@
         "precision": "program_only",
         "cycles": [],
         "cycleText": "",
+        "evidenceLocation": "Title",
+        "certainty": "verified",
+        "statCanExplicit": true
+      }
+    ],
+    "mentions": []
+  },
+  {
+    "id": "doi:10.1016/j.jcjd.2020.08.039",
+    "title": "33 - Objectively Measured Physical Activity, Sedentary Behaviour and Cardiometabolic Measures in Adults with Type 2 Diabetes: Results from the Canadian Health Measures Survey (2007-2017)",
+    "doi": "10.1016/j.jcjd.2020.08.039",
+    "url": "https://doi.org/10.1016/j.jcjd.2020.08.039",
+    "year": 2020,
+    "workType": "article",
+    "issuingOrganization": "Elsevier BV",
+    "sources": [
+      "OpenAlex"
+    ],
+    "theme": "health",
+    "uses": [
+      {
+        "program": "CHMS",
+        "precision": "range",
+        "cycles": [],
+        "cycleText": "2007-2017",
         "evidenceLocation": "Title",
         "certainty": "verified",
         "statCanExplicit": true
@@ -4462,6 +4869,33 @@
         "precision": "program_only",
         "cycles": [],
         "cycleText": "",
+        "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
+      }
+    ],
+    "mentions": []
+  },
+  {
+    "id": "doi:10.1016/j.mhpa.2021.100394",
+    "title": "Antidepressant medication use and objectively measured physical activity and sedentary behaviors in adults: A cross-sectional analysis of a nationally representative sample of Canadian adults",
+    "doi": "10.1016/j.mhpa.2021.100394",
+    "url": "https://doi.org/10.1016/j.mhpa.2021.100394",
+    "year": 2021,
+    "workType": "article",
+    "issuingOrganization": "Elsevier BV",
+    "sources": [
+      "OpenAlex"
+    ],
+    "theme": "digital society",
+    "uses": [
+      {
+        "program": "CHMS",
+        "precision": "exact_cycles",
+        "cycles": [
+          "2007"
+        ],
+        "cycleText": "2007",
         "evidenceLocation": "Abstract",
         "certainty": "verified",
         "statCanExplicit": true
@@ -5152,6 +5586,33 @@
     "mentions": []
   },
   {
+    "id": "doi:10.1016/j.sleh.2020.02.018",
+    "title": "Geographic variation in short and long sleep duration and poor sleep quality: a multilevel analysis using the 2015–2018 Canadian community health survey",
+    "doi": "10.1016/j.sleh.2020.02.018",
+    "url": "https://doi.org/10.1016/j.sleh.2020.02.018",
+    "year": 2020,
+    "workType": "article",
+    "issuingOrganization": "Elsevier BV",
+    "sources": [
+      "OpenAlex"
+    ],
+    "theme": "health",
+    "uses": [
+      {
+        "program": "CCHS",
+        "precision": "exact_cycles",
+        "cycles": [
+          "2018"
+        ],
+        "cycleText": "2018",
+        "evidenceLocation": "Title",
+        "certainty": "verified",
+        "statCanExplicit": true
+      }
+    ],
+    "mentions": []
+  },
+  {
     "id": "doi:10.1016/j.sleh.2025.06.004",
     "title": "Exploring the relationship between sleep duration and sense of community belonging: Insights from the 2015-16 Canadian Community Health Survey",
     "doi": "10.1016/j.sleh.2025.06.004",
@@ -5595,6 +6056,31 @@
     "mentions": []
   },
   {
+    "id": "doi:10.1016/j.ssmph.2020.100553",
+    "title": "Agreement between area- and individual-level income measures in a population-based cohort: Implications for population health research",
+    "doi": "10.1016/j.ssmph.2020.100553",
+    "url": "https://doi.org/10.1016/j.ssmph.2020.100553",
+    "year": 2020,
+    "workType": "article",
+    "issuingOrganization": "Elsevier BV",
+    "sources": [
+      "OpenAlex"
+    ],
+    "theme": "health",
+    "uses": [
+      {
+        "program": "CCHS",
+        "precision": "range",
+        "cycles": [],
+        "cycleText": "2005-2012",
+        "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
+      }
+    ],
+    "mentions": []
+  },
+  {
     "id": "doi:10.1016/j.ssmph.2020.100704",
     "title": "Mental health and economic concerns from March to May during the COVID-19 pandemic in Canada: Insights from an analysis of repeated cross-sectional surveys",
     "doi": "10.1016/j.ssmph.2020.100704",
@@ -5609,6 +6095,31 @@
     "uses": [
       {
         "program": "CPSS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
+      }
+    ],
+    "mentions": []
+  },
+  {
+    "id": "doi:10.1016/j.ssmph.2021.100768",
+    "title": "Food insecurity, chronic pain, and use of prescription opioids",
+    "doi": "10.1016/j.ssmph.2021.100768",
+    "url": "https://doi.org/10.1016/j.ssmph.2021.100768",
+    "year": 2021,
+    "workType": "article",
+    "issuingOrganization": "Elsevier BV",
+    "sources": [
+      "OpenAlex"
+    ],
+    "theme": "health",
+    "uses": [
+      {
+        "program": "CCHS",
         "precision": "program_only",
         "cycles": [],
         "cycleText": "",
@@ -6496,14 +7007,15 @@
   },
   {
     "id": "doi:10.1016/j.ypmed.2022.107327",
-    "title": "The social determinants of substance use associated with deaths of despair: Individual risks and population impacts - Canadian Research Data Centre Network",
+    "title": "The social determinants of substance use associated with deaths of despair: Individual risks and population impacts",
     "doi": "10.1016/j.ypmed.2022.107327",
     "url": "https://crdcn.ca/publication/the-social-determinants-of-substance-use-associated-with-deaths-of-despair-individual-risks-and-population-impacts/",
     "year": 2022,
     "workType": "article",
-    "issuingOrganization": "Preventive Medicine",
+    "issuingOrganization": "Elsevier BV",
     "sources": [
-      "CRDCN"
+      "CRDCN",
+      "OpenAlex"
     ],
     "theme": "health",
     "uses": [
@@ -6623,6 +7135,31 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
+      }
+    ],
+    "mentions": []
+  },
+  {
+    "id": "doi:10.1016/s0378-4274(21)00797-9",
+    "title": "Concurrent exposure to multiple chemicals in the Canadian population: Biomonitoring data from the Canadian Health Measures Survey",
+    "doi": "10.1016/s0378-4274(21)00797-9",
+    "url": "https://doi.org/10.1016/s0378-4274(21)00797-9",
+    "year": 2021,
+    "workType": "article",
+    "issuingOrganization": "Elsevier BV",
+    "sources": [
+      "OpenAlex"
+    ],
+    "theme": "health",
+    "uses": [
+      {
+        "program": "CHMS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Title",
         "certainty": "verified",
         "statCanExplicit": true
       }
@@ -6844,12 +7381,12 @@
   },
   {
     "id": "doi:10.1017/s0007114517000320",
-    "title": "Vitamin D deficiency and sufficiency among Canadian children residing at high latitude following the revision of the RDA of vitamin D intake in 2010 - Canadian Research Data Centre Network",
+    "title": "Vitamin D deficiency and sufficiency among Canadian children residing at high latitude following the revision of the RDA of vitamin D intake in 2010",
     "doi": "10.1017/s0007114517000320",
     "url": "https://doi.org/10.1017/s0007114517000320",
     "year": 2017,
     "workType": "article",
-    "issuingOrganization": "British Journal of Nutrition",
+    "issuingOrganization": "Cambridge University Press",
     "sources": [
       "CRDCN",
       "OpenAlex"
@@ -7275,10 +7812,10 @@
   },
   {
     "id": "doi:10.1017/s0714980824000230",
-    "title": "The Association between Residential Environment and Self-Rated Mental Health among Older Canadians: The Moderating Effects of Education and Gender",
+    "title": "The Association between Residential Environment and Self-Rated Mental Health Among Older Canadians: The Moderating Effects of Education and Gender",
     "doi": "10.1017/s0714980824000230",
     "url": "https://doi.org/10.1017/s0714980824000230",
-    "year": 2024,
+    "year": 2022,
     "workType": "article",
     "issuingOrganization": "Cambridge University Press",
     "sources": [
@@ -7286,6 +7823,17 @@
     ],
     "theme": "education",
     "uses": [
+      {
+        "program": "CHS",
+        "precision": "exact_cycles",
+        "cycles": [
+          "2018"
+        ],
+        "cycleText": "2018",
+        "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
+      },
       {
         "program": "CHS",
         "precision": "exact_cycles",
@@ -7438,12 +7986,12 @@
   },
   {
     "id": "doi:10.1017/s1368980018000472",
-    "title": "Prioritization of the essentials in the spending patterns of Canadian households experiencing food insecurity - Canadian Research Data Centre Network",
+    "title": "Prioritization of the essentials in the spending patterns of Canadian households experiencing food insecurity",
     "doi": "10.1017/s1368980018000472",
     "url": "https://doi.org/10.1017/s1368980018000472",
     "year": 2018,
     "workType": "article",
-    "issuingOrganization": "Public Health Nutrition",
+    "issuingOrganization": "Cambridge University Press",
     "sources": [
       "CRDCN",
       "OpenAlex"
@@ -7954,15 +8502,43 @@
     "mentions": []
   },
   {
+    "id": "doi:10.1038/s41598-022-07927-5",
+    "title": "A national survey of physical activity after spinal cord injury",
+    "doi": "10.1038/s41598-022-07927-5",
+    "url": "https://doi.org/10.1038/s41598-022-07927-5",
+    "year": 2022,
+    "workType": "article",
+    "issuingOrganization": "Nature Portfolio",
+    "sources": [
+      "OpenAlex"
+    ],
+    "theme": "health",
+    "uses": [
+      {
+        "program": "CCHS",
+        "precision": "exact_cycles",
+        "cycles": [
+          "2010"
+        ],
+        "cycleText": "2010",
+        "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
+      }
+    ],
+    "mentions": []
+  },
+  {
     "id": "doi:10.1038/s41598-022-13794-x",
-    "title": "Trends and patterns of life satisfaction and its relationship with social support in Canada, 2009 to 2018 - Canadian Research Data Centre Network",
+    "title": "Trends and patterns of life satisfaction and its relationship with social support in Canada, 2009 to 2018",
     "doi": "10.1038/s41598-022-13794-x",
     "url": "https://crdcn.ca/publication/trends-and-patterns-of-life-satisfaction-and-its-relationship-with-social-support-in-canada-2009-to-2018/",
     "year": 2022,
     "workType": "article",
-    "issuingOrganization": "Scientific Reports",
+    "issuingOrganization": "Nature Portfolio",
     "sources": [
-      "CRDCN"
+      "CRDCN",
+      "OpenAlex"
     ],
     "theme": "digital society",
     "uses": [
@@ -8239,6 +8815,33 @@
     "mentions": []
   },
   {
+    "id": "doi:10.1080/00224499.2020.1772704",
+    "title": "Where Sexual Orientation Has No Name: Sexual Orientation Missing Data in the Canadian Community Health Survey (2005-2014)",
+    "doi": "10.1080/00224499.2020.1772704",
+    "url": "https://doi.org/10.1080/00224499.2020.1772704",
+    "year": 2020,
+    "workType": "article",
+    "issuingOrganization": "Taylor & Francis",
+    "sources": [
+      "OpenAlex"
+    ],
+    "theme": "immigration",
+    "uses": [
+      {
+        "program": "CCHS",
+        "precision": "exact_cycles",
+        "cycles": [
+          "2005"
+        ],
+        "cycleText": "2005",
+        "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
+      }
+    ],
+    "mentions": []
+  },
+  {
     "id": "doi:10.1080/00332747.2025.2528528",
     "title": "The Mediating and Moderating Role of Sleep Disturbance Between Chronic Pain and Psychological Distress: Evidence from Canadian Community Health Survey",
     "doi": "10.1080/00332747.2025.2528528",
@@ -8308,6 +8911,34 @@
           "2008"
         ],
         "cycleText": "2008",
+        "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
+      }
+    ],
+    "mentions": []
+  },
+  {
+    "id": "doi:10.1080/00380253.2020.1868956",
+    "title": "Multilevel Modeling of Health Inequalities at the Intersection of Multiple Social Identities in Canada",
+    "doi": "10.1080/00380253.2020.1868956",
+    "url": "https://doi.org/10.1080/00380253.2020.1868956",
+    "year": 2021,
+    "workType": "article",
+    "issuingOrganization": "Taylor & Francis",
+    "sources": [
+      "OpenAlex"
+    ],
+    "theme": "health",
+    "uses": [
+      {
+        "program": "CCHS",
+        "precision": "exact_cycles",
+        "cycles": [
+          "2015",
+          "2016"
+        ],
+        "cycleText": "2015, 2016",
         "evidenceLocation": "Abstract",
         "certainty": "verified",
         "statCanExplicit": true
@@ -9083,6 +9714,33 @@
         "precision": "program_only",
         "cycles": [],
         "cycleText": "",
+        "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
+      }
+    ],
+    "mentions": []
+  },
+  {
+    "id": "doi:10.1080/09638237.2020.1818192",
+    "title": "The relationship between mood disorder diagnosis and experiencing an unmet health-care need in Canada: findings from the 2014 Canadian Community Health Survey",
+    "doi": "10.1080/09638237.2020.1818192",
+    "url": "https://doi.org/10.1080/09638237.2020.1818192",
+    "year": 2020,
+    "workType": "article",
+    "issuingOrganization": "Taylor & Francis",
+    "sources": [
+      "OpenAlex"
+    ],
+    "theme": "health",
+    "uses": [
+      {
+        "program": "CCHS",
+        "precision": "exact_cycles",
+        "cycles": [
+          "2014"
+        ],
+        "cycleText": "2014",
         "evidenceLocation": "Abstract",
         "certainty": "verified",
         "statCanExplicit": true
@@ -10302,6 +10960,31 @@
     "mentions": []
   },
   {
+    "id": "doi:10.1080/15332985.2022.2048335",
+    "title": "Unmet health care needs among women at risk for developing an eating disorder in Canada: A structural perspective",
+    "doi": "10.1080/15332985.2022.2048335",
+    "url": "https://doi.org/10.1080/15332985.2022.2048335",
+    "year": 2022,
+    "workType": "article",
+    "issuingOrganization": "Taylor & Francis",
+    "sources": [
+      "OpenAlex"
+    ],
+    "theme": "health",
+    "uses": [
+      {
+        "program": "CCHS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
+      }
+    ],
+    "mentions": []
+  },
+  {
     "id": "doi:10.1080/15348458.2017.1390433",
     "title": "Differences in Language Proficiency and Learning Strategies Among Immigrant Women to Canada",
     "doi": "10.1080/15348458.2017.1390433",
@@ -10684,6 +11367,139 @@
     "mentions": []
   },
   {
+    "id": "doi:10.1080/21645515.2016.1153207",
+    "title": "Estimates and determinants of HPV non-vaccination and vaccine refusal in girls 12 to 14 y of age in Canada: Results from the Childhood National Immunization Coverage Survey, 2013",
+    "doi": "10.1080/21645515.2016.1153207",
+    "url": "https://doi.org/10.1080/21645515.2016.1153207",
+    "year": 2016,
+    "workType": "article",
+    "issuingOrganization": "Taylor & Francis",
+    "sources": [
+      "OpenAlex"
+    ],
+    "theme": "health",
+    "uses": [
+      {
+        "program": "CNICS",
+        "precision": "exact_cycles",
+        "cycles": [
+          "2013"
+        ],
+        "cycleText": "2013",
+        "evidenceLocation": "Abstract",
+        "certainty": "provisional",
+        "statCanExplicit": false
+      }
+    ],
+    "mentions": []
+  },
+  {
+    "id": "doi:10.1080/21645515.2016.1277847",
+    "title": "Determinants of non-vaccination and incomplete vaccination in Canadian toddlers",
+    "doi": "10.1080/21645515.2016.1277847",
+    "url": "https://doi.org/10.1080/21645515.2016.1277847",
+    "year": 2017,
+    "workType": "article",
+    "issuingOrganization": "Taylor & Francis",
+    "sources": [
+      "OpenAlex"
+    ],
+    "theme": "families",
+    "uses": [
+      {
+        "program": "CNICS",
+        "precision": "exact_cycles",
+        "cycles": [
+          "2013"
+        ],
+        "cycleText": "2013",
+        "evidenceLocation": "Abstract",
+        "certainty": "provisional",
+        "statCanExplicit": false
+      }
+    ],
+    "mentions": []
+  },
+  {
+    "id": "doi:10.1080/21645515.2017.1319022",
+    "title": "Methods used for immunization coverage assessment in Canada, a Canadian Immunization Research Network (CIRN) study",
+    "doi": "10.1080/21645515.2017.1319022",
+    "url": "https://doi.org/10.1080/21645515.2017.1319022",
+    "year": 2017,
+    "workType": "article",
+    "issuingOrganization": "Taylor & Francis",
+    "sources": [
+      "OpenAlex"
+    ],
+    "theme": "families",
+    "uses": [
+      {
+        "program": "CNICS",
+        "precision": "exact_cycles",
+        "cycles": [
+          "2013"
+        ],
+        "cycleText": "2013",
+        "evidenceLocation": "Abstract",
+        "certainty": "provisional",
+        "statCanExplicit": false
+      }
+    ],
+    "mentions": []
+  },
+  {
+    "id": "doi:10.1080/21645515.2017.1332932",
+    "title": "Corrigendum",
+    "doi": "10.1080/21645515.2017.1332932",
+    "url": "https://doi.org/10.1080/21645515.2017.1332932",
+    "year": 2017,
+    "workType": "erratum",
+    "issuingOrganization": "Taylor & Francis",
+    "sources": [
+      "OpenAlex"
+    ],
+    "theme": "health",
+    "uses": [
+      {
+        "program": "CNICS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Abstract",
+        "certainty": "provisional",
+        "statCanExplicit": false
+      }
+    ],
+    "mentions": []
+  },
+  {
+    "id": "doi:10.1080/21645515.2017.1412899",
+    "title": "Delayed measles vaccination of toddlers in Canada: Associated socio-demographic factors and parental knowledge, attitudes and beliefs",
+    "doi": "10.1080/21645515.2017.1412899",
+    "url": "https://doi.org/10.1080/21645515.2017.1412899",
+    "year": 2017,
+    "workType": "article",
+    "issuingOrganization": "Taylor & Francis",
+    "sources": [
+      "OpenAlex"
+    ],
+    "theme": "families",
+    "uses": [
+      {
+        "program": "CNICS",
+        "precision": "exact_cycles",
+        "cycles": [
+          "2013"
+        ],
+        "cycleText": "2013",
+        "evidenceLocation": "Abstract",
+        "certainty": "provisional",
+        "statCanExplicit": false
+      }
+    ],
+    "mentions": []
+  },
+  {
     "id": "doi:10.1080/21645515.2024.2379090",
     "title": "Estimates and determinants of HPV non-vaccination in 14-year-old Canadians: Results from the childhood national immunization coverage survey, 2019",
     "doi": "10.1080/21645515.2024.2379090",
@@ -10973,14 +11789,15 @@
   },
   {
     "id": "doi:10.1089/met.2021.0024",
-    "title": "Exploring the Association of a Total Physical Activity Energy Expenditure and Diabetes Mellitus in Adults: A Cross-Sectional Analysis of the Canadian Health Measures Survey - Canadian Research Data Centre Network",
+    "title": "Exploring the Association of a Total Physical Activity Energy Expenditure and Diabetes Mellitus in Adults: A Cross-Sectional Analysis of the Canadian Health Measures Survey",
     "doi": "10.1089/met.2021.0024",
     "url": "https://crdcn.ca/publication/exploring-the-association-of-a-total-physical-activity-energy-expenditure-and-diabetes-mellitus-in-adults-a-cross-sectional-analysis-of-the-canadian-health-measures-survey/",
     "year": 2021,
     "workType": "article",
-    "issuingOrganization": "Metabolic Syndrome and Related Disorders",
+    "issuingOrganization": "Mary Ann Liebert, Inc.",
     "sources": [
-      "CRDCN"
+      "CRDCN",
+      "OpenAlex"
     ],
     "theme": "health",
     "uses": [
@@ -10999,6 +11816,15 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
+        "certainty": "verified",
+        "statCanExplicit": true
+      },
+      {
+        "program": "CHMS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Abstract",
         "certainty": "verified",
         "statCanExplicit": true
       }
@@ -11049,6 +11875,33 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
+      }
+    ],
+    "mentions": []
+  },
+  {
+    "id": "doi:10.1093/ajcn/nqaa401",
+    "title": "Proportions of long-chain ω-3 fatty acids in erythrocyte membranes of Canadian adults: Results from the Canadian Health Measures Survey 2012–2015",
+    "doi": "10.1093/ajcn/nqaa401",
+    "url": "https://doi.org/10.1093/ajcn/nqaa401",
+    "year": 2020,
+    "workType": "article",
+    "issuingOrganization": "Elsevier BV",
+    "sources": [
+      "OpenAlex"
+    ],
+    "theme": "health",
+    "uses": [
+      {
+        "program": "CHMS",
+        "precision": "exact_cycles",
+        "cycles": [
+          "2012"
+        ],
+        "cycleText": "2012",
+        "evidenceLocation": "Title",
         "certainty": "verified",
         "statCanExplicit": true
       }
@@ -12126,6 +12979,31 @@
     "mentions": []
   },
   {
+    "id": "doi:10.1093/geroni/igx004.5037",
+    "title": "DIGITAL DIVIDE: UNDERSTANDING DIFFERENCES IN ICT LITERACY IN THE CANADIAN CONTEXT",
+    "doi": "10.1093/geroni/igx004.5037",
+    "url": "https://doi.org/10.1093/geroni/igx004.5037",
+    "year": 2017,
+    "workType": "conference-paper",
+    "issuingOrganization": "University of Oxford",
+    "sources": [
+      "OpenAlex"
+    ],
+    "theme": "digital society",
+    "uses": [
+      {
+        "program": "PIAAC",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Abstract",
+        "certainty": "provisional",
+        "statCanExplicit": false
+      }
+    ],
+    "mentions": []
+  },
+  {
     "id": "doi:10.1093/geroni/igy023.575",
     "title": "FAMILY CAREGIVER HEALTH IN CANADA AND THE UNITED STATES: ARE THERE DIFFERENCES IN THE STRESS PROCESS?",
     "doi": "10.1093/geroni/igy023.575",
@@ -12146,6 +13024,31 @@
         "evidenceLocation": "Abstract",
         "certainty": "verified",
         "statCanExplicit": true
+      }
+    ],
+    "mentions": []
+  },
+  {
+    "id": "doi:10.1093/geroni/igy031.3410",
+    "title": "AN INTERNATIONAL COMPARISON OF PARTICIPATION IN LIFELONG LEARNING AND PROBLEM SOLVING ABILITIES FOR OLDER WORKERS",
+    "doi": "10.1093/geroni/igy031.3410",
+    "url": "https://doi.org/10.1093/geroni/igy031.3410",
+    "year": 2018,
+    "workType": "conference-paper",
+    "issuingOrganization": "University of Oxford",
+    "sources": [
+      "OpenAlex"
+    ],
+    "theme": "education",
+    "uses": [
+      {
+        "program": "PIAAC",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Abstract",
+        "certainty": "provisional",
+        "statCanExplicit": false
       }
     ],
     "mentions": []
@@ -12279,6 +13182,31 @@
         "precision": "program_only",
         "cycles": [],
         "cycleText": "",
+        "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
+      }
+    ],
+    "mentions": []
+  },
+  {
+    "id": "doi:10.1093/ije/dyab067",
+    "title": "Quantifying the contribution of modifiable risk factors to socio-economic inequities in cancer morbidity and mortality: a nationally representative population-based cohort study",
+    "doi": "10.1093/ije/dyab067",
+    "url": "https://doi.org/10.1093/ije/dyab067",
+    "year": 2021,
+    "workType": "article",
+    "issuingOrganization": "Oxford University Press",
+    "sources": [
+      "OpenAlex"
+    ],
+    "theme": "health",
+    "uses": [
+      {
+        "program": "CCHS",
+        "precision": "range",
+        "cycles": [],
+        "cycleText": "2001-2011",
         "evidenceLocation": "Abstract",
         "certainty": "verified",
         "statCanExplicit": true
@@ -12595,6 +13523,31 @@
     "mentions": []
   },
   {
+    "id": "doi:10.1093/occmed/kqaa023",
+    "title": "Respiratory health, occupation and the healthy worker effect",
+    "doi": "10.1093/occmed/kqaa023",
+    "url": "https://doi.org/10.1093/occmed/kqaa023",
+    "year": 2020,
+    "workType": "article",
+    "issuingOrganization": "Oxford University Press",
+    "sources": [
+      "OpenAlex"
+    ],
+    "theme": "labour",
+    "uses": [
+      {
+        "program": "CHMS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
+      }
+    ],
+    "mentions": []
+  },
+  {
     "id": "doi:10.1093/pch/21.supp5.e72",
     "title": "Prevalence of overweight And Obesity in Canadian Children: A Decade of Progress in the Canadian Community Health and Health Measure Surveys",
     "doi": "10.1093/pch/21.supp5.e72",
@@ -12621,6 +13574,31 @@
         "precision": "range",
         "cycles": [],
         "cycleText": "2009-2013",
+        "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
+      }
+    ],
+    "mentions": []
+  },
+  {
+    "id": "doi:10.1093/pch/pxaa026",
+    "title": "Prevalence of high blood pressure among Canadian Children: 2017 American Academy of Pediatrics guidelines with the Canadian Health Measures Survey",
+    "doi": "10.1093/pch/pxaa026",
+    "url": "https://doi.org/10.1093/pch/pxaa026",
+    "year": 2020,
+    "workType": "article",
+    "issuingOrganization": "Oxford University Press",
+    "sources": [
+      "OpenAlex"
+    ],
+    "theme": "families",
+    "uses": [
+      {
+        "program": "CHMS",
+        "precision": "range",
+        "cycles": [],
+        "cycleText": "2007 to 2015",
         "evidenceLocation": "Abstract",
         "certainty": "verified",
         "statCanExplicit": true
@@ -13693,6 +14671,31 @@
     "mentions": []
   },
   {
+    "id": "doi:10.1097/j.pain.0000000000002003",
+    "title": "Assessing the validity of health administrative data compared to population health survey data for the measurement of low back pain",
+    "doi": "10.1097/j.pain.0000000000002003",
+    "url": "https://doi.org/10.1097/j.pain.0000000000002003",
+    "year": 2020,
+    "workType": "article",
+    "issuingOrganization": "Lippincott Williams & Wilkins",
+    "sources": [
+      "OpenAlex"
+    ],
+    "theme": "health",
+    "uses": [
+      {
+        "program": "CCHS",
+        "precision": "range",
+        "cycles": [],
+        "cycleText": "2003 to 2012",
+        "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
+      }
+    ],
+    "mentions": []
+  },
+  {
     "id": "doi:10.1097/jom.0000000000000574",
     "title": "Physical Activity, Physical Fitness, and Body Composition of Canadian Shift Workers",
     "doi": "10.1097/jom.0000000000000574",
@@ -13960,6 +14963,81 @@
       },
       {
         "program": "LFS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
+      }
+    ],
+    "mentions": []
+  },
+  {
+    "id": "doi:10.1101/2022.04.05.22273469",
+    "title": "Human Papillomavirus Infection Rate by Genotype and Vaccination Rates in Canada: Canadian Health Measures Survey 2009 to 2013",
+    "doi": "10.1101/2022.04.05.22273469",
+    "url": "https://doi.org/10.1101/2022.04.05.22273469",
+    "year": 2022,
+    "workType": "preprint",
+    "issuingOrganization": "medRxiv",
+    "sources": [
+      "OpenAlex"
+    ],
+    "theme": "health",
+    "uses": [
+      {
+        "program": "CHMS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
+      }
+    ],
+    "mentions": []
+  },
+  {
+    "id": "doi:10.1101/2022.04.21.22274148",
+    "title": "Trends in TSH, free T4, and anti-thyroid peroxidase and treatment status: Canadian Health Measures Survey 2012 to 2015",
+    "doi": "10.1101/2022.04.21.22274148",
+    "url": "https://doi.org/10.1101/2022.04.21.22274148",
+    "year": 2022,
+    "workType": "preprint",
+    "issuingOrganization": "medRxiv",
+    "sources": [
+      "OpenAlex"
+    ],
+    "theme": "health",
+    "uses": [
+      {
+        "program": "CHMS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
+      }
+    ],
+    "mentions": []
+  },
+  {
+    "id": "doi:10.1101/2022.05.04.22274698",
+    "title": "Trends in Diabetes Biomarkers and Treatment Statuses of Non-Institutionalized Canadians: Canadian Health Measures Survey 2007 to 2015",
+    "doi": "10.1101/2022.05.04.22274698",
+    "url": "https://doi.org/10.1101/2022.05.04.22274698",
+    "year": 2022,
+    "workType": "preprint",
+    "issuingOrganization": "medRxiv",
+    "sources": [
+      "OpenAlex"
+    ],
+    "theme": "health",
+    "uses": [
+      {
+        "program": "CHMS",
         "precision": "program_only",
         "cycles": [],
         "cycleText": "",
@@ -14705,6 +15783,31 @@
     "mentions": []
   },
   {
+    "id": "doi:10.1108/s0731-219920170000025015",
+    "title": "Index",
+    "doi": "10.1108/s0731-219920170000025015",
+    "url": "https://doi.org/10.1108/s0731-219920170000025015",
+    "year": 2017,
+    "workType": "paratext",
+    "issuingOrganization": "Emerald Publishing Limited",
+    "sources": [
+      "OpenAlex"
+    ],
+    "theme": "health",
+    "uses": [
+      {
+        "program": "NHS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
+      }
+    ],
+    "mentions": []
+  },
+  {
     "id": "doi:10.1108/s1530-353520230000021008",
     "title": "Index",
     "doi": "10.1108/s1530-353520230000021008",
@@ -14790,7 +15893,7 @@
     "url": "https://doi.org/10.1109/fuzz-ieee.2016.7737850",
     "year": 2016,
     "workType": "conference-paper",
-    "issuingOrganization": null,
+    "issuingOrganization": "Institute of Electrical and Electronics Engineers",
     "sources": [
       "OpenAlex"
     ],
@@ -14835,7 +15938,7 @@
   },
   {
     "id": "doi:10.1109/wts.2015.7117263",
-    "title": "Mobile device access: Effect on online purchases",
+    "title": "Mobile Device Access: Effect on Online Purchases",
     "doi": "10.1109/wts.2015.7117263",
     "url": "https://doi.org/10.1109/wts.2015.7117263",
     "year": 2015,
@@ -15082,12 +16185,12 @@
   },
   {
     "id": "doi:10.1111/cag.12750",
-    "title": "Quantifying the prevalence of energy poverty across Canada: Estimating domestic energy burden using an expenditures approach - Canadian Research Data Centre Network",
+    "title": "Quantifying the prevalence of energy poverty across Canada: Estimating domestic energy burden using an expenditures approach",
     "doi": "10.1111/cag.12750",
     "url": "https://doi.org/10.1111/cag.12750",
     "year": 2022,
     "workType": "article",
-    "issuingOrganization": "Canadian Geographies / Les géographies canadiennes",
+    "issuingOrganization": "Wiley",
     "sources": [
       "CRDCN",
       "OpenAlex"
@@ -15272,12 +16375,12 @@
   },
   {
     "id": "doi:10.1111/caje.12495",
-    "title": "Indian Residential Schools: Height and body mass post-1930 - Canadian Research Data Centre Network",
+    "title": "Indian residential schools: Height and body mass post‐1930",
     "doi": "10.1111/caje.12495",
     "url": "https://doi.org/10.1111/caje.12495",
     "year": 2021,
     "workType": "article",
-    "issuingOrganization": "Canadian Journal of Economics",
+    "issuingOrganization": "Wiley",
     "sources": [
       "CRDCN",
       "OpenAlex"
@@ -15782,12 +16885,12 @@
   },
   {
     "id": "doi:10.1111/cars.12384",
-    "title": "Intergenerational reproduction and self-rated health in Canada - Canadian Research Data Centre Network",
+    "title": "Intergenerational reproduction and self‐rated health in Canada",
     "doi": "10.1111/cars.12384",
     "url": "https://doi.org/10.1111/cars.12384",
     "year": 2022,
     "workType": "article",
-    "issuingOrganization": "Canadian Review of Sociology/Revue canadienne de sociologie",
+    "issuingOrganization": "Wiley",
     "sources": [
       "CRDCN",
       "OpenAlex"
@@ -16195,6 +17298,31 @@
     "mentions": []
   },
   {
+    "id": "doi:10.1111/cjag.12227",
+    "title": "Food security and Canada's agricultural system challenged by COVID‐19",
+    "doi": "10.1111/cjag.12227",
+    "url": "https://doi.org/10.1111/cjag.12227",
+    "year": 2020,
+    "workType": "article",
+    "issuingOrganization": "Wiley",
+    "sources": [
+      "OpenAlex"
+    ],
+    "theme": "health",
+    "uses": [
+      {
+        "program": "CCHS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
+      }
+    ],
+    "mentions": []
+  },
+  {
     "id": "doi:10.1111/cob.12287",
     "title": "Health behaviours, intentions and barriers to change among obesity classes I, II and III",
     "doi": "10.1111/cob.12287",
@@ -16328,6 +17456,31 @@
           "2012"
         ],
         "cycleText": "2012",
+        "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
+      }
+    ],
+    "mentions": []
+  },
+  {
+    "id": "doi:10.1111/dme.14396",
+    "title": "Childhood food insecurity and incident diabetes: A longitudinal cohort study of 34 042 children in Ontario, Canada",
+    "doi": "10.1111/dme.14396",
+    "url": "https://doi.org/10.1111/dme.14396",
+    "year": 2020,
+    "workType": "article",
+    "issuingOrganization": "Wiley",
+    "sources": [
+      "OpenAlex"
+    ],
+    "theme": "health",
+    "uses": [
+      {
+        "program": "CCHS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
         "evidenceLocation": "Abstract",
         "certainty": "verified",
         "statCanExplicit": true
@@ -17189,12 +18342,12 @@
   },
   {
     "id": "doi:10.1111/ruso.12471",
-    "title": "Police Encounters for Behavioral Health-Related Reasons in Rural and Remote Communities: A Canadian Study - Canadian Research Data Centre Network",
+    "title": "Police Encounters for Behavioral Health‐Related Reasons in Rural and Remote Communities: A Canadian Study☆",
     "doi": "10.1111/ruso.12471",
     "url": "https://doi.org/10.1111/ruso.12471",
-    "year": 2023,
+    "year": 2022,
     "workType": "article",
-    "issuingOrganization": "Rural Sociology",
+    "issuingOrganization": "Wiley",
     "sources": [
       "CRDCN",
       "OpenAlex"
@@ -17392,6 +18545,31 @@
     "mentions": []
   },
   {
+    "id": "doi:10.1121/10.0005589",
+    "title": "High frequency hearing impairment and cardiovascular disease in Canada: Results from the Canadian Health Measures Survey",
+    "doi": "10.1121/10.0005589",
+    "url": "https://doi.org/10.1121/10.0005589",
+    "year": 2021,
+    "workType": "article",
+    "issuingOrganization": "Acoustical Society of America",
+    "sources": [
+      "OpenAlex"
+    ],
+    "theme": "health",
+    "uses": [
+      {
+        "program": "CHMS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
+      }
+    ],
+    "mentions": []
+  },
+  {
     "id": "doi:10.1123/japa.2014-0169",
     "title": "Association Between Body Mass Index, Physical Activity, and Health-Related Quality of Life in Canadian Adults",
     "doi": "10.1123/japa.2014-0169",
@@ -17411,6 +18589,31 @@
           "2012"
         ],
         "cycleText": "2012",
+        "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
+      }
+    ],
+    "mentions": []
+  },
+  {
+    "id": "doi:10.1123/jpah.2021-0542",
+    "title": "Sociodemographic Factors Associated With Meeting the Canadian 24-Hour Movement Guidelines Among Adults: Findings From the Canadian Health Measures Survey",
+    "doi": "10.1123/jpah.2021-0542",
+    "url": "https://doi.org/10.1123/jpah.2021-0542",
+    "year": 2022,
+    "workType": "article",
+    "issuingOrganization": "Human Kinetics",
+    "sources": [
+      "OpenAlex"
+    ],
+    "theme": "health",
+    "uses": [
+      {
+        "program": "CHMS",
+        "precision": "range",
+        "cycles": [],
+        "cycleText": "2007 to 2013",
         "evidenceLocation": "Abstract",
         "certainty": "verified",
         "statCanExplicit": true
@@ -17507,6 +18710,31 @@
       "OpenAlex"
     ],
     "theme": "income and inequality",
+    "uses": [
+      {
+        "program": "CCHS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
+      }
+    ],
+    "mentions": []
+  },
+  {
+    "id": "doi:10.1136/bmjmilitary-2020-001526",
+    "title": "Comparing negative health indicators in male and female veterans with the Canadian general population",
+    "doi": "10.1136/bmjmilitary-2020-001526",
+    "url": "https://doi.org/10.1136/bmjmilitary-2020-001526",
+    "year": 2020,
+    "workType": "article",
+    "issuingOrganization": "BMJ",
+    "sources": [
+      "OpenAlex"
+    ],
+    "theme": "health",
     "uses": [
       {
         "program": "CCHS",
@@ -19042,6 +20270,31 @@
     "mentions": []
   },
   {
+    "id": "doi:10.1139/apnm-2019-0874",
+    "title": "Criterion-referenced mCAFT cut-points to identify metabolically healthy cardiorespiratory fitness among adults aged 18–69 years: an analysis of the Canadian Health Measures Survey",
+    "doi": "10.1139/apnm-2019-0874",
+    "url": "https://doi.org/10.1139/apnm-2019-0874",
+    "year": 2020,
+    "workType": "article",
+    "issuingOrganization": "NRC Research Press",
+    "sources": [
+      "OpenAlex"
+    ],
+    "theme": "health",
+    "uses": [
+      {
+        "program": "CHMS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
+      }
+    ],
+    "mentions": []
+  },
+  {
     "id": "doi:10.1139/apnm-2020-0760",
     "title": "Protein consumption in Canadian habitual diets: usual intake, inadequacy, and the contribution of animal- and plant-based foods to nutrient intakes",
     "doi": "10.1139/apnm-2020-0760",
@@ -19065,6 +20318,58 @@
         "certainty": "verified",
         "statCanExplicit": true
       },
+      {
+        "program": "CCHS",
+        "precision": "exact_cycles",
+        "cycles": [
+          "2015"
+        ],
+        "cycleText": "2015",
+        "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
+      }
+    ],
+    "mentions": []
+  },
+  {
+    "id": "doi:10.1139/apnm-2021-0502",
+    "title": "Development of machine learning prediction models to explore nutrients predictive of cardiovascular disease using Canadian linked population-based data",
+    "doi": "10.1139/apnm-2021-0502",
+    "url": "https://doi.org/10.1139/apnm-2021-0502",
+    "year": 2022,
+    "workType": "article",
+    "issuingOrganization": "NRC Research Press",
+    "sources": [
+      "OpenAlex"
+    ],
+    "theme": "health",
+    "uses": [
+      {
+        "program": "CCHS",
+        "precision": "range",
+        "cycles": [],
+        "cycleText": "2004 to 2018",
+        "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
+      }
+    ],
+    "mentions": []
+  },
+  {
+    "id": "doi:10.1139/apnm-2021-0517",
+    "title": "Intakes of nutrients and food categories in Canadian children and adolescents across levels of sugars intake: cross-sectional analyses of the Canadian Community Health Survey 2015 Public Use Microdata File",
+    "doi": "10.1139/apnm-2021-0517",
+    "url": "https://doi.org/10.1139/apnm-2021-0517",
+    "year": 2022,
+    "workType": "article",
+    "issuingOrganization": "NRC Research Press",
+    "sources": [
+      "OpenAlex"
+    ],
+    "theme": "health",
+    "uses": [
       {
         "program": "CCHS",
         "precision": "exact_cycles",
@@ -19436,12 +20741,12 @@
   },
   {
     "id": "doi:10.1142/s2737436x22500029",
-    "title": "A Renewed Study on Charitable Giving Among Canadians - Canadian Research Data Centre Network",
+    "title": "A Renewed Study on Charitable Giving Among Canadians",
     "doi": "10.1142/s2737436x22500029",
     "url": "https://doi.org/10.1142/s2737436x22500029",
     "year": 2022,
     "workType": "article",
-    "issuingOrganization": "Journal of Economics, Management and Religion",
+    "issuingOrganization": "Journal of Economics Management and Religion",
     "sources": [
       "CRDCN",
       "OpenAlex"
@@ -19642,6 +20947,31 @@
     "mentions": []
   },
   {
+    "id": "doi:10.1155/2021/5712844",
+    "title": "Fast-Food Dietary Pattern Is Linked to Higher Prevalence of Metabolic Syndrome in Older Canadian Adults",
+    "doi": "10.1155/2021/5712844",
+    "url": "https://doi.org/10.1155/2021/5712844",
+    "year": 2021,
+    "workType": "article",
+    "issuingOrganization": "Hindawi Publishing Corporation",
+    "sources": [
+      "OpenAlex"
+    ],
+    "theme": "health",
+    "uses": [
+      {
+        "program": "CHMS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
+      }
+    ],
+    "mentions": []
+  },
+  {
     "id": "doi:10.1155/2022/9429242",
     "title": "Self-Reported Health of Working-Age Refugees, Immigrants, and the Canadian-Born",
     "doi": "10.1155/2022/9429242",
@@ -19831,6 +21161,31 @@
     "uses": [
       {
         "program": "LFS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
+      }
+    ],
+    "mentions": []
+  },
+  {
+    "id": "doi:10.11575/prism/37838",
+    "title": "Exploring the Relationship Between Diabetes and Physical Activity Behaviours: Results from the Canadian Health Measures Survey (2007-2017)",
+    "doi": "10.11575/prism/37838",
+    "url": "https://prism.ucalgary.ca.",
+    "year": 2020,
+    "workType": "dissertation",
+    "issuingOrganization": null,
+    "sources": [
+      "OpenAlex"
+    ],
+    "theme": "health",
+    "uses": [
+      {
+        "program": "CHMS",
         "precision": "program_only",
         "cycles": [],
         "cycleText": "",
@@ -20061,6 +21416,56 @@
         "precision": "range",
         "cycles": [],
         "cycleText": "2017 to 2018",
+        "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
+      }
+    ],
+    "mentions": []
+  },
+  {
+    "id": "doi:10.1158/1538-7445.am2021-857",
+    "title": "Abstract 857: Evaluating the relationship between arsenic exposure and cancer risk in Canada",
+    "doi": "10.1158/1538-7445.am2021-857",
+    "url": "https://doi.org/10.1158/1538-7445.am2021-857",
+    "year": 2021,
+    "workType": "conference-paper",
+    "issuingOrganization": "American Association for Cancer Research",
+    "sources": [
+      "OpenAlex"
+    ],
+    "theme": "environment",
+    "uses": [
+      {
+        "program": "CHMS",
+        "precision": "range",
+        "cycles": [],
+        "cycleText": "2007-2017",
+        "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
+      }
+    ],
+    "mentions": []
+  },
+  {
+    "id": "doi:10.1158/1538-7445.am2022-5895",
+    "title": "Abstract 5895: Examining the association between arsenic exposure and cancer risk among Canadian adults",
+    "doi": "10.1158/1538-7445.am2022-5895",
+    "url": "https://doi.org/10.1158/1538-7445.am2022-5895",
+    "year": 2022,
+    "workType": "conference-paper",
+    "issuingOrganization": "American Association for Cancer Research",
+    "sources": [
+      "OpenAlex"
+    ],
+    "theme": "health",
+    "uses": [
+      {
+        "program": "CHMS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
         "evidenceLocation": "Abstract",
         "certainty": "verified",
         "statCanExplicit": true
@@ -20411,6 +21816,31 @@
         "precision": "range",
         "cycles": [],
         "cycleText": "2007-2011",
+        "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
+      }
+    ],
+    "mentions": []
+  },
+  {
+    "id": "doi:10.1164/ajrccm-conference.2021.203.1_meetingabstracts.a1645",
+    "title": "Does Vaping Increase the Odds of Asthma?: A Canadian Community Health Survey Study",
+    "doi": "10.1164/ajrccm-conference.2021.203.1_meetingabstracts.a1645",
+    "url": "https://doi.org/10.1164/ajrccm-conference.2021.203.1_meetingabstracts.a1645",
+    "year": 2021,
+    "workType": "conference-paper",
+    "issuingOrganization": null,
+    "sources": [
+      "OpenAlex"
+    ],
+    "theme": "health",
+    "uses": [
+      {
+        "program": "CCHS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
         "evidenceLocation": "Abstract",
         "certainty": "verified",
         "statCanExplicit": true
@@ -21837,6 +23267,33 @@
     "mentions": []
   },
   {
+    "id": "doi:10.1177/0706743720980080",
+    "title": "Gambling and Problem Gambling in Canada in 2018: Prevalence and Changes Since 2002",
+    "doi": "10.1177/0706743720980080",
+    "url": "https://doi.org/10.1177/0706743720980080",
+    "year": 2020,
+    "workType": "article",
+    "issuingOrganization": "SAGE Publishing",
+    "sources": [
+      "OpenAlex"
+    ],
+    "theme": "digital society",
+    "uses": [
+      {
+        "program": "CCHS",
+        "precision": "exact_cycles",
+        "cycles": [
+          "2018"
+        ],
+        "cycleText": "2018",
+        "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
+      }
+    ],
+    "mentions": []
+  },
+  {
     "id": "doi:10.1177/0706743720984677",
     "title": "Course and Predictors of Major Depressive Disorder in the Canadian Armed Forces Members and Veterans Mental Health Follow-up Survey: Cours et Prédicteurs du Trouble de Dépression Majeure Dans l’Enquête de Suivi Sur la Santé Mentale Auprès Des Membres des Forces Armées Canadiennes et des ex-Militaires - Canadian Research Data Centre Network",
     "doi": "10.1177/0706743720984677",
@@ -22231,6 +23688,40 @@
     "mentions": []
   },
   {
+    "id": "doi:10.1177/07334648221099279",
+    "title": "Collecting Information on Caregivers’ Financial Well-Being: A Document Review of Federal Surveys in Canada",
+    "doi": "10.1177/07334648221099279",
+    "url": "https://doi.org/10.1177/07334648221099279",
+    "year": 2022,
+    "workType": "article",
+    "issuingOrganization": "SAGE Publishing",
+    "sources": [
+      "OpenAlex"
+    ],
+    "theme": "aging",
+    "uses": [
+      {
+        "program": "CCHS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
+      },
+      {
+        "program": "GSS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
+      }
+    ],
+    "mentions": []
+  },
+  {
     "id": "doi:10.1177/0734371x19894035",
     "title": "The Effects of Family Responsibilities Discrimination on Public Employees’ Satisfaction and Turnover Intentions: Can Flexible Work Arrangements Help?",
     "doi": "10.1177/0734371x19894035",
@@ -22359,12 +23850,12 @@
   },
   {
     "id": "doi:10.1177/0886260520922352",
-    "title": "Severity of Victimization and Formal Help Seeking Among Men Who Experienced Intimate Partner Violence in Their Ongoing Relationships - Canadian Research Data Centre Network",
+    "title": "Severity of Victimization and Formal Help Seeking Among Men Who Experienced Intimate Partner Violence in Their Ongoing Relationships",
     "doi": "10.1177/0886260520922352",
     "url": "https://doi.org/10.1177/0886260520922352",
-    "year": 2022,
+    "year": 2020,
     "workType": "article",
-    "issuingOrganization": "Journal of Interpersonal Violence",
+    "issuingOrganization": "SAGE Publishing",
     "sources": [
       "CRDCN",
       "OpenAlex"
@@ -22400,12 +23891,12 @@
   },
   {
     "id": "doi:10.1177/0886260520939197",
-    "title": "The Connection Between Animal Abuse, Emotional Abuse, and Financial Abuse in Intimate Relationships: Evidence From a Nationally Representative Sample of the General Public - Canadian Research Data Centre Network",
+    "title": "The Connection Between Animal Abuse, Emotional Abuse, and Financial Abuse in Intimate Relationships: Evidence From a Nationally Representative Sample of the General Public",
     "doi": "10.1177/0886260520939197",
     "url": "https://doi.org/10.1177/0886260520939197",
-    "year": 2022,
+    "year": 2020,
     "workType": "article",
-    "issuingOrganization": "Journal of Interpersonal Violence",
+    "issuingOrganization": "SAGE Publishing",
     "sources": [
       "CRDCN",
       "OpenAlex"
@@ -23455,12 +24946,12 @@
   },
   {
     "id": "doi:10.1186/s12651-021-00292-2",
-    "title": "Short-term earnings mobility in the Canadian and German context: the role of cognitive skills - Canadian Research Data Centre Network",
+    "title": "Short-term earnings mobility in the Canadian and German context: the role of cognitive skills",
     "doi": "10.1186/s12651-021-00292-2",
     "url": "https://doi.org/10.1186/s12651-021-00292-2",
     "year": 2021,
     "workType": "article",
-    "issuingOrganization": "Journal for Labour Market Research",
+    "issuingOrganization": "Springer Nature",
     "sources": [
       "CRDCN",
       "OpenAlex"
@@ -25380,6 +26871,31 @@
     "mentions": []
   },
   {
+    "id": "doi:10.1186/s12940-022-00892-6",
+    "title": "Individual and mixture associations of perfluoroalkyl substances on liver function biomarkers in the Canadian Health Measures Survey",
+    "doi": "10.1186/s12940-022-00892-6",
+    "url": "https://doi.org/10.1186/s12940-022-00892-6",
+    "year": 2022,
+    "workType": "article",
+    "issuingOrganization": "BioMed Central",
+    "sources": [
+      "OpenAlex"
+    ],
+    "theme": "health",
+    "uses": [
+      {
+        "program": "CHMS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
+      }
+    ],
+    "mentions": []
+  },
+  {
     "id": "doi:10.1186/s12940-026-01271-1",
     "title": "Exposure to per- and polyfluoroalkyl substances and adult cardiometabolic health: a Canadian Health Measures Survey mixture analysis",
     "doi": "10.1186/s12940-026-01271-1",
@@ -25430,6 +26946,33 @@
     "mentions": []
   },
   {
+    "id": "doi:10.1186/s12966-016-0339-0",
+    "title": "Bike Score®: Associations between urban bikeability and cycling behavior in 24 cities",
+    "doi": "10.1186/s12966-016-0339-0",
+    "url": "https://doi.org/10.1186/s12966-016-0339-0",
+    "year": 2016,
+    "workType": "article",
+    "issuingOrganization": "BioMed Central",
+    "sources": [
+      "OpenAlex"
+    ],
+    "theme": "digital society",
+    "uses": [
+      {
+        "program": "NHS",
+        "precision": "exact_cycles",
+        "cycles": [
+          "2011"
+        ],
+        "cycleText": "2011",
+        "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
+      }
+    ],
+    "mentions": []
+  },
+  {
     "id": "doi:10.1186/s12966-016-0350-5",
     "title": "Physical activity and non-movement behaviours: their independent and combined associations with metabolic syndrome",
     "doi": "10.1186/s12966-016-0350-5",
@@ -25441,6 +26984,31 @@
       "OpenAlex"
     ],
     "theme": "health",
+    "uses": [
+      {
+        "program": "CHMS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
+      }
+    ],
+    "mentions": []
+  },
+  {
+    "id": "doi:10.1186/s12966-020-00973-0",
+    "title": "Development of a consensus statement on the role of the family in the physical activity, sedentary, and sleep behaviours of children and youth",
+    "doi": "10.1186/s12966-020-00973-0",
+    "url": "https://doi.org/10.1186/s12966-020-00973-0",
+    "year": 2020,
+    "workType": "article",
+    "issuingOrganization": "BioMed Central",
+    "sources": [
+      "OpenAlex"
+    ],
+    "theme": "education",
     "uses": [
       {
         "program": "CHMS",
@@ -26781,6 +28349,106 @@
     "mentions": []
   },
   {
+    "id": "doi:10.1289/isee.2020.virtual.o-os-620",
+    "title": "Associations between exposure to parabens and reproductive hormones: A study among Canadian girls age 6 to 17 years",
+    "doi": "10.1289/isee.2020.virtual.o-os-620",
+    "url": "https://doi.org/10.1289/isee.2020.virtual.o-os-620",
+    "year": 2020,
+    "workType": "conference-paper",
+    "issuingOrganization": "National Institute of Environmental Health Sciences",
+    "sources": [
+      "OpenAlex"
+    ],
+    "theme": "health",
+    "uses": [
+      {
+        "program": "CHMS",
+        "precision": "range",
+        "cycles": [],
+        "cycleText": "2014-2015",
+        "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
+      }
+    ],
+    "mentions": []
+  },
+  {
+    "id": "doi:10.1289/isee.2020.virtual.p-1270",
+    "title": "Fluoride exposure and duration and quality of sleep in a Canadian cohort",
+    "doi": "10.1289/isee.2020.virtual.p-1270",
+    "url": "https://doi.org/10.1289/isee.2020.virtual.p-1270",
+    "year": 2020,
+    "workType": "conference-paper",
+    "issuingOrganization": "National Institute of Environmental Health Sciences",
+    "sources": [
+      "OpenAlex"
+    ],
+    "theme": "health",
+    "uses": [
+      {
+        "program": "CHMS",
+        "precision": "range",
+        "cycles": [],
+        "cycleText": "2012-2013",
+        "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
+      }
+    ],
+    "mentions": []
+  },
+  {
+    "id": "doi:10.1289/isee.2021.o-sy-106",
+    "title": "Estimating the effect of long-term exposure to PM2.5 on mortality in Canadian Community Health Survey Cohort using parametric g-computation",
+    "doi": "10.1289/isee.2021.o-sy-106",
+    "url": "https://doi.org/10.1289/isee.2021.o-sy-106",
+    "year": 2021,
+    "workType": "conference-paper",
+    "issuingOrganization": "National Institute of Environmental Health Sciences",
+    "sources": [
+      "OpenAlex"
+    ],
+    "theme": "health",
+    "uses": [
+      {
+        "program": "CCHS",
+        "precision": "range",
+        "cycles": [],
+        "cycleText": "2001 to 2012",
+        "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
+      }
+    ],
+    "mentions": []
+  },
+  {
+    "id": "doi:10.1289/isee.2022.p-0438",
+    "title": "Investigation of the relationship between multiple environmental exposures and pediatric obesity in a national cross-sectional study of Canadian children",
+    "doi": "10.1289/isee.2022.p-0438",
+    "url": "https://doi.org/10.1289/isee.2022.p-0438",
+    "year": 2022,
+    "workType": "conference-paper",
+    "issuingOrganization": "National Institute of Environmental Health Sciences",
+    "sources": [
+      "OpenAlex"
+    ],
+    "theme": "environment",
+    "uses": [
+      {
+        "program": "CHMS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
+      }
+    ],
+    "mentions": []
+  },
+  {
     "id": "doi:10.1289/isesisee.2018.o03.02.37",
     "title": "Iron Status and Its Associations with Blood and Plasma Divalent Metals among Children Aged 3 to 19 Years Old from Four First Nation Communities in Quebec",
     "doi": "10.1289/isesisee.2018.o03.02.37",
@@ -27479,6 +29147,31 @@
         "evidenceLocation": "Abstract",
         "certainty": "provisional",
         "statCanExplicit": false
+      }
+    ],
+    "mentions": []
+  },
+  {
+    "id": "doi:10.1353/ces.2020.0012",
+    "title": "Quality of Life of Immigrants in Canada",
+    "doi": "10.1353/ces.2020.0012",
+    "url": "https://doi.org/10.1353/ces.2020.0012",
+    "year": 2020,
+    "workType": "article",
+    "issuingOrganization": "Canadian ethnic studies",
+    "sources": [
+      "OpenAlex"
+    ],
+    "theme": "health",
+    "uses": [
+      {
+        "program": "CCHS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -28185,12 +29878,12 @@
   },
   {
     "id": "doi:10.1371/journal.pone.0214718",
-    "title": "Drug trends among non-institutionalized Canadians and the impact of data collection changes in the Canadian Health Measures Survey 2007 to 2015 - Canadian Research Data Centre Network",
+    "title": "Drug trends among non-institutionalized Canadians and the impact of data collection changes in the Canadian Health Measures Survey 2007 to 2015",
     "doi": "10.1371/journal.pone.0214718",
     "url": "https://doi.org/10.1371/journal.pone.0214718",
     "year": 2019,
     "workType": "article",
-    "issuingOrganization": "PLOS ONE",
+    "issuingOrganization": "Public Library of Science",
     "sources": [
       "CRDCN",
       "OpenAlex"
@@ -28252,6 +29945,56 @@
         "precision": "program_only",
         "cycles": [],
         "cycleText": "",
+        "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
+      }
+    ],
+    "mentions": []
+  },
+  {
+    "id": "doi:10.1371/journal.pone.0229465",
+    "title": "Risk factors for avoidable hospitalizations in Canada using national linked data: A retrospective cohort study",
+    "doi": "10.1371/journal.pone.0229465",
+    "url": "https://doi.org/10.1371/journal.pone.0229465",
+    "year": 2020,
+    "workType": "article",
+    "issuingOrganization": "Public Library of Science",
+    "sources": [
+      "OpenAlex"
+    ],
+    "theme": "health",
+    "uses": [
+      {
+        "program": "CCHS",
+        "precision": "range",
+        "cycles": [],
+        "cycleText": "2001-2011",
+        "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
+      }
+    ],
+    "mentions": []
+  },
+  {
+    "id": "doi:10.1371/journal.pone.0240083",
+    "title": "An examination of difficulties accessing surgical care in Canada from 2005-2014: Results from the Canadian Community Health Survey",
+    "doi": "10.1371/journal.pone.0240083",
+    "url": "https://doi.org/10.1371/journal.pone.0240083",
+    "year": 2020,
+    "workType": "article",
+    "issuingOrganization": "Public Library of Science",
+    "sources": [
+      "OpenAlex"
+    ],
+    "theme": "health",
+    "uses": [
+      {
+        "program": "CCHS",
+        "precision": "range",
+        "cycles": [],
+        "cycleText": "2005-2014",
         "evidenceLocation": "Abstract",
         "certainty": "verified",
         "statCanExplicit": true
@@ -29303,6 +31046,31 @@
     "mentions": []
   },
   {
+    "id": "doi:10.14288/1.0398304",
+    "title": "Sex differences in the Risk for Cardiovascular Disease Associated with Spinal Cord Injury",
+    "doi": "10.14288/1.0398304",
+    "url": "http://hdl.handle.net/2429/78578",
+    "year": 2022,
+    "workType": "article",
+    "issuingOrganization": "University of British Columbia",
+    "sources": [
+      "OpenAlex"
+    ],
+    "theme": "health",
+    "uses": [
+      {
+        "program": "CCHS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
+      }
+    ],
+    "mentions": []
+  },
+  {
     "id": "doi:10.14288/cjur.v8i1.196785",
     "title": "Assessing the Relationship Between Childhood Victimization and Excessive Binge Drinking in Adulthood",
     "doi": "10.14288/cjur.v8i1.196785",
@@ -29857,13 +31625,40 @@
     "mentions": []
   },
   {
+    "id": "doi:10.1503/cmaj.190603",
+    "title": "Trends in objectively measured and perceived mental health and use of mental health services: a population-based study in Ontario, 2002–2014",
+    "doi": "10.1503/cmaj.190603",
+    "url": "https://doi.org/10.1503/cmaj.190603",
+    "year": 2020,
+    "workType": "article",
+    "issuingOrganization": "Canadian Medical Association",
+    "sources": [
+      "OpenAlex"
+    ],
+    "theme": "health",
+    "uses": [
+      {
+        "program": "CCHS",
+        "precision": "exact_cycles",
+        "cycles": [
+          "2002"
+        ],
+        "cycleText": "2002",
+        "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
+      }
+    ],
+    "mentions": []
+  },
+  {
     "id": "doi:10.1503/cmaj.212054",
-    "title": "Suicidality among sexual minority and transgender adolescents: a nationally representative population-based study of youth in Canada - Canadian Research Data Centre Network",
+    "title": "Suicidality among sexual minority and transgender adolescents: a nationally representative population-based study of youth in Canada",
     "doi": "10.1503/cmaj.212054",
     "url": "https://doi.org/10.1503/cmaj.212054",
     "year": 2022,
     "workType": "article",
-    "issuingOrganization": "CMAJ",
+    "issuingOrganization": "Canadian Medical Association",
     "sources": [
       "CRDCN",
       "OpenAlex"
@@ -30842,13 +32637,63 @@
     "mentions": []
   },
   {
+    "id": "doi:10.17269/s41997-020-00297-3",
+    "title": "Association between C-reactive protein and mood disorder in a representative sample of the Canadian population: analysis of CHMS data 2013–2014",
+    "doi": "10.17269/s41997-020-00297-3",
+    "url": "https://doi.org/10.17269/s41997-020-00297-3",
+    "year": 2020,
+    "workType": "article",
+    "issuingOrganization": "Springer Science+Business Media",
+    "sources": [
+      "OpenAlex"
+    ],
+    "theme": "other",
+    "uses": [
+      {
+        "program": "CHMS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Title",
+        "certainty": "provisional",
+        "statCanExplicit": false
+      }
+    ],
+    "mentions": []
+  },
+  {
+    "id": "doi:10.17269/s41997-021-00507-6",
+    "title": "Likelihood of meeting physical activity guidelines in rural and urban adults: cross-sectional analysis of the Canadian Community Health Survey",
+    "doi": "10.17269/s41997-021-00507-6",
+    "url": "https://doi.org/10.17269/s41997-021-00507-6",
+    "year": 2021,
+    "workType": "article",
+    "issuingOrganization": "Springer Science+Business Media",
+    "sources": [
+      "OpenAlex"
+    ],
+    "theme": "health",
+    "uses": [
+      {
+        "program": "CCHS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Title",
+        "certainty": "verified",
+        "statCanExplicit": true
+      }
+    ],
+    "mentions": []
+  },
+  {
     "id": "doi:10.17269/s41997-021-00547-y",
-    "title": "Socio-economic resources and adult mental health in Canada: Controlling for time-invariant confounders and investigating causal directionality. - Canadian Research Data Centre Network",
+    "title": "Socio-economic resources and adult mental health in Canada: controlling for time-invariant confounders and investigating causal directionality",
     "doi": "10.17269/s41997-021-00547-y",
     "url": "https://doi.org/10.17269/s41997-021-00547-y",
     "year": 2021,
     "workType": "article",
-    "issuingOrganization": "Canadian Journal of Public Health",
+    "issuingOrganization": "Springer Science+Business Media",
     "sources": [
       "CRDCN",
       "OpenAlex"
@@ -33380,6 +35225,31 @@
     "mentions": []
   },
   {
+    "id": "doi:10.2139/ssrn.3396926",
+    "title": "Socioeconomic Status and Housework: Cultural Differences in Participation in Routine Housework in Japan, Canada, and the US",
+    "doi": "10.2139/ssrn.3396926",
+    "url": "https://doi.org/10.2139/ssrn.3396926",
+    "year": 2018,
+    "workType": "preprint",
+    "issuingOrganization": "RELX Group (Netherlands)",
+    "sources": [
+      "OpenAlex"
+    ],
+    "theme": "income and inequality",
+    "uses": [
+      {
+        "program": "GSS",
+        "precision": "range",
+        "cycles": [],
+        "cycleText": "2003 to 2016",
+        "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
+      }
+    ],
+    "mentions": []
+  },
+  {
     "id": "doi:10.2139/ssrn.3477612",
     "title": "The Gender Pay Gap in the Public Sector: Evidence from the Canadian Labour Force Survey",
     "doi": "10.2139/ssrn.3477612",
@@ -34320,7 +36190,7 @@
     "url": "https://doi.org/10.22584/nr42.2016.008",
     "year": 2016,
     "workType": "article",
-    "issuingOrganization": "The Northern Review",
+    "issuingOrganization": "Yukon University",
     "sources": [
       "OpenAlex"
     ],
@@ -34754,6 +36624,31 @@
           "2008"
         ],
         "cycleText": "2007, 2008",
+        "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
+      }
+    ],
+    "mentions": []
+  },
+  {
+    "id": "doi:10.23889/ijpds.v7i3.2082",
+    "title": "Associations between neighbourhood fast-food environments and hypertension in Canadian adults.",
+    "doi": "10.23889/ijpds.v7i3.2082",
+    "url": "https://doi.org/10.23889/ijpds.v7i3.2082",
+    "year": 2022,
+    "workType": "article",
+    "issuingOrganization": "Swansea University",
+    "sources": [
+      "OpenAlex"
+    ],
+    "theme": "health",
+    "uses": [
+      {
+        "program": "CHMS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
         "evidenceLocation": "Abstract",
         "certainty": "verified",
         "statCanExplicit": true
@@ -36329,6 +38224,33 @@
     "mentions": []
   },
   {
+    "id": "doi:10.24095/hpcdp.40.3.02",
+    "title": "Tobacco smoke exposure and sleep: estimating the association of urinary cotinine with sleep quality",
+    "doi": "10.24095/hpcdp.40.3.02",
+    "url": "https://doi.org/10.24095/hpcdp.40.3.02",
+    "year": 2020,
+    "workType": "article",
+    "issuingOrganization": "Public Health Agency of Canada",
+    "sources": [
+      "OpenAlex"
+    ],
+    "theme": "environment",
+    "uses": [
+      {
+        "program": "CHMS",
+        "precision": "exact_cycles",
+        "cycles": [
+          "2007"
+        ],
+        "cycleText": "2007",
+        "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
+      }
+    ],
+    "mentions": []
+  },
+  {
     "id": "doi:10.24095/hpcdp.40.3.03f",
     "title": "Aperçu - Mise à jour sur la santé mentale positive chez les jeunes au Canada",
     "doi": "10.24095/hpcdp.40.3.03f",
@@ -36393,6 +38315,31 @@
       "OpenAlex"
     ],
     "theme": "digital society",
+    "uses": [
+      {
+        "program": "CCHS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
+      }
+    ],
+    "mentions": []
+  },
+  {
+    "id": "doi:10.24095/hpcdp.40.7/8.02",
+    "title": "Regional variation in multimorbidity prevalence in British Columbia, Canada: a cross-sectional analysis of Canadian Community Health Survey data, 2015/16",
+    "doi": "10.24095/hpcdp.40.7/8.02",
+    "url": "https://doi.org/10.24095/hpcdp.40.7/8.02",
+    "year": 2020,
+    "workType": "article",
+    "issuingOrganization": "Public Health Agency of Canada",
+    "sources": [
+      "OpenAlex"
+    ],
+    "theme": "health",
     "uses": [
       {
         "program": "CCHS",
@@ -38516,6 +40463,31 @@
     "mentions": []
   },
   {
+    "id": "doi:10.25336/p6ww35",
+    "title": "Guest Editor's Introduction",
+    "doi": "10.25336/p6ww35",
+    "url": "https://doi.org/10.25336/p6ww35",
+    "year": 2017,
+    "workType": "article",
+    "issuingOrganization": "Springer Nature",
+    "sources": [
+      "OpenAlex"
+    ],
+    "theme": "immigration",
+    "uses": [
+      {
+        "program": "LISA",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Abstract",
+        "certainty": "provisional",
+        "statCanExplicit": false
+      }
+    ],
+    "mentions": []
+  },
+  {
     "id": "doi:10.26108/e9sh-e473",
     "title": "Social capital and the wellbeing of Indigenous Peoples in Canada",
     "doi": "10.26108/e9sh-e473",
@@ -38730,7 +40702,7 @@
     "url": "https://doi.org/10.28984/drhj.v3i0.303",
     "year": 2020,
     "workType": "article",
-    "issuingOrganization": "Diversity of Research in Health Journal",
+    "issuingOrganization": "Laurentian University",
     "sources": [
       "OpenAlex"
     ],
@@ -39176,6 +41148,31 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
+      }
+    ],
+    "mentions": []
+  },
+  {
+    "id": "doi:10.3102/1679721",
+    "title": "Comparing Unsupervised Machine Learning Algorithms to Cluster the Responses to the Canadian Community Health Survey",
+    "doi": "10.3102/1679721",
+    "url": "https://doi.org/10.3102/1679721",
+    "year": 2021,
+    "workType": "conference-paper",
+    "issuingOrganization": "American Educational Research Association Annual Meeting (AERA)",
+    "sources": [
+      "OpenAlex"
+    ],
+    "theme": "health",
+    "uses": [
+      {
+        "program": "CCHS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Title",
         "certainty": "verified",
         "statCanExplicit": true
       }
@@ -39766,6 +41763,33 @@
     "mentions": []
   },
   {
+    "id": "doi:10.3138/cjhs.2021-0053",
+    "title": "Disability is associated with sexually transmitted infection: Severity and female sex are important risk factors",
+    "doi": "10.3138/cjhs.2021-0053",
+    "url": "https://doi.org/10.3138/cjhs.2021-0053",
+    "year": 2022,
+    "workType": "article",
+    "issuingOrganization": "University of Toronto Press",
+    "sources": [
+      "OpenAlex"
+    ],
+    "theme": "health",
+    "uses": [
+      {
+        "program": "CCHS",
+        "precision": "exact_cycles",
+        "cycles": [
+          "2014"
+        ],
+        "cycleText": "2014",
+        "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
+      }
+    ],
+    "mentions": []
+  },
+  {
     "id": "doi:10.3138/cpp.2013-060",
     "title": "Minimum Wages and Wage Spillovers in Canada",
     "doi": "10.3138/cpp.2013-060",
@@ -40041,6 +42065,31 @@
     "uses": [
       {
         "program": "LSIC",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
+      }
+    ],
+    "mentions": []
+  },
+  {
+    "id": "doi:10.3138/cpp.2017-073",
+    "title": "Underrepresentation of Women in Canada’s Information and Communication Technology Sector: What Can We Learn from a Canadian Survey of Adult Skills?",
+    "doi": "10.3138/cpp.2017-073",
+    "url": "https://doi.org/10.3138/cpp.2017-073",
+    "year": 2018,
+    "workType": "article",
+    "issuingOrganization": "University of Toronto Press",
+    "sources": [
+      "OpenAlex"
+    ],
+    "theme": "labour",
+    "uses": [
+      {
+        "program": "PIAAC",
         "precision": "program_only",
         "cycles": [],
         "cycleText": "",
@@ -40347,6 +42396,31 @@
     "mentions": []
   },
   {
+    "id": "doi:10.3138/cpp.2020-122",
+    "title": "What Happened to the Immigrant Life Satisfaction Gap?",
+    "doi": "10.3138/cpp.2020-122",
+    "url": "https://doi.org/10.3138/cpp.2020-122",
+    "year": 2021,
+    "workType": "article",
+    "issuingOrganization": "University of Toronto Press",
+    "sources": [
+      "OpenAlex"
+    ],
+    "theme": "immigration",
+    "uses": [
+      {
+        "program": "CCHS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
+      }
+    ],
+    "mentions": []
+  },
+  {
     "id": "doi:10.3138/cpp.2020-138",
     "title": "COVID-19 Health Precautions: Identifying Demographic and Socio-Economic Disparities and Changes over Time",
     "doi": "10.3138/cpp.2020-138",
@@ -40482,12 +42556,12 @@
   },
   {
     "id": "doi:10.3138/cpp.2022-030",
-    "title": "Replacement Rates of Public Pensions in Canada: Heterogeneity across Socio-Economic Status - Canadian Research Data Centre Network",
+    "title": "Replacement Rates of Public Pensions in Canada: Heterogeneity across Socio-Economic Status",
     "doi": "10.3138/cpp.2022-030",
     "url": "https://doi.org/10.3138/cpp.2022-030",
     "year": 2022,
     "workType": "article",
-    "issuingOrganization": "Canadian Public Policy",
+    "issuingOrganization": "University of Toronto Press",
     "sources": [
       "CRDCN",
       "OpenAlex"
@@ -41272,6 +43346,31 @@
     "mentions": []
   },
   {
+    "id": "doi:10.3278/6004672w",
+    "title": "Trends and issues in Canadian adult education research",
+    "doi": "10.3278/6004672w",
+    "url": "http://kups.ub.uni-koeln.de/29735/",
+    "year": 2018,
+    "workType": "article",
+    "issuingOrganization": "Rhenish Institute for Environmental Research",
+    "sources": [
+      "OpenAlex"
+    ],
+    "theme": "education",
+    "uses": [
+      {
+        "program": "PIAAC",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Abstract",
+        "certainty": "provisional",
+        "statCanExplicit": false
+      }
+    ],
+    "mentions": []
+  },
+  {
     "id": "doi:10.32866/001c.19088",
     "title": "Changes in Commute Mode Attributed to COVID-19 Risk in Canadian National Survey Data",
     "doi": "10.32866/001c.19088",
@@ -41447,6 +43546,60 @@
           "2014"
         ],
         "cycleText": "1997, 2014",
+        "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
+      }
+    ],
+    "mentions": []
+  },
+  {
+    "id": "doi:10.32920/14753859",
+    "title": "Exploring differences in Canadian adult men and women with Diabetes management: results from the Canadian Community Health Survey",
+    "doi": "10.32920/14753859",
+    "url": "https://doi.org/10.32920/14753859",
+    "year": 2021,
+    "workType": "preprint",
+    "issuingOrganization": null,
+    "sources": [
+      "OpenAlex"
+    ],
+    "theme": "health",
+    "uses": [
+      {
+        "program": "CCHS",
+        "precision": "exact_cycles",
+        "cycles": [
+          "2007"
+        ],
+        "cycleText": "2007",
+        "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
+      }
+    ],
+    "mentions": []
+  },
+  {
+    "id": "doi:10.32920/14753859.v1",
+    "title": "Exploring differences in Canadian adult men and women with Diabetes management: results from the Canadian Community Health Survey",
+    "doi": "10.32920/14753859.v1",
+    "url": "https://doi.org/10.32920/14753859.v1",
+    "year": 2021,
+    "workType": "preprint",
+    "issuingOrganization": null,
+    "sources": [
+      "OpenAlex"
+    ],
+    "theme": "health",
+    "uses": [
+      {
+        "program": "CCHS",
+        "precision": "exact_cycles",
+        "cycles": [
+          "2007"
+        ],
+        "cycleText": "2007",
         "evidenceLocation": "Abstract",
         "certainty": "verified",
         "statCanExplicit": true
@@ -42581,6 +44734,31 @@
     "mentions": []
   },
   {
+    "id": "doi:10.3389/frai.2021.561528",
+    "title": "Identification of Suicidal Ideation in the Canadian Community Health Survey—Mental Health Component Using Deep Learning",
+    "doi": "10.3389/frai.2021.561528",
+    "url": "https://doi.org/10.3389/frai.2021.561528",
+    "year": 2021,
+    "workType": "article",
+    "issuingOrganization": "Frontiers Media",
+    "sources": [
+      "OpenAlex"
+    ],
+    "theme": "health",
+    "uses": [
+      {
+        "program": "CCHS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
+      }
+    ],
+    "mentions": []
+  },
+  {
     "id": "doi:10.3389/frhs.2022.954914",
     "title": "Mental health services use among Canadian Armed Forces members and Veterans: Data from the 2018 Canadian Armed Forces members and Veterans mental health follow-up survey (CAFMVHS)",
     "doi": "10.3389/frhs.2022.954914",
@@ -43133,15 +45311,41 @@
     "mentions": []
   },
   {
+    "id": "doi:10.3390/ijerph18052450",
+    "title": "Outdoor Air Pollution and Depression in Canada: A Population-Based Cross-Sectional Study from 2011 to 2016",
+    "doi": "10.3390/ijerph18052450",
+    "url": "https://doi.org/10.3390/ijerph18052450",
+    "year": 2021,
+    "workType": "article",
+    "issuingOrganization": "Multidisciplinary Digital Publishing Institute",
+    "sources": [
+      "OpenAlex"
+    ],
+    "theme": "health",
+    "uses": [
+      {
+        "program": "CCHS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
+      }
+    ],
+    "mentions": []
+  },
+  {
     "id": "doi:10.3390/ijerph18126203",
-    "title": "Urinary Fluoride Levels among Canadians with and without Community Water Fluoridation - Canadian Research Data Centre Network",
+    "title": "Urinary Fluoride Levels among Canadians with and without Community Water Fluoridation",
     "doi": "10.3390/ijerph18126203",
     "url": "https://crdcn.ca/publication/urinary-fluoride-levels-among-canadians-with-and-without-community-water-fluoridation-2/",
     "year": 2021,
     "workType": "article",
-    "issuingOrganization": "International Journal of Environmental Research and Public Health",
+    "issuingOrganization": "Multidisciplinary Digital Publishing Institute",
     "sources": [
-      "CRDCN"
+      "CRDCN",
+      "OpenAlex"
     ],
     "theme": "health",
     "uses": [
@@ -43151,6 +45355,15 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
+        "certainty": "verified",
+        "statCanExplicit": true
+      },
+      {
+        "program": "CHMS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Abstract",
         "certainty": "verified",
         "statCanExplicit": true
       }
@@ -43211,12 +45424,12 @@
   },
   {
     "id": "doi:10.3390/ijerph19138029",
-    "title": "Predictors of Land-Based Activity Participation in a National Representative Sample of Indigenous Individuals Living Off-Reserve - Canadian Research Data Centre Network",
+    "title": "Predictors of Land-Based Activity Participation in a National Representative Sample of Indigenous Individuals Living Off-Reserve",
     "doi": "10.3390/ijerph19138029",
     "url": "https://doi.org/10.3390/ijerph19138029",
     "year": 2022,
     "workType": "article",
-    "issuingOrganization": "International Journal of Environmental Research and Public Health",
+    "issuingOrganization": "Multidisciplinary Digital Publishing Institute",
     "sources": [
       "CRDCN",
       "OpenAlex"
@@ -43812,6 +46025,31 @@
     "mentions": []
   },
   {
+    "id": "doi:10.3390/nu14091760",
+    "title": "Vitamin D and Chronic Diseases among First-Generation Immigrants: A Large-Scale Study Using Canadian Health Measures Survey (CHMS) Data",
+    "doi": "10.3390/nu14091760",
+    "url": "https://doi.org/10.3390/nu14091760",
+    "year": 2022,
+    "workType": "article",
+    "issuingOrganization": "Multidisciplinary Digital Publishing Institute",
+    "sources": [
+      "OpenAlex"
+    ],
+    "theme": "health",
+    "uses": [
+      {
+        "program": "CHMS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
+      }
+    ],
+    "mentions": []
+  },
+  {
     "id": "doi:10.3390/nu16162638",
     "title": "Estimating the Potential Health Care Cost-Savings from a Flax-Based Treatment for Hypertension - Canadian Research Data Centre Network",
     "doi": "10.3390/nu16162638",
@@ -44162,6 +46400,15 @@
         "evidenceLocation": "Abstract",
         "certainty": "verified",
         "statCanExplicit": true
+      },
+      {
+        "program": "CHMS",
+        "precision": "range",
+        "cycles": [],
+        "cycleText": "2007-2013",
+        "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -44236,6 +46483,31 @@
         "precision": "program_only",
         "cycles": [],
         "cycleText": "",
+        "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
+      }
+    ],
+    "mentions": []
+  },
+  {
+    "id": "doi:10.3390/toxics10030146",
+    "title": "Exposure to Endocrine Disrupting Chemicals in Canada: Population-Based Estimates of Disease Burden and Economic Costs",
+    "doi": "10.3390/toxics10030146",
+    "url": "https://doi.org/10.3390/toxics10030146",
+    "year": 2022,
+    "workType": "article",
+    "issuingOrganization": "Multidisciplinary Digital Publishing Institute",
+    "sources": [
+      "OpenAlex"
+    ],
+    "theme": "health",
+    "uses": [
+      {
+        "program": "CHMS",
+        "precision": "range",
+        "cycles": [],
+        "cycleText": "2007-2011",
         "evidenceLocation": "Abstract",
         "certainty": "verified",
         "statCanExplicit": true
@@ -44405,6 +46677,33 @@
         "certainty": "verified",
         "statCanExplicit": true
       },
+      {
+        "program": "NHS",
+        "precision": "exact_cycles",
+        "cycles": [
+          "2011"
+        ],
+        "cycleText": "2011",
+        "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
+      }
+    ],
+    "mentions": []
+  },
+  {
+    "id": "doi:10.35188/unu-wider/2017/414-8",
+    "title": "The resettlement of Vietnamese refugees across Canada over three decades",
+    "doi": "10.35188/unu-wider/2017/414-8",
+    "url": "https://doi.org/10.35188/unu-wider/2017/414-8",
+    "year": 2017,
+    "workType": "book",
+    "issuingOrganization": "Working Paper Series",
+    "sources": [
+      "OpenAlex"
+    ],
+    "theme": "immigration",
+    "uses": [
       {
         "program": "NHS",
         "precision": "exact_cycles",
@@ -44987,7 +47286,7 @@
     "url": "https://doi.org/10.4324/9781003080824-23",
     "year": 2021,
     "workType": "book-chapter",
-    "issuingOrganization": null,
+    "issuingOrganization": "Routledge",
     "sources": [
       "OpenAlex"
     ],
@@ -45393,7 +47692,7 @@
     "url": "https://doi.org/10.5176/2251-3833_ghc15.13",
     "year": 2015,
     "workType": "conference-paper",
-    "issuingOrganization": null,
+    "issuingOrganization": "Proceedings of the annual Global Healthcare Conference",
     "sources": [
       "OpenAlex"
     ],
@@ -46900,6 +49199,33 @@
     "mentions": []
   },
   {
+    "id": "doi:10.5864/d2021-018",
+    "title": "Population health indicators across Ontario’s Public Health Units: a cross-sectional analysis of the Canadian Community Health Survey",
+    "doi": "10.5864/d2021-018",
+    "url": "https://doi.org/10.5864/d2021-018",
+    "year": 2021,
+    "workType": "article",
+    "issuingOrganization": "Environmental Health Review",
+    "sources": [
+      "OpenAlex"
+    ],
+    "theme": "health",
+    "uses": [
+      {
+        "program": "CCHS",
+        "precision": "exact_cycles",
+        "cycles": [
+          "2016"
+        ],
+        "cycleText": "2016",
+        "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
+      }
+    ],
+    "mentions": []
+  },
+  {
     "id": "doi:10.59720/23-161",
     "title": "The effects of age on quality of mental health during the COVID-19 pandemic",
     "doi": "10.59720/23-161",
@@ -47175,6 +49501,31 @@
         "precision": "program_only",
         "cycles": [],
         "cycleText": "",
+        "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
+      }
+    ],
+    "mentions": []
+  },
+  {
+    "id": "doi:10.67698/pjpcr.2026.0102",
+    "title": "Revenue Recycling Mechanism and Distributional Welfare Effects of Carbon Pricing: Evidence from British Columbia's Carbon Tax, 2008-2020",
+    "doi": "10.67698/pjpcr.2026.0102",
+    "url": "https://doi.org/10.67698/pjpcr.2026.0102",
+    "year": 2021,
+    "workType": "article",
+    "issuingOrganization": "Princeton Journal of Pre-Collegiate Research",
+    "sources": [
+      "OpenAlex"
+    ],
+    "theme": "environment",
+    "uses": [
+      {
+        "program": "SHS",
+        "precision": "range",
+        "cycles": [],
+        "cycleText": "2008-2020",
         "evidenceLocation": "Abstract",
         "certainty": "verified",
         "statCanExplicit": true
@@ -47646,7 +49997,7 @@
   },
   {
     "id": "doi:10.71548/22621",
-    "title": "Comparing Civic participation Between Korea and Canada",
+    "title": "The Effect of Trust and Sense of belonging on Civic participation: a Comparative study between Korea and Canada",
     "doi": "10.71548/22621",
     "url": "http://hdl.handle.net/11375/26308",
     "year": 2021,
@@ -47800,6 +50151,33 @@
         "precision": "program_only",
         "cycles": [],
         "cycleText": "",
+        "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
+      }
+    ],
+    "mentions": []
+  },
+  {
+    "id": "doi:10.71781/1472",
+    "title": "Relation entre l’exposition aux parabènes et les hormones de la reproduction : une étude chez les jeunes filles canadiennes",
+    "doi": "10.71781/1472",
+    "url": "http://hdl.handle.net/1866/24549",
+    "year": 2020,
+    "workType": "dissertation",
+    "issuingOrganization": null,
+    "sources": [
+      "OpenAlex"
+    ],
+    "theme": "digital society",
+    "uses": [
+      {
+        "program": "CHMS",
+        "precision": "exact_cycles",
+        "cycles": [
+          "2014"
+        ],
+        "cycleText": "2014",
         "evidenceLocation": "Abstract",
         "certainty": "verified",
         "statCanExplicit": true
@@ -48441,6 +50819,31 @@
         "evidenceLocation": "Abstract",
         "certainty": "provisional",
         "statCanExplicit": false
+      }
+    ],
+    "mentions": []
+  },
+  {
+    "id": "doi:10.7577/pp.4029",
+    "title": "A Gendered Analysis of Work, Stress and Mental Health, Among Professional and Non-Professional Workers",
+    "doi": "10.7577/pp.4029",
+    "url": "https://doi.org/10.7577/pp.4029",
+    "year": 2021,
+    "workType": "article",
+    "issuingOrganization": "Oslo and Akershus University College of Applied Sciences",
+    "sources": [
+      "OpenAlex"
+    ],
+    "theme": "health",
+    "uses": [
+      {
+        "program": "CCHS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -50180,6 +52583,56 @@
           "2012"
         ],
         "cycleText": "2012",
+        "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
+      }
+    ],
+    "mentions": []
+  },
+  {
+    "id": "doi:10.9778/cmajo.20210147",
+    "title": "Association between chronic conditions and urinary incontinence in females: a cross-sectional study using national survey data",
+    "doi": "10.9778/cmajo.20210147",
+    "url": "https://doi.org/10.9778/cmajo.20210147",
+    "year": 2022,
+    "workType": "article",
+    "issuingOrganization": "Canadian Medical Association",
+    "sources": [
+      "OpenAlex"
+    ],
+    "theme": "health",
+    "uses": [
+      {
+        "program": "CCHS",
+        "precision": "range",
+        "cycles": [],
+        "cycleText": "2013-2014",
+        "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
+      }
+    ],
+    "mentions": []
+  },
+  {
+    "id": "doi:10.9778/cmajo.20210205",
+    "title": "Trends in obesity across Canada from 2005 to 2018: a consecutive cross-sectional population-based study",
+    "doi": "10.9778/cmajo.20210205",
+    "url": "https://doi.org/10.9778/cmajo.20210205",
+    "year": 2022,
+    "workType": "article",
+    "issuingOrganization": "Canadian Medical Association",
+    "sources": [
+      "OpenAlex"
+    ],
+    "theme": "health",
+    "uses": [
+      {
+        "program": "CCHS",
+        "precision": "range",
+        "cycles": [],
+        "cycleText": "2005 to 2017",
         "evidenceLocation": "Abstract",
         "certainty": "verified",
         "statCanExplicit": true
@@ -52279,6 +54732,33 @@
     "mentions": []
   },
   {
+    "id": "url:0e33092099eb37fded726407ad75cbaa6fb0a42a8f3a401c9be91cf5b9ee83c6",
+    "title": "Socio-demographic factors associated with meeting the Canadian 24-hour movement guidelines among adults and older adults: Mini-Oral Presentation C3.11",
+    "doi": null,
+    "url": "https://hfjc.library.ubc.ca/index.php/HFJC/article/view/785",
+    "year": 2021,
+    "workType": "article",
+    "issuingOrganization": "Health & fitness journal of Canada",
+    "sources": [
+      "OpenAlex"
+    ],
+    "theme": "health",
+    "uses": [
+      {
+        "program": "CHMS",
+        "precision": "exact_cycles",
+        "cycles": [
+          "2013"
+        ],
+        "cycleText": "2013",
+        "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
+      }
+    ],
+    "mentions": []
+  },
+  {
     "id": "url:0e3f9bf52a8da5cce448d30d9dfe31f459f4f4edf42f33e75fd4a17de14a4d27",
     "title": "Cardiometabolic Health in South Asians Living in Canada: Canadian Community Health Survey 2000-2014 and Canadian Health Measures Survey 2007-2013",
     "doi": null,
@@ -52381,6 +54861,56 @@
         "cycles": [],
         "cycleText": "2004 to 2015",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
+        "certainty": "verified",
+        "statCanExplicit": true
+      }
+    ],
+    "mentions": []
+  },
+  {
+    "id": "url:0ebf42980a0228f3131cd35c7c854814ce96fa45f8a688af1a24622b17d6c493",
+    "title": "Gambling among Immigrants to Canada: A Quantitative Investigation Using the Canadian Community Health Survey",
+    "doi": null,
+    "url": "https://hdl.handle.net/ 10680/2425",
+    "year": 2021,
+    "workType": "report",
+    "issuingOrganization": "The University of Winnipeg",
+    "sources": [
+      "OpenAlex"
+    ],
+    "theme": "health",
+    "uses": [
+      {
+        "program": "CCHS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
+      }
+    ],
+    "mentions": []
+  },
+  {
+    "id": "url:0f889da901cf3b728e8f9f48881d8c66a02fe586b1b66ce7277419af724118c7",
+    "title": "Prematurity, Socioeconomic Status, And Childhood Asthma: A Canadian Cohort Study",
+    "doi": null,
+    "url": "https://ir.lib.uwo.ca/etd/7163",
+    "year": 2020,
+    "workType": "article",
+    "issuingOrganization": "Western University",
+    "sources": [
+      "OpenAlex"
+    ],
+    "theme": "income and inequality",
+    "uses": [
+      {
+        "program": "CHMS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Abstract",
         "certainty": "verified",
         "statCanExplicit": true
       }
@@ -59625,6 +62155,31 @@
     "mentions": []
   },
   {
+    "id": "url:47b965f068849e6c23e64ba4e1c6cf8cd9cbe112052dd4e949feeb44dc33e79f",
+    "title": "Associations Between Handgrip Strength Asymmetry And Health Related Quality Of Life Among Canadian Adults: An Analysis Of The Canadian Health Measures Survey",
+    "doi": null,
+    "url": "https://commons.und.edu/theses/4274",
+    "year": 2022,
+    "workType": "dissertation",
+    "issuingOrganization": "University of North Dakota",
+    "sources": [
+      "OpenAlex"
+    ],
+    "theme": "health",
+    "uses": [
+      {
+        "program": "CHMS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Abstract",
+        "certainty": "provisional",
+        "statCanExplicit": false
+      }
+    ],
+    "mentions": []
+  },
+  {
     "id": "url:47c539d6cc325f2e840d7ba901a2c6b48ca8099cb4f569176aa72a23f91855a1",
     "title": "Nonparametric kernal estimation methods using complex survey data - Canadian Research Data Centre Network",
     "doi": null,
@@ -61833,6 +64388,31 @@
           "2010"
         ],
         "cycleText": "2010",
+        "evidenceLocation": "Abstract",
+        "certainty": "provisional",
+        "statCanExplicit": false
+      }
+    ],
+    "mentions": []
+  },
+  {
+    "id": "url:5979cd21bd2291cf11eb615ab7f9c714fa4611cd0e52b522ad4fe6795cedc01d",
+    "title": "Visible Minority Status and Confidence in the Police",
+    "doi": null,
+    "url": "https://ojs.lib.uwo.ca/index.php/si/article/view/10515",
+    "year": 2020,
+    "workType": "article",
+    "issuingOrganization": "The Sociological Imagination: Undergraduate Journal",
+    "sources": [
+      "OpenAlex"
+    ],
+    "theme": "immigration",
+    "uses": [
+      {
+        "program": "GSS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
         "evidenceLocation": "Abstract",
         "certainty": "provisional",
         "statCanExplicit": false
@@ -64318,6 +66898,31 @@
         "cycles": [],
         "cycleText": "2007 to 2025",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
+        "certainty": "verified",
+        "statCanExplicit": true
+      }
+    ],
+    "mentions": []
+  },
+  {
+    "id": "url:6b03113ed9d2a17ea10e206dd6e68c6dc200f2dffd4336a17db888610b71ddcd",
+    "title": "Sex, sexual orientation, and body dissatisfaction: Results from the Canadian Community Health Survey 2017-2018: Oral Presentation C13.5",
+    "doi": null,
+    "url": "https://hfjc.library.ubc.ca/index.php/HFJC/article/view/729",
+    "year": 2021,
+    "workType": "article",
+    "issuingOrganization": "Health & fitness journal of Canada",
+    "sources": [
+      "OpenAlex"
+    ],
+    "theme": "health",
+    "uses": [
+      {
+        "program": "CCHS",
+        "precision": "range",
+        "cycles": [],
+        "cycleText": "2017-2018",
+        "evidenceLocation": "Abstract",
         "certainty": "verified",
         "statCanExplicit": true
       }
@@ -68806,6 +71411,33 @@
     "mentions": []
   },
   {
+    "id": "url:8e54791f006fb9e157ebee37e3626c9d0386195c0161dc67374cef20cf6c87c7",
+    "title": "The effect of the presence of children on the labour market performance of Canadian-born and immigrant women",
+    "doi": null,
+    "url": "http://hdl.handle.net/10393/35150",
+    "year": 2016,
+    "workType": "article",
+    "issuingOrganization": "University of Ottawa",
+    "sources": [
+      "OpenAlex"
+    ],
+    "theme": "labour",
+    "uses": [
+      {
+        "program": "NHS",
+        "precision": "exact_cycles",
+        "cycles": [
+          "2011"
+        ],
+        "cycleText": "2011",
+        "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
+      }
+    ],
+    "mentions": []
+  },
+  {
     "id": "url:8e81f2a09592d779772fbb1dfa94d39317aca4d0a6699b59ea1f9171cf4ed010",
     "title": "Comparison of Physical Activity Adult Questionnaire results with accelerometer data.",
     "doi": null,
@@ -69157,6 +71789,33 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
+        "certainty": "verified",
+        "statCanExplicit": true
+      }
+    ],
+    "mentions": []
+  },
+  {
+    "id": "url:91f5772730e85e514d633907eaac9e331787104f02056e24b85ca28b68855a3c",
+    "title": "Are the Dimensions of the Human Development Index (HDI) Important in Explaining Subjective Well-being (SWB)?",
+    "doi": null,
+    "url": "http://hdl.handle.net/1828/11811",
+    "year": 2020,
+    "workType": "article",
+    "issuingOrganization": "University of Victoria",
+    "sources": [
+      "OpenAlex"
+    ],
+    "theme": "education",
+    "uses": [
+      {
+        "program": "CCHS",
+        "precision": "exact_cycles",
+        "cycles": [
+          "2014"
+        ],
+        "cycleText": "2014",
+        "evidenceLocation": "Abstract",
         "certainty": "verified",
         "statCanExplicit": true
       }
@@ -73437,6 +76096,31 @@
     "mentions": []
   },
   {
+    "id": "url:b27774addf24ef6250c53f6e7293b97d9da3ebf528b577a7ffd5512df849faff",
+    "title": "Physical activity and chronic back disorders: A comparison between self-reported and accelerometer-measured physical activity: Oral Presentation C10.8",
+    "doi": null,
+    "url": "https://hfjc.library.ubc.ca/index.php/HFJC/article/view/709",
+    "year": 2021,
+    "workType": "article",
+    "issuingOrganization": "Health & fitness journal of Canada",
+    "sources": [
+      "OpenAlex"
+    ],
+    "theme": "health",
+    "uses": [
+      {
+        "program": "CHMS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
+      }
+    ],
+    "mentions": []
+  },
+  {
     "id": "url:b28cbc9c38550e850612669bdd4555251c575d32119042757e486b98a6bb335c",
     "title": "Economic Immigrants in Gateway Cities: Factors Involved in Their Initial Location and Onward Migration Decisions",
     "doi": null,
@@ -73834,6 +76518,31 @@
     "uses": [
       {
         "program": "CCHS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
+      }
+    ],
+    "mentions": []
+  },
+  {
+    "id": "url:b7648f9cb926fa2a7f88a6971e82896e918570af395e71df7dec66feb82162cb",
+    "title": "Underrepresentation of Women in Canada's Information and Communication Technology Sector: What Can be Learn from a Canadian Survey of Adult Skills?",
+    "doi": null,
+    "url": "https://papers.ssrn.com/sol3/papers.cfm?abstract_id=3477624",
+    "year": 2018,
+    "workType": "preprint",
+    "issuingOrganization": "RELX Group (Netherlands)",
+    "sources": [
+      "OpenAlex"
+    ],
+    "theme": "labour",
+    "uses": [
+      {
+        "program": "PIAAC",
         "precision": "program_only",
         "cycles": [],
         "cycleText": "",
@@ -81736,6 +84445,31 @@
     "mentions": []
   },
   {
+    "id": "url:ed91c10d1a57de16368201a5b882fc67e04e3695f6e123c4784c89d29ed33042",
+    "title": "Urinary Fluoride Levels Among Canadians and the Association Between Fluoride Exposure and Attention Deficit Hyperactivity Disorder",
+    "doi": null,
+    "url": "http://hdl.handle.net/10315/37856",
+    "year": 2020,
+    "workType": "dissertation",
+    "issuingOrganization": "York University",
+    "sources": [
+      "OpenAlex"
+    ],
+    "theme": "health",
+    "uses": [
+      {
+        "program": "CHMS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
+      }
+    ],
+    "mentions": []
+  },
+  {
     "id": "url:edc7703a930a05f2016a5f829f02c8e0e1a56f31a38ee2ffd4f890ac5136d171",
     "title": "Evaluating the Canada Child Benefit - Canadian Research Data Centre Network",
     "doi": null,
@@ -81989,6 +84723,31 @@
         "cycles": [],
         "cycleText": "2004 to 2015",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
+        "certainty": "verified",
+        "statCanExplicit": true
+      }
+    ],
+    "mentions": []
+  },
+  {
+    "id": "url:ef3e59a6d5526f7d2c31e6cbaa1fd6defab151639f1f2bd55b070ae67e36b452",
+    "title": "Original quantitative research - Regional variation in multimorbidity prevalence in British Columbia, Canada: a cross-sectional analysis of Canadian Community Health Survey data, 2015/16",
+    "doi": null,
+    "url": "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC7450904/",
+    "year": 2020,
+    "workType": "article",
+    "issuingOrganization": null,
+    "sources": [
+      "OpenAlex"
+    ],
+    "theme": "health",
+    "uses": [
+      {
+        "program": "CCHS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Abstract",
         "certainty": "verified",
         "statCanExplicit": true
       }
