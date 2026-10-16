@@ -199,7 +199,10 @@ async function harvestCkanEndpoint(
   query: string,
   maxRows: number
 ): Promise<CandidateWork[]> {
-  const url = `${endpoint.baseUrl.replace(/\/$/, '')}/api/3/action/package_search?q=${encodeURIComponent(query)}&rows=${maxRows}`;
+  const fqParam = (endpoint.tier === 'federal' || endpoint.baseUrl.includes('open.canada.ca'))
+    ? '&fq=-organization:statcan'
+    : '';
+  const url = `${endpoint.baseUrl.replace(/\/$/, '')}/api/3/action/package_search?q=${encodeURIComponent(query)}${fqParam}&rows=${maxRows}`;
   const candidates: CandidateWork[] = [];
 
   try {
@@ -222,7 +225,7 @@ async function harvestCkanEndpoint(
           notes?: string;
           url?: string;
           organization?: { title?: string; name?: string };
-          resources?: Array<{ name?: string; url?: string }>;
+          resources?: Array<{ name?: string; url?: string; description?: string }>;
           metadata_created?: string;
           metadata_modified?: string;
           portal_release_date?: string;
@@ -244,7 +247,11 @@ async function harvestCkanEndpoint(
       }
 
       const notes = pkg.notes || '';
-      const fullText = `${pkg.title} ${notes}`;
+      const resText = (pkg.resources || [])
+        .map(r => `${r.name || ''} ${r.description || ''}`)
+        .join(' ')
+        .trim();
+      const fullText = `${pkg.title} ${notes} ${resText}`;
 
       if (!isCanadianGrounded(fullText) || hasForeignDisqualifier(fullText)) {
         continue;
@@ -274,6 +281,11 @@ async function harvestCkanEndpoint(
         primaryUrl = `${endpoint.baseUrl}/dataset/${pkg.id}`;
       }
 
+      let passage = notes.length >= 40 ? notes : pkg.title;
+      if (resText.length >= 20 && !notes.toLowerCase().includes('survey') && !notes.toLowerCase().includes('enquête')) {
+        passage = notes.length > 0 ? `${notes}\n\n${resText.slice(0, 1500)}` : resText.slice(0, 1500);
+      }
+
       candidates.push({
         title: pkg.title,
         url: primaryUrl,
@@ -282,10 +294,10 @@ async function harvestCkanEndpoint(
         year,
         workType: 'report',
         issuingOrganization: orgName.replace(/\s*\|\s*.*$/, '').trim(),
-        abstract: notes.slice(0, 2500),
+        abstract: notes.slice(0, 2500) || resText.slice(0, 2500),
         abstractRights: 'permitted',
         suggestedPrograms: matchedPrograms,
-        passage: notes.length >= 40 ? notes : pkg.title,
+        passage: passage.slice(0, 3000),
         passageLocation: `${endpoint.name} - Description`,
       });
     }
@@ -583,7 +595,7 @@ export async function harvestPanCanadianJurisdictions(
   options: PanCanadianHarvestOptions = {}
 ): Promise<CandidateWork[]> {
   const allCandidates: CandidateWork[] = [];
-  const maxRows = options.maxRowsPerQuery ?? 15;
+  const maxRows = options.maxRowsPerQuery ?? 25;
 
   console.log('\n[PanCanadianHarvester] Initializing 4-Tier Jurisdictional Scanning System:');
   console.log('  - Tier 1: Federal Repositories (open.canada.ca)');
@@ -608,7 +620,7 @@ export async function harvestPanCanadianJurisdictions(
 
   for (const ep of ckanEndpoints) {
     console.log(`\n[${ep.tier.toUpperCase()} Scan: ${ep.name}] Querying portal (${ep.jurisdiction})...`);
-    for (const q of TARGET_SURVEY_QUERIES.slice(0, 8)) {
+    for (const q of TARGET_SURVEY_QUERIES) {
       const hits = await harvestCkanEndpoint(ep, q, maxRows);
       if (hits.length > 0) {
         console.log(`  ✓ ${ep.jurisdiction} (${q}): ${hits.length} candidates`);

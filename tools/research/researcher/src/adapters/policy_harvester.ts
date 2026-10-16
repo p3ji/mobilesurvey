@@ -38,9 +38,9 @@ export interface PolicyHarvestOptions {
  */
 export async function harvestFederalOpenData(
   query: string,
-  maxRows: number = 25
+  maxRows: number = 30
 ): Promise<CandidateWork[]> {
-  const url = `https://open.canada.ca/data/api/3/action/package_search?q=${encodeURIComponent(query)}&rows=${maxRows}`;
+  const url = `https://open.canada.ca/data/api/3/action/package_search?q=${encodeURIComponent(query)}&fq=-organization:statcan&rows=${maxRows}`;
   const candidates: CandidateWork[] = [];
 
   try {
@@ -79,7 +79,11 @@ export async function harvestFederalOpenData(
       }
 
       const notes = pkg.notes || '';
-      const fullText = `${pkg.title} ${notes}`;
+      const resText = (pkg.resources || [])
+        .map(r => `${r.name || ''}`)
+        .join(' ')
+        .trim();
+      const fullText = `${pkg.title} ${notes} ${resText}`;
       
       // Ensure positive Canadian grounding and no foreign disqualifiers
       if (!isCanadianGrounded(fullText) || hasForeignDisqualifier(fullText)) {
@@ -106,6 +110,11 @@ export async function harvestFederalOpenData(
 
       const primaryUrl = pkg.resources?.[0]?.url || pkg.url || `https://open.canada.ca/data/en/dataset/${pkg.id}`;
 
+      let passage = notes.length >= 40 ? notes : pkg.title;
+      if (resText.length >= 20 && !notes.toLowerCase().includes('survey') && !notes.toLowerCase().includes('enquête')) {
+        passage = notes.length > 0 ? `${notes}\n\n${resText.slice(0, 1500)}` : resText.slice(0, 1500);
+      }
+
       candidates.push({
         title: pkg.title,
         url: primaryUrl,
@@ -114,10 +123,10 @@ export async function harvestFederalOpenData(
         year,
         workType: 'report',
         issuingOrganization: orgName.replace(/\s*\|\s*.*$/, '').trim(), // e.g. "Health Canada | Santé Canada" -> "Health Canada"
-        abstract: notes.slice(0, 2500),
+        abstract: notes.slice(0, 2500) || resText.slice(0, 2500),
         abstractRights: 'permitted',
         suggestedPrograms: matchedPrograms,
-        passage: notes.length >= 40 ? notes : pkg.title,
+        passage: passage.slice(0, 3000),
         passageLocation: 'Dataset Description & Methodology',
       });
     }

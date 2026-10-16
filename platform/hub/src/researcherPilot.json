@@ -50239,6 +50239,33 @@
     "mentions": []
   },
   {
+    "id": "url:00223f4cebef923be7276ebfd77153671ea26ca595ad0f3f8247f6304eed76d1",
+    "title": "Communications Services in Canadian Households Subscriptions and Expenditures",
+    "doi": null,
+    "url": "https://applications.crtc.gc.ca/OpenData/CASP/CSCHSE/Communications%20Services%20in%20Canadian%20Households%20Subscriptions%20and%20Expenditures.xlsx",
+    "year": 2018,
+    "workType": "report",
+    "issuingOrganization": "Canadian Radio-television and Telecommunications Commission",
+    "sources": [
+      "Government of Canada Open Data (FEDERAL)"
+    ],
+    "theme": "digital society",
+    "uses": [
+      {
+        "program": "SHS",
+        "precision": "exact_cycles",
+        "cycles": [
+          "2016"
+        ],
+        "cycleText": "2016",
+        "evidenceLocation": "Government of Canada Open Data - Description",
+        "certainty": "verified",
+        "statCanExplicit": true
+      }
+    ],
+    "mentions": []
+  },
+  {
     "id": "url:005789ccbe7b17560148f87c54eb9874c15fb582e7f97ac038a0889fda73e73b",
     "title": "Examining the Canadian Sociocultural Model of Entrepreneurship and Acculturation of Immigrant Entrepreneurs in Saskatchewan",
     "doi": null,
@@ -50479,6 +50506,31 @@
         "cycles": [],
         "cycleText": "2011 to 2011",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
+        "certainty": "verified",
+        "statCanExplicit": true
+      }
+    ],
+    "mentions": []
+  },
+  {
+    "id": "url:0325cbe961253e6c0240d53c730c1b98c642ae3d30295bce666e38fb2094e674",
+    "title": "Labour market notes [2017]",
+    "doi": null,
+    "url": "https://open.alberta.ca/dataset/4c662302-698a-4ee9-b4e9-df6cf7d73d8e/resource/ced03213-13d3-4618-bb09-7704ef40865f/download/tbf-labour-market-notes-2017-12.pdf",
+    "year": 2021,
+    "workType": "report",
+    "issuingOrganization": "Treasury Board and Finance",
+    "sources": [
+      "Alberta Open Data Portal (PROVINCIAL)"
+    ],
+    "theme": "digital society",
+    "uses": [
+      {
+        "program": "LFS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Alberta Open Data Portal - Description",
         "certainty": "verified",
         "statCanExplicit": true
       }
@@ -50801,6 +50853,33 @@
     "mentions": []
   },
   {
+    "id": "url:06c4ccab921161b321000705d737781b967bee1adfcf5fc028f922cbf545726c",
+    "title": "Workforce Population Showing Representation by Employment Equity Occupational Group and Sector in the Federally Regulated Private Sector for Women, Indigenous Peoples, Persons with Disabilities, and Members of Visible Minorities",
+    "doi": null,
+    "url": "https://open.canada.ca/data/dataset/69362c0b-bfa9-40f0-acb6-0f7ba4abd648/resource/ea5df54b-8798-41e3-83a4-b7e792788cbc/download/wd-opendata-leepsector-4dg-en.csv",
+    "year": 2025,
+    "workType": "report",
+    "issuingOrganization": "Employment and Social Development Canada",
+    "sources": [
+      "Government of Canada Open Data (FEDERAL)"
+    ],
+    "theme": "labour",
+    "uses": [
+      {
+        "program": "CSD",
+        "precision": "exact_cycles",
+        "cycles": [
+          "2022"
+        ],
+        "cycleText": "2022",
+        "evidenceLocation": "Government of Canada Open Data - Description",
+        "certainty": "verified",
+        "statCanExplicit": true
+      }
+    ],
+    "mentions": []
+  },
+  {
     "id": "url:06e1d0506a7d499a3ce0b4e15bee7ba2463f143676fb63c4afe3f21032c4e74d",
     "title": "TYPE 2 DIABETES AND DEPRESSION COMORBIDITY: EXPLORING RISK FACTORS, ANTECEDENCE, ASSOCIATED PAIN, AND HEALTH SERVICES UTILIZATION",
     "doi": null,
@@ -50995,6 +51074,31 @@
     "mentions": []
   },
   {
+    "id": "url:07fa4d446f24f2b0d55310ff5408258bdab32660c381b12248df6898f651fa36",
+    "title": "Upper Income Quintile boundaries, Canada, Alberta and Provinces (2010-2013)",
+    "doi": null,
+    "url": "https://open.alberta.ca/dataset/8db52c1c-daab-4f0b-9be3-899399f0a295/resource/21f13b72-4bac-4827-aa5c-f3b02cc7d308/download/goadesktopejjenna.wongdesktopquintile-boundaries-20102015-10-16.xlsx",
+    "year": 2015,
+    "workType": "report",
+    "issuingOrganization": "Treasury Board and Finance",
+    "sources": [
+      "Alberta Open Data Portal (PROVINCIAL)"
+    ],
+    "theme": "digital society",
+    "uses": [
+      {
+        "program": "SHS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Alberta Open Data Portal - Description",
+        "certainty": "verified",
+        "statCanExplicit": true
+      }
+    ],
+    "mentions": []
+  },
+  {
     "id": "url:08322349e9a5258ee84911313d0d9c72868e3b301b0fdc777f5788a6bf4c94a0",
     "title": "Canadian Community Health Survey (CCHS) Pooled Demographic and Income Data",
     "doi": null,
@@ -51149,6 +51253,31 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
+        "certainty": "verified",
+        "statCanExplicit": true
+      }
+    ],
+    "mentions": []
+  },
+  {
+    "id": "url:08b80931db9d7518aa1db9cfa2bed1d9e55a7aa96bcb12eac5da678d524e6db0",
+    "title": "Vitamin D Supplementation of Breastfed Infants in Canada: Key Statistics and Graphics (2007-2008)",
+    "doi": null,
+    "url": "https://www.canada.ca/en/health-canada/services/food-nutrition/food-nutrition-surveillance/health-nutrition-surveys/canadian-community-health-survey-cchs/vitamin-supplementation-breastfed-infants-canada-key-statistics-graphics-2007-2008-food-nutrition-surveillance-health-canada.html",
+    "year": 2022,
+    "workType": "report",
+    "issuingOrganization": "Health Canada",
+    "sources": [
+      "Government of Canada Open Data (FEDERAL)"
+    ],
+    "theme": "health",
+    "uses": [
+      {
+        "program": "CCHS",
+        "precision": "range",
+        "cycles": [],
+        "cycleText": "2007-2008",
+        "evidenceLocation": "Government of Canada Open Data - Description",
         "certainty": "verified",
         "statCanExplicit": true
       }
@@ -52098,7 +52227,8 @@
     "workType": "report",
     "issuingOrganization": "Department of Justice Canada",
     "sources": [
-      "Federal Open Data (open.canada.ca)"
+      "Federal Open Data (open.canada.ca)",
+      "Government of Canada Open Data (FEDERAL)"
     ],
     "theme": "crime and justice",
     "uses": [
@@ -53132,6 +53262,31 @@
     "mentions": []
   },
   {
+    "id": "url:160391482654ef214f2208c4d1d58cf5ddf019268a448c91b2170661c60eaff0",
+    "title": "[ARCHIVED] Canadian Community Health Survey Sleeping 2001",
+    "doi": null,
+    "url": "https://data.novascotia.ca/datasets/m9nq-2jdk",
+    "year": 2022,
+    "workType": "report",
+    "issuingOrganization": "Government of Nova Scotia",
+    "sources": [
+      "Government of Canada Open Data (FEDERAL)"
+    ],
+    "theme": "health",
+    "uses": [
+      {
+        "program": "CCHS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Government of Canada Open Data - Description",
+        "certainty": "verified",
+        "statCanExplicit": true
+      }
+    ],
+    "mentions": []
+  },
+  {
     "id": "url:1620695f20478cf376006a27af5349f55cae1cdc28d6e06edd6a6b9d06256f1e",
     "title": "Mobiliser les statistiques sociales pour explorer l&#039;hétérogénéité de la catégorie NEEF - Canadian Research Data Centre Network",
     "doi": null,
@@ -53856,6 +54011,31 @@
     "mentions": []
   },
   {
+    "id": "url:1b0570cb5a8fb512141875352e8f8987583939ebaf4dc66fa72da7c0f7db669b",
+    "title": "Women in Alberta : income and paid work [2018]",
+    "doi": null,
+    "url": "https://open.alberta.ca/dataset/4cd009e7-e7ad-43dc-ab16-b95d2700aeea/resource/9faa905c-b207-4bb5-984b-5a637800568e/download/2018-0214-women-in-alberta-income-and-paid-work.pdf",
+    "year": 2018,
+    "workType": "report",
+    "issuingOrganization": "Treasury Board and Finance",
+    "sources": [
+      "Alberta Open Data Portal (PROVINCIAL)"
+    ],
+    "theme": "labour",
+    "uses": [
+      {
+        "program": "LFS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Alberta Open Data Portal - Description",
+        "certainty": "provisional",
+        "statCanExplicit": false
+      }
+    ],
+    "mentions": []
+  },
+  {
     "id": "url:1b2a12f3aab4a12b5ddcab7756cc7f7d42a571456c6fd77326ad4c8ffdf56bc9",
     "title": "Labour force estimates by sex, age groups, education level, immigrant status, Canada and provinces (annual average) (2018)",
     "doi": null,
@@ -54139,6 +54319,31 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
+        "certainty": "verified",
+        "statCanExplicit": true
+      }
+    ],
+    "mentions": []
+  },
+  {
+    "id": "url:1df24826e812c93eb167ae516d8a5051792786951da3e92f7334dbf1fc2ebc88",
+    "title": "Vol 35, No 7, September 2015 - Health Promotion and Chronic Disease Prevention in Canada",
+    "doi": null,
+    "url": "https://www.canada.ca/en/public-health/services/reports-publications/health-promotion-chronic-disease-prevention-canada-research-policy-practice/vol-35-no-7-2015.html",
+    "year": 2019,
+    "workType": "report",
+    "issuingOrganization": "Public Health Agency of Canada",
+    "sources": [
+      "Government of Canada Open Data (FEDERAL)"
+    ],
+    "theme": "health",
+    "uses": [
+      {
+        "program": "CCHS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Government of Canada Open Data - Description",
         "certainty": "verified",
         "statCanExplicit": true
       }
@@ -54678,6 +54883,31 @@
     "mentions": []
   },
   {
+    "id": "url:231f6157e5f4246f725fa27bed7cb763de4870733d862b9f45d44902de8c2fe1",
+    "title": "Broadband Internet Access by Estimated Number of Households for Canada and Provinces (2009)",
+    "doi": null,
+    "url": "https://open.alberta.ca/dataset/901baf00-2ed5-47c9-b3b0-c7829c6ce628/resource/01310be3-e42e-456c-ab8b-5d37bfb3f2af/download/survey-of-household-spending-2009-c3-2011-01-01.xls",
+    "year": 2016,
+    "workType": "report",
+    "issuingOrganization": "Treasury Board and Finance",
+    "sources": [
+      "Alberta Open Data Portal (PROVINCIAL)"
+    ],
+    "theme": "digital society",
+    "uses": [
+      {
+        "program": "SHS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Alberta Open Data Portal - Description",
+        "certainty": "verified",
+        "statCanExplicit": true
+      }
+    ],
+    "mentions": []
+  },
+  {
     "id": "url:23431f4039efbaa888f40d66b3f5bda34581b8d90b11b65a06ac290362ca22ec",
     "title": "Just Facts: Indigenous overrepresentation in the criminal justice system (2019)",
     "doi": null,
@@ -54686,7 +54916,8 @@
     "workType": "report",
     "issuingOrganization": "Department of Justice Canada",
     "sources": [
-      "Federal Open Data (open.canada.ca)"
+      "Federal Open Data (open.canada.ca)",
+      "Government of Canada Open Data (FEDERAL)"
     ],
     "theme": "crime and justice",
     "uses": [
@@ -55180,6 +55411,31 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
+        "certainty": "verified",
+        "statCanExplicit": true
+      }
+    ],
+    "mentions": []
+  },
+  {
+    "id": "url:26db1fe076a397c3f0cd43cd7f319114a3a6fc3af4c1cdf7bea36bcd3dee8902",
+    "title": "[ARCHIVED] Canadian Community Health Survey 2001-2010",
+    "doi": null,
+    "url": "https://data.novascotia.ca/datasets/eytb-9sg2",
+    "year": 2022,
+    "workType": "report",
+    "issuingOrganization": "Government of Nova Scotia",
+    "sources": [
+      "Government of Canada Open Data (FEDERAL)"
+    ],
+    "theme": "health",
+    "uses": [
+      {
+        "program": "CCHS",
+        "precision": "range",
+        "cycles": [],
+        "cycleText": "2001-2010",
+        "evidenceLocation": "Government of Canada Open Data - Description",
         "certainty": "verified",
         "statCanExplicit": true
       }
@@ -55834,6 +56090,31 @@
     "mentions": []
   },
   {
+    "id": "url:2b82c563131d5795518bdd92b4dba6a9a1a81d8b91d850ed72dc02bab37ed699",
+    "title": "Households with Access to Internet at Home in Canada, Alberta, Alberta's Economic Regions and Metropolitan Influenced Zones (2012)",
+    "doi": null,
+    "url": "https://open.alberta.ca/dataset/98a9d99e-372d-4b80-a5e0-7a6abb56454d/resource/a0de1b90-778d-4fe1-82fb-e2bf1dfaec27/download/households-with-access-to-internet-at-homecanabermiz-20122014-01-28.xls",
+    "year": 2016,
+    "workType": "report",
+    "issuingOrganization": "Treasury Board and Finance",
+    "sources": [
+      "Alberta Open Data Portal (PROVINCIAL)"
+    ],
+    "theme": "digital society",
+    "uses": [
+      {
+        "program": "CIUS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Alberta Open Data Portal - Description",
+        "certainty": "verified",
+        "statCanExplicit": true
+      }
+    ],
+    "mentions": []
+  },
+  {
     "id": "url:2b9010522bb4aeafd6fedf44e805ac55a652473096951d212a2bf3b1969c8cb2",
     "title": "Not Everyone Is a Target: An Analysis of Online Identity Crime Victimization Using Routine Activities Theory",
     "doi": null,
@@ -56362,6 +56643,40 @@
         "evidenceLocation": "CRDCN - Abstract & Data Used"
       }
     ]
+  },
+  {
+    "id": "url:2f49fc8710c928ab7ce2a7843bdb1a103c5e678f89753825c457a44f3c03a082",
+    "title": "Average Household Expenditures by Household Type and Age in Alberta (2010)",
+    "doi": null,
+    "url": "https://open.alberta.ca/dataset/0b5f29eb-4162-447d-8e4e-b9d329b5e6d1/resource/537e4094-930b-49ff-8891-141d22b2b16a/download/survey-of-household-spending-20102012-09-12.xls",
+    "year": 2015,
+    "workType": "report",
+    "issuingOrganization": "Treasury Board and Finance",
+    "sources": [
+      "Alberta Open Data Portal (PROVINCIAL)"
+    ],
+    "theme": "families",
+    "uses": [
+      {
+        "program": "SHS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Alberta Open Data Portal - Description",
+        "certainty": "verified",
+        "statCanExplicit": true
+      },
+      {
+        "program": "SHS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Alberta Open Data Portal - Description",
+        "certainty": "provisional",
+        "statCanExplicit": false
+      }
+    ],
+    "mentions": []
   },
   {
     "id": "url:2f7e9e696e8b2c8346ca2d2047b38ea90a3a4ab5d2a134cf68853648f01e4aa9",
@@ -57407,6 +57722,31 @@
     "mentions": []
   },
   {
+    "id": "url:39407b598995428ccf0ca49ac90a0531a557d19332d11377f22af4e739417bc7",
+    "title": "[ARCHIVED] Canadian Community Health Survey Preventative Behaviour 2001",
+    "doi": null,
+    "url": "https://data.novascotia.ca/datasets/hct8-cae7",
+    "year": 2022,
+    "workType": "report",
+    "issuingOrganization": "Government of Nova Scotia",
+    "sources": [
+      "Government of Canada Open Data (FEDERAL)"
+    ],
+    "theme": "health",
+    "uses": [
+      {
+        "program": "CCHS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Government of Canada Open Data - Description",
+        "certainty": "verified",
+        "statCanExplicit": true
+      }
+    ],
+    "mentions": []
+  },
+  {
     "id": "url:39a2c3990b565b18ae1e2280820b0c086ab59ce85eecd9630340654af9e359b6",
     "title": "All minutes are not equal: Travel time and the effects of congestion on commute satisfaction in Canadian cities - Canadian Research Data Centre Network",
     "doi": null,
@@ -57945,7 +58285,8 @@
     "workType": "report",
     "issuingOrganization": "Department of Justice Canada",
     "sources": [
-      "Federal Open Data (open.canada.ca)"
+      "Federal Open Data (open.canada.ca)",
+      "Government of Canada Open Data (FEDERAL)"
     ],
     "theme": "families",
     "uses": [
@@ -58419,6 +58760,31 @@
     "mentions": []
   },
   {
+    "id": "url:41a26e04b47b53ebc8d1242d113e36ee244ad9bbf510a94c66e1e51828c62fa1",
+    "title": "Detailed Average Household Expenditures by Household Type and Age in Alberta and Ages 65 Plus for Canada and Provinces (2014)",
+    "doi": null,
+    "url": "https://open.alberta.ca/dataset/e5215fa7-35f9-4fbf-88a8-1337e897e053/resource/0208fa1f-5475-421d-b931-aecb8df9263c/download/detailedaveragehouseholdexpenditureshouseholdtypeagealberta20142016-04-01.xls",
+    "year": 2016,
+    "workType": "report",
+    "issuingOrganization": "Treasury Board and Finance",
+    "sources": [
+      "Alberta Open Data Portal (PROVINCIAL)"
+    ],
+    "theme": "families",
+    "uses": [
+      {
+        "program": "SHS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Alberta Open Data Portal - Description",
+        "certainty": "verified",
+        "statCanExplicit": true
+      }
+    ],
+    "mentions": []
+  },
+  {
     "id": "url:41ba906f98bf53a7b3ea32bc6d44ec5b7ed0019a9fb1635d19afdc8d995c0a3c",
     "title": "Epilepsy and lifestyle behaviours related to bone health - Canadian Research Data Centre Network",
     "doi": null,
@@ -58563,7 +58929,8 @@
     "workType": "report",
     "issuingOrganization": "Government of Alberta",
     "sources": [
-      "Federal Open Data (open.canada.ca)"
+      "Federal Open Data (open.canada.ca)",
+      "Government of Canada Open Data (FEDERAL)"
     ],
     "theme": "crime and justice",
     "uses": [
@@ -59076,6 +59443,32 @@
     "mentions": []
   },
   {
+    "id": "url:455dc09942e3815f3737a49bd922662dada3a0459b786d70eba5144e9a68f6d8",
+    "title": "Infographic: Autism Spectrum Disorder - Highlights from the Canadian Survey on Disability",
+    "doi": null,
+    "url": "https://www.canada.ca/en/public-health/services/publications/diseases-conditions/infographic-autism-spectrum-disorder-highlights-canadian-survey-disability.html?utm_source=BNews&utm_medium=email&utm_campaign=launch_ASD_infographic_May_2020_ENG",
+    "year": 2020,
+    "workType": "report",
+    "issuingOrganization": "Public Health Agency of Canada",
+    "sources": [
+      "Federal Open Data (open.canada.ca)",
+      "Government of Canada Open Data (FEDERAL)"
+    ],
+    "theme": "digital society",
+    "uses": [
+      {
+        "program": "CSD",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Government of Canada Open Data - Description",
+        "certainty": "verified",
+        "statCanExplicit": true
+      }
+    ],
+    "mentions": []
+  },
+  {
     "id": "url:459330c019d8df3ae7cdd9a9f4c2300d6d4654273ea29ed434036b2fb8be6047",
     "title": "Gender Differences: The Roles of Travel and Time Use in Subjective Well-Being",
     "doi": null,
@@ -59556,6 +59949,31 @@
         "cycles": [],
         "cycleText": "2004 to 2015",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
+        "certainty": "verified",
+        "statCanExplicit": true
+      }
+    ],
+    "mentions": []
+  },
+  {
+    "id": "url:4b319d18d8f6af6ad32064e8ffbbd2cabdbefead63c59c90ceff05c8e1f39096",
+    "title": "Labour Force Survey estimates by detailed age groups, sex, education level, Canada and provinces, country of birth (2006 to 2017)",
+    "doi": null,
+    "url": "https://open.alberta.ca/dataset/0cc57f0b-dbf3-4fcb-a201-88abdabeaf7b/resource/267b1692-ba42-4b99-91f0-05e799c5c6f0/download/educ_immigrant_an_v2.ivt",
+    "year": 2018,
+    "workType": "report",
+    "issuingOrganization": "Treasury Board and Finance",
+    "sources": [
+      "Alberta Open Data Portal (PROVINCIAL)"
+    ],
+    "theme": "digital society",
+    "uses": [
+      {
+        "program": "LFS",
+        "precision": "range",
+        "cycles": [],
+        "cycleText": "2006 to 2017",
+        "evidenceLocation": "Alberta Open Data Portal - Description",
         "certainty": "verified",
         "statCanExplicit": true
       }
@@ -61278,6 +61696,31 @@
     "mentions": []
   },
   {
+    "id": "url:5842ac95db47e585b0ede73fc07bb71dbce9d395f881f597a8ac204c722b73e7",
+    "title": "Health Promotion and Chronic Disease Prevention in Canada, Vol 40, No 7/8, July/August 2020",
+    "doi": null,
+    "url": "https://www.canada.ca/en/public-health/services/reports-publications/health-promotion-chronic-disease-prevention-canada-research-policy-practice/vol-40-no-7-8-2020.html",
+    "year": 2020,
+    "workType": "report",
+    "issuingOrganization": "Public Health Agency of Canada",
+    "sources": [
+      "Government of Canada Open Data (FEDERAL)"
+    ],
+    "theme": "health",
+    "uses": [
+      {
+        "program": "CCHS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Government of Canada Open Data - Description",
+        "certainty": "verified",
+        "statCanExplicit": true
+      }
+    ],
+    "mentions": []
+  },
+  {
     "id": "url:586a2d6ce027032565551eef2442d76cef770e6deea6f49d9b229f5dcf081921",
     "title": "Trends in Socioeconomic Inequities in Diet Quality between 2004 and 2015 among a Nationally Representative Sample of Children in Canada - Canadian Research Data Centre Network",
     "doi": null,
@@ -62282,6 +62725,40 @@
         "evidenceLocation": "CRDCN - Abstract & Data Used",
         "certainty": "verified",
         "statCanExplicit": true
+      }
+    ],
+    "mentions": []
+  },
+  {
+    "id": "url:60f995ac8af0e22ea4873f4dbbf845ca193b17f43f35d5bca10ea81f8a6f4a54",
+    "title": "Household Expenditures by Household Type, Housing Tenure and by Size of Area of Residence in Alberta (2009)",
+    "doi": null,
+    "url": "https://open.alberta.ca/dataset/a735383f-3fed-45ec-894b-33117bd2a0d8/resource/2e408e53-a7cd-4f88-8568-0e9a4a5a474c/download/survey-of-household-spending-2009-c2-2011-02-22.xls",
+    "year": 2016,
+    "workType": "report",
+    "issuingOrganization": "Treasury Board and Finance",
+    "sources": [
+      "Alberta Open Data Portal (PROVINCIAL)"
+    ],
+    "theme": "families",
+    "uses": [
+      {
+        "program": "SHS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Alberta Open Data Portal - Description",
+        "certainty": "verified",
+        "statCanExplicit": true
+      },
+      {
+        "program": "SHS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Alberta Open Data Portal - Description",
+        "certainty": "provisional",
+        "statCanExplicit": false
       }
     ],
     "mentions": []
@@ -63621,6 +64098,31 @@
         ],
         "cycleText": "2012",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
+        "certainty": "verified",
+        "statCanExplicit": true
+      }
+    ],
+    "mentions": []
+  },
+  {
+    "id": "url:698249f890d0fd44f24d33f5654b80e51f8a88d0df7e831eb6a3b9fa7fc778ce",
+    "title": "Labour Force Survey estimates, wages by relationship to reference person and by economic family for Alberta (March 2016 to September 2018)",
+    "doi": null,
+    "url": "https://open.alberta.ca/dataset/96b879ce-541d-4ab7-97e0-85c86c70924f/resource/10b280b7-530f-4ed4-8199-797ba92b1220/download/1018_02-table-1.ivt",
+    "year": 2018,
+    "workType": "report",
+    "issuingOrganization": "Treasury Board and Finance",
+    "sources": [
+      "Alberta Open Data Portal (PROVINCIAL)"
+    ],
+    "theme": "labour",
+    "uses": [
+      {
+        "program": "LFS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Alberta Open Data Portal - Description",
         "certainty": "verified",
         "statCanExplicit": true
       }
@@ -65904,6 +66406,31 @@
     "mentions": []
   },
   {
+    "id": "url:7bdae9bcaa7ee0cc56af61ca68ab3eb2510a5c861e41d824bc0b4e0ab233d4d1",
+    "title": "Labour Force Survey estimates, average hourly and weekly wage rate by 3 and 4 digits occupations for Alberta, quarterly average (Q12010 to Q12018)",
+    "doi": null,
+    "url": "https://open.alberta.ca/dataset/6fef5486-7a7f-40b5-a745-d2c847aee622/resource/bb7d2a60-ccab-4836-bbb5-d538272d58e8/download/0917_16-table-1_v2.ivt",
+    "year": 2018,
+    "workType": "report",
+    "issuingOrganization": "Treasury Board and Finance",
+    "sources": [
+      "Alberta Open Data Portal (PROVINCIAL)"
+    ],
+    "theme": "labour",
+    "uses": [
+      {
+        "program": "LFS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Alberta Open Data Portal - Description",
+        "certainty": "verified",
+        "statCanExplicit": true
+      }
+    ],
+    "mentions": []
+  },
+  {
     "id": "url:7c34a1e53319c4e34093d070f6b65f5bac0c349405840babd927210212f3c53c",
     "title": "The Contemporary Labor Market Integration of Vietnamese Refugees in Canada - Canadian Research Data Centre Network",
     "doi": null,
@@ -67254,6 +67781,31 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
+        "certainty": "verified",
+        "statCanExplicit": true
+      }
+    ],
+    "mentions": []
+  },
+  {
+    "id": "url:86eed55df996e63d761f57516aa9c952315ce64a4d8d762012770f79f08e26e1",
+    "title": "[ARCHIVED] Canadian Community Health Survey Personal Health Practices 2003",
+    "doi": null,
+    "url": "https://data.novascotia.ca/datasets/xge6-7pax",
+    "year": 2022,
+    "workType": "report",
+    "issuingOrganization": "Government of Nova Scotia",
+    "sources": [
+      "Government of Canada Open Data (FEDERAL)"
+    ],
+    "theme": "health",
+    "uses": [
+      {
+        "program": "CCHS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Government of Canada Open Data - Description",
         "certainty": "verified",
         "statCanExplicit": true
       }
@@ -68662,6 +69214,33 @@
     "mentions": []
   },
   {
+    "id": "url:92e321c4c033bd9a1a2a7c2d0c1fcc5346ca7c21b38d94b2a26099c5b849b697",
+    "title": "[ARCHIVED] Canadian Community Health Survey 2007",
+    "doi": null,
+    "url": "https://data.novascotia.ca/datasets/trdn-2v6g",
+    "year": 2022,
+    "workType": "report",
+    "issuingOrganization": "Government of Nova Scotia",
+    "sources": [
+      "Government of Canada Open Data (FEDERAL)"
+    ],
+    "theme": "health",
+    "uses": [
+      {
+        "program": "CCHS",
+        "precision": "exact_cycles",
+        "cycles": [
+          "2007"
+        ],
+        "cycleText": "2007",
+        "evidenceLocation": "Government of Canada Open Data - Description",
+        "certainty": "verified",
+        "statCanExplicit": true
+      }
+    ],
+    "mentions": []
+  },
+  {
     "id": "url:92e814893cfc1caac23ee0476d801aa56209a729c460d710f4e4350ea4b36038",
     "title": "Three essays on the consumption patterns of the elderly - Canadian Research Data Centre Network",
     "doi": null,
@@ -69205,6 +69784,31 @@
         ],
         "cycleText": "2015",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
+        "certainty": "verified",
+        "statCanExplicit": true
+      }
+    ],
+    "mentions": []
+  },
+  {
+    "id": "url:97519cf8d3bd1e6da2c97bb59f0eebae7bc3c9f83eb5a6140102e69dfd027aa6",
+    "title": "Data Quality Indicators, Demographic Profiles of Internet Use From any Location and Internet Use Indicators for Canada, Alberta, Alberta’s Economic Regions, Rural Areas, Census Metropolitan Areas, Census Agglomerations and Metropolitan Influenced Zones (2009)",
+    "doi": null,
+    "url": "https://open.alberta.ca/dataset/71be88d9-1057-4905-8a3b-ea5961d132d8/resource/f030ef9a-426f-4203-bd7d-cdf7285bb54c/download/canadian-internet-use-survey-2009-2010-07-30.xls",
+    "year": 2016,
+    "workType": "report",
+    "issuingOrganization": "Treasury Board and Finance",
+    "sources": [
+      "Alberta Open Data Portal (PROVINCIAL)"
+    ],
+    "theme": "digital society",
+    "uses": [
+      {
+        "program": "CIUS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Alberta Open Data Portal - Description",
         "certainty": "verified",
         "statCanExplicit": true
       }
@@ -70116,6 +70720,31 @@
     "mentions": []
   },
   {
+    "id": "url:9ec084da677d359e5bb62da265fe005d01c6b93f91d0e98229fce919197174dd",
+    "title": "[ARCHIVED] Canadian Community Health Survey Food Insecurity 2001",
+    "doi": null,
+    "url": "https://data.novascotia.ca/datasets/vbfd-mnv6",
+    "year": 2022,
+    "workType": "report",
+    "issuingOrganization": "Government of Nova Scotia",
+    "sources": [
+      "Government of Canada Open Data (FEDERAL)"
+    ],
+    "theme": "health",
+    "uses": [
+      {
+        "program": "CCHS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Government of Canada Open Data - Description",
+        "certainty": "verified",
+        "statCanExplicit": true
+      }
+    ],
+    "mentions": []
+  },
+  {
     "id": "url:9eed45be7dcd928a5470426460ce5c1eae51b16f18e658a068fff999a2e3eb03",
     "title": "Prevalence and determinants of asthma among Aboriginal adolescents in Canada - Canadian Research Data Centre Network",
     "doi": null,
@@ -70875,6 +71504,31 @@
     "mentions": []
   },
   {
+    "id": "url:a401f6cb446f68ab59ccf1cb9c9ff555ac55a66bb1a4a6d7459d71bda6650206",
+    "title": "Fact sheet: Cancer in Canada",
+    "doi": null,
+    "url": "https://www.canada.ca/en/public-health/services/publications/diseases-conditions/fact-sheet-cancer-canada.html",
+    "year": 2020,
+    "workType": "report",
+    "issuingOrganization": "Public Health Agency of Canada",
+    "sources": [
+      "Government of Canada Open Data (FEDERAL)"
+    ],
+    "theme": "health",
+    "uses": [
+      {
+        "program": "CCHS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Government of Canada Open Data - Description",
+        "certainty": "verified",
+        "statCanExplicit": true
+      }
+    ],
+    "mentions": []
+  },
+  {
     "id": "url:a427d7def56792856c632b5130a4bb00d2b315cccac6bffe447b9c7c12423233",
     "title": "The Life Satisfaction of Immigrants in Canada: Does Time Since Arrival Matter more than Income? - Canadian Research Data Centre Network",
     "doi": null,
@@ -71021,6 +71675,33 @@
         "evidenceLocation": "Title",
         "certainty": "provisional",
         "statCanExplicit": false
+      }
+    ],
+    "mentions": []
+  },
+  {
+    "id": "url:a4bd1bd4a53c2268cd21c13818968cd7db6407823d9f3fbf01455670cdc1760a",
+    "title": "Health Promotion and Chronic Disease Prevention in Canada, Vol 39, No 5, May 2019",
+    "doi": null,
+    "url": "https://www.canada.ca/en/public-health/services/reports-publications/health-promotion-chronic-disease-prevention-canada-research-policy-practice/vol-39-no-5-2019.html",
+    "year": 2019,
+    "workType": "report",
+    "issuingOrganization": "Public Health Agency of Canada",
+    "sources": [
+      "Government of Canada Open Data (FEDERAL)"
+    ],
+    "theme": "health",
+    "uses": [
+      {
+        "program": "GSS",
+        "precision": "exact_cycles",
+        "cycles": [
+          "2012"
+        ],
+        "cycleText": "2012",
+        "evidenceLocation": "Government of Canada Open Data - Description",
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -71379,6 +72060,31 @@
         "evidenceLocation": "Title",
         "certainty": "provisional",
         "statCanExplicit": false
+      }
+    ],
+    "mentions": []
+  },
+  {
+    "id": "url:a899a348f5663024521ac154bec2de036da2c9fc0af539604fa42cea8a423da6",
+    "title": "[ARCHIVED] Canadian Community Health Survey Health Status 2001",
+    "doi": null,
+    "url": "https://data.novascotia.ca/datasets/rc3q-et9i",
+    "year": 2022,
+    "workType": "report",
+    "issuingOrganization": "Government of Nova Scotia",
+    "sources": [
+      "Government of Canada Open Data (FEDERAL)"
+    ],
+    "theme": "health",
+    "uses": [
+      {
+        "program": "CCHS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Government of Canada Open Data - Description",
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -71894,6 +72600,31 @@
         "cycles": [],
         "cycleText": "2009 to 2019",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
+        "certainty": "verified",
+        "statCanExplicit": true
+      }
+    ],
+    "mentions": []
+  },
+  {
+    "id": "url:acc3ddf093b27683da17552d732dae6c9d8bd300dc1659c470962d23390d855d",
+    "title": "Detailed Average Household Expenditures for Canada and Provinces by Age of Reference Person Less Than 65 (2013)",
+    "doi": null,
+    "url": "https://open.alberta.ca/dataset/3977e1db-dd7a-4ab5-85d2-4949fba77be2/resource/7500bda2-a779-45b0-b29b-274cca31ebdd/download/mefposiaveragehouseholdexpenditurescanadaprovincesage20132016-04-19.xls",
+    "year": 2016,
+    "workType": "report",
+    "issuingOrganization": "Treasury Board and Finance",
+    "sources": [
+      "Alberta Open Data Portal (PROVINCIAL)"
+    ],
+    "theme": "families",
+    "uses": [
+      {
+        "program": "SHS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Alberta Open Data Portal - Description",
         "certainty": "verified",
         "statCanExplicit": true
       }
@@ -72577,7 +73308,8 @@
     "workType": "report",
     "issuingOrganization": "Government of Alberta",
     "sources": [
-      "Government of Canada Open Data (FEDERAL)"
+      "Government of Canada Open Data (FEDERAL)",
+      "Government of Canada Open Data (FEDERAL)+Alberta Open Data Portal (PROVINCIAL)"
     ],
     "theme": "health",
     "uses": [
@@ -73056,6 +73788,31 @@
         "cycles": [],
         "cycleText": "2007 to 2024",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
+        "certainty": "verified",
+        "statCanExplicit": true
+      }
+    ],
+    "mentions": []
+  },
+  {
+    "id": "url:b6dc1c7338eae1aaa3e2519655223cf5b95df45d870d6ad14f70008b90ffaa56",
+    "title": "[ARCHIVED] Canadian Community Health Survey Emotional Status 2001",
+    "doi": null,
+    "url": "https://data.novascotia.ca/datasets/qe5n-nqgu",
+    "year": 2022,
+    "workType": "report",
+    "issuingOrganization": "Government of Nova Scotia",
+    "sources": [
+      "Government of Canada Open Data (FEDERAL)"
+    ],
+    "theme": "health",
+    "uses": [
+      {
+        "program": "CCHS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Government of Canada Open Data - Description",
         "certainty": "verified",
         "statCanExplicit": true
       }
@@ -74904,6 +75661,31 @@
     "mentions": []
   },
   {
+    "id": "url:c41da30efb9cf42ff30f1dc413222c3874c5424b5ba5e9604b8cada8611edfae",
+    "title": "The prevalence of healthfulness in Alberta : highlights from the 1985 general social survey",
+    "doi": null,
+    "url": "https://open.alberta.ca/dataset/0c415262-a356-4398-8680-2544c2a05e4f/resource/ee6c96ea-475f-47d8-9902-78d41735b8d2/download/32270000053414-prevalence-healthfulness-alberta-highlights-from-1985-general-social-survey.pdf",
+    "year": 2026,
+    "workType": "report",
+    "issuingOrganization": "Health",
+    "sources": [
+      "Alberta Open Data Portal (PROVINCIAL)"
+    ],
+    "theme": "health",
+    "uses": [
+      {
+        "program": "GSS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Alberta Open Data Portal - Description",
+        "certainty": "provisional",
+        "statCanExplicit": false
+      }
+    ],
+    "mentions": []
+  },
+  {
     "id": "url:c43002589cc949d0026159269817771366fb32ccd75503d74c8de440be51e049",
     "title": "A profile of arthritis in the Territories - Canadian Research Data Centre Network",
     "doi": null,
@@ -75396,7 +76178,8 @@
     "workType": "report",
     "issuingOrganization": "Department of Justice Canada",
     "sources": [
-      "Federal Open Data (open.canada.ca)"
+      "Federal Open Data (open.canada.ca)",
+      "Government of Canada Open Data (FEDERAL)"
     ],
     "theme": "families",
     "uses": [
@@ -75664,6 +76447,31 @@
         ],
         "cycleText": "2023",
         "evidenceLocation": "Methodology and Data",
+        "certainty": "verified",
+        "statCanExplicit": true
+      }
+    ],
+    "mentions": []
+  },
+  {
+    "id": "url:c9b977762728f0f8c78f317ec981d3f48735d34f896928599d41851ad85d6086",
+    "title": "Violent and Household Victimization Rates, Canada and Provinces",
+    "doi": null,
+    "url": "https://open.alberta.ca/dataset/401077ba-6afe-4ba8-94d2-786de554857b/resource/ca6f1dbd-322c-4301-b382-3772a1813f86/download/mefposistc_victimization_rates_csv_v4.0_2016-01-08.csv",
+    "year": 2015,
+    "workType": "report",
+    "issuingOrganization": "Justice and Solicitor General",
+    "sources": [
+      "Alberta Open Data Portal (PROVINCIAL)"
+    ],
+    "theme": "crime and justice",
+    "uses": [
+      {
+        "program": "GSS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Alberta Open Data Portal - Description",
         "certainty": "verified",
         "statCanExplicit": true
       }
@@ -76553,6 +77361,33 @@
     "mentions": []
   },
   {
+    "id": "url:cfcd0d9fc965a527dd17b0a7827958661a67940c9ccb40e56eba8e68e804cfba",
+    "title": "CMR 2019 – Communications Services in Canadian Households: Subscriptions and Expenditures 2013-2017",
+    "doi": null,
+    "url": "https://open.canada.ca/data/dataset/f4310d3c-6577-422c-900e-ab4e0b54764c/resource/4db63c26-8c9a-41d2-bb0b-ada9a504148f/download/cmr-2019-communications-services-in-canadian-households-subscription....xlsx",
+    "year": 2019,
+    "workType": "report",
+    "issuingOrganization": "Canadian Radio-television and Telecommunications Commission",
+    "sources": [
+      "Government of Canada Open Data (FEDERAL)"
+    ],
+    "theme": "digital society",
+    "uses": [
+      {
+        "program": "SHS",
+        "precision": "exact_cycles",
+        "cycles": [
+          "2017"
+        ],
+        "cycleText": "2017",
+        "evidenceLocation": "Government of Canada Open Data - Description",
+        "certainty": "verified",
+        "statCanExplicit": true
+      }
+    ],
+    "mentions": []
+  },
+  {
     "id": "url:cfddb2159cf2ce17949d5aba1ae21d19668e478ceddaf3dd0052a54b1e39da0d",
     "title": "Is There Anything Exceptional about ICT Use While Travelling? A Time Allocation Framework for and Empirical Insights into Multitasking Patterns and Well-Being Implications from the Canadian General Social Survey",
     "doi": null,
@@ -76650,6 +77485,31 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
+        "certainty": "verified",
+        "statCanExplicit": true
+      }
+    ],
+    "mentions": []
+  },
+  {
+    "id": "url:d069cbbcf9c804bceee15a5a390c069b84e5ad7627325aeeb41f4ee13307cb49",
+    "title": "Victims of Spousal Violence and Self-Reported Spousal Violence by Relationship, Type of Violence, Age, Marital Status, Family Type, Household Income, Education, Place of Residence and Service Contacted, Alberta (1999, 2004 and 2009)",
+    "doi": null,
+    "url": "https://open.alberta.ca/dataset/7858223b-3e2c-44ad-b500-767ef1356796/resource/5f0e119e-3349-4388-8759-ebe7254c4fea/download/general-social-survey-1999-2004-and-2009-2012-03-19.xls",
+    "year": 2016,
+    "workType": "report",
+    "issuingOrganization": "Treasury Board and Finance",
+    "sources": [
+      "Alberta Open Data Portal (PROVINCIAL)"
+    ],
+    "theme": "families",
+    "uses": [
+      {
+        "program": "GSS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Alberta Open Data Portal - Description",
         "certainty": "verified",
         "statCanExplicit": true
       }
@@ -77159,6 +78019,24 @@
     ],
     "theme": "labour",
     "uses": [
+      {
+        "program": "LFS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Open Data Toronto - Description",
+        "certainty": "verified",
+        "statCanExplicit": true
+      },
+      {
+        "program": "LFS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Open Data Toronto - Description",
+        "certainty": "verified",
+        "statCanExplicit": true
+      },
       {
         "program": "LFS",
         "precision": "program_only",
@@ -77715,6 +78593,31 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
+        "certainty": "verified",
+        "statCanExplicit": true
+      }
+    ],
+    "mentions": []
+  },
+  {
+    "id": "url:d806cb999abe8bbe58dd20835a7c2a8b6a85c4638f059b4718ec6ff5dc52d3cd",
+    "title": "Alberta Hutterites : overview of selected determinants of health",
+    "doi": null,
+    "url": "https://open.alberta.ca/dataset/e257e514-2e6a-4fdf-aa13-7217c2a3cb5f/resource/babf9f54-76af-4aae-85f5-a126da2e5411/download/hta-2014-09-09-alberta-hutterites-health-determinants.pdf",
+    "year": 2015,
+    "workType": "report",
+    "issuingOrganization": "Health",
+    "sources": [
+      "Alberta Open Data Portal (PROVINCIAL)"
+    ],
+    "theme": "health",
+    "uses": [
+      {
+        "program": "CCHS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Alberta Open Data Portal - Description",
         "certainty": "verified",
         "statCanExplicit": true
       }
@@ -79014,7 +79917,8 @@
     "workType": "report",
     "issuingOrganization": "Department of Justice Canada",
     "sources": [
-      "Federal Open Data (open.canada.ca)"
+      "Federal Open Data (open.canada.ca)",
+      "Government of Canada Open Data (FEDERAL)"
     ],
     "theme": "Indigenous peoples",
     "uses": [
@@ -79084,6 +79988,31 @@
         ],
         "cycleText": "2001, 2003, 2005, 2007, 2009, 2011, 2013",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
+        "certainty": "verified",
+        "statCanExplicit": true
+      }
+    ],
+    "mentions": []
+  },
+  {
+    "id": "url:e1a4913d487049ca91712466cf38959f7738e4c959c5f23e31b97a2636dfe99c",
+    "title": "Labour market notes [2018]",
+    "doi": null,
+    "url": "https://open.alberta.ca/dataset/aa46420e-c11f-44e8-8d02-f8d8bae7544e/resource/1be72d11-b76b-4054-8a45-b298ef602939/download/tbf-labour-market-notes-2018-12.pdf",
+    "year": 2021,
+    "workType": "report",
+    "issuingOrganization": "Treasury Board and Finance",
+    "sources": [
+      "Alberta Open Data Portal (PROVINCIAL)"
+    ],
+    "theme": "digital society",
+    "uses": [
+      {
+        "program": "LFS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Alberta Open Data Portal - Description",
         "certainty": "verified",
         "statCanExplicit": true
       }
@@ -79465,6 +80394,40 @@
     "mentions": []
   },
   {
+    "id": "url:e4cef23a113a8bb34673732ef93678e080fb68586e31ddc915f103306d644ec1",
+    "title": "Household Expenditures by Household Type and Age, Alberta (2009)",
+    "doi": null,
+    "url": "https://open.alberta.ca/dataset/75fd2d0c-ef9e-4fca-bab8-e26788d99dd5/resource/549e8af5-3fcb-465f-9418-6e37ab1e087b/download/survey-of-household-spending-2009-2011-02-16.xls",
+    "year": 2016,
+    "workType": "report",
+    "issuingOrganization": "Treasury Board and Finance",
+    "sources": [
+      "Alberta Open Data Portal (PROVINCIAL)"
+    ],
+    "theme": "health",
+    "uses": [
+      {
+        "program": "SHS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Alberta Open Data Portal - Description",
+        "certainty": "verified",
+        "statCanExplicit": true
+      },
+      {
+        "program": "SHS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Alberta Open Data Portal - Description",
+        "certainty": "provisional",
+        "statCanExplicit": false
+      }
+    ],
+    "mentions": []
+  },
+  {
     "id": "url:e4f63d99292bfd45a3c8a0bdb02aab2ab68ce0ae115eb1cd04e2dc96d9219a0c",
     "title": "Caring for the kids: The characteristics and livelihoods of Canada&#039;s paid child-care givers - Canadian Research Data Centre Network",
     "doi": null,
@@ -79641,6 +80604,33 @@
     "mentions": []
   },
   {
+    "id": "url:e59ee68cab6cb6210481e4fc32c17b57d20d82d7f3959093d110fafd5be03839",
+    "title": "What is the Impact of Sleep Apnea on Canadians?",
+    "doi": null,
+    "url": "https://www.canada.ca/en/public-health/services/chronic-diseases/sleep-apnea/what-impact-sleep-apnea-on-canadians.html",
+    "year": 2018,
+    "workType": "report",
+    "issuingOrganization": "Public Health Agency of Canada",
+    "sources": [
+      "Government of Canada Open Data (FEDERAL)"
+    ],
+    "theme": "health",
+    "uses": [
+      {
+        "program": "CCHS",
+        "precision": "exact_cycles",
+        "cycles": [
+          "2009"
+        ],
+        "cycleText": "2009",
+        "evidenceLocation": "Government of Canada Open Data - Description",
+        "certainty": "verified",
+        "statCanExplicit": true
+      }
+    ],
+    "mentions": []
+  },
+  {
     "id": "url:e5da5ad44671e88803439713387d0d5140132fbdfffb2ac5f9bb559a3f6ede16",
     "title": "Labour Market Outcomes Among Refugees to Canada",
     "doi": null,
@@ -79756,6 +80746,33 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
+        "certainty": "verified",
+        "statCanExplicit": true
+      }
+    ],
+    "mentions": []
+  },
+  {
+    "id": "url:e674d92c95295017b5aa111c0eb81df7d5875a8f324daf1d90b6eedae073c246",
+    "title": "[ARCHIVED] Canadian Community Health Survey 2005",
+    "doi": null,
+    "url": "https://data.novascotia.ca/datasets/5tws-niqq",
+    "year": 2022,
+    "workType": "report",
+    "issuingOrganization": "Government of Nova Scotia",
+    "sources": [
+      "Government of Canada Open Data (FEDERAL)"
+    ],
+    "theme": "health",
+    "uses": [
+      {
+        "program": "CCHS",
+        "precision": "exact_cycles",
+        "cycles": [
+          "2005"
+        ],
+        "cycleText": "2005",
+        "evidenceLocation": "Government of Canada Open Data - Description",
         "certainty": "verified",
         "statCanExplicit": true
       }
@@ -79976,6 +80993,31 @@
     "mentions": []
   },
   {
+    "id": "url:e79494b1ab469317a40f62bb246d395c623ab1e12dcb072e8baedc1eda68426e",
+    "title": "Household Spending Characteristics",
+    "doi": null,
+    "url": "https://catalogue.data.gov.bc.ca/dataset/f93e8ee8-6904-4a3e-98ae-20164a6294ee/resource/6c201076-4fba-47ce-800f-977b704fb400/download/dwelling-characteristics-and-household-equipment.csv",
+    "year": 2024,
+    "workType": "report",
+    "issuingOrganization": "BC Stats",
+    "sources": [
+      "BC Data Catalogue (PROVINCIAL)"
+    ],
+    "theme": "digital society",
+    "uses": [
+      {
+        "program": "SHS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "BC Data Catalogue - Description",
+        "certainty": "verified",
+        "statCanExplicit": true
+      }
+    ],
+    "mentions": []
+  },
+  {
     "id": "url:e7cb276a19bb93109f5062ac8aae11f45a9dc6dc817aa5f2c8bf55aa2b1d34c0",
     "title": "Job stress and Happiness",
     "doi": null,
@@ -80050,6 +81092,31 @@
         "evidenceLocation": "CRDCN - Abstract & Data Used",
         "certainty": "verified",
         "statCanExplicit": true
+      }
+    ],
+    "mentions": []
+  },
+  {
+    "id": "url:e817f3605e2ae91394ef87305c6cec61ff7938efa7b670bfeae54da8dc1836c9",
+    "title": "Employment Insurance Beneficiaries Receiving Regular Benefits, Alberta",
+    "doi": null,
+    "url": "https://open.alberta.ca/dataset/6b8ad13f-0768-4040-a5ba-0b938c30243c/resource/61938a42-9ad0-46b7-9b04-28b1efa890a6/download/mefposistatistical-servicespublications_2370aosemploymentinsurancebeneficiaries_onepage.pdf",
+    "year": 2018,
+    "workType": "report",
+    "issuingOrganization": "Government of Alberta",
+    "sources": [
+      "Government of Canada Open Data (FEDERAL)"
+    ],
+    "theme": "labour",
+    "uses": [
+      {
+        "program": "LFS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Government of Canada Open Data - Description",
+        "certainty": "provisional",
+        "statCanExplicit": false
       }
     ],
     "mentions": []
@@ -81524,6 +82591,31 @@
     "mentions": []
   },
   {
+    "id": "url:f49c96eab1e84142d47dfd3f4e9190ac652f425e167d7c9a03bad0a1072a4884",
+    "title": "Prevalence of Current Daily Smokers by Sex, Alberta",
+    "doi": null,
+    "url": "https://open.alberta.ca/dataset/452846ba-55fb-4bc8-beee-2fd934f228bb/resource/6b3fdd6f-b360-4109-91da-d21dfa5350df/download/stcprevalenceofcurrentdailysmokerscsvv2.02015-06-02.csv",
+    "year": 2015,
+    "workType": "report",
+    "issuingOrganization": "Health",
+    "sources": [
+      "Alberta Open Data Portal (PROVINCIAL)"
+    ],
+    "theme": "health",
+    "uses": [
+      {
+        "program": "CCHS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Alberta Open Data Portal - Description",
+        "certainty": "verified",
+        "statCanExplicit": true
+      }
+    ],
+    "mentions": []
+  },
+  {
     "id": "url:f4fbe7e28d6ee9a7288fc9724fa3949d3ad18e008332a99228e658dc8281bf30",
     "title": "Inflation, Real Wages, and Household Living Standards: Microdata Evidence Across Canadian Income Deciles",
     "doi": null,
@@ -81637,6 +82729,31 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
+        "certainty": "verified",
+        "statCanExplicit": true
+      }
+    ],
+    "mentions": []
+  },
+  {
+    "id": "url:f5c1cf9b5ab892b165e50ea4d6507c79fda2ba91ccdbe655a4bc7e400f56b70e",
+    "title": "Proportion of Households With Access to the Internet for Canada, Alberta, Alberta's Economic Regions, Census Metropolitan Areas, Census Agglomerations and Metropolitan Influenced Zones (2010)",
+    "doi": null,
+    "url": "https://open.alberta.ca/dataset/b1ea95a7-2e5f-45cb-a563-68c46ff4ecbe/resource/68e00a17-0f92-4da3-a774-6f585c2c5754/download/canadian-internet-use-survey-2010-2011-09-23.xls",
+    "year": 2016,
+    "workType": "report",
+    "issuingOrganization": "Treasury Board and Finance",
+    "sources": [
+      "Alberta Open Data Portal (PROVINCIAL)"
+    ],
+    "theme": "education",
+    "uses": [
+      {
+        "program": "CIUS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Alberta Open Data Portal - Description",
         "certainty": "verified",
         "statCanExplicit": true
       }
@@ -81768,6 +82885,31 @@
         ],
         "cycleText": "2004",
         "evidenceLocation": "Government of Canada Open Data - Description",
+        "certainty": "verified",
+        "statCanExplicit": true
+      }
+    ],
+    "mentions": []
+  },
+  {
+    "id": "url:f6cec2673e69173eb34b6b7ef81c8c3e2ee0d9acfcbd096b92f7f7f188901e44",
+    "title": "Labour Force Survey estimates, wages by National Occupational Classification for Alberta (March 2016 to September 2018)",
+    "doi": null,
+    "url": "https://open.alberta.ca/dataset/2bc3e9ab-1392-4b01-81ce-60c07944408a/resource/fc538c97-0311-484d-b405-3391b5929ee7/download/1018_02-table-2.ivt",
+    "year": 2018,
+    "workType": "report",
+    "issuingOrganization": "Treasury Board and Finance",
+    "sources": [
+      "Alberta Open Data Portal (PROVINCIAL)"
+    ],
+    "theme": "labour",
+    "uses": [
+      {
+        "program": "LFS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Alberta Open Data Portal - Description",
         "certainty": "verified",
         "statCanExplicit": true
       }
@@ -82085,6 +83227,31 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
+        "certainty": "verified",
+        "statCanExplicit": true
+      }
+    ],
+    "mentions": []
+  },
+  {
+    "id": "url:f9f86ff10faedeb1bdb2a539de7d85e90a32e8c08c5784cadd430b0518fb9fe6",
+    "title": "[ARCHIVED] Canadian Community Health Survey Health Practices 2001",
+    "doi": null,
+    "url": "https://data.novascotia.ca/datasets/wwnh-bqn7",
+    "year": 2022,
+    "workType": "report",
+    "issuingOrganization": "Government of Nova Scotia",
+    "sources": [
+      "Government of Canada Open Data (FEDERAL)"
+    ],
+    "theme": "health",
+    "uses": [
+      {
+        "program": "CCHS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Government of Canada Open Data - Description",
         "certainty": "verified",
         "statCanExplicit": true
       }

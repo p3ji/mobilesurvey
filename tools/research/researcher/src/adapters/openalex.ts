@@ -6,6 +6,7 @@ export interface OpenAlexSearchOptions {
   cursor?: string;
   filter?: string;
   politeEmail?: string;
+  apiKey?: string;
   queue?: ResearchQueue;
   fetchImpl?: typeof fetch;
 }
@@ -75,6 +76,8 @@ export async function searchOpenAlex(
   params.set('per-page', String(perPage));
   params.set('cursor', cursor);
   params.set('mailto', politeEmail);
+  const apiKey = options.apiKey ?? process.env.OPENALEX_API_KEY;
+  if (apiKey) params.set('api_key', apiKey);
   if (options.filter) params.set('filter', options.filter);
 
   const requestUrl = `https://api.openalex.org/works?${params.toString()}`;
@@ -136,22 +139,30 @@ export async function harvestOpenAlexAll(
 
   while (currentCursor && allWorks.length < maxRecords) {
     const batchSize = Math.min(100, maxRecords - allWorks.length);
-    const res = await searchOpenAlex(query, {
-      ...options,
-      perPage: batchSize,
-      cursor: currentCursor,
-    });
-    totalCount = res.totalCount;
-    allWorks.push(...res.works);
-    if (options.onProgress) {
-      options.onProgress(allWorks.length, totalCount);
+    try {
+      const res = await searchOpenAlex(query, {
+        ...options,
+        perPage: batchSize,
+        cursor: currentCursor,
+      });
+      totalCount = res.totalCount;
+      allWorks.push(...res.works);
+      if (options.onProgress) {
+        options.onProgress(allWorks.length, totalCount);
+      }
+      if (!res.nextCursor || res.works.length === 0 || res.nextCursor === currentCursor) {
+        break;
+      }
+      currentCursor = res.nextCursor;
+      // Polite pacing
+      await new Promise(r => setTimeout(r, 120));
+    } catch (err: any) {
+      if (err.message && (err.message.includes('API key required') || err.message.includes('Insufficient budget') || err.message.includes('Rate limit exceeded'))) {
+        // Deep cursor paging or shared unauthenticated IP quota bounded; proceed with gathered works
+        break;
+      }
+      throw err;
     }
-    if (!res.nextCursor || res.works.length === 0 || res.nextCursor === currentCursor) {
-      break;
-    }
-    currentCursor = res.nextCursor;
-    // Polite pacing
-    await new Promise(r => setTimeout(r, 120));
   }
 
   return { works: allWorks, totalCount };
