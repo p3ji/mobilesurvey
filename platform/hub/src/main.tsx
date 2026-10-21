@@ -3,6 +3,7 @@ import { createRoot } from 'react-dom/client';
 import { App } from './App.jsx';
 import './styles.css';
 import './theme.css';
+import './cognitive-lab.css';
 import '@mobilesurvey/ui-locale/style.css';
 
 const root = document.getElementById('root');
