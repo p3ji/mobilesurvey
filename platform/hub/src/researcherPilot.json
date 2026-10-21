@@ -2719,6 +2719,31 @@
     "mentions": []
   },
   {
+    "id": "doi:10.1016/j.chemosphere.2022.136797",
+    "title": "Plasma Concentrations of Perfluoroalkyl Acids and Their Determinants in Youth and Adults from Nunavik, Canada",
+    "doi": "10.1016/j.chemosphere.2022.136797",
+    "url": "https://doi.org/10.1016/j.chemosphere.2022.136797",
+    "year": 2022,
+    "workType": "article",
+    "issuingOrganization": "Institut national de santé publique du Québec",
+    "sources": [
+      "INSPQ Surveillance Épidémiologique"
+    ],
+    "theme": "environment",
+    "uses": [
+      {
+        "program": "CHMS",
+        "precision": "range",
+        "cycles": [],
+        "cycleText": "2016-2017",
+        "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
+      }
+    ],
+    "mentions": []
+  },
+  {
     "id": "doi:10.1016/j.chiabu.2015.05.001",
     "title": "Relationship between child abuse exposure and reported contact with child protection organizations: Results from the Canadian Community Health Survey",
     "doi": "10.1016/j.chiabu.2015.05.001",
@@ -2865,8 +2890,9 @@
     "url": "https://doi.org/10.1016/j.cjco.2020.07.013",
     "year": 2020,
     "workType": "article",
-    "issuingOrganization": "Elsevier BV",
+    "issuingOrganization": "Alberta Health Services",
     "sources": [
+      "Alberta Health Services Epidemiological Report",
       "OpenAlex"
     ],
     "theme": "health",
@@ -3201,8 +3227,9 @@
     "url": "https://doi.org/10.1016/j.envint.2018.07.011",
     "year": 2018,
     "workType": "article",
-    "issuingOrganization": "Elsevier BV",
+    "issuingOrganization": "BC Centre for Disease Control",
     "sources": [
+      "BCCDC Public Health Surveillance",
       "OpenAlex"
     ],
     "theme": "health",
@@ -3301,8 +3328,9 @@
     "url": "https://doi.org/10.1016/j.envint.2019.04.029",
     "year": 2019,
     "workType": "article",
-    "issuingOrganization": "Elsevier BV",
+    "issuingOrganization": "Institut national de santé publique du Québec",
     "sources": [
+      "INSPQ Surveillance Épidémiologique",
       "OpenAlex"
     ],
     "theme": "environment",
@@ -3372,6 +3400,40 @@
         "precision": "range",
         "cycles": [],
         "cycleText": "2012 to 2015",
+        "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
+      }
+    ],
+    "mentions": []
+  },
+  {
+    "id": "doi:10.1016/j.envint.2020.106169",
+    "title": "Perfluoroalkyl acids in pregnant women from Nunavik (Quebec, Canada): Trends in exposure and associations with country foods consumption",
+    "doi": "10.1016/j.envint.2020.106169",
+    "url": "https://doi.org/10.1016/j.envint.2020.106169",
+    "year": 2020,
+    "workType": "article",
+    "issuingOrganization": "Institut national de santé publique du Québec",
+    "sources": [
+      "INSPQ Surveillance Épidémiologique"
+    ],
+    "theme": "health",
+    "uses": [
+      {
+        "program": "CHMS",
+        "precision": "range",
+        "cycles": [],
+        "cycleText": "2016-2017",
+        "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
+      },
+      {
+        "program": "CHMS",
+        "precision": "range",
+        "cycles": [],
+        "cycleText": "2016-2017",
         "evidenceLocation": "Abstract",
         "certainty": "verified",
         "statCanExplicit": true
@@ -3511,9 +3573,10 @@
     "url": "https://doi.org/10.1016/j.envres.2018.11.011",
     "year": 2018,
     "workType": "article",
-    "issuingOrganization": "Elsevier BV",
+    "issuingOrganization": "Public Health Ontario",
     "sources": [
-      "OpenAlex"
+      "OpenAlex",
+      "Public Health Ontario Surveillance"
     ],
     "theme": "digital society",
     "uses": [
@@ -3762,9 +3825,10 @@
     "url": "https://doi.org/10.1016/j.hpopen.2025.100155",
     "year": 2025,
     "workType": "article",
-    "issuingOrganization": "Elsevier BV",
+    "issuingOrganization": "Public Health Ontario",
     "sources": [
-      "OpenAlex"
+      "OpenAlex",
+      "Public Health Ontario Surveillance"
     ],
     "theme": "health",
     "uses": [
@@ -3948,9 +4012,10 @@
     "url": "https://doi.org/10.1016/j.ijheh.2020.113451",
     "year": 2020,
     "workType": "article",
-    "issuingOrganization": "Elsevier BV",
+    "issuingOrganization": "Public Health Ontario",
     "sources": [
-      "OpenAlex"
+      "OpenAlex",
+      "Public Health Ontario Surveillance+INSPQ Surveillance Épidémiologique"
     ],
     "theme": "health",
     "uses": [
@@ -4023,12 +4088,22 @@
     "url": "https://doi.org/10.1016/j.ijheh.2025.114715",
     "year": 2025,
     "workType": "article",
-    "issuingOrganization": "Elsevier BV",
+    "issuingOrganization": "Institut national de santé publique du Québec",
     "sources": [
+      "INSPQ Surveillance Épidémiologique",
       "OpenAlex"
     ],
     "theme": "digital society",
     "uses": [
+      {
+        "program": "CHMS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
+      },
       {
         "program": "CHMS",
         "precision": "program_only",
@@ -4374,6 +4449,31 @@
         "precision": "range",
         "cycles": [],
         "cycleText": "2007-2017",
+        "evidenceLocation": "Title",
+        "certainty": "verified",
+        "statCanExplicit": true
+      }
+    ],
+    "mentions": []
+  },
+  {
+    "id": "doi:10.1016/j.jcjd.2023.03.006",
+    "title": "Association Between Insulin Resistance and the Inflammatory Marker C-reactive Protein in a Representative Healthy Adult Canadian Population: Results From the Canadian Health Measures Survey",
+    "doi": "10.1016/j.jcjd.2023.03.006",
+    "url": "https://doi.org/10.1016/j.jcjd.2023.03.006",
+    "year": 2023,
+    "workType": "article",
+    "issuingOrganization": "Alberta Health Services",
+    "sources": [
+      "Alberta Health Services Epidemiological Report"
+    ],
+    "theme": "health",
+    "uses": [
+      {
+        "program": "CHMS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
         "evidenceLocation": "Title",
         "certainty": "verified",
         "statCanExplicit": true
@@ -5440,9 +5540,10 @@
     "url": "https://doi.org/10.1016/j.scitotenv.2017.11.336",
     "year": 2017,
     "workType": "article",
-    "issuingOrganization": "Elsevier BV",
+    "issuingOrganization": "Public Health Ontario",
     "sources": [
-      "OpenAlex"
+      "OpenAlex",
+      "Public Health Ontario Surveillance"
     ],
     "theme": "immigration",
     "uses": [
@@ -5477,6 +5578,31 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "Title",
+        "certainty": "verified",
+        "statCanExplicit": true
+      }
+    ],
+    "mentions": []
+  },
+  {
+    "id": "doi:10.1016/j.scitotenv.2024.173563",
+    "title": "Exposure to organophosphate esters among Inuit adults of Nunavik, Canada",
+    "doi": "10.1016/j.scitotenv.2024.173563",
+    "url": "https://doi.org/10.1016/j.scitotenv.2024.173563",
+    "year": 2024,
+    "workType": "article",
+    "issuingOrganization": "Institut national de santé publique du Québec",
+    "sources": [
+      "INSPQ Surveillance Épidémiologique"
+    ],
+    "theme": "digital society",
+    "uses": [
+      {
+        "program": "CHMS",
+        "precision": "range",
+        "cycles": [],
+        "cycleText": "2018-2019",
+        "evidenceLocation": "Abstract",
         "certainty": "verified",
         "statCanExplicit": true
       }
@@ -5664,14 +5790,15 @@
   },
   {
     "id": "doi:10.1016/j.socscimed.2024.116623",
-    "title": "Income inequality and deaths of despair risk in Canada, identifying possible mechanisms - Canadian Research Data Centre Network",
+    "title": "Income inequality and deaths of despair risk in Canada, identifying possible mechanisms",
     "doi": "10.1016/j.socscimed.2024.116623",
     "url": "https://crdcn.ca/publication/income-inequality-and-deaths-of-despair-risk-in-canada-identifying-possible-mechanisms/",
     "year": 2024,
     "workType": "article",
-    "issuingOrganization": "Social Science & Medicine",
+    "issuingOrganization": "Public Health Ontario",
     "sources": [
-      "CRDCN"
+      "CRDCN",
+      "Public Health Ontario Surveillance"
     ],
     "theme": "health",
     "uses": [
@@ -5681,6 +5808,15 @@
         "cycles": [],
         "cycleText": "2007 to 2017",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
+        "certainty": "verified",
+        "statCanExplicit": true
+      },
+      {
+        "program": "CCHS",
+        "precision": "range",
+        "cycles": [],
+        "cycleText": "2007 to 2017",
+        "evidenceLocation": "Abstract",
         "certainty": "verified",
         "statCanExplicit": true
       }
@@ -5773,12 +5909,22 @@
     "url": "https://doi.org/10.1016/j.socscimed.2026.119630",
     "year": 2026,
     "workType": "article",
-    "issuingOrganization": "Elsevier BV",
+    "issuingOrganization": "Public Health Ontario",
     "sources": [
-      "OpenAlex"
+      "OpenAlex",
+      "Public Health Ontario Surveillance"
     ],
     "theme": "health",
     "uses": [
+      {
+        "program": "CHMS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
+      },
       {
         "program": "CHMS",
         "precision": "program_only",
@@ -6252,13 +6398,14 @@
   },
   {
     "id": "doi:10.1016/j.ssmph.2022.101276",
-    "title": "Preventable mortality among sexual minority Canadians - Canadian Research Data Centre Network",
+    "title": "Preventable mortality among sexual minority Canadians",
     "doi": "10.1016/j.ssmph.2022.101276",
     "url": "https://doi.org/10.1016/j.ssmph.2022.101276",
     "year": 2022,
     "workType": "article",
-    "issuingOrganization": "SSM - Population Health",
+    "issuingOrganization": "BC Centre for Disease Control",
     "sources": [
+      "BCCDC Public Health Surveillance",
       "CRDCN",
       "OpenAlex"
     ],
@@ -6352,6 +6499,32 @@
         "cycles": [],
         "cycleText": "2016 to 2016",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
+        "certainty": "verified",
+        "statCanExplicit": true
+      }
+    ],
+    "mentions": []
+  },
+  {
+    "id": "doi:10.1016/j.ssmph.2024.101697",
+    "title": "Trends in mental health and smoking disparities between sexual minority and heterosexual adults in Canada, 2003–2020",
+    "doi": "10.1016/j.ssmph.2024.101697",
+    "url": "https://crdcn.ca/publication/school-readiness-and-early-childhood-education-and-care-services-among-dual-language-learners/",
+    "year": 2024,
+    "workType": "article",
+    "issuingOrganization": "BC Centre for Disease Control",
+    "sources": [
+      "BCCDC Public Health Surveillance",
+      "CRDCN"
+    ],
+    "theme": "education",
+    "uses": [
+      {
+        "program": "CCHS",
+        "precision": "range",
+        "cycles": [],
+        "cycleText": "2003-2020",
+        "evidenceLocation": "Abstract",
         "certainty": "verified",
         "statCanExplicit": true
       }
@@ -6746,9 +6919,10 @@
     "url": "https://doi.org/10.1016/j.vaccine.2022.04.011",
     "year": 2022,
     "workType": "article",
-    "issuingOrganization": "Elsevier BV",
+    "issuingOrganization": "Public Health Ontario",
     "sources": [
-      "OpenAlex"
+      "OpenAlex",
+      "Public Health Ontario Surveillance+INSPQ Surveillance Épidémiologique"
     ],
     "theme": "health",
     "uses": [
@@ -6848,9 +7022,10 @@
     "url": "https://doi.org/10.1016/j.ypmed.2015.05.011",
     "year": 2015,
     "workType": "article",
-    "issuingOrganization": "Elsevier BV",
+    "issuingOrganization": "Public Health Ontario",
     "sources": [
-      "OpenAlex"
+      "OpenAlex",
+      "Public Health Ontario Surveillance"
     ],
     "theme": "health",
     "uses": [
@@ -6898,8 +7073,9 @@
     "url": "https://doi.org/10.1016/j.ypmed.2017.10.007",
     "year": 2017,
     "workType": "article",
-    "issuingOrganization": "Elsevier BV",
+    "issuingOrganization": "Alberta Health Services",
     "sources": [
+      "Alberta Health Services Epidemiological Report",
       "OpenAlex"
     ],
     "theme": "health",
@@ -6942,6 +7118,33 @@
         "evidenceLocation": "Abstract",
         "certainty": "verified",
         "statCanExplicit": true
+      }
+    ],
+    "mentions": []
+  },
+  {
+    "id": "doi:10.1016/j.ypmed.2019.03.033",
+    "title": "Socioeconomic status differences in parental immunization attitudes and child immunization in Canada: Findings from the 2013 Childhood National Immunization Coverage Survey (CNICS)",
+    "doi": "10.1016/j.ypmed.2019.03.033",
+    "url": "https://doi.org/10.1016/j.ypmed.2019.03.033",
+    "year": 2019,
+    "workType": "article",
+    "issuingOrganization": "Institut national de santé publique du Québec",
+    "sources": [
+      "INSPQ Surveillance Épidémiologique"
+    ],
+    "theme": "income and inequality",
+    "uses": [
+      {
+        "program": "CNICS",
+        "precision": "exact_cycles",
+        "cycles": [
+          "2013"
+        ],
+        "cycleText": "2013",
+        "evidenceLocation": "Title",
+        "certainty": "provisional",
+        "statCanExplicit": false
       }
     ],
     "mentions": []
@@ -7941,8 +8144,9 @@
     "url": "https://doi.org/10.1017/s1368980016001506",
     "year": 2016,
     "workType": "article",
-    "issuingOrganization": "Cambridge University Press",
+    "issuingOrganization": "Alberta Health Services",
     "sources": [
+      "Alberta Health Services Epidemiological Report",
       "OpenAlex"
     ],
     "theme": "health",
@@ -8063,15 +8267,41 @@
     "mentions": []
   },
   {
+    "id": "doi:10.1017/s1368980022000581",
+    "title": "Perfluoroalkyl acid and bisphenol-A exposure via food sources in four First Nation communities in Quebec, Canada",
+    "doi": "10.1017/s1368980022000581",
+    "url": "https://doi.org/10.1017/s1368980022000581",
+    "year": 2022,
+    "workType": "article",
+    "issuingOrganization": "Institut national de santé publique du Québec",
+    "sources": [
+      "INSPQ Surveillance Épidémiologique"
+    ],
+    "theme": "health",
+    "uses": [
+      {
+        "program": "CHMS",
+        "precision": "range",
+        "cycles": [],
+        "cycleText": "2016-2017",
+        "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
+      }
+    ],
+    "mentions": []
+  },
+  {
     "id": "doi:10.1017/s1368980024000545",
-    "title": "The equitable impact of sugary drink taxation structures on sugary drink consumption among Canadians: a modelling study using the 2015 Canadian Community Health Survey-Nutrition - Canadian Research Data Centre Network",
+    "title": "The equitable impact of sugary drink taxation structures on sugary drink consumption among Canadians: a modelling study using the 2015 Canadian Community Health Survey-Nutrition",
     "doi": "10.1017/s1368980024000545",
     "url": "https://crdcn.ca/publication/the-equitable-impact-of-sugary-drink-taxation-structures-on-sugary-drink-consumption-among-canadians-a-modelling-study-using-the-2015-canadian-community-health-survey-nutrition/",
     "year": 2024,
     "workType": "article",
-    "issuingOrganization": "Public Health Nutrition",
+    "issuingOrganization": "Public Health Ontario",
     "sources": [
-      "CRDCN"
+      "CRDCN",
+      "Public Health Ontario Surveillance"
     ],
     "theme": "health",
     "uses": [
@@ -8094,6 +8324,17 @@
         ],
         "cycleText": "2015",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
+        "certainty": "verified",
+        "statCanExplicit": true
+      },
+      {
+        "program": "CCHS",
+        "precision": "exact_cycles",
+        "cycles": [
+          "2015"
+        ],
+        "cycleText": "2015",
+        "evidenceLocation": "Abstract",
         "certainty": "verified",
         "statCanExplicit": true
       }
@@ -8477,6 +8718,31 @@
     "mentions": []
   },
   {
+    "id": "doi:10.1038/s41370-022-00425-w",
+    "title": "Non-persistent exposures from plasticizers or plastic constituents in remote Arctic communities: a case for further research",
+    "doi": "10.1038/s41370-022-00425-w",
+    "url": "https://doi.org/10.1038/s41370-022-00425-w",
+    "year": 2022,
+    "workType": "article",
+    "issuingOrganization": "Institut national de santé publique du Québec",
+    "sources": [
+      "INSPQ Surveillance Épidémiologique"
+    ],
+    "theme": "Indigenous peoples",
+    "uses": [
+      {
+        "program": "CHMS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
+      }
+    ],
+    "mentions": []
+  },
+  {
     "id": "doi:10.1038/s41370-026-00934-y",
     "title": "Occupational predictors of serum per- and polyfluoroalkyl substance concentrations in a national biomonitoring survey of adults in Canada",
     "doi": "10.1038/s41370-026-00934-y",
@@ -8548,6 +8814,31 @@
         "cycles": [],
         "cycleText": "2007 to 2025",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
+        "certainty": "verified",
+        "statCanExplicit": true
+      }
+    ],
+    "mentions": []
+  },
+  {
+    "id": "doi:10.1038/s41598-024-81273-6",
+    "title": "Longitudinal study examining the relationship between physical activity and psychiatric hospitalizations in canadian adolescents and young adults utilizing record linkage",
+    "doi": "10.1038/s41598-024-81273-6",
+    "url": "https://doi.org/10.1038/s41598-024-81273-6",
+    "year": 2024,
+    "workType": "article",
+    "issuingOrganization": "Alberta Health Services",
+    "sources": [
+      "Alberta Health Services Epidemiological Report"
+    ],
+    "theme": "health",
+    "uses": [
+      {
+        "program": "CCHS",
+        "precision": "range",
+        "cycles": [],
+        "cycleText": "2001-2014",
+        "evidenceLocation": "Abstract",
         "certainty": "verified",
         "statCanExplicit": true
       }
@@ -10916,8 +11207,9 @@
     "url": "https://doi.org/10.1080/15287394.2018.1534174",
     "year": 2018,
     "workType": "article",
-    "issuingOrganization": "Taylor & Francis",
+    "issuingOrganization": "Institut national de santé publique du Québec",
     "sources": [
+      "INSPQ Surveillance Épidémiologique",
       "OpenAlex"
     ],
     "theme": "environment",
@@ -11373,9 +11665,10 @@
     "url": "https://doi.org/10.1080/21645515.2016.1153207",
     "year": 2016,
     "workType": "article",
-    "issuingOrganization": "Taylor & Francis",
+    "issuingOrganization": "Public Health Ontario",
     "sources": [
-      "OpenAlex"
+      "OpenAlex",
+      "Public Health Ontario Surveillance+INSPQ Surveillance Épidémiologique"
     ],
     "theme": "health",
     "uses": [
@@ -11400,9 +11693,10 @@
     "url": "https://doi.org/10.1080/21645515.2016.1277847",
     "year": 2017,
     "workType": "article",
-    "issuingOrganization": "Taylor & Francis",
+    "issuingOrganization": "Public Health Ontario",
     "sources": [
-      "OpenAlex"
+      "OpenAlex",
+      "Public Health Ontario Surveillance"
     ],
     "theme": "families",
     "uses": [
@@ -11427,9 +11721,10 @@
     "url": "https://doi.org/10.1080/21645515.2017.1319022",
     "year": 2017,
     "workType": "article",
-    "issuingOrganization": "Taylor & Francis",
+    "issuingOrganization": "Public Health Ontario",
     "sources": [
-      "OpenAlex"
+      "OpenAlex",
+      "Public Health Ontario Surveillance+BCCDC Public Health Surveillance"
     ],
     "theme": "families",
     "uses": [
@@ -11479,8 +11774,9 @@
     "url": "https://doi.org/10.1080/21645515.2017.1412899",
     "year": 2017,
     "workType": "article",
-    "issuingOrganization": "Taylor & Francis",
+    "issuingOrganization": "Institut national de santé publique du Québec",
     "sources": [
+      "INSPQ Surveillance Épidémiologique",
       "OpenAlex"
     ],
     "theme": "families",
@@ -11533,8 +11829,9 @@
     "url": "https://doi.org/10.1080/22423982.2019.1607703",
     "year": 2019,
     "workType": "article",
-    "issuingOrganization": "Taylor & Francis",
+    "issuingOrganization": "BC Centre for Disease Control",
     "sources": [
+      "BCCDC Public Health Surveillance",
       "OpenAlex"
     ],
     "theme": "health",
@@ -11574,6 +11871,31 @@
         "evidenceLocation": "Abstract",
         "certainty": "provisional",
         "statCanExplicit": false
+      }
+    ],
+    "mentions": []
+  },
+  {
+    "id": "doi:10.1080/22423982.2024.2421048",
+    "title": "Current-use pesticide exposures in remote Inuit communities",
+    "doi": "10.1080/22423982.2024.2421048",
+    "url": "https://doi.org/10.1080/22423982.2024.2421048",
+    "year": 2024,
+    "workType": "article",
+    "issuingOrganization": "Institut national de santé publique du Québec",
+    "sources": [
+      "INSPQ Surveillance Épidémiologique"
+    ],
+    "theme": "environment",
+    "uses": [
+      {
+        "program": "CHMS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -11639,8 +11961,9 @@
     "url": "https://doi.org/10.1080/24740527.2018.1452147",
     "year": 2018,
     "workType": "article",
-    "issuingOrganization": "Taylor & Francis",
+    "issuingOrganization": "BC Centre for Disease Control",
     "sources": [
+      "BCCDC Public Health Surveillance",
       "OpenAlex"
     ],
     "theme": "health",
@@ -11730,6 +12053,31 @@
           "2012"
         ],
         "cycleText": "2011, 2012",
+        "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
+      }
+    ],
+    "mentions": []
+  },
+  {
+    "id": "doi:10.1089/lgbt.2021.0273",
+    "title": "Prescription Drug Insurance and Cost-Related Medication Nonadherence Among Lesbian, Gay, and Bisexual Individuals in Canada",
+    "doi": "10.1089/lgbt.2021.0273",
+    "url": "https://doi.org/10.1089/lgbt.2021.0273",
+    "year": 2022,
+    "workType": "article",
+    "issuingOrganization": "BC Centre for Disease Control",
+    "sources": [
+      "BCCDC Public Health Surveillance"
+    ],
+    "theme": "immigration",
+    "uses": [
+      {
+        "program": "CCHS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
         "evidenceLocation": "Abstract",
         "certainty": "verified",
         "statCanExplicit": true
@@ -12011,6 +12359,31 @@
     "mentions": []
   },
   {
+    "id": "doi:10.1093/aje/kwae107",
+    "title": "Improving prevalence estimates of mental health and well-being indicators among sexual minority men: a propensity-weighting approach",
+    "doi": "10.1093/aje/kwae107",
+    "url": "https://doi.org/10.1093/aje/kwae107",
+    "year": 2024,
+    "workType": "article",
+    "issuingOrganization": "BC Centre for Disease Control",
+    "sources": [
+      "BCCDC Public Health Surveillance"
+    ],
+    "theme": "health",
+    "uses": [
+      {
+        "program": "CCHS",
+        "precision": "range",
+        "cycles": [],
+        "cycleText": "2015-2018",
+        "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
+      }
+    ],
+    "mentions": []
+  },
+  {
     "id": "doi:10.1093/aje/kwag172",
     "title": "Multidimensional social exposure clusters and incident multimorbidity in a population-based cohort",
     "doi": "10.1093/aje/kwag172",
@@ -12119,9 +12492,10 @@
     "url": "https://doi.org/10.1093/aje/kwy245",
     "year": 2018,
     "workType": "article",
-    "issuingOrganization": "Oxford University Press",
+    "issuingOrganization": "Public Health Ontario",
     "sources": [
-      "OpenAlex"
+      "OpenAlex",
+      "Public Health Ontario Surveillance"
     ],
     "theme": "health",
     "uses": [
@@ -13336,8 +13710,9 @@
     "url": "https://doi.org/10.1093/ije/dyz173",
     "year": 2019,
     "workType": "article",
-    "issuingOrganization": "Oxford University Press",
+    "issuingOrganization": "Alberta Health Services",
     "sources": [
+      "Alberta Health Services Epidemiological Report",
       "OpenAlex"
     ],
     "theme": "digital society",
@@ -14471,6 +14846,40 @@
     "mentions": []
   },
   {
+    "id": "doi:10.1097/cxa.0000000000000201",
+    "title": "Exposure to Second-hand Smoke and Having Regular Family Physicians Are Associated With Cessation of Smoking During Pregnancy: A Population-based Study",
+    "doi": "10.1097/cxa.0000000000000201",
+    "url": "https://doi.org/10.1097/cxa.0000000000000201",
+    "year": 2024,
+    "workType": "article",
+    "issuingOrganization": "Alberta Health Services",
+    "sources": [
+      "Alberta Health Services Epidemiological Report"
+    ],
+    "theme": "families",
+    "uses": [
+      {
+        "program": "CCHS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Abstract",
+        "certainty": "provisional",
+        "statCanExplicit": false
+      },
+      {
+        "program": "CCHS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Abstract",
+        "certainty": "provisional",
+        "statCanExplicit": false
+      }
+    ],
+    "mentions": []
+  },
+  {
     "id": "doi:10.1097/ede.0000000000000490",
     "title": "Goat’s Milk, Plant-based Milk, Cow’s Milk, and Serum 25-hydroxyvitamin D Levels in Early Childhood",
     "doi": "10.1097/ede.0000000000000490",
@@ -14546,6 +14955,31 @@
     "mentions": []
   },
   {
+    "id": "doi:10.1097/ede.0000000000001711",
+    "title": "Differential Participation, a Potential Cause of Spurious Associations in Observational Cohorts in Environmental Epidemiology",
+    "doi": "10.1097/ede.0000000000001711",
+    "url": "https://doi.org/10.1097/ede.0000000000001711",
+    "year": 2023,
+    "workType": "article",
+    "issuingOrganization": "Public Health Ontario",
+    "sources": [
+      "Public Health Ontario Surveillance"
+    ],
+    "theme": "environment",
+    "uses": [
+      {
+        "program": "CCHS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
+      }
+    ],
+    "mentions": []
+  },
+  {
     "id": "doi:10.1097/ede.0000000000001862",
     "title": "Health Predictors of Neighborhood Selection: A Prospective Cohort Study of Residential Mobility in Ontario, Canada",
     "doi": "10.1097/ede.0000000000001862",
@@ -14602,12 +15036,22 @@
     "url": "https://doi.org/10.1097/ee9.0000000000000375",
     "year": 2025,
     "workType": "article",
-    "issuingOrganization": "Wolters Kluwer",
+    "issuingOrganization": "Public Health Ontario",
     "sources": [
-      "OpenAlex"
+      "OpenAlex",
+      "Public Health Ontario Surveillance"
     ],
     "theme": "digital society",
     "uses": [
+      {
+        "program": "CCHS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
+      },
       {
         "program": "CCHS",
         "precision": "program_only",
@@ -14752,12 +15196,22 @@
     "url": "https://doi.org/10.1097/md.0000000000041021",
     "year": 2025,
     "workType": "article",
-    "issuingOrganization": "Wolters Kluwer",
+    "issuingOrganization": "Alberta Health Services",
     "sources": [
+      "Alberta Health Services Epidemiological Report",
       "OpenAlex"
     ],
     "theme": "health",
     "uses": [
+      {
+        "program": "CCHS",
+        "precision": "range",
+        "cycles": [],
+        "cycleText": "2015-2016",
+        "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
+      },
       {
         "program": "CCHS",
         "precision": "range",
@@ -14831,9 +15285,10 @@
     "url": "https://doi.org/10.1097/mlr.0000000000000837",
     "year": 2017,
     "workType": "article",
-    "issuingOrganization": "Lippincott Williams & Wilkins",
+    "issuingOrganization": "Public Health Ontario",
     "sources": [
-      "OpenAlex"
+      "OpenAlex",
+      "Public Health Ontario Surveillance"
     ],
     "theme": "health",
     "uses": [
@@ -17955,9 +18410,10 @@
     "url": "https://doi.org/10.1111/jcpe.12684",
     "year": 2016,
     "workType": "article",
-    "issuingOrganization": "Wiley",
+    "issuingOrganization": "Public Health Ontario",
     "sources": [
-      "OpenAlex"
+      "OpenAlex",
+      "Public Health Ontario Surveillance"
     ],
     "theme": "health",
     "uses": [
@@ -18172,9 +18628,10 @@
     "url": "https://doi.org/10.1111/jphd.12283",
     "year": 2018,
     "workType": "article",
-    "issuingOrganization": "Wiley",
+    "issuingOrganization": "Public Health Ontario",
     "sources": [
-      "OpenAlex"
+      "OpenAlex",
+      "Public Health Ontario Surveillance"
     ],
     "theme": "families",
     "uses": [
@@ -18183,6 +18640,56 @@
         "precision": "range",
         "cycles": [],
         "cycleText": "2007-2008",
+        "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
+      }
+    ],
+    "mentions": []
+  },
+  {
+    "id": "doi:10.1111/jphd.12486",
+    "title": "Comparing the magnitude of oral health inequality over time in Canada and the United States",
+    "doi": "10.1111/jphd.12486",
+    "url": "https://doi.org/10.1111/jphd.12486",
+    "year": 2021,
+    "workType": "article",
+    "issuingOrganization": "Public Health Ontario",
+    "sources": [
+      "Public Health Ontario Surveillance"
+    ],
+    "theme": "digital society",
+    "uses": [
+      {
+        "program": "CHMS",
+        "precision": "range",
+        "cycles": [],
+        "cycleText": "2007-2009",
+        "evidenceLocation": "Abstract",
+        "certainty": "provisional",
+        "statCanExplicit": false
+      }
+    ],
+    "mentions": []
+  },
+  {
+    "id": "doi:10.1111/jphd.12574",
+    "title": "Cost‐related avoidance of oral health service utilization among lesbian, gay, and bisexual individuals in Canada",
+    "doi": "10.1111/jphd.12574",
+    "url": "https://doi.org/10.1111/jphd.12574",
+    "year": 2023,
+    "workType": "article",
+    "issuingOrganization": "BC Centre for Disease Control",
+    "sources": [
+      "BCCDC Public Health Surveillance"
+    ],
+    "theme": "health",
+    "uses": [
+      {
+        "program": "CCHS",
+        "precision": "range",
+        "cycles": [],
+        "cycleText": "2017-2018",
         "evidenceLocation": "Abstract",
         "certainty": "verified",
         "statCanExplicit": true
@@ -18860,9 +19367,10 @@
     "url": "https://doi.org/10.1136/bmjopen-2018-022029",
     "year": 2018,
     "workType": "article",
-    "issuingOrganization": "BMJ",
+    "issuingOrganization": "Public Health Ontario",
     "sources": [
-      "OpenAlex"
+      "OpenAlex",
+      "Public Health Ontario Surveillance"
     ],
     "theme": "health",
     "uses": [
@@ -18921,9 +19429,10 @@
     "url": "https://doi.org/10.1136/bmjopen-2019-032475",
     "year": 2019,
     "workType": "article",
-    "issuingOrganization": "BMJ",
+    "issuingOrganization": "Public Health Ontario",
     "sources": [
-      "OpenAlex"
+      "OpenAlex",
+      "Public Health Ontario Surveillance"
     ],
     "theme": "health",
     "uses": [
@@ -18932,6 +19441,31 @@
         "precision": "range",
         "cycles": [],
         "cycleText": "2007-2011",
+        "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
+      }
+    ],
+    "mentions": []
+  },
+  {
+    "id": "doi:10.1136/bmjopen-2019-035867",
+    "title": "Bayesian network modelling study to identify factors influencing the risk of cardiovascular disease in Canadian adults with hepatitis C virus infection",
+    "doi": "10.1136/bmjopen-2019-035867",
+    "url": "https://doi.org/10.1136/bmjopen-2019-035867",
+    "year": 2020,
+    "workType": "article",
+    "issuingOrganization": "Alberta Health Services",
+    "sources": [
+      "Alberta Health Services Epidemiological Report"
+    ],
+    "theme": "health",
+    "uses": [
+      {
+        "program": "CHMS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
         "evidenceLocation": "Abstract",
         "certainty": "verified",
         "statCanExplicit": true
@@ -19045,9 +19579,10 @@
     "url": "https://doi.org/10.1136/bmjopen-2023-081538",
     "year": 2024,
     "workType": "article",
-    "issuingOrganization": "BMJ",
+    "issuingOrganization": "Public Health Ontario",
     "sources": [
-      "OpenAlex"
+      "OpenAlex",
+      "Public Health Ontario Surveillance"
     ],
     "theme": "families",
     "uses": [
@@ -19278,6 +19813,33 @@
     "mentions": []
   },
   {
+    "id": "doi:10.1136/bmjph-2025-003068",
+    "title": "Sociodemographic correlates of human papillomavirus and hepatitis B vaccination status in Canada: a cross-sectional study",
+    "doi": "10.1136/bmjph-2025-003068",
+    "url": "https://doi.org/10.1136/bmjph-2025-003068",
+    "year": 2026,
+    "workType": "article",
+    "issuingOrganization": "Public Health Ontario",
+    "sources": [
+      "Public Health Ontario Surveillance"
+    ],
+    "theme": "health",
+    "uses": [
+      {
+        "program": "CNICS",
+        "precision": "exact_cycles",
+        "cycles": [
+          "2021"
+        ],
+        "cycleText": "2021",
+        "evidenceLocation": "Abstract",
+        "certainty": "provisional",
+        "statCanExplicit": false
+      }
+    ],
+    "mentions": []
+  },
+  {
     "id": "doi:10.1136/heartjnl-2015-308564",
     "title": "Alternative interventions for refractory angina",
     "doi": "10.1136/heartjnl-2015-308564",
@@ -19417,8 +19979,9 @@
     "url": "https://doi.org/10.1136/jech-2017-209129",
     "year": 2017,
     "workType": "article",
-    "issuingOrganization": "BMJ",
+    "issuingOrganization": "Alberta Health Services",
     "sources": [
+      "Alberta Health Services Epidemiological Report",
       "OpenAlex"
     ],
     "theme": "health",
@@ -20318,6 +20881,60 @@
         "certainty": "verified",
         "statCanExplicit": true
       },
+      {
+        "program": "CCHS",
+        "precision": "exact_cycles",
+        "cycles": [
+          "2015"
+        ],
+        "cycleText": "2015",
+        "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
+      }
+    ],
+    "mentions": []
+  },
+  {
+    "id": "doi:10.1139/apnm-2021-0415",
+    "title": "Development of the Healthy Eating Food Index (HEFI)-2019 measuring adherence to Canada’s Food Guide 2019 recommendations on healthy food choices",
+    "doi": "10.1139/apnm-2021-0415",
+    "url": "https://doi.org/10.1139/apnm-2021-0415",
+    "year": 2022,
+    "workType": "article",
+    "issuingOrganization": "Alberta Health Services",
+    "sources": [
+      "Alberta Health Services Epidemiological Report"
+    ],
+    "theme": "health",
+    "uses": [
+      {
+        "program": "CCHS",
+        "precision": "exact_cycles",
+        "cycles": [
+          "2015"
+        ],
+        "cycleText": "2015",
+        "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
+      }
+    ],
+    "mentions": []
+  },
+  {
+    "id": "doi:10.1139/apnm-2021-0416",
+    "title": "Evaluation of the Healthy Eating Food Index (HEFI)-2019 measuring adherence to Canada’s Food Guide 2019 recommendations on healthy food choices",
+    "doi": "10.1139/apnm-2021-0416",
+    "url": "https://doi.org/10.1139/apnm-2021-0416",
+    "year": 2022,
+    "workType": "article",
+    "issuingOrganization": "Alberta Health Services",
+    "sources": [
+      "Alberta Health Services Epidemiological Report"
+    ],
+    "theme": "health",
+    "uses": [
       {
         "program": "CCHS",
         "precision": "exact_cycles",
@@ -21855,9 +22472,10 @@
     "url": "https://doi.org/10.1164/rccm.201510-1932oc",
     "year": 2016,
     "workType": "article",
-    "issuingOrganization": "American Thoracic Society",
+    "issuingOrganization": "Public Health Ontario",
     "sources": [
-      "OpenAlex"
+      "OpenAlex",
+      "Public Health Ontario Surveillance"
     ],
     "theme": "health",
     "uses": [
@@ -22496,8 +23114,9 @@
     "url": "https://doi.org/10.1177/0269881119882806",
     "year": 2019,
     "workType": "article",
-    "issuingOrganization": "SAGE Publishing",
+    "issuingOrganization": "BC Centre for Disease Control",
     "sources": [
+      "BCCDC Public Health Surveillance",
       "OpenAlex"
     ],
     "theme": "health",
@@ -22523,12 +23142,22 @@
     "url": "https://doi.org/10.1177/0272989x251319342",
     "year": 2025,
     "workType": "article",
-    "issuingOrganization": "SAGE Publishing",
+    "issuingOrganization": "Public Health Ontario",
     "sources": [
-      "OpenAlex"
+      "OpenAlex",
+      "Public Health Ontario Surveillance"
     ],
     "theme": "health",
     "uses": [
+      {
+        "program": "CCHS",
+        "precision": "range",
+        "cycles": [],
+        "cycleText": "2000 to 2014",
+        "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
+      },
       {
         "program": "CCHS",
         "precision": "range",
@@ -22648,8 +23277,9 @@
     "url": "https://doi.org/10.1177/070674371506000310",
     "year": 2015,
     "workType": "article",
-    "issuingOrganization": "SAGE Publishing",
+    "issuingOrganization": "Alberta Health Services",
     "sources": [
+      "Alberta Health Services Epidemiological Report",
       "OpenAlex"
     ],
     "theme": "health",
@@ -24680,6 +25310,31 @@
     "mentions": []
   },
   {
+    "id": "doi:10.1177/17474930241288033",
+    "title": "Sex, gender, and stroke recovery: Functional limitations and inpatient care needs in Canadian and European survivors",
+    "doi": "10.1177/17474930241288033",
+    "url": "https://doi.org/10.1177/17474930241288033",
+    "year": 2024,
+    "workType": "article",
+    "issuingOrganization": "Alberta Health Services",
+    "sources": [
+      "Alberta Health Services Epidemiological Report"
+    ],
+    "theme": "health",
+    "uses": [
+      {
+        "program": "CCHS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
+      }
+    ],
+    "mentions": []
+  },
+  {
     "id": "doi:10.1177/1757913914561670",
     "title": "Mental health and wellbeing",
     "doi": "10.1177/1757913914561670",
@@ -25256,9 +25911,10 @@
     "url": "https://doi.org/10.1186/s12889-016-3144-4",
     "year": 2016,
     "workType": "article",
-    "issuingOrganization": "BioMed Central",
+    "issuingOrganization": "Public Health Ontario",
     "sources": [
-      "OpenAlex"
+      "OpenAlex",
+      "Public Health Ontario Surveillance"
     ],
     "theme": "health",
     "uses": [
@@ -25858,8 +26514,9 @@
     "url": "https://doi.org/10.1186/s12889-022-14090-z",
     "year": 2022,
     "workType": "article",
-    "issuingOrganization": "BioMed Central",
+    "issuingOrganization": "Institut national de santé publique du Québec",
     "sources": [
+      "INSPQ Surveillance Épidémiologique",
       "OpenAlex"
     ],
     "theme": "health",
@@ -26036,14 +26693,42 @@
     "url": "https://doi.org/10.1186/s12889-023-17079-4",
     "year": 2023,
     "workType": "article",
-    "issuingOrganization": "BioMed Central",
+    "issuingOrganization": "Institut national de santé publique du Québec",
     "sources": [
+      "INSPQ Surveillance Épidémiologique",
       "OpenAlex"
     ],
     "theme": "health",
     "uses": [
       {
         "program": "CNICS",
+        "precision": "exact_cycles",
+        "cycles": [
+          "2017"
+        ],
+        "cycleText": "2017",
+        "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
+      }
+    ],
+    "mentions": []
+  },
+  {
+    "id": "doi:10.1186/s12889-024-18868-1",
+    "title": "Socio-demographic predictors of not having private dental insurance coverage: machine-learning algorithms may help identify the disadvantaged",
+    "doi": "10.1186/s12889-024-18868-1",
+    "url": "https://doi.org/10.1186/s12889-024-18868-1",
+    "year": 2024,
+    "workType": "article",
+    "issuingOrganization": "Public Health Ontario",
+    "sources": [
+      "Public Health Ontario Surveillance"
+    ],
+    "theme": "health",
+    "uses": [
+      {
+        "program": "CCHS",
         "precision": "exact_cycles",
         "cycles": [
           "2017"
@@ -26077,6 +26762,33 @@
         "evidenceLocation": "Abstract",
         "certainty": "verified",
         "statCanExplicit": true
+      }
+    ],
+    "mentions": []
+  },
+  {
+    "id": "doi:10.1186/s12889-024-20862-6",
+    "title": "Correction: Determinants of parental vaccine hesitancy in Canada: results from the 2017 Childhood National Immunization Coverage Survey",
+    "doi": "10.1186/s12889-024-20862-6",
+    "url": "https://doi.org/10.1186/s12889-024-20862-6",
+    "year": 2025,
+    "workType": "erratum",
+    "issuingOrganization": "Institut national de santé publique du Québec",
+    "sources": [
+      "INSPQ Surveillance Épidémiologique"
+    ],
+    "theme": "families",
+    "uses": [
+      {
+        "program": "CNICS",
+        "precision": "exact_cycles",
+        "cycles": [
+          "2017"
+        ],
+        "cycleText": "2017",
+        "evidenceLocation": "Title",
+        "certainty": "provisional",
+        "statCanExplicit": false
       }
     ],
     "mentions": []
@@ -26164,12 +26876,22 @@
     "url": "https://doi.org/10.1186/s12889-025-23728-7",
     "year": 2025,
     "workType": "article",
-    "issuingOrganization": "BioMed Central",
+    "issuingOrganization": "Alberta Health Services",
     "sources": [
+      "Alberta Health Services Epidemiological Report",
       "OpenAlex"
     ],
     "theme": "health",
     "uses": [
+      {
+        "program": "CCHS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
+      },
       {
         "program": "CCHS",
         "precision": "program_only",
@@ -26558,9 +27280,10 @@
     "url": "https://doi.org/10.1186/s12939-015-0245-0",
     "year": 2015,
     "workType": "article",
-    "issuingOrganization": "BioMed Central",
+    "issuingOrganization": "Public Health Ontario",
     "sources": [
-      "OpenAlex"
+      "OpenAlex",
+      "Public Health Ontario Surveillance"
     ],
     "theme": "income and inequality",
     "uses": [
@@ -26784,9 +27507,10 @@
     "url": "https://doi.org/10.1186/s12940-016-0111-6",
     "year": 2016,
     "workType": "article",
-    "issuingOrganization": "BioMed Central",
+    "issuingOrganization": "Public Health Ontario",
     "sources": [
-      "OpenAlex"
+      "OpenAlex",
+      "Public Health Ontario Surveillance"
     ],
     "theme": "health",
     "uses": [
@@ -27191,14 +27915,15 @@
   },
   {
     "id": "doi:10.1186/s13075-022-02843-5",
-    "title": "Long-term exposure to fine particulate matter and ozone and the onset of systemic autoimmune rheumatic diseases: an open cohort study in Quebec, Canada - Canadian Research Data Centre Network",
+    "title": "Long-term exposure to fine particulate matter and ozone and the onset of systemic autoimmune rheumatic diseases: an open cohort study in Quebec, Canada",
     "doi": "10.1186/s13075-022-02843-5",
     "url": "https://crdcn.ca/publication/long-term-exposure-to-fine-particulate-matter-and-ozone-and-the-onset-of-systemic-autoimmune-rheumatic-diseases-an-open-cohort-study-in-quebec-canada/",
     "year": 2022,
     "workType": "article",
-    "issuingOrganization": "Arthritis Research & Therapy",
+    "issuingOrganization": "Institut national de santé publique du Québec",
     "sources": [
-      "CRDCN"
+      "CRDCN",
+      "INSPQ Surveillance Épidémiologique"
     ],
     "theme": "health",
     "uses": [
@@ -27478,8 +28203,9 @@
     "url": "https://doi.org/10.1186/s40608-015-0060-6",
     "year": 2015,
     "workType": "article",
-    "issuingOrganization": "Springer Science+Business Media",
+    "issuingOrganization": "Alberta Health Services",
     "sources": [
+      "Alberta Health Services Epidemiological Report",
       "OpenAlex"
     ],
     "theme": "families",
@@ -27603,6 +28329,33 @@
     "mentions": []
   },
   {
+    "id": "doi:10.1186/s40814-021-00864-6",
+    "title": "Automated Self-Administered 24-H Dietary Assessment Tool (ASA24) recalls for parent proxy-reporting of children’s intake (> 4 years of age): a feasibility study",
+    "doi": "10.1186/s40814-021-00864-6",
+    "url": "https://doi.org/10.1186/s40814-021-00864-6",
+    "year": 2021,
+    "workType": "article",
+    "issuingOrganization": "Public Health Ontario",
+    "sources": [
+      "Public Health Ontario Surveillance"
+    ],
+    "theme": "digital society",
+    "uses": [
+      {
+        "program": "CCHS",
+        "precision": "exact_cycles",
+        "cycles": [
+          "2015"
+        ],
+        "cycleText": "2015",
+        "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
+      }
+    ],
+    "mentions": []
+  },
+  {
     "id": "doi:10.1186/s41043-019-0206-0",
     "title": "Development of the Health Awareness and Behaviour Tool (HABiT): reliability and suitability for a Canadian older adult population",
     "doi": "10.1186/s41043-019-0206-0",
@@ -27645,6 +28398,31 @@
         "precision": "range",
         "cycles": [],
         "cycleText": "2000 to 2014",
+        "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
+      }
+    ],
+    "mentions": []
+  },
+  {
+    "id": "doi:10.1186/s41512-020-00086-z",
+    "title": "A study protocol for a predictive algorithm to assess population-based premature mortality risk: Premature Mortality Population Risk Tool (PreMPoRT)",
+    "doi": "10.1186/s41512-020-00086-z",
+    "url": "https://doi.org/10.1186/s41512-020-00086-z",
+    "year": 2020,
+    "workType": "article",
+    "issuingOrganization": "Public Health Ontario",
+    "sources": [
+      "Public Health Ontario Surveillance"
+    ],
+    "theme": "health",
+    "uses": [
+      {
+        "program": "CCHS",
+        "precision": "range",
+        "cycles": [],
+        "cycleText": "2000 to 2017",
         "evidenceLocation": "Abstract",
         "certainty": "verified",
         "statCanExplicit": true
@@ -28297,6 +29075,31 @@
     "mentions": []
   },
   {
+    "id": "doi:10.1289/ehp11095",
+    "title": "Using Parametric g-Computation to Estimate the Effect of Long-Term Exposure to Air Pollution on Mortality Risk and Simulate the Benefits of Hypothetical Policies: The Canadian Community Health Survey Cohort (2005 to 2015)",
+    "doi": "10.1289/ehp11095",
+    "url": "https://doi.org/10.1289/ehp11095",
+    "year": 2023,
+    "workType": "article",
+    "issuingOrganization": "Public Health Ontario",
+    "sources": [
+      "Public Health Ontario Surveillance"
+    ],
+    "theme": "income and inequality",
+    "uses": [
+      {
+        "program": "CCHS",
+        "precision": "range",
+        "cycles": [],
+        "cycleText": "2005 to 2015",
+        "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
+      }
+    ],
+    "mentions": []
+  },
+  {
     "id": "doi:10.1289/isee.2016.3214",
     "title": "Inorganic Arsenic Exposure is not Associated with Type-2 Diabetes Prevalence in Cycle 2 of the Canadian Health Measures Survey",
     "doi": "10.1289/isee.2016.3214",
@@ -28341,6 +29144,31 @@
           "2011"
         ],
         "cycleText": "2011",
+        "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
+      }
+    ],
+    "mentions": []
+  },
+  {
+    "id": "doi:10.1289/isee.2020.virtual.o-os-528",
+    "title": "Environmental noise exposure and sleeping troubles: A general population-based study in Montreal and Halifax",
+    "doi": "10.1289/isee.2020.virtual.o-os-528",
+    "url": "https://doi.org/10.1289/isee.2020.virtual.o-os-528",
+    "year": 2020,
+    "workType": "conference-paper",
+    "issuingOrganization": "Public Health Ontario",
+    "sources": [
+      "Public Health Ontario Surveillance"
+    ],
+    "theme": "health",
+    "uses": [
+      {
+        "program": "CCHS",
+        "precision": "range",
+        "cycles": [],
+        "cycleText": "2007-2008",
         "evidenceLocation": "Abstract",
         "certainty": "verified",
         "statCanExplicit": true
@@ -28424,6 +29252,31 @@
     "mentions": []
   },
   {
+    "id": "doi:10.1289/isee.2022.o-sy-063",
+    "title": "Elevated exposure to long-chain perfluoroalkyl and polyfluoroalkyl substances (PFAS) in Inuit from Nunavik, Arctic Canada: a call for global action",
+    "doi": "10.1289/isee.2022.o-sy-063",
+    "url": "https://doi.org/10.1289/isee.2022.o-sy-063",
+    "year": 2022,
+    "workType": "conference-paper",
+    "issuingOrganization": "Institut national de santé publique du Québec",
+    "sources": [
+      "INSPQ Surveillance Épidémiologique"
+    ],
+    "theme": "environment",
+    "uses": [
+      {
+        "program": "CHMS",
+        "precision": "range",
+        "cycles": [],
+        "cycleText": "2016-2017",
+        "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
+      }
+    ],
+    "mentions": []
+  },
+  {
     "id": "doi:10.1289/isee.2022.p-0438",
     "title": "Investigation of the relationship between multiple environmental exposures and pediatric obesity in a national cross-sectional study of Canadian children",
     "doi": "10.1289/isee.2022.p-0438",
@@ -28480,8 +29333,9 @@
     "url": "https://doi.org/10.1289/isesisee.2018.o04.01.18",
     "year": 2018,
     "workType": "conference-paper",
-    "issuingOrganization": "National Institute of Environmental Health Sciences",
+    "issuingOrganization": "BC Centre for Disease Control",
     "sources": [
+      "BCCDC Public Health Surveillance",
       "OpenAlex"
     ],
     "theme": "health",
@@ -28632,8 +29486,9 @@
     "url": "https://doi.org/10.1289/isesisee.2018.p03.3630",
     "year": 2018,
     "workType": "conference-paper",
-    "issuingOrganization": "National Institute of Environmental Health Sciences",
+    "issuingOrganization": "Institut national de santé publique du Québec",
     "sources": [
+      "INSPQ Surveillance Épidémiologique",
       "OpenAlex"
     ],
     "theme": "environment",
@@ -28657,8 +29512,9 @@
     "url": "https://doi.org/10.1289/isesisee.2018.s01.01.29",
     "year": 2018,
     "workType": "conference-paper",
-    "issuingOrganization": "National Institute of Environmental Health Sciences",
+    "issuingOrganization": "Institut national de santé publique du Québec",
     "sources": [
+      "INSPQ Surveillance Épidémiologique",
       "OpenAlex"
     ],
     "theme": "environment",
@@ -29658,9 +30514,10 @@
     "url": "https://doi.org/10.1371/journal.pone.0195962",
     "year": 2018,
     "workType": "article",
-    "issuingOrganization": "Public Library of Science",
+    "issuingOrganization": "Public Health Ontario",
     "sources": [
-      "OpenAlex"
+      "OpenAlex",
+      "Public Health Ontario Surveillance"
     ],
     "theme": "health",
     "uses": [
@@ -29903,6 +30760,34 @@
     "mentions": []
   },
   {
+    "id": "doi:10.1371/journal.pone.0218056",
+    "title": "Risk of complications among diabetics self-reporting oral health status in Canada: A population-based cohort study",
+    "doi": "10.1371/journal.pone.0218056",
+    "url": "https://doi.org/10.1371/journal.pone.0218056",
+    "year": 2020,
+    "workType": "article",
+    "issuingOrganization": "Public Health Ontario",
+    "sources": [
+      "Public Health Ontario Surveillance"
+    ],
+    "theme": "health",
+    "uses": [
+      {
+        "program": "CCHS",
+        "precision": "exact_cycles",
+        "cycles": [
+          "2003",
+          "2007"
+        ],
+        "cycleText": "2003, 2007",
+        "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
+      }
+    ],
+    "mentions": []
+  },
+  {
     "id": "doi:10.1371/journal.pone.0218540",
     "title": "Reduced social participation among seniors with self-reported visual impairment and glaucoma",
     "doi": "10.1371/journal.pone.0218540",
@@ -29959,9 +30844,10 @@
     "url": "https://doi.org/10.1371/journal.pone.0229465",
     "year": 2020,
     "workType": "article",
-    "issuingOrganization": "Public Library of Science",
+    "issuingOrganization": "Public Health Ontario",
     "sources": [
-      "OpenAlex"
+      "OpenAlex",
+      "Public Health Ontario Surveillance"
     ],
     "theme": "health",
     "uses": [
@@ -30033,6 +30919,56 @@
           "2017"
         ],
         "cycleText": "2017",
+        "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
+      }
+    ],
+    "mentions": []
+  },
+  {
+    "id": "doi:10.1371/journal.pone.0272638",
+    "title": "Economic burden of chronic pain in Alberta, Canada",
+    "doi": "10.1371/journal.pone.0272638",
+    "url": "https://doi.org/10.1371/journal.pone.0272638",
+    "year": 2022,
+    "workType": "article",
+    "issuingOrganization": "Alberta Health Services",
+    "sources": [
+      "Alberta Health Services Epidemiological Report"
+    ],
+    "theme": "health",
+    "uses": [
+      {
+        "program": "CCHS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
+      }
+    ],
+    "mentions": []
+  },
+  {
+    "id": "doi:10.1371/journal.pone.0280370",
+    "title": "Trends in self-reported cost barriers to dental care in Ontario",
+    "doi": "10.1371/journal.pone.0280370",
+    "url": "https://doi.org/10.1371/journal.pone.0280370",
+    "year": 2023,
+    "workType": "article",
+    "issuingOrganization": "Public Health Ontario",
+    "sources": [
+      "Public Health Ontario Surveillance"
+    ],
+    "theme": "health",
+    "uses": [
+      {
+        "program": "CCHS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
         "evidenceLocation": "Abstract",
         "certainty": "verified",
         "statCanExplicit": true
@@ -30185,9 +31121,10 @@
     "url": "http://dx.doi.org/10.1371/journal.pone.0309154",
     "year": 2024,
     "workType": "article",
-    "issuingOrganization": "Public Library of Science",
+    "issuingOrganization": "Public Health Ontario",
     "sources": [
-      "OpenAlex"
+      "OpenAlex",
+      "Public Health Ontario Surveillance+INSPQ Surveillance Épidémiologique"
     ],
     "theme": "health",
     "uses": [
@@ -31270,9 +32207,10 @@
     "url": "https://doi.org/10.14745/ccdr.v49i1112a02",
     "year": 2023,
     "workType": "article",
-    "issuingOrganization": "Health Canada",
+    "issuingOrganization": "Public Health Ontario",
     "sources": [
-      "OpenAlex"
+      "OpenAlex",
+      "Public Health Ontario Surveillance"
     ],
     "theme": "health",
     "uses": [
@@ -31593,8 +32531,9 @@
     "url": "https://doi.org/10.1503/cmaj.190597",
     "year": 2019,
     "workType": "article",
-    "issuingOrganization": "Canadian Medical Association",
+    "issuingOrganization": "Alberta Health Services",
     "sources": [
+      "Alberta Health Services Epidemiological Report",
       "OpenAlex"
     ],
     "theme": "health",
@@ -32489,9 +33428,10 @@
     "url": "https://doi.org/10.17269/s41997-018-0127-5",
     "year": 2018,
     "workType": "article",
-    "issuingOrganization": "Springer Science+Business Media",
+    "issuingOrganization": "Public Health Ontario",
     "sources": [
-      "OpenAlex"
+      "OpenAlex",
+      "Public Health Ontario Surveillance"
     ],
     "theme": "health",
     "uses": [
@@ -32541,8 +33481,9 @@
     "url": "https://doi.org/10.17269/s41997-018-0169-8",
     "year": 2019,
     "workType": "article",
-    "issuingOrganization": "Springer Science+Business Media",
+    "issuingOrganization": "BC Centre for Disease Control",
     "sources": [
+      "BCCDC Public Health Surveillance",
       "OpenAlex"
     ],
     "theme": "health",
@@ -32591,9 +33532,10 @@
     "url": "https://doi.org/10.17269/s41997-019-00251-y",
     "year": 2019,
     "workType": "article",
-    "issuingOrganization": "Springer Science+Business Media",
+    "issuingOrganization": "Public Health Ontario",
     "sources": [
-      "OpenAlex"
+      "OpenAlex",
+      "Public Health Ontario Surveillance"
     ],
     "theme": "health",
     "uses": [
@@ -32714,14 +33656,15 @@
   },
   {
     "id": "doi:10.17269/s41997-021-00602-8",
-    "title": "Socioeconomic position and consumption of sugary drinks, sugar-sweetened beverages and 100% juice among Canadians: a cross-sectional analysis of the 2015 Canadian Community Health Survey-Nutrition - Canadian Research Data Centre Network",
+    "title": "Socioeconomic position and consumption of sugary drinks, sugar-sweetened beverages and 100% juice among Canadians: a cross-sectional analysis of the 2015 Canadian Community Health Survey–Nutrition",
     "doi": "10.17269/s41997-021-00602-8",
     "url": "https://crdcn.ca/publication/socioeconomic-position-and-consumption-of-sugary-drinks-sugar-sweetened-beverages-and-100-juice-among-canadians-a-cross-sectional-analysis-of-the-2015-canadian-community-health-survey-nutrition/",
     "year": 2022,
     "workType": "article",
-    "issuingOrganization": "Canadian Journal of Public Health = Revue Canadienne De Sante Publique",
+    "issuingOrganization": "Public Health Ontario",
     "sources": [
-      "CRDCN"
+      "CRDCN",
+      "Public Health Ontario Surveillance"
     ],
     "theme": "health",
     "uses": [
@@ -32744,6 +33687,17 @@
         ],
         "cycleText": "2015",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
+        "certainty": "verified",
+        "statCanExplicit": true
+      },
+      {
+        "program": "CCHS",
+        "precision": "exact_cycles",
+        "cycles": [
+          "2015"
+        ],
+        "cycleText": "2015",
+        "evidenceLocation": "Abstract",
         "certainty": "verified",
         "statCanExplicit": true
       }
@@ -32992,6 +33946,33 @@
     "mentions": []
   },
   {
+    "id": "doi:10.17269/s41997-024-00868-8",
+    "title": "The projected health and economic impact of increased colorectal cancer screening participation among Canadians by income quintile",
+    "doi": "10.17269/s41997-024-00868-8",
+    "url": "https://doi.org/10.17269/s41997-024-00868-8",
+    "year": 2024,
+    "workType": "article",
+    "issuingOrganization": "Alberta Health Services",
+    "sources": [
+      "Alberta Health Services Epidemiological Report"
+    ],
+    "theme": "health",
+    "uses": [
+      {
+        "program": "CCHS",
+        "precision": "exact_cycles",
+        "cycles": [
+          "2017"
+        ],
+        "cycleText": "2017",
+        "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
+      }
+    ],
+    "mentions": []
+  },
+  {
     "id": "doi:10.17269/s41997-024-00931-4",
     "title": "Sexual and gender minority youth in Canada: An investigation of disparities in positive mental health",
     "doi": "10.17269/s41997-024-00931-4",
@@ -33089,12 +34070,24 @@
     "url": "https://doi.org/10.17269/s41997-025-01033-5",
     "year": 2025,
     "workType": "article",
-    "issuingOrganization": "Springer Science+Business Media",
+    "issuingOrganization": "Public Health Ontario",
     "sources": [
-      "OpenAlex"
+      "OpenAlex",
+      "Public Health Ontario Surveillance"
     ],
     "theme": "health",
     "uses": [
+      {
+        "program": "CCHS",
+        "precision": "exact_cycles",
+        "cycles": [
+          "2014"
+        ],
+        "cycleText": "2014",
+        "evidenceLocation": "Title",
+        "certainty": "verified",
+        "statCanExplicit": true
+      },
       {
         "program": "CCHS",
         "precision": "exact_cycles",
@@ -33116,9 +34109,10 @@
     "url": "https://doi.org/10.17269/s41997-025-01073-x",
     "year": 2025,
     "workType": "article",
-    "issuingOrganization": "Springer Science+Business Media",
+    "issuingOrganization": "Public Health Ontario",
     "sources": [
-      "OpenAlex"
+      "OpenAlex",
+      "Public Health Ontario Surveillance"
     ],
     "theme": "families",
     "uses": [
@@ -33213,12 +34207,24 @@
     "url": "https://doi.org/10.17269/s41997-026-01160-7",
     "year": 2026,
     "workType": "article",
-    "issuingOrganization": "Springer Science+Business Media",
+    "issuingOrganization": "BC Centre for Disease Control",
     "sources": [
+      "BCCDC Public Health Surveillance",
       "OpenAlex"
     ],
     "theme": "health",
     "uses": [
+      {
+        "program": "CCHS",
+        "precision": "exact_cycles",
+        "cycles": [
+          "2017"
+        ],
+        "cycleText": "2017",
+        "evidenceLocation": "Title",
+        "certainty": "verified",
+        "statCanExplicit": true
+      },
       {
         "program": "CCHS",
         "precision": "exact_cycles",
@@ -33376,8 +34382,9 @@
     "url": "https://doi.org/10.18332/popmed/157270",
     "year": 2022,
     "workType": "article",
-    "issuingOrganization": "EU European Publishing",
+    "issuingOrganization": "Alberta Health Services",
     "sources": [
+      "Alberta Health Services Epidemiological Report",
       "OpenAlex"
     ],
     "theme": "other",
@@ -35121,6 +36128,33 @@
     "mentions": []
   },
   {
+    "id": "doi:10.21203/rs.3.rs-3650319/v1",
+    "title": "Socio-demographic predictors of not having private dental insurance coverage: Machine-learning algorithms may help identify the disadvantaged",
+    "doi": "10.21203/rs.3.rs-3650319/v1",
+    "url": "http://dx.doi.org/10.21203/rs.3.rs-3650319/v1",
+    "year": 2023,
+    "workType": "preprint",
+    "issuingOrganization": "Public Health Ontario",
+    "sources": [
+      "Public Health Ontario Surveillance"
+    ],
+    "theme": "housing",
+    "uses": [
+      {
+        "program": "CCHS",
+        "precision": "exact_cycles",
+        "cycles": [
+          "2017"
+        ],
+        "cycleText": "2017",
+        "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
+      }
+    ],
+    "mentions": []
+  },
+  {
     "id": "doi:10.21203/rs.3.rs-4503504/v1",
     "title": "Workplace Accommodations and the Labour Force Status of Persons with Disabilities",
     "doi": "10.21203/rs.3.rs-4503504/v1",
@@ -36224,9 +37258,10 @@
     "url": "https://doi.org/10.2337/dc14-2474",
     "year": 2015,
     "workType": "article",
-    "issuingOrganization": "American Diabetes Association",
+    "issuingOrganization": "Public Health Ontario",
     "sources": [
-      "OpenAlex"
+      "OpenAlex",
+      "Public Health Ontario Surveillance"
     ],
     "theme": "health",
     "uses": [
@@ -36510,9 +37545,10 @@
     "url": "https://doi.org/10.23889/ijpds.v3i4.806",
     "year": 2018,
     "workType": "article",
-    "issuingOrganization": "Swansea University",
+    "issuingOrganization": "Public Health Ontario",
     "sources": [
-      "OpenAlex"
+      "OpenAlex",
+      "Public Health Ontario Surveillance"
     ],
     "theme": "income and inequality",
     "uses": [
@@ -36632,6 +37668,31 @@
     "mentions": []
   },
   {
+    "id": "doi:10.23889/ijpds.v5i5.1467",
+    "title": "Use of Machine Learning and Linked Population Health Data to Develop Predictive Risk Algorithms for Population Health Decision-Making",
+    "doi": "10.23889/ijpds.v5i5.1467",
+    "url": "https://doi.org/10.23889/ijpds.v5i5.1467",
+    "year": 2020,
+    "workType": "article",
+    "issuingOrganization": "Public Health Ontario",
+    "sources": [
+      "Public Health Ontario Surveillance"
+    ],
+    "theme": "health",
+    "uses": [
+      {
+        "program": "CCHS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
+      }
+    ],
+    "mentions": []
+  },
+  {
     "id": "doi:10.23889/ijpds.v7i3.2082",
     "title": "Associations between neighbourhood fast-food environments and hypertension in Canadian adults.",
     "doi": "10.23889/ijpds.v7i3.2082",
@@ -36740,8 +37801,9 @@
     "url": "https://doi.org/10.24095/hpcdp.35.4.01",
     "year": 2015,
     "workType": "article",
-    "issuingOrganization": "Public Health Agency of Canada",
+    "issuingOrganization": "Institut national de santé publique du Québec",
     "sources": [
+      "INSPQ Surveillance Épidémiologique",
       "OpenAlex"
     ],
     "theme": "health",
@@ -36765,8 +37827,9 @@
     "url": "https://doi.org/10.24095/hpcdp.35.4.01f",
     "year": 2015,
     "workType": "article",
-    "issuingOrganization": "Public Health Agency of Canada",
+    "issuingOrganization": "Institut national de santé publique du Québec",
     "sources": [
+      "INSPQ Surveillance Épidémiologique",
       "OpenAlex"
     ],
     "theme": "digital society",
@@ -37155,8 +38218,9 @@
     "url": "https://doi.org/10.24095/hpcdp.36.7.01",
     "year": 2016,
     "workType": "article",
-    "issuingOrganization": "Public Health Agency of Canada",
+    "issuingOrganization": "Institut national de santé publique du Québec",
     "sources": [
+      "INSPQ Surveillance Épidémiologique",
       "OpenAlex"
     ],
     "theme": "digital society",
@@ -37280,9 +38344,10 @@
     "url": "https://doi.org/10.24095/hpcdp.37.2.03",
     "year": 2017,
     "workType": "article",
-    "issuingOrganization": "Public Health Agency of Canada",
+    "issuingOrganization": "Public Health Ontario",
     "sources": [
-      "OpenAlex"
+      "OpenAlex",
+      "Public Health Ontario Surveillance"
     ],
     "theme": "health",
     "uses": [
@@ -37308,9 +38373,10 @@
     "url": "https://doi.org/10.24095/hpcdp.37.2.03f",
     "year": 2017,
     "workType": "article",
-    "issuingOrganization": "Public Health Agency of Canada",
+    "issuingOrganization": "Public Health Ontario",
     "sources": [
-      "OpenAlex"
+      "OpenAlex",
+      "Public Health Ontario Surveillance"
     ],
     "theme": "digital society",
     "uses": [
@@ -38335,8 +39401,9 @@
     "url": "https://doi.org/10.24095/hpcdp.40.7/8.02",
     "year": 2020,
     "workType": "article",
-    "issuingOrganization": "Public Health Agency of Canada",
+    "issuingOrganization": "BC Centre for Disease Control",
     "sources": [
+      "BCCDC Public Health Surveillance",
       "OpenAlex"
     ],
     "theme": "health",
@@ -40044,12 +41111,22 @@
     "url": "https://doi.org/10.24095/hpcdp.46.9.04",
     "year": 2026,
     "workType": "article",
-    "issuingOrganization": "Public Health Agency of Canada",
+    "issuingOrganization": "Public Health Ontario",
     "sources": [
-      "OpenAlex"
+      "OpenAlex",
+      "Public Health Ontario Surveillance"
     ],
     "theme": "health",
     "uses": [
+      {
+        "program": "CCHS",
+        "precision": "range",
+        "cycles": [],
+        "cycleText": "2017 to 2019",
+        "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
+      },
       {
         "program": "CCHS",
         "precision": "range",
@@ -40069,12 +41146,22 @@
     "url": "https://doi.org/10.24095/hpcdp.46.9.04f",
     "year": 2026,
     "workType": "article",
-    "issuingOrganization": "Public Health Agency of Canada",
+    "issuingOrganization": "Public Health Ontario",
     "sources": [
-      "OpenAlex"
+      "OpenAlex",
+      "Public Health Ontario Surveillance"
     ],
     "theme": "digital society",
     "uses": [
+      {
+        "program": "CCHS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
+      },
       {
         "program": "CCHS",
         "precision": "program_only",
@@ -43244,6 +44331,33 @@
     "mentions": []
   },
   {
+    "id": "doi:10.3148/cjdpr-2022-010",
+    "title": "Creating “Plates” to Evaluate Canadians’ Dietary Intake in Relation to the 2019 Canada’s Food Guide",
+    "doi": "10.3148/cjdpr-2022-010",
+    "url": "https://doi.org/10.3148/cjdpr-2022-010",
+    "year": 2022,
+    "workType": "article",
+    "issuingOrganization": "Public Health Ontario",
+    "sources": [
+      "Public Health Ontario Surveillance"
+    ],
+    "theme": "health",
+    "uses": [
+      {
+        "program": "CCHS",
+        "precision": "exact_cycles",
+        "cycles": [
+          "2015"
+        ],
+        "cycleText": "2015",
+        "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
+      }
+    ],
+    "mentions": []
+  },
+  {
     "id": "doi:10.3233/sji-220095",
     "title": "Adaptation of Statistics Canada and Eurostat methodologies for variance estimation of changes of the main labour force indicators in Iran",
     "doi": "10.3233/sji-220095",
@@ -43600,6 +44714,60 @@
           "2007"
         ],
         "cycleText": "2007",
+        "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
+      }
+    ],
+    "mentions": []
+  },
+  {
+    "id": "doi:10.32920/24168456",
+    "title": "Automated Self-Administered 24-H Dietary Assessment Tool (ASA24) recalls for parent proxy-reporting of children's intake (> 4 years of age): a feasibility study",
+    "doi": "10.32920/24168456",
+    "url": "http://dx.doi.org/10.32920/24168456",
+    "year": 2023,
+    "workType": "preprint",
+    "issuingOrganization": "Public Health Ontario",
+    "sources": [
+      "Public Health Ontario Surveillance"
+    ],
+    "theme": "digital society",
+    "uses": [
+      {
+        "program": "CCHS",
+        "precision": "exact_cycles",
+        "cycles": [
+          "2015"
+        ],
+        "cycleText": "2015",
+        "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
+      }
+    ],
+    "mentions": []
+  },
+  {
+    "id": "doi:10.32920/24168456.v1",
+    "title": "Automated Self-Administered 24-H Dietary Assessment Tool (ASA24) recalls for parent proxy-reporting of children's intake (> 4 years of age): a feasibility study",
+    "doi": "10.32920/24168456.v1",
+    "url": "http://dx.doi.org/10.32920/24168456.v1",
+    "year": 2023,
+    "workType": "preprint",
+    "issuingOrganization": "Public Health Ontario",
+    "sources": [
+      "Public Health Ontario Surveillance"
+    ],
+    "theme": "digital society",
+    "uses": [
+      {
+        "program": "CCHS",
+        "precision": "exact_cycles",
+        "cycles": [
+          "2015"
+        ],
+        "cycleText": "2015",
         "evidenceLocation": "Abstract",
         "certainty": "verified",
         "statCanExplicit": true
@@ -44398,6 +45566,31 @@
     "mentions": []
   },
   {
+    "id": "doi:10.3389/falgy.2024.1456077",
+    "title": "Association between antibiotic usage during infancy and asthma incidence among children: a population-level ecological study in British Columbia, Canada",
+    "doi": "10.3389/falgy.2024.1456077",
+    "url": "https://doi.org/10.3389/falgy.2024.1456077",
+    "year": 2024,
+    "workType": "article",
+    "issuingOrganization": "BC Centre for Disease Control",
+    "sources": [
+      "BCCDC Public Health Surveillance"
+    ],
+    "theme": "health",
+    "uses": [
+      {
+        "program": "CCHS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
+      }
+    ],
+    "mentions": []
+  },
+  {
     "id": "doi:10.3389/fdgth.2022.877762",
     "title": "Digital phenotyping for classification of anxiety severity during COVID-19",
     "doi": "10.3389/fdgth.2022.877762",
@@ -44607,6 +45800,31 @@
         "evidenceLocation": "Abstract",
         "certainty": "provisional",
         "statCanExplicit": false
+      }
+    ],
+    "mentions": []
+  },
+  {
+    "id": "doi:10.3389/fpubh.2023.1090541",
+    "title": "Sex and gender aspects in diabetes mellitus: Focus on access to health care and cardiovascular outcomes",
+    "doi": "10.3389/fpubh.2023.1090541",
+    "url": "https://doi.org/10.3389/fpubh.2023.1090541",
+    "year": 2023,
+    "workType": "article",
+    "issuingOrganization": "Alberta Health Services",
+    "sources": [
+      "Alberta Health Services Epidemiological Report"
+    ],
+    "theme": "health",
+    "uses": [
+      {
+        "program": "CCHS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -45161,8 +46379,9 @@
     "url": "https://doi.org/10.3390/ijerph15071358",
     "year": 2018,
     "workType": "article",
-    "issuingOrganization": "Multidisciplinary Digital Publishing Institute",
+    "issuingOrganization": "Institut national de santé publique du Québec",
     "sources": [
+      "INSPQ Surveillance Épidémiologique",
       "OpenAlex"
     ],
     "theme": "environment",
@@ -45938,14 +47157,15 @@
   },
   {
     "id": "doi:10.3390/nu13030779",
-    "title": "The Equity and Effectiveness of Achieving Canada&#039;s Voluntary Sodium Reduction Guidance Targets: A Modelling Study Using the 2015 Canadian Community Health Survey-Nutrition - Canadian Research Data Centre Network",
+    "title": "The Equity and Effectiveness of Achieving Canada’s Voluntary Sodium Reduction Guidance Targets: A Modelling Study Using the 2015 Canadian Community Health Survey—Nutrition",
     "doi": "10.3390/nu13030779",
     "url": "https://crdcn.ca/publication/the-equity-and-effectiveness-of-achieving-canadas-voluntary-sodium-reduction-guidance-targets-a-modelling-study-using-the-2015-canadian-community-health-survey-nutrition-2/",
     "year": 2021,
     "workType": "article",
-    "issuingOrganization": "Nutrients",
+    "issuingOrganization": "Public Health Ontario",
     "sources": [
-      "CRDCN"
+      "CRDCN",
+      "Public Health Ontario Surveillance"
     ],
     "theme": "health",
     "uses": [
@@ -45968,6 +47188,17 @@
         ],
         "cycleText": "2015",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
+        "certainty": "verified",
+        "statCanExplicit": true
+      },
+      {
+        "program": "CCHS",
+        "precision": "exact_cycles",
+        "cycles": [
+          "2015"
+        ],
+        "cycleText": "2015",
+        "evidenceLocation": "Abstract",
         "certainty": "verified",
         "statCanExplicit": true
       }
@@ -50961,12 +52192,24 @@
     "url": "https://doi.org/10.7759/cureus.109491",
     "year": 2026,
     "workType": "article",
-    "issuingOrganization": "Cureus, Inc.",
+    "issuingOrganization": "Alberta Health Services",
     "sources": [
+      "Alberta Health Services Epidemiological Report",
       "OpenAlex"
     ],
     "theme": "health",
     "uses": [
+      {
+        "program": "CCHS",
+        "precision": "exact_cycles",
+        "cycles": [
+          "2022"
+        ],
+        "cycleText": "2022",
+        "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
+      },
       {
         "program": "CCHS",
         "precision": "exact_cycles",
@@ -50988,12 +52231,24 @@
     "url": "https://doi.org/10.7759/cureus.111994",
     "year": 2026,
     "workType": "article",
-    "issuingOrganization": "Cureus, Inc.",
+    "issuingOrganization": "Alberta Health Services",
     "sources": [
+      "Alberta Health Services Epidemiological Report",
       "OpenAlex"
     ],
     "theme": "health",
     "uses": [
+      {
+        "program": "CCHS",
+        "precision": "exact_cycles",
+        "cycles": [
+          "2022"
+        ],
+        "cycleText": "2022",
+        "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
+      },
       {
         "program": "CCHS",
         "precision": "exact_cycles",
@@ -51015,12 +52270,24 @@
     "url": "https://doi.org/10.7759/cureus.114786",
     "year": 2026,
     "workType": "article",
-    "issuingOrganization": "Cureus, Inc.",
+    "issuingOrganization": "Alberta Health Services",
     "sources": [
+      "Alberta Health Services Epidemiological Report",
       "OpenAlex"
     ],
     "theme": "health",
     "uses": [
+      {
+        "program": "CCHS",
+        "precision": "exact_cycles",
+        "cycles": [
+          "2022"
+        ],
+        "cycleText": "2022",
+        "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
+      },
       {
         "program": "CCHS",
         "precision": "exact_cycles",
@@ -51042,12 +52309,24 @@
     "url": "https://doi.org/10.7759/cureus.117206",
     "year": 2026,
     "workType": "article",
-    "issuingOrganization": "Cureus, Inc.",
+    "issuingOrganization": "Alberta Health Services",
     "sources": [
+      "Alberta Health Services Epidemiological Report",
       "OpenAlex"
     ],
     "theme": "health",
     "uses": [
+      {
+        "program": "CCHS",
+        "precision": "exact_cycles",
+        "cycles": [
+          "2022"
+        ],
+        "cycleText": "2022",
+        "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
+      },
       {
         "program": "CCHS",
         "precision": "exact_cycles",
@@ -52098,8 +53377,9 @@
     "url": "https://doi.org/10.9778/cmajo.20150069",
     "year": 2016,
     "workType": "article",
-    "issuingOrganization": "Canadian Medical Association",
+    "issuingOrganization": "Alberta Health Services",
     "sources": [
+      "Alberta Health Services Epidemiological Report",
       "OpenAlex"
     ],
     "theme": "health",
@@ -52123,8 +53403,9 @@
     "url": "https://doi.org/10.9778/cmajo.20160005",
     "year": 2016,
     "workType": "article",
-    "issuingOrganization": "Canadian Medical Association",
+    "issuingOrganization": "Alberta Health Services",
     "sources": [
+      "Alberta Health Services Epidemiological Report",
       "OpenAlex"
     ],
     "theme": "health",
@@ -52148,9 +53429,10 @@
     "url": "https://doi.org/10.9778/cmajo.20160009",
     "year": 2016,
     "workType": "article",
-    "issuingOrganization": "Canadian Medical Association",
+    "issuingOrganization": "Public Health Ontario",
     "sources": [
-      "OpenAlex"
+      "OpenAlex",
+      "Public Health Ontario Surveillance"
     ],
     "theme": "health",
     "uses": [
@@ -52198,8 +53480,9 @@
     "url": "https://doi.org/10.9778/cmajo.20160037",
     "year": 2016,
     "workType": "article",
-    "issuingOrganization": "Canadian Medical Association",
+    "issuingOrganization": "Alberta Health Services",
     "sources": [
+      "Alberta Health Services Epidemiological Report",
       "OpenAlex"
     ],
     "theme": "health",
@@ -52228,8 +53511,9 @@
     "url": "https://doi.org/10.9778/cmajo.20160039",
     "year": 2017,
     "workType": "article",
-    "issuingOrganization": "Canadian Medical Association",
+    "issuingOrganization": "Alberta Health Services",
     "sources": [
+      "Alberta Health Services Epidemiological Report",
       "OpenAlex"
     ],
     "theme": "health",
@@ -52253,8 +53537,9 @@
     "url": "https://doi.org/10.9778/cmajo.20160044",
     "year": 2017,
     "workType": "article",
-    "issuingOrganization": "Canadian Medical Association",
+    "issuingOrganization": "Alberta Health Services",
     "sources": [
+      "Alberta Health Services Epidemiological Report",
       "OpenAlex"
     ],
     "theme": "health",
@@ -52503,6 +53788,33 @@
     "mentions": []
   },
   {
+    "id": "doi:10.9778/cmajo.20190188",
+    "title": "The ecology of medical care for adults in Alberta, 2002/03 to 2016/17: a retrospective cohort study",
+    "doi": "10.9778/cmajo.20190188",
+    "url": "https://doi.org/10.9778/cmajo.20190188",
+    "year": 2020,
+    "workType": "article",
+    "issuingOrganization": "Alberta Health Services",
+    "sources": [
+      "Alberta Health Services Epidemiological Report"
+    ],
+    "theme": "health",
+    "uses": [
+      {
+        "program": "CCHS",
+        "precision": "exact_cycles",
+        "cycles": [
+          "2016"
+        ],
+        "cycleText": "2016",
+        "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
+      }
+    ],
+    "mentions": []
+  },
+  {
     "id": "doi:10.9778/cmajo.20190229",
     "title": "Trends and correlates of cannabis use in Canada: a repeated cross-sectional analysis of national surveys from 2004 to 2017",
     "doi": "10.9778/cmajo.20190229",
@@ -52591,6 +53903,31 @@
     "mentions": []
   },
   {
+    "id": "doi:10.9778/cmajo.20210051",
+    "title": "Patterns of up-to-date status for colorectal cancer screening in Alberta: a cross-sectional study using survey data",
+    "doi": "10.9778/cmajo.20210051",
+    "url": "https://doi.org/10.9778/cmajo.20210051",
+    "year": 2022,
+    "workType": "article",
+    "issuingOrganization": "Alberta Health Services",
+    "sources": [
+      "Alberta Health Services Epidemiological Report"
+    ],
+    "theme": "health",
+    "uses": [
+      {
+        "program": "CCHS",
+        "precision": "range",
+        "cycles": [],
+        "cycleText": "2015-2016",
+        "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
+      }
+    ],
+    "mentions": []
+  },
+  {
     "id": "doi:10.9778/cmajo.20210147",
     "title": "Association between chronic conditions and urinary incontinence in females: a cross-sectional study using national survey data",
     "doi": "10.9778/cmajo.20210147",
@@ -52622,8 +53959,9 @@
     "url": "https://doi.org/10.9778/cmajo.20210205",
     "year": 2022,
     "workType": "article",
-    "issuingOrganization": "Canadian Medical Association",
+    "issuingOrganization": "Alberta Health Services",
     "sources": [
+      "Alberta Health Services Epidemiological Report",
       "OpenAlex"
     ],
     "theme": "health",
@@ -52673,8 +54011,9 @@
     "url": "https://doi.org/10.9778/cmajo.20230026",
     "year": 2023,
     "workType": "article",
-    "issuingOrganization": "Canadian Medical Association",
+    "issuingOrganization": "Institut national de santé publique du Québec",
     "sources": [
+      "INSPQ Surveillance Épidémiologique",
       "OpenAlex"
     ],
     "theme": "health",
@@ -68060,8 +69399,9 @@
     "url": "https://pubmed.ncbi.nlm.nih.gov/26885840",
     "year": 2016,
     "workType": "article",
-    "issuingOrganization": "National Institutes of Health",
+    "issuingOrganization": "Institut national de santé publique du Québec",
     "sources": [
+      "INSPQ Surveillance Épidémiologique",
       "OpenAlex"
     ],
     "theme": "health",
@@ -92468,8 +93808,9 @@
     "url": "https://pubmed.ncbi.nlm.nih.gov/30329145",
     "year": 2018,
     "workType": "article",
-    "issuingOrganization": "National Institutes of Health",
+    "issuingOrganization": "Institut national de santé publique du Québec",
     "sources": [
+      "INSPQ Surveillance Épidémiologique",
       "OpenAlex"
     ],
     "theme": "health",
