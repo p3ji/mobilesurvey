@@ -5,6 +5,7 @@ import path from 'node:path';
 import { parseOpenAlexWork } from '../adapters/openalex.js';
 import { fetchCrossrefDoi, parseCrossrefWork } from '../adapters/crossref.js';
 import { parseCrdcnHtml } from '../adapters/crdcn.js';
+import { harvestScholarisRepo, type ScholarisRepository } from '../adapters/institutional_repositories.js';
 import { isStatisticsCanadaPublication, reconstructAbstract, stripXml } from '../model.js';
 import { ResearchQueue } from '../queue.js';
 
@@ -166,5 +167,63 @@ describe('Researcher Adapters', () => {
       q.close();
       rmSync(dir, { recursive: true, force: true });
     }
+  });
+
+  it('harvests and parses Scholaris institutional repository theses', async () => {
+    const mockRepo: ScholarisRepository = {
+      id: 'utoronto',
+      name: 'University of Toronto',
+      host: 'utoronto.scholaris.ca',
+      source: 'University of Toronto (TSpace)',
+      jurisdiction: 'Ontario',
+    };
+
+    const mockResponse = {
+      _embedded: {
+        searchResult: {
+          page: { totalPages: 1 },
+          _embedded: {
+            objects: [
+              {
+                _embedded: {
+                  indexableObject: {
+                    name: 'Food Security and Health in Ontario',
+                    handle: '1807/99999',
+                    metadata: {
+                      'dc.title': [{ value: 'Food Security and Health in Ontario' }],
+                      'dc.date.issued': [{ value: '2021-05' }],
+                      'dc.description.abstract': [{ value: 'Using Canadian Community Health Survey (CCHS) microdata, we analyze nutrition and income dynamics among Ontario households.' }],
+                      'dc.description.degree': [{ value: 'Ph.D.' }],
+                      'dc.type': [{ value: 'Thesis' }],
+                      'dc.identifier.uri': [{ value: 'http://hdl.handle.net/1807/99999' }],
+                      'dc.subject': [{ value: 'Nutrition' }, { value: 'CCHS' }],
+                    },
+                  },
+                },
+              },
+            ],
+          },
+        },
+      },
+    };
+
+    const mockFetch = async () => ({
+      ok: true,
+      status: 200,
+      text: async () => JSON.stringify(mockResponse),
+    } as any);
+
+    const candidates = await harvestScholarisRepo(mockRepo, 'CCHS', 'CCHS', {
+      fetchImpl: mockFetch,
+      minYear: 2015,
+    });
+
+    expect(candidates).toHaveLength(1);
+    expect(candidates[0]!.title).toBe('Food Security and Health in Ontario');
+    expect(candidates[0]!.source).toBe('University of Toronto (TSpace)');
+    expect(candidates[0]!.year).toBe(2021);
+    expect(candidates[0]!.workType).toBe('Thesis');
+    expect(candidates[0]!.abstractRights).toBe('permitted');
+    expect(candidates[0]!.url).toBe('http://hdl.handle.net/1807/99999');
   });
 });
