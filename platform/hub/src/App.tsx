@@ -63,6 +63,7 @@ import { PrivacyPolicyView } from './PrivacyPolicyView.js';
 import { DataCartView } from './DataCartView.js';
 import { useDataCart } from './useDataCart.js';
 import { ResearcherPage } from './ResearcherPage.js';
+import { CognitiveLabView } from './CognitiveLabView.js';
 import { UpdatesSignup } from './UpdatesSignup.js';
 import { SurveyDistributeModal } from './SurveyDistributeModal.js';
 import type { CorpusGraphFocus } from './CorpusLineage.js';
@@ -167,7 +168,7 @@ const DEMO_SURVEYS: SurveySummary[] = [
 
 // ── Module definitions ────────────────────────────────────────────────────────
 
-type HubView = 'home' | 'collector' | 'searcher' | 'researcher' | 'trainer' | 'migrator' | 'analyzer' | 'interviewer' | 'supervisor' | 'validator' | 'privacy';
+type HubView = 'home' | 'collector' | 'searcher' | 'researcher' | 'trainer' | 'migrator' | 'analyzer' | 'interviewer' | 'supervisor' | 'validator' | 'coglab' | 'privacy';
 
 const VALID_HUB_VIEWS = new Set<HubView>([
   'home',
@@ -180,6 +181,7 @@ const VALID_HUB_VIEWS = new Set<HubView>([
   'interviewer',
   'supervisor',
   'validator',
+  'coglab',
   'privacy',
 ]);
 
@@ -195,6 +197,7 @@ function getViewFromUrl(): HubView {
   const hashPart = rawHash.split('?')[0] ?? '';
   const viewFromHash = (hashPart.split('&')[0] ?? '').trim().toLowerCase();
   if (viewFromHash === 'about') return 'searcher'; // Preserve links to the former standalone page.
+  if (viewFromHash === 'tester' || viewFromHash === 'cognitive-lab') return 'coglab';
   if (viewFromHash === 'privacy' || viewFromHash === 'privacy-policy') return 'privacy';
   if (isValidHubView(viewFromHash)) return viewFromHash;
 
@@ -202,6 +205,7 @@ function getViewFromUrl(): HubView {
   const searchParams = new URLSearchParams(window.location.search);
   const viewParam = searchParams.get('view')?.toLowerCase();
   if (viewParam === 'about') return 'searcher';
+  if (viewParam === 'tester' || viewParam === 'cognitive-lab') return 'coglab';
   if (viewParam === 'privacy' || viewParam === 'privacy-policy') return 'privacy';
   if (viewParam && isValidHubView(viewParam)) return viewParam;
 
@@ -3355,7 +3359,7 @@ const HOME_GROUPS = [
     titleFr: 'Examiner et améliorer les données',
     summary: 'Explore results and resolve data quality issues.',
     summaryFr: 'Explorez les résultats et résolvez les problèmes de qualité des données.',
-    moduleIds: ['analyzer', 'validator'],
+    moduleIds: ['coglab', 'analyzer', 'validator'],
   },
 ];
 
@@ -3372,6 +3376,7 @@ const HOME_MODULES_FR: Record<string, Pick<ModuleDef, 'name' | 'tagline' | 'desc
   'designer-business': { name: 'Designer — Enquête auprès des entreprises', tag: 'En essai', tagline: 'Formulaires structurés pour les données d’entreprise', description: 'Concevez des tableaux numériques avec totaux en direct, saisie depuis Excel et contrôles d’équilibre.' },
   analyzer: { name: 'Analyzer', tag: 'En essai', tagline: 'Graphiques et tableaux pour les données recueillies', description: 'Suivez la participation et explorez les distributions de réponses. Exportez les réponses ou les paradonnées en CSV.' },
   validator: { name: 'Validator', tag: 'En essai', tagline: 'Détectez et corrigez les problèmes de qualité', description: 'Appliquez des contrôles issus des métadonnées et des règles d’analyste; examinez les valeurs aberrantes et priorisez les corrections.' },
+  coglab: { name: 'Laboratoire cognitif', tag: 'Prototype — À tester et déployer', tagline: 'Prosodie vocale, mouvements d’interface et diagnostic (contactez-nous pour tester et déployer)', description: 'Prototype interactif de test cognitif : analyse la hauteur tonale (F0), le volume, les pauses et les oscillations du curseur. Contactez-nous pour aider à tester et déployer le prototype sur vos questionnaires.' },
   tester: { name: 'Testeur de questionnaires', tagline: 'Repérez les erreurs de cheminement', description: 'Parcourez automatiquement tous les chemins d’une enquête pour détecter les impasses et les écarts entre conception et affichage.' },
   sensor: { name: 'Collecte par capteurs', tag: 'En essai', tagline: 'Questions GPS et photo avec consentement', description: 'Recueillez des coordonnées ou des photos avec le consentement du répondant et des contrôles de confidentialité.' },
   remine: { name: 'Remine', tagline: 'Exploration automatisée de tableaux de données', description: 'Repérez les écarts persistants, les renversements de tendance et les seuils franchis dans les tableaux de données.' },
@@ -3537,6 +3542,17 @@ function HomePage({ onNavigate }: { onNavigate: (v: HubView) => void }) {
       status: 'live',
       href: '#validator',
       action: () => onNavigate('validator'),
+    },
+    {
+      id: 'coglab',
+      icon: <Headphones size={22} />,
+      name: 'Cognitive Testing Lab',
+      tag: 'Prototype — Contact to test & deploy',
+      tagline: 'Voice prosody & 4-construct diagnostics (Contact to help test and deploy)',
+      description: 'Interactive prototype for multimodal cognitive testing: transcribes interviews, analyzes pitch shifts (F0), volume drops, pauses, and cursor oscillations. Contact us to help test and deploy on your questionnaires.',
+      status: 'live',
+      href: '#coglab',
+      action: () => onNavigate('coglab'),
     },
     {
       id: 'tester',
@@ -4119,6 +4135,7 @@ export function App() {
     : view === 'interviewer' ? <InterviewerView onBack={() => setView('home')} />
     : view === 'supervisor' ? <SupervisorView onBack={() => setView('home')} />
     : view === 'validator' ? <ValidatorView onBack={() => setView('home')} />
+    : view === 'coglab' ? <CognitiveLabView onBack={() => setView('home')} />
     : <PrivacyPolicyView onBack={() => setView('home')} />;
   return <><div className="hub-language-bar"><LanguageSwitch /></div>{page}</>;
 }

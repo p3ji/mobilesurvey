@@ -142,3 +142,13 @@ In many surveys, derivation notes cite CAPI/CATI collection question codes (`SED
 ### Core Concept & Problem Solved
 While exact DDI cascade clustering (`cluster.ts`) places identical `(meaning, universe)` occurrences onto a single timeline, any shift in universe (`universe_shift`: 1,464), wording/universe evolution (`wording_and_universe_evolution`: 598), concept relabeling (`concept_relabel`: 18), or CCHS 3-digit to 2-digit renumbering (`cycle_renumbering`: 6) creates a separate `l:ConceptualVariable` group so populations are never silently merged. Phase 27 connects consecutive distinct `conceptual_variable_id` epochs along each longitudinal series with full Two-Clause attribution (`Evidence from data dictionary: "..."; AI interpretation and action: ...`).
 
+---
+
+## 9. Phase 28: Multimodal Cognitive Testing Lab (`@mobilesurvey/cognitive-lab`) *(DONE — 2026-10-20)*
+
+- **Workspace package:** `tools/testing/cognitive-lab` (`@mobilesurvey/cognitive-lab`), `platform/hub` (`src/CognitiveLabView.tsx`)
+- **Survey Step:** Pre-Collection Cognitive Interviewing & Usability Testing
+- **Primary Interfaces:** Local Companion Daemon (`npx @mobilesurvey/cognitive-lab start --port 8792`), Hub Moderator Console & Diagnostic UI (`#coglab` / `#tester`), Design Spec (`docs/cognitive-testing-lab.md`)
+- **Input → Output:** Live or recorded participant voice (16 kHz PCM) + instrumented browser UI movements (Playwright/CDP on `@mobilesurvey` or external web questionnaires) → Speaker-normalized prosodic contours ($F_0$ semitones, $\Delta\text{dB}$ volume, silent/filled pauses, declarative uptalk), Tourangeau 4-construct diagnostic scores, real-time bilingual moderator probes, and PII-sanitized session reports.
+
+

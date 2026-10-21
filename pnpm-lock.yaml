@@ -110,6 +110,9 @@ importers:
 
   platform/hub:
     dependencies:
+      '@mobilesurvey/cognitive-lab':
+        specifier: workspace:*
+        version: link:../../tools/testing/cognitive-lab
       '@mobilesurvey/expression-engine':
         specifier: workspace:*
         version: link:../../packages/expression-engine
@@ -390,6 +393,25 @@ importers:
     devDependencies:
       '@types/node':
         specifier: ^22.10.2
+        version: 22.20.0
+      typescript:
+        specifier: ^5.6.3
+        version: 5.9.3
+      vitest:
+        specifier: ^3.2.6
+        version: 3.2.6(@types/node@22.20.0)
+
+  tools/testing/cognitive-lab:
+    dependencies:
+      '@mobilesurvey/instrument-schema':
+        specifier: workspace:*
+        version: link:../../../packages/instrument-schema
+      playwright:
+        specifier: ^1.48.0
+        version: 1.61.1
+    devDependencies:
+      '@types/node':
+        specifier: ^22.0.0
         version: 22.20.0
       typescript:
         specifier: ^5.6.3

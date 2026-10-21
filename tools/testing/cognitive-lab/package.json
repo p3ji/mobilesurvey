@@ -1,0 +1,30 @@
+{
+  "name": "@mobilesurvey/cognitive-lab",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Multimodal questionnaire cognitive testing lab: local prosodic/paralinguistic audio DSP (pitch, volume, pauses, sentiment), Playwright UI movement telemetry, 4-construct Tourangeau diagnostics, and real-time moderator probes.",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "bin": {
+    "cognitive-lab": "./src/cli.ts"
+  },
+  "exports": {
+    ".": "./src/index.ts",
+    "./daemon": "./src/daemon.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "start": "tsx src/cli.ts start"
+  },
+  "dependencies": {
+    "@mobilesurvey/instrument-schema": "workspace:*",
+    "playwright": "^1.48.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "typescript": "^5.6.3",
+    "vitest": "^3.2.6"
+  }
+}

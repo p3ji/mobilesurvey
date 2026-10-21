@@ -6,6 +6,7 @@ import { parseOpenAlexWork } from '../adapters/openalex.js';
 import { fetchCrossrefDoi, parseCrossrefWork } from '../adapters/crossref.js';
 import { parseCrdcnHtml } from '../adapters/crdcn.js';
 import { harvestScholarisRepo, type ScholarisRepository } from '../adapters/institutional_repositories.js';
+import { harvestHealthAuthority, type HealthAuthority } from '../adapters/public_health_harvester.js';
 import { isStatisticsCanadaPublication, reconstructAbstract, stripXml } from '../model.js';
 import { ResearchQueue } from '../queue.js';
 
@@ -225,5 +226,61 @@ describe('Researcher Adapters', () => {
     expect(candidates[0]!.workType).toBe('Thesis');
     expect(candidates[0]!.abstractRights).toBe('permitted');
     expect(candidates[0]!.url).toBe('http://hdl.handle.net/1807/99999');
+  });
+
+  it('harvests public health authority surveillance works', async () => {
+    const mockAuthority: HealthAuthority = {
+      id: 'I4210125326',
+      name: 'Public Health Ontario',
+      source: 'Public Health Ontario Surveillance',
+      jurisdiction: 'Ontario',
+    };
+
+    const mockOpenAlexResponse = {
+      meta: { count: 1 },
+      results: [
+        {
+          id: 'https://openalex.org/W999888777',
+          doi: 'https://doi.org/10.1080/0001',
+          title: 'Surveillance of Health Inequities in Ontario: An Analysis of the Canadian Community Health Survey',
+          publication_year: 2022,
+          type: 'report',
+          primary_location: {
+            landing_page_url: 'https://example.org/pho-report',
+            source: { display_name: 'PHO Technical Report' },
+          },
+          abstract_inverted_index: {
+            Using: [0],
+            Canadian: [1],
+            Community: [2],
+            Health: [3],
+            Survey: [4],
+            data: [5],
+            for: [6],
+            Ontario: [7],
+            residents: [8],
+          },
+        },
+      ],
+    };
+
+    const mockFetch = async () => ({
+      ok: true,
+      status: 200,
+      text: async () => JSON.stringify(mockOpenAlexResponse),
+    } as any);
+
+    const candidates = await harvestHealthAuthority(
+      mockAuthority,
+      { program: 'CCHS', query: '"Canadian Community Health Survey"' },
+      { fetchImpl: mockFetch, minYear: 2015 }
+    );
+
+    expect(candidates).toHaveLength(1);
+    expect(candidates[0]!.title).toContain('Surveillance of Health Inequities');
+    expect(candidates[0]!.source).toBe('Public Health Ontario Surveillance');
+    expect(candidates[0]!.issuingOrganization).toBe('Public Health Ontario');
+    expect(candidates[0]!.year).toBe(2022);
+    expect(candidates[0]!.suggestedPrograms).toEqual(['CCHS']);
   });
 });

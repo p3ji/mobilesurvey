@@ -8,7 +8,8 @@
     "test": "vitest run",
     "researcher": "tsx src/cli.ts",
     "harvest:exhaust-12year": "tsx src/run_12year_exhaust_harvest.ts",
-    "harvest:theses": "tsx src/run_institutional_theses_harvest.ts"
+    "harvest:theses": "tsx src/run_institutional_theses_harvest.ts",
+    "harvest:health": "tsx src/run_public_health_harvest.ts"
   },
   "devDependencies": {
     "@types/node": "^22.10.2",
