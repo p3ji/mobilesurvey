@@ -1,9 +1,10 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useUiLanguage, uiText } from '@mobilesurvey/ui-locale';
-import { ArrowLeft, ArrowRight, BarChart3, BookOpen, Calendar, ExternalLink, RotateCcw, Search, X } from 'lucide-react';
+import { ArrowLeft, ArrowRight, BarChart3, BookOpen, Calendar, ExternalLink, RotateCcw, Search, ShieldCheck, X } from 'lucide-react';
 import logo from './assets/brand-light.svg';
 import pilotRecords from './researcherPilot.json';
 import { ResearcherThemesViz } from './ResearcherThemesViz.jsx';
+import { ResearcherCoverageDashboard } from './ResearcherCoverageDashboard.jsx';
 
 interface PilotUse {
   program: string;
@@ -81,11 +82,12 @@ function initialSurveys(): string[] {
   return raw.split(',').filter(program => program in programNames);
 }
 
-function initialTab(): 'stats' | 'search' {
+function initialTab(): 'stats' | 'search' | 'coverage' {
   const params = new URLSearchParams(window.location.hash.split('?')[1] ?? '');
   const tab = params.get('tab');
   if (tab === 'search') return 'search';
   if (tab === 'stats') return 'stats';
+  if (tab === 'coverage') return 'coverage';
   return 'stats';
 }
 
@@ -98,7 +100,7 @@ function cycleLabel(use: PilotUse): string {
 export function ResearcherPage({ onHome, onSearcher }: { onHome: () => void; onSearcher?: () => void }) {
   const language = useUiLanguage();
   const l = (en: string, fr: string) => uiText(language, en, fr);
-  const [activeTab, setActiveTab] = useState<'stats' | 'search'>(initialTab);
+  const [activeTab, setActiveTab] = useState<'stats' | 'search' | 'coverage'>(initialTab);
   const [selectedSurveys, setSelectedSurveys] = useState<string[]>(initialSurveys);
   const [selectedTheme, setSelectedTheme] = useState<string>('all');
   const [selectedPrecision, setSelectedPrecision] = useState<string>('all');
@@ -112,7 +114,7 @@ export function ResearcherPage({ onHome, onSearcher }: { onHome: () => void; onS
   const [query, setQuery] = useState('');
   const [displayLimit, setDisplayLimit] = useState(30);
 
-  function handleTabChange(nextTab: 'stats' | 'search') {
+  function handleTabChange(nextTab: 'stats' | 'search' | 'coverage') {
     setActiveTab(nextTab);
     const params = new URLSearchParams(window.location.hash.split('?')[1] ?? '');
     params.set('tab', nextTab);
@@ -366,7 +368,7 @@ export function ResearcherPage({ onHome, onSearcher }: { onHome: () => void; onS
           </div>
         </section>
 
-        {/* Top-Level Navigation Tabs: 1) Stats  2) Search */}
+        {/* Top-Level Navigation Tabs: 1) Stats  2) Search  3) Coverage */}
         <div className="researcher-tabs-container">
           <nav className="researcher-tabs" role="tablist" aria-label={l('Researcher views', 'Vues de Researcher')}>
             <button
@@ -394,6 +396,19 @@ export function ResearcherPage({ onHome, onSearcher }: { onHome: () => void; onS
               <Search size={16} aria-hidden="true" />
               <span className="researcher-tab__label-desktop">2) {l('Search Publications', 'Rechercher des publications')} ({works.length})</span>
               <span className="researcher-tab__label-mobile">2) {l('Search', 'Rechercher')} ({works.length})</span>
+            </button>
+            <button
+              type="button"
+              role="tab"
+              id="tab-coverage"
+              aria-controls="panel-coverage"
+              aria-selected={activeTab === 'coverage'}
+              className={`researcher-tab ${activeTab === 'coverage' ? 'researcher-tab--active' : ''}`}
+              onClick={() => handleTabChange('coverage')}
+            >
+              <ShieldCheck size={16} aria-hidden="true" />
+              <span className="researcher-tab__label-desktop">3) {l('Coverage & Completeness', 'Couverture et exhaustivité')}</span>
+              <span className="researcher-tab__label-mobile">3) {l('Coverage', 'Couverture')}</span>
             </button>
           </nav>
         </div>
@@ -867,6 +882,29 @@ export function ResearcherPage({ onHome, onSearcher }: { onHome: () => void; onS
             </div>
           )}
         </section>
+      </div>
+
+      {/* Tab 3: Coverage & Completeness Dashboard */}
+      <div
+        id="panel-coverage"
+        role="tabpanel"
+        aria-labelledby="tab-coverage"
+        hidden={activeTab !== 'coverage'}
+        style={{ display: activeTab === 'coverage' ? 'block' : 'none' }}
+      >
+        <ResearcherCoverageDashboard
+          works={works}
+          programNames={programNames}
+          onFilterSurvey={prog => {
+            selectSurvey(prog);
+            handleTabChange('search');
+          }}
+          onFilterYear={yr => {
+            setSelectedPubYear(yr);
+            handleTabChange('search');
+          }}
+          onSwitchToSearch={() => handleTabChange('search')}
+        />
       </div>
 
     <section className="researcher-method" aria-labelledby="researcher-method-title">
