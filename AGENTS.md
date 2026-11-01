@@ -27,7 +27,7 @@
 
 ## Multi-Agent Teamwork & Verification Gates (`Hermes <-> Antigravity`)
 - **Hermes (`qwen3.8-27b` + `microsoft/phi-4` local fleet / scheduled crons):**
-  - Owns the 4-hour `statcan-derivation-drain-publish` cron (`tools/metadata/statcan-corpus`), the Adversarial Derivation Critic (`microsoft/phi-4` on LM Studio `:1234` — 5.6x faster than `JEV-27B` with 0 syntax errors), and the `scheduled_harvester.ts` Researcher jobs across all 4 Pan-Canadian tiers and CRDCN sitemaps.
+  - Owns the `scheduled_harvester.ts` Researcher jobs across all 4 Pan-Canadian tiers and CRDCN sitemaps, the Adversarial Derivation Critic (`microsoft/phi-4` on LM Studio `:1234`), and legacy derivation drain tooling (`statcan-derivation-drain-publish` cron paused; Phase 19 fully drained).
   - **Single-Concurrent-Inference Rule:** Never run a heavy Splash (`:8000`) batch concurrently with an active LM Studio (`:1234`) `phi-4` critic drain to preserve M5 Ultra memory bandwidth (819 GB/s).
   - **Stuck-Lease Auto-Recovery:** Before any derivation drain pass, reset exhausted transient LM Studio leases: `UPDATE derivation_job SET attempts=0 WHERE status='pending' AND attempts>=3;`.
 - **Antigravity (`Gemini 3.8 Pro` / `Claude Opus 4.6` interactive IDE):**
