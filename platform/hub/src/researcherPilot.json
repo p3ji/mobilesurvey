@@ -95,6 +95,15 @@
         "evidenceLocation": "Abstract",
         "certainty": "verified",
         "statCanExplicit": true
+      },
+      {
+        "program": "CCHS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -112,6 +121,15 @@
     ],
     "theme": "health",
     "uses": [
+      {
+        "program": "CCHS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
+      },
       {
         "program": "CCHS",
         "precision": "program_only",
@@ -466,6 +484,15 @@
     ],
     "theme": "digital society",
     "uses": [
+      {
+        "program": "GSS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
+      },
       {
         "program": "GSS",
         "precision": "program_only",
@@ -1100,10 +1127,20 @@
     "workType": "article",
     "issuingOrganization": "Springer Science+Business Media",
     "sources": [
-      "OpenAlex"
+      "OpenAlex",
+      "OpenAlex+PHAC Epidemiological Surveillance"
     ],
     "theme": "health",
     "uses": [
+      {
+        "program": "CCHS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
+      },
       {
         "program": "CCHS",
         "precision": "program_only",
@@ -1365,6 +1402,15 @@
     ],
     "theme": "families",
     "uses": [
+      {
+        "program": "GSS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Abstract",
+        "certainty": "provisional",
+        "statCanExplicit": false
+      },
       {
         "program": "GSS",
         "precision": "program_only",
@@ -2282,6 +2328,17 @@
         "evidenceLocation": "Abstract",
         "certainty": "verified",
         "statCanExplicit": true
+      },
+      {
+        "program": "CCHS",
+        "precision": "exact_cycles",
+        "cycles": [
+          "2015"
+        ],
+        "cycleText": "2015",
+        "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -2465,14 +2522,15 @@
   },
   {
     "id": "doi:10.1016/j.ajcnut.2026.101540",
-    "title": "Vitamin B12 status of people living in Canada: Results from the Canadian Health Measures Survey 2012-2019",
+    "title": "Vitamin B12 status of people living in Canada: results from the Canadian Health Measures Survey 2012-2019",
     "doi": "10.1016/j.ajcnut.2026.101540",
     "url": "https://doi.org/10.1016/j.ajcnut.2026.101540",
     "year": 2026,
     "workType": "article",
-    "issuingOrganization": "Elsevier BV",
+    "issuingOrganization": "Public Health Agency of Canada",
     "sources": [
-      "OpenAlex"
+      "OpenAlex",
+      "PHAC Epidemiological Surveillance"
     ],
     "theme": "health",
     "uses": [
@@ -2482,6 +2540,15 @@
         "cycles": [],
         "cycleText": "2012-2019",
         "evidenceLocation": "Title",
+        "certainty": "verified",
+        "statCanExplicit": true
+      },
+      {
+        "program": "CHMS",
+        "precision": "range",
+        "cycles": [],
+        "cycleText": "2012-2019",
+        "evidenceLocation": "Abstract",
         "certainty": "verified",
         "statCanExplicit": true
       },
@@ -2510,6 +2577,15 @@
     ],
     "theme": "health",
     "uses": [
+      {
+        "program": "CCHS",
+        "precision": "range",
+        "cycles": [],
+        "cycleText": "2005-2014",
+        "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
+      },
       {
         "program": "CCHS",
         "precision": "range",
@@ -2604,6 +2680,15 @@
     ],
     "theme": "health",
     "uses": [
+      {
+        "program": "CCHS",
+        "precision": "range",
+        "cycles": [],
+        "cycleText": "2001-2012",
+        "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
+      },
       {
         "program": "CCHS",
         "precision": "range",
@@ -2820,6 +2905,17 @@
         "evidenceLocation": "Abstract",
         "certainty": "verified",
         "statCanExplicit": true
+      },
+      {
+        "program": "CCHS",
+        "precision": "exact_cycles",
+        "cycles": [
+          "2018"
+        ],
+        "cycleText": "2018",
+        "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -3007,6 +3103,15 @@
         "evidenceLocation": "Abstract",
         "certainty": "verified",
         "statCanExplicit": true
+      },
+      {
+        "program": "CCHS",
+        "precision": "range",
+        "cycles": [],
+        "cycleText": "2003-2022",
+        "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -3126,6 +3231,15 @@
     ],
     "theme": "health",
     "uses": [
+      {
+        "program": "CCHS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
+      },
       {
         "program": "CCHS",
         "precision": "program_only",
@@ -3798,12 +3912,24 @@
     "url": "https://doi.org/10.1016/j.healthpol.2026.105712",
     "year": 2026,
     "workType": "article",
-    "issuingOrganization": "Elsevier BV",
+    "issuingOrganization": "Canadian Institute for Health Information",
     "sources": [
+      "CIHI Health Indicators Analysis",
       "OpenAlex"
     ],
     "theme": "health",
     "uses": [
+      {
+        "program": "CCHS",
+        "precision": "exact_cycles",
+        "cycles": [
+          "2022"
+        ],
+        "cycleText": "2022",
+        "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
+      },
       {
         "program": "CCHS",
         "precision": "exact_cycles",
@@ -4182,6 +4308,15 @@
     ],
     "theme": "health",
     "uses": [
+      {
+        "program": "CCHS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Title",
+        "certainty": "verified",
+        "statCanExplicit": true
+      },
       {
         "program": "CCHS",
         "precision": "program_only",
@@ -4641,9 +4776,10 @@
     "url": "https://doi.org/10.1016/j.jeph.2026.203536",
     "year": 2026,
     "workType": "article",
-    "issuingOrganization": "Elsevier BV",
+    "issuingOrganization": "Public Health Agency of Canada",
     "sources": [
-      "OpenAlex"
+      "OpenAlex",
+      "PHAC Epidemiological Surveillance"
     ],
     "theme": "digital society",
     "uses": [
@@ -4892,10 +5028,25 @@
     "workType": "article",
     "issuingOrganization": "Elsevier BV",
     "sources": [
-      "OpenAlex"
+      "OpenAlex",
+      "OpenAlex+PHAC Epidemiological Surveillance"
     ],
     "theme": "environment",
     "uses": [
+      {
+        "program": "CCHS",
+        "precision": "exact_cycles",
+        "cycles": [
+          "2017",
+          "2018",
+          "2020",
+          "2021"
+        ],
+        "cycleText": "2017, 2018, 2020, 2021",
+        "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
+      },
       {
         "program": "CCHS",
         "precision": "exact_cycles",
@@ -4914,18 +5065,57 @@
     "mentions": []
   },
   {
+    "id": "doi:10.1016/j.jvacx.2025.100768",
+    "title": "Determinants of incomplete vaccination against polio by 2 years of age in Canada: A cross-sectional study using the Childhood National Immunization Coverage Survey (CNICS)",
+    "doi": "10.1016/j.jvacx.2025.100768",
+    "url": "https://doi.org/10.1016/j.jvacx.2025.100768",
+    "year": 2025,
+    "workType": "article",
+    "issuingOrganization": "Public Health Agency of Canada",
+    "sources": [
+      "PHAC Epidemiological Surveillance"
+    ],
+    "theme": "families",
+    "uses": [
+      {
+        "program": "CNICS",
+        "precision": "exact_cycles",
+        "cycles": [
+          "2021"
+        ],
+        "cycleText": "2021",
+        "evidenceLocation": "Abstract",
+        "certainty": "provisional",
+        "statCanExplicit": false
+      }
+    ],
+    "mentions": []
+  },
+  {
     "id": "doi:10.1016/j.lana.2025.101072",
     "title": "Child abuse prevalence estimates in Canada; comparisons of nationally representative data from 2012 to 2022: a population-based study",
     "doi": "10.1016/j.lana.2025.101072",
     "url": "https://doi.org/10.1016/j.lana.2025.101072",
     "year": 2025,
     "workType": "article",
-    "issuingOrganization": "Elsevier BV",
+    "issuingOrganization": "Public Health Agency of Canada",
     "sources": [
-      "OpenAlex"
+      "OpenAlex",
+      "PHAC Epidemiological Surveillance"
     ],
     "theme": "health",
     "uses": [
+      {
+        "program": "CCHS",
+        "precision": "exact_cycles",
+        "cycles": [
+          "2012"
+        ],
+        "cycleText": "2012",
+        "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
+      },
       {
         "program": "CCHS",
         "precision": "exact_cycles",
@@ -5425,12 +5615,24 @@
     "url": "https://doi.org/10.1016/j.puhe.2025.106110",
     "year": 2025,
     "workType": "article",
-    "issuingOrganization": "Elsevier BV",
+    "issuingOrganization": "Public Health Agency of Canada",
     "sources": [
-      "OpenAlex"
+      "OpenAlex",
+      "PHAC Epidemiological Surveillance"
     ],
     "theme": "health",
     "uses": [
+      {
+        "program": "CHMS",
+        "precision": "exact_cycles",
+        "cycles": [
+          "2016"
+        ],
+        "cycleText": "2016",
+        "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
+      },
       {
         "program": "CHMS",
         "precision": "exact_cycles",
@@ -5759,6 +5961,15 @@
         "evidenceLocation": "Abstract",
         "certainty": "verified",
         "statCanExplicit": true
+      },
+      {
+        "program": "CCHS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -5983,12 +6194,22 @@
     "url": "https://doi.org/10.1016/j.ssmmh.2025.100450",
     "year": 2025,
     "workType": "article",
-    "issuingOrganization": "Elsevier BV",
+    "issuingOrganization": "Public Health Agency of Canada",
     "sources": [
-      "OpenAlex"
+      "OpenAlex",
+      "PHAC Epidemiological Surveillance"
     ],
     "theme": "health",
     "uses": [
+      {
+        "program": "CCHS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
+      },
       {
         "program": "CCHS",
         "precision": "program_only",
@@ -6678,12 +6899,22 @@
     "url": "https://doi.org/10.1016/j.tjnut.2025.03.004",
     "year": 2025,
     "workType": "article",
-    "issuingOrganization": "Elsevier BV",
+    "issuingOrganization": "Public Health Agency of Canada",
     "sources": [
-      "OpenAlex"
+      "OpenAlex",
+      "PHAC Epidemiological Surveillance"
     ],
     "theme": "health",
     "uses": [
+      {
+        "program": "CCHS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
+      },
       {
         "program": "CCHS",
         "precision": "program_only",
@@ -6947,10 +7178,20 @@
     "workType": "article",
     "issuingOrganization": "Elsevier BV",
     "sources": [
-      "OpenAlex"
+      "OpenAlex",
+      "OpenAlex+PHAC Epidemiological Surveillance"
     ],
     "theme": "health",
     "uses": [
+      {
+        "program": "CCHS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
+      },
       {
         "program": "CCHS",
         "precision": "program_only",
@@ -6976,6 +7217,15 @@
     ],
     "theme": "health",
     "uses": [
+      {
+        "program": "CCHS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
+      },
       {
         "program": "CCHS",
         "precision": "program_only",
@@ -7315,6 +7565,33 @@
         "evidenceLocation": "CRDCN - Abstract & Data Used",
         "certainty": "verified",
         "statCanExplicit": true
+      }
+    ],
+    "mentions": []
+  },
+  {
+    "id": "doi:10.1016/j.ypmed.2025.108435",
+    "title": "Factors associated with human papillomavirus (HPV) non-vaccination among 14-year-old children in Canada",
+    "doi": "10.1016/j.ypmed.2025.108435",
+    "url": "https://doi.org/10.1016/j.ypmed.2025.108435",
+    "year": 2025,
+    "workType": "article",
+    "issuingOrganization": "Public Health Agency of Canada",
+    "sources": [
+      "PHAC Epidemiological Surveillance"
+    ],
+    "theme": "income and inequality",
+    "uses": [
+      {
+        "program": "CNICS",
+        "precision": "exact_cycles",
+        "cycles": [
+          "2021"
+        ],
+        "cycleText": "2021",
+        "evidenceLocation": "Abstract",
+        "certainty": "provisional",
+        "statCanExplicit": false
       }
     ],
     "mentions": []
@@ -7780,6 +8057,15 @@
         "evidenceLocation": "Abstract",
         "certainty": "verified",
         "statCanExplicit": true
+      },
+      {
+        "program": "GSS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -8125,6 +8411,15 @@
     ],
     "theme": "health",
     "uses": [
+      {
+        "program": "CCHS",
+        "precision": "range",
+        "cycles": [],
+        "cycleText": "2007-2015",
+        "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
+      },
       {
         "program": "CCHS",
         "precision": "range",
@@ -9153,6 +9448,15 @@
         "evidenceLocation": "Abstract",
         "certainty": "verified",
         "statCanExplicit": true
+      },
+      {
+        "program": "CCHS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -9773,6 +10077,15 @@
     ],
     "theme": "health",
     "uses": [
+      {
+        "program": "CCHS",
+        "precision": "range",
+        "cycles": [],
+        "cycleText": "2019-2020",
+        "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
+      },
       {
         "program": "CCHS",
         "precision": "range",
@@ -12559,6 +12872,15 @@
         "evidenceLocation": "Abstract",
         "certainty": "verified",
         "statCanExplicit": true
+      },
+      {
+        "program": "CCHS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -12570,12 +12892,22 @@
     "url": "https://doi.org/10.1093/annweh/wxag083",
     "year": 2026,
     "workType": "article",
-    "issuingOrganization": "Oxford University Press",
+    "issuingOrganization": "Public Health Agency of Canada",
     "sources": [
-      "OpenAlex"
+      "OpenAlex",
+      "PHAC Epidemiological Surveillance"
     ],
     "theme": "health",
     "uses": [
+      {
+        "program": "CHMS",
+        "precision": "range",
+        "cycles": [],
+        "cycleText": "2007 to 2017",
+        "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
+      },
       {
         "program": "CHMS",
         "precision": "range",
@@ -15036,9 +15368,10 @@
     "url": "https://doi.org/10.1097/ee9.0000000000000375",
     "year": 2025,
     "workType": "article",
-    "issuingOrganization": "Public Health Ontario",
+    "issuingOrganization": "Wolters Kluwer",
     "sources": [
       "OpenAlex",
+      "OpenAlex+Public Health Ontario Surveillance",
       "Public Health Ontario Surveillance"
     ],
     "theme": "digital society",
@@ -15196,10 +15529,11 @@
     "url": "https://doi.org/10.1097/md.0000000000041021",
     "year": 2025,
     "workType": "article",
-    "issuingOrganization": "Alberta Health Services",
+    "issuingOrganization": "Wolters Kluwer",
     "sources": [
       "Alberta Health Services Epidemiological Report",
-      "OpenAlex"
+      "OpenAlex",
+      "OpenAlex+Alberta Health Services Epidemiological Report"
     ],
     "theme": "health",
     "uses": [
@@ -15630,6 +15964,15 @@
         "evidenceLocation": "Abstract",
         "certainty": "verified",
         "statCanExplicit": true
+      },
+      {
+        "program": "LFS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -15700,6 +16043,15 @@
     ],
     "theme": "labour",
     "uses": [
+      {
+        "program": "LFS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Abstract",
+        "certainty": "provisional",
+        "statCanExplicit": false
+      },
       {
         "program": "LFS",
         "precision": "program_only",
@@ -15911,6 +16263,15 @@
     ],
     "theme": "health",
     "uses": [
+      {
+        "program": "CCHS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
+      },
       {
         "program": "CCHS",
         "precision": "program_only",
@@ -16223,6 +16584,17 @@
     ],
     "theme": "immigration",
     "uses": [
+      {
+        "program": "CCHS",
+        "precision": "exact_cycles",
+        "cycles": [
+          "2013"
+        ],
+        "cycleText": "2013",
+        "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
+      },
       {
         "program": "CCHS",
         "precision": "exact_cycles",
@@ -17027,6 +17399,15 @@
     ],
     "theme": "labour",
     "uses": [
+      {
+        "program": "CCHS",
+        "precision": "range",
+        "cycles": [],
+        "cycleText": "2013 to 2019",
+        "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
+      },
       {
         "program": "CCHS",
         "precision": "range",
@@ -18517,6 +18898,17 @@
         "evidenceLocation": "Abstract",
         "certainty": "verified",
         "statCanExplicit": true
+      },
+      {
+        "program": "CCHS",
+        "precision": "exact_cycles",
+        "cycles": [
+          "2015"
+        ],
+        "cycleText": "2015",
+        "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -19174,6 +19566,15 @@
         "evidenceLocation": "Abstract",
         "certainty": "verified",
         "statCanExplicit": true
+      },
+      {
+        "program": "CCHS",
+        "precision": "range",
+        "cycles": [],
+        "cycleText": "2015-2018",
+        "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -19634,9 +20035,10 @@
     "url": "https://doi.org/10.1136/bmjopen-2024-089414",
     "year": 2025,
     "workType": "article",
-    "issuingOrganization": "BMJ",
+    "issuingOrganization": "Public Health Agency of Canada",
     "sources": [
-      "OpenAlex"
+      "OpenAlex",
+      "PHAC Epidemiological Surveillance"
     ],
     "theme": "health",
     "uses": [
@@ -19672,9 +20074,10 @@
     "url": "https://doi.org/10.1136/bmjopen-2024-096019",
     "year": 2025,
     "workType": "article",
-    "issuingOrganization": "BMJ",
+    "issuingOrganization": "Public Health Agency of Canada",
     "sources": [
-      "OpenAlex"
+      "OpenAlex",
+      "PHAC Epidemiological Surveillance"
     ],
     "theme": "families",
     "uses": [
@@ -19732,6 +20135,15 @@
     ],
     "theme": "health",
     "uses": [
+      {
+        "program": "CCHS",
+        "precision": "range",
+        "cycles": [],
+        "cycleText": "2000-2014",
+        "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
+      },
       {
         "program": "CCHS",
         "precision": "range",
@@ -19821,7 +20233,8 @@
     "workType": "article",
     "issuingOrganization": "Public Health Ontario",
     "sources": [
-      "Public Health Ontario Surveillance"
+      "Public Health Ontario Surveillance",
+      "Public Health Ontario Surveillance+PHAC Epidemiological Surveillance"
     ],
     "theme": "health",
     "uses": [
@@ -21300,6 +21713,17 @@
         "evidenceLocation": "Abstract",
         "certainty": "verified",
         "statCanExplicit": true
+      },
+      {
+        "program": "CCHS",
+        "precision": "exact_cycles",
+        "cycles": [
+          "2015"
+        ],
+        "cycleText": "2015",
+        "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -21901,6 +22325,15 @@
     ],
     "theme": "health",
     "uses": [
+      {
+        "program": "CCHS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
+      },
       {
         "program": "CCHS",
         "precision": "program_only",
@@ -23142,9 +23575,10 @@
     "url": "https://doi.org/10.1177/0272989x251319342",
     "year": 2025,
     "workType": "article",
-    "issuingOrganization": "Public Health Ontario",
+    "issuingOrganization": "SAGE Publishing",
     "sources": [
       "OpenAlex",
+      "OpenAlex+Public Health Ontario Surveillance",
       "Public Health Ontario Surveillance"
     ],
     "theme": "health",
@@ -24935,6 +25369,15 @@
         "evidenceLocation": "Abstract",
         "certainty": "verified",
         "statCanExplicit": true
+      },
+      {
+        "program": "CCHS",
+        "precision": "range",
+        "cycles": [],
+        "cycleText": "2015-2016",
+        "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -25064,6 +25507,15 @@
     ],
     "theme": "digital society",
     "uses": [
+      {
+        "program": "CCHS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
+      },
       {
         "program": "CCHS",
         "precision": "program_only",
@@ -25688,6 +26140,15 @@
     ],
     "theme": "health",
     "uses": [
+      {
+        "program": "CCHS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
+      },
       {
         "program": "CCHS",
         "precision": "program_only",
@@ -26775,7 +27236,8 @@
     "workType": "erratum",
     "issuingOrganization": "Institut national de santé publique du Québec",
     "sources": [
-      "INSPQ Surveillance Épidémiologique"
+      "INSPQ Surveillance Épidémiologique",
+      "INSPQ Surveillance Épidémiologique+PHAC Epidemiological Surveillance"
     ],
     "theme": "families",
     "uses": [
@@ -26800,9 +27262,10 @@
     "url": "https://doi.org/10.1186/s12889-025-22874-2",
     "year": 2025,
     "workType": "article",
-    "issuingOrganization": "BioMed Central",
+    "issuingOrganization": "Public Health Agency of Canada",
     "sources": [
-      "OpenAlex"
+      "OpenAlex",
+      "PHAC Epidemiological Surveillance"
     ],
     "theme": "digital society",
     "uses": [
@@ -26876,10 +27339,11 @@
     "url": "https://doi.org/10.1186/s12889-025-23728-7",
     "year": 2025,
     "workType": "article",
-    "issuingOrganization": "Alberta Health Services",
+    "issuingOrganization": "BioMed Central",
     "sources": [
       "Alberta Health Services Epidemiological Report",
-      "OpenAlex"
+      "OpenAlex",
+      "OpenAlex+Alberta Health Services Epidemiological Report"
     ],
     "theme": "health",
     "uses": [
@@ -26938,12 +27402,22 @@
     "url": "https://doi.org/10.1186/s12889-026-27408-y",
     "year": 2026,
     "workType": "article",
-    "issuingOrganization": "BioMed Central",
+    "issuingOrganization": "Public Health Agency of Canada",
     "sources": [
-      "OpenAlex"
+      "OpenAlex",
+      "PHAC Epidemiological Surveillance"
     ],
     "theme": "health",
     "uses": [
+      {
+        "program": "CHMS",
+        "precision": "range",
+        "cycles": [],
+        "cycleText": "2016-2019",
+        "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
+      },
       {
         "program": "CHMS",
         "precision": "range",
@@ -26990,10 +27464,20 @@
     "workType": "article",
     "issuingOrganization": "BioMed Central",
     "sources": [
-      "OpenAlex"
+      "OpenAlex",
+      "OpenAlex+PHAC Epidemiological Surveillance"
     ],
     "theme": "health",
     "uses": [
+      {
+        "program": "CCHS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
+      },
       {
         "program": "CCHS",
         "precision": "program_only",
@@ -27186,6 +27670,15 @@
     ],
     "theme": "health",
     "uses": [
+      {
+        "program": "CCHS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
+      },
       {
         "program": "CCHS",
         "precision": "program_only",
@@ -27753,9 +28246,10 @@
     "url": "https://doi.org/10.1186/s12982-025-01179-0",
     "year": 2025,
     "workType": "article",
-    "issuingOrganization": "Discover Public Health",
+    "issuingOrganization": "Public Health Agency of Canada",
     "sources": [
-      "OpenAlex"
+      "OpenAlex",
+      "PHAC Epidemiological Surveillance"
     ],
     "theme": "families",
     "uses": [
@@ -28443,6 +28937,15 @@
     ],
     "theme": "health",
     "uses": [
+      {
+        "program": "CCHS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
+      },
       {
         "program": "CCHS",
         "precision": "program_only",
@@ -29899,6 +30402,17 @@
         "evidenceLocation": "Abstract",
         "certainty": "verified",
         "statCanExplicit": true
+      },
+      {
+        "program": "GSS",
+        "precision": "exact_cycles",
+        "cycles": [
+          "2018"
+        ],
+        "cycleText": "2018",
+        "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -31174,10 +31688,20 @@
     "workType": "article",
     "issuingOrganization": "Public Library of Science",
     "sources": [
-      "OpenAlex"
+      "OpenAlex",
+      "OpenAlex+PHAC Epidemiological Surveillance"
     ],
     "theme": "digital society",
     "uses": [
+      {
+        "program": "CCHS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
+      },
       {
         "program": "CCHS",
         "precision": "program_only",
@@ -31236,6 +31760,15 @@
         "evidenceLocation": "Abstract",
         "certainty": "verified",
         "statCanExplicit": true
+      },
+      {
+        "program": "CCHS",
+        "precision": "range",
+        "cycles": [],
+        "cycleText": "2007-2020",
+        "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -31253,6 +31786,15 @@
     ],
     "theme": "health",
     "uses": [
+      {
+        "program": "CCHS",
+        "precision": "range",
+        "cycles": [],
+        "cycleText": "2015-2016",
+        "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
+      },
       {
         "program": "CCHS",
         "precision": "range",
@@ -31372,6 +31914,15 @@
         "evidenceLocation": "Abstract",
         "certainty": "verified",
         "statCanExplicit": true
+      },
+      {
+        "program": "GSS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -31389,6 +31940,15 @@
     ],
     "theme": "families",
     "uses": [
+      {
+        "program": "GSS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
+      },
       {
         "program": "GSS",
         "precision": "program_only",
@@ -32283,12 +32843,22 @@
     "url": "https://doi.org/10.14745/ccdr.v51i09a06",
     "year": 2025,
     "workType": "article",
-    "issuingOrganization": "Health Canada",
+    "issuingOrganization": "Public Health Agency of Canada",
     "sources": [
-      "OpenAlex"
+      "OpenAlex",
+      "PHAC Epidemiological Surveillance"
     ],
     "theme": "health",
     "uses": [
+      {
+        "program": "CCHS",
+        "precision": "range",
+        "cycles": [],
+        "cycleText": "2017-2021",
+        "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
+      },
       {
         "program": "CCHS",
         "precision": "range",
@@ -32310,10 +32880,20 @@
     "workType": "article",
     "issuingOrganization": "Public Health Agency of Canada",
     "sources": [
-      "OpenAlex"
+      "OpenAlex",
+      "PHAC Epidemiological Surveillance"
     ],
     "theme": "health",
     "uses": [
+      {
+        "program": "CHMS",
+        "precision": "range",
+        "cycles": [],
+        "cycleText": "2016-2017",
+        "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
+      },
       {
         "program": "CHMS",
         "precision": "range",
@@ -32335,10 +32915,20 @@
     "workType": "article",
     "issuingOrganization": "Public Health Agency of Canada",
     "sources": [
-      "OpenAlex"
+      "OpenAlex",
+      "PHAC Epidemiological Surveillance"
     ],
     "theme": "digital society",
     "uses": [
+      {
+        "program": "CHMS",
+        "precision": "range",
+        "cycles": [],
+        "cycleText": "2016-2017",
+        "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
+      },
       {
         "program": "CHMS",
         "precision": "range",
@@ -32711,6 +33301,15 @@
     ],
     "theme": "digital society",
     "uses": [
+      {
+        "program": "CCHS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
+      },
       {
         "program": "CCHS",
         "precision": "program_only",
@@ -34171,6 +34770,24 @@
         "evidenceLocation": "Abstract",
         "certainty": "verified",
         "statCanExplicit": true
+      },
+      {
+        "program": "CCHS",
+        "precision": "range",
+        "cycles": [],
+        "cycleText": "2015-2016",
+        "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
+      },
+      {
+        "program": "CCHS",
+        "precision": "range",
+        "cycles": [],
+        "cycleText": "2015-2016",
+        "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -34286,6 +34903,17 @@
     ],
     "theme": "health",
     "uses": [
+      {
+        "program": "GSS",
+        "precision": "exact_cycles",
+        "cycles": [
+          "2014"
+        ],
+        "cycleText": "2014",
+        "evidenceLocation": "Abstract",
+        "certainty": "provisional",
+        "statCanExplicit": false
+      },
       {
         "program": "GSS",
         "precision": "exact_cycles",
@@ -36727,15 +37355,16 @@
   },
   {
     "id": "doi:10.2196/66056",
-    "title": "Development and Validation of Prediction Models for Perceived and Unmet Mental Health Needs in the Canadian General Population: Model-Based Synthetic Estimation Study - Canadian Research Data Centre Network",
+    "title": "Development and Validation of Prediction Models for Perceived and Unmet Mental Health Needs in the Canadian General Population: Model-Based Synthetic Estimation Study",
     "doi": "10.2196/66056",
     "url": "https://doi.org/10.2196/66056",
     "year": 2025,
     "workType": "article",
-    "issuingOrganization": "JMIR Public Health and Surveillance",
+    "issuingOrganization": "JMIR Publications",
     "sources": [
       "CRDCN",
-      "OpenAlex"
+      "OpenAlex",
+      "OpenAlex+PHAC Epidemiological Surveillance+Ottawa Public Health Status Report"
     ],
     "theme": "health",
     "uses": [
@@ -36760,6 +37389,17 @@
         ],
         "cycleText": "2018, 2019, 2020",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
+        "certainty": "verified",
+        "statCanExplicit": true
+      },
+      {
+        "program": "CCHS",
+        "precision": "exact_cycles",
+        "cycles": [
+          "2020"
+        ],
+        "cycleText": "2020",
+        "evidenceLocation": "Abstract",
         "certainty": "verified",
         "statCanExplicit": true
       }
@@ -37004,6 +37644,15 @@
         "evidenceLocation": "Abstract",
         "certainty": "verified",
         "statCanExplicit": true
+      },
+      {
+        "program": "CCHS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -37080,6 +37729,15 @@
     ],
     "theme": "digital society",
     "uses": [
+      {
+        "program": "GSS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
+      },
       {
         "program": "GSS",
         "precision": "program_only",
@@ -37730,6 +38388,15 @@
     ],
     "theme": "health",
     "uses": [
+      {
+        "program": "CCHS",
+        "precision": "range",
+        "cycles": [],
+        "cycleText": "2000-2017",
+        "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
+      },
       {
         "program": "CCHS",
         "precision": "range",
@@ -40653,7 +41320,8 @@
     "workType": "article",
     "issuingOrganization": "Public Health Agency of Canada",
     "sources": [
-      "OpenAlex"
+      "OpenAlex",
+      "PHAC Epidemiological Surveillance"
     ],
     "theme": "health",
     "uses": [
@@ -40678,10 +41346,22 @@
     "workType": "article",
     "issuingOrganization": "Public Health Agency of Canada",
     "sources": [
-      "OpenAlex"
+      "OpenAlex",
+      "OpenAlex+PHAC Epidemiological Surveillance"
     ],
     "theme": "immigration",
     "uses": [
+      {
+        "program": "CCHS",
+        "precision": "exact_cycles",
+        "cycles": [
+          "2019"
+        ],
+        "cycleText": "2019",
+        "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
+      },
       {
         "program": "CCHS",
         "precision": "exact_cycles",
@@ -40705,10 +41385,20 @@
     "workType": "article",
     "issuingOrganization": "Public Health Agency of Canada",
     "sources": [
-      "OpenAlex"
+      "OpenAlex",
+      "PHAC Epidemiological Surveillance"
     ],
     "theme": "immigration",
     "uses": [
+      {
+        "program": "CCHS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
+      },
       {
         "program": "CCHS",
         "precision": "program_only",
@@ -40730,10 +41420,20 @@
     "workType": "article",
     "issuingOrganization": "Public Health Agency of Canada",
     "sources": [
-      "OpenAlex"
+      "OpenAlex",
+      "PHAC Epidemiological Surveillance"
     ],
     "theme": "health",
     "uses": [
+      {
+        "program": "CHMS",
+        "precision": "range",
+        "cycles": [],
+        "cycleText": "2014-2019",
+        "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
+      },
       {
         "program": "CHMS",
         "precision": "range",
@@ -40755,10 +41455,20 @@
     "workType": "article",
     "issuingOrganization": "Public Health Agency of Canada",
     "sources": [
-      "OpenAlex"
+      "OpenAlex",
+      "PHAC Epidemiological Surveillance"
     ],
     "theme": "digital society",
     "uses": [
+      {
+        "program": "CHMS",
+        "precision": "range",
+        "cycles": [],
+        "cycleText": "2014-2019",
+        "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
+      },
       {
         "program": "CHMS",
         "precision": "range",
@@ -40780,7 +41490,8 @@
     "workType": "article",
     "issuingOrganization": "Public Health Agency of Canada",
     "sources": [
-      "OpenAlex"
+      "OpenAlex",
+      "OpenAlex+PHAC Epidemiological Surveillance"
     ],
     "theme": "health",
     "uses": [
@@ -40843,10 +41554,24 @@
     "workType": "article",
     "issuingOrganization": "Public Health Agency of Canada",
     "sources": [
-      "OpenAlex"
+      "OpenAlex",
+      "OpenAlex+PHAC Epidemiological Surveillance"
     ],
     "theme": "health",
     "uses": [
+      {
+        "program": "CCHS",
+        "precision": "exact_cycles",
+        "cycles": [
+          "2017",
+          "2019",
+          "2021"
+        ],
+        "cycleText": "2017, 2019, 2021",
+        "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
+      },
       {
         "program": "CCHS",
         "precision": "exact_cycles",
@@ -40872,10 +41597,20 @@
     "workType": "article",
     "issuingOrganization": "Public Health Agency of Canada",
     "sources": [
-      "OpenAlex"
+      "OpenAlex",
+      "PHAC Epidemiological Surveillance"
     ],
     "theme": "health",
     "uses": [
+      {
+        "program": "CCHS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
+      },
       {
         "program": "CCHS",
         "precision": "program_only",
@@ -40897,7 +41632,8 @@
     "workType": "article",
     "issuingOrganization": "Public Health Agency of Canada",
     "sources": [
-      "OpenAlex"
+      "OpenAlex",
+      "PHAC Epidemiological Surveillance"
     ],
     "theme": "health",
     "uses": [
@@ -40935,7 +41671,8 @@
     "workType": "article",
     "issuingOrganization": "Public Health Agency of Canada",
     "sources": [
-      "OpenAlex"
+      "OpenAlex",
+      "PHAC Epidemiological Surveillance"
     ],
     "theme": "health",
     "uses": [
@@ -40965,6 +41702,33 @@
     "mentions": []
   },
   {
+    "id": "doi:10.24095/hpcdp.46.10.02",
+    "title": "Physical activity among children and youth in Canada living with disabilities",
+    "doi": "10.24095/hpcdp.46.10.02",
+    "url": "https://doi.org/10.24095/hpcdp.46.10.02",
+    "year": 2026,
+    "workType": "article",
+    "issuingOrganization": "Public Health Agency of Canada",
+    "sources": [
+      "PHAC Epidemiological Surveillance"
+    ],
+    "theme": "health",
+    "uses": [
+      {
+        "program": "CHSCY",
+        "precision": "exact_cycles",
+        "cycles": [
+          "2019"
+        ],
+        "cycleText": "2019",
+        "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
+      }
+    ],
+    "mentions": []
+  },
+  {
     "id": "doi:10.24095/hpcdp.46.2.01",
     "title": "Physical activity levels among Canadians using a health equity lens",
     "doi": "10.24095/hpcdp.46.2.01",
@@ -40973,10 +41737,22 @@
     "workType": "article",
     "issuingOrganization": "Public Health Agency of Canada",
     "sources": [
-      "OpenAlex"
+      "OpenAlex",
+      "PHAC Epidemiological Surveillance"
     ],
     "theme": "education",
     "uses": [
+      {
+        "program": "CCHS",
+        "precision": "exact_cycles",
+        "cycles": [
+          "2021"
+        ],
+        "cycleText": "2021",
+        "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
+      },
       {
         "program": "CCHS",
         "precision": "exact_cycles",
@@ -41000,7 +41776,8 @@
     "workType": "article",
     "issuingOrganization": "Public Health Agency of Canada",
     "sources": [
-      "OpenAlex"
+      "OpenAlex",
+      "PHAC Epidemiological Surveillance"
     ],
     "theme": "families",
     "uses": [
@@ -41038,10 +41815,20 @@
     "workType": "article",
     "issuingOrganization": "Public Health Agency of Canada",
     "sources": [
-      "OpenAlex"
+      "OpenAlex",
+      "PHAC Epidemiological Surveillance"
     ],
     "theme": "families",
     "uses": [
+      {
+        "program": "CHMS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
+      },
       {
         "program": "CHMS",
         "precision": "program_only",
@@ -41063,10 +41850,20 @@
     "workType": "article",
     "issuingOrganization": "Public Health Agency of Canada",
     "sources": [
-      "OpenAlex"
+      "OpenAlex",
+      "PHAC Epidemiological Surveillance"
     ],
     "theme": "digital society",
     "uses": [
+      {
+        "program": "CHMS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
+      },
       {
         "program": "CHMS",
         "precision": "program_only",
@@ -41111,9 +41908,10 @@
     "url": "https://doi.org/10.24095/hpcdp.46.9.04",
     "year": 2026,
     "workType": "article",
-    "issuingOrganization": "Public Health Ontario",
+    "issuingOrganization": "Public Health Agency of Canada",
     "sources": [
       "OpenAlex",
+      "OpenAlex+Public Health Ontario Surveillance",
       "Public Health Ontario Surveillance"
     ],
     "theme": "health",
@@ -41298,6 +42096,17 @@
     ],
     "theme": "health",
     "uses": [
+      {
+        "program": "CCHS",
+        "precision": "exact_cycles",
+        "cycles": [
+          "2018"
+        ],
+        "cycleText": "2018",
+        "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
+      },
       {
         "program": "CCHS",
         "precision": "exact_cycles",
@@ -43894,6 +44703,17 @@
         "evidenceLocation": "Abstract",
         "certainty": "verified",
         "statCanExplicit": true
+      },
+      {
+        "program": "CCHS",
+        "precision": "exact_cycles",
+        "cycles": [
+          "2005"
+        ],
+        "cycleText": "2005",
+        "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -44902,6 +45722,17 @@
         "evidenceLocation": "Abstract",
         "certainty": "provisional",
         "statCanExplicit": false
+      },
+      {
+        "program": "GSS",
+        "precision": "exact_cycles",
+        "cycles": [
+          "2009"
+        ],
+        "cycleText": "2009",
+        "evidenceLocation": "Abstract",
+        "certainty": "provisional",
+        "statCanExplicit": false
       }
     ],
     "mentions": []
@@ -44995,6 +45826,15 @@
     ],
     "theme": "immigration",
     "uses": [
+      {
+        "program": "CCHS",
+        "precision": "range",
+        "cycles": [],
+        "cycleText": "2019 to 2022",
+        "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
+      },
       {
         "program": "CCHS",
         "precision": "range",
@@ -45536,6 +46376,15 @@
         "evidenceLocation": "Abstract",
         "certainty": "provisional",
         "statCanExplicit": false
+      },
+      {
+        "program": "GSS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Abstract",
+        "certainty": "provisional",
+        "statCanExplicit": false
       }
     ],
     "mentions": []
@@ -45553,6 +46402,15 @@
     ],
     "theme": "labour",
     "uses": [
+      {
+        "program": "LFS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Abstract",
+        "certainty": "provisional",
+        "statCanExplicit": false
+      },
       {
         "program": "LFS",
         "precision": "program_only",
@@ -46024,6 +46882,17 @@
         "evidenceLocation": "Abstract",
         "certainty": "verified",
         "statCanExplicit": true
+      },
+      {
+        "program": "CCHS",
+        "precision": "exact_cycles",
+        "cycles": [
+          "2022"
+        ],
+        "cycleText": "2022",
+        "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -46125,6 +46994,15 @@
     ],
     "theme": "health",
     "uses": [
+      {
+        "program": "CCHS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
+      },
       {
         "program": "CCHS",
         "precision": "program_only",
@@ -46838,6 +47716,15 @@
         "evidenceLocation": "Abstract",
         "certainty": "verified",
         "statCanExplicit": true
+      },
+      {
+        "program": "CCHS",
+        "precision": "range",
+        "cycles": [],
+        "cycleText": "2000-2020",
+        "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -47382,6 +48269,17 @@
         "evidenceLocation": "Abstract",
         "certainty": "verified",
         "statCanExplicit": true
+      },
+      {
+        "program": "CCHS",
+        "precision": "exact_cycles",
+        "cycles": [
+          "2015"
+        ],
+        "cycleText": "2015",
+        "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -47535,6 +48433,17 @@
     ],
     "theme": "health",
     "uses": [
+      {
+        "program": "CCHS",
+        "precision": "exact_cycles",
+        "cycles": [
+          "2018"
+        ],
+        "cycleText": "2018",
+        "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
+      },
       {
         "program": "CCHS",
         "precision": "exact_cycles",
@@ -47742,6 +48651,33 @@
         "evidenceLocation": "Abstract",
         "certainty": "verified",
         "statCanExplicit": true
+      }
+    ],
+    "mentions": []
+  },
+  {
+    "id": "doi:10.3390/vaccines14090817",
+    "title": "Factors Associated with Up-to-Date Measles Vaccination Among 2-Year-Old Children in Canada: An Analysis of the 2021 Childhood National Immunization Coverage Survey",
+    "doi": "10.3390/vaccines14090817",
+    "url": "https://doi.org/10.3390/vaccines14090817",
+    "year": 2026,
+    "workType": "article",
+    "issuingOrganization": "Public Health Agency of Canada",
+    "sources": [
+      "PHAC Epidemiological Surveillance"
+    ],
+    "theme": "families",
+    "uses": [
+      {
+        "program": "CNICS",
+        "precision": "exact_cycles",
+        "cycles": [
+          "2021"
+        ],
+        "cycleText": "2021",
+        "evidenceLocation": "Abstract",
+        "certainty": "provisional",
+        "statCanExplicit": false
       }
     ],
     "mentions": []
@@ -48269,6 +49205,17 @@
         "evidenceLocation": "Abstract",
         "certainty": "verified",
         "statCanExplicit": true
+      },
+      {
+        "program": "CCHS",
+        "precision": "exact_cycles",
+        "cycles": [
+          "2015"
+        ],
+        "cycleText": "2015",
+        "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -48659,6 +49606,17 @@
     ],
     "theme": "health",
     "uses": [
+      {
+        "program": "CCHS",
+        "precision": "exact_cycles",
+        "cycles": [
+          "2019"
+        ],
+        "cycleText": "2019",
+        "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
+      },
       {
         "program": "CCHS",
         "precision": "exact_cycles",
@@ -49257,6 +50215,15 @@
         "evidenceLocation": "Abstract",
         "certainty": "provisional",
         "statCanExplicit": false
+      },
+      {
+        "program": "LFS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Abstract",
+        "certainty": "provisional",
+        "statCanExplicit": false
       }
     ],
     "mentions": []
@@ -49463,6 +50430,15 @@
         "evidenceLocation": "Abstract",
         "certainty": "verified",
         "statCanExplicit": true
+      },
+      {
+        "program": "CCHS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -49480,6 +50456,15 @@
     ],
     "theme": "health",
     "uses": [
+      {
+        "program": "CCHS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
+      },
       {
         "program": "CCHS",
         "precision": "program_only",
@@ -50373,6 +51358,15 @@
         "evidenceLocation": "Abstract",
         "certainty": "verified",
         "statCanExplicit": true
+      },
+      {
+        "program": "CCHS",
+        "precision": "range",
+        "cycles": [],
+        "cycleText": "2001-2014",
+        "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -50491,6 +51485,41 @@
     "mentions": []
   },
   {
+    "id": "doi:10.6084/m9.figshare.c.8504218",
+    "title": "Objective and perceived neighbourhood walkability: population-average associations with transportation and recreational physical activity in urban-dwelling Canadian adults",
+    "doi": "10.6084/m9.figshare.c.8504218",
+    "url": "https://doi.org/10.6084/m9.figshare.c.8504218",
+    "year": 2026,
+    "workType": "preprint",
+    "issuingOrganization": "Public Health Agency of Canada",
+    "sources": [
+      "OpenAlex",
+      "PHAC Epidemiological Surveillance"
+    ],
+    "theme": "health",
+    "uses": [
+      {
+        "program": "CHMS",
+        "precision": "range",
+        "cycles": [],
+        "cycleText": "2016-2019",
+        "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
+      },
+      {
+        "program": "CHMS",
+        "precision": "range",
+        "cycles": [],
+        "cycleText": "2016-2019",
+        "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
+      }
+    ],
+    "mentions": []
+  },
+  {
     "id": "doi:10.62425/jopres.1761142",
     "title": "Use of an Entropy Measure to Dichotomize a Variable",
     "doi": "10.62425/jopres.1761142",
@@ -50503,6 +51532,15 @@
     ],
     "theme": "health",
     "uses": [
+      {
+        "program": "CCHS",
+        "precision": "range",
+        "cycles": [],
+        "cycleText": "2007-2008",
+        "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
+      },
       {
         "program": "CCHS",
         "precision": "range",
@@ -50613,6 +51651,15 @@
         "evidenceLocation": "Abstract",
         "certainty": "verified",
         "statCanExplicit": true
+      },
+      {
+        "program": "CCHS",
+        "precision": "range",
+        "cycles": [],
+        "cycleText": "2001 to 2011",
+        "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -50702,6 +51749,15 @@
     ],
     "theme": "labour",
     "uses": [
+      {
+        "program": "LFS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Abstract",
+        "certainty": "provisional",
+        "statCanExplicit": false
+      },
       {
         "program": "LFS",
         "precision": "program_only",
@@ -51264,6 +52320,15 @@
     ],
     "theme": "health",
     "uses": [
+      {
+        "program": "CCHS",
+        "precision": "range",
+        "cycles": [],
+        "cycleText": "2015-2023",
+        "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
+      },
       {
         "program": "CCHS",
         "precision": "range",
@@ -52181,6 +53246,17 @@
         "evidenceLocation": "Abstract",
         "certainty": "verified",
         "statCanExplicit": true
+      },
+      {
+        "program": "CCHS",
+        "precision": "exact_cycles",
+        "cycles": [
+          "2022"
+        ],
+        "cycleText": "2022",
+        "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -52231,10 +53307,11 @@
     "url": "https://doi.org/10.7759/cureus.111994",
     "year": 2026,
     "workType": "article",
-    "issuingOrganization": "Alberta Health Services",
+    "issuingOrganization": "Cureus, Inc.",
     "sources": [
       "Alberta Health Services Epidemiological Report",
-      "OpenAlex"
+      "OpenAlex",
+      "OpenAlex+Alberta Health Services Epidemiological Report"
     ],
     "theme": "health",
     "uses": [
@@ -52309,10 +53386,11 @@
     "url": "https://doi.org/10.7759/cureus.117206",
     "year": 2026,
     "workType": "article",
-    "issuingOrganization": "Alberta Health Services",
+    "issuingOrganization": "Cureus, Inc.",
     "sources": [
       "Alberta Health Services Epidemiological Report",
-      "OpenAlex"
+      "OpenAlex",
+      "OpenAlex+Alberta Health Services Epidemiological Report"
     ],
     "theme": "health",
     "uses": [
@@ -52379,6 +53457,15 @@
     ],
     "theme": "immigration",
     "uses": [
+      {
+        "program": "CCHS",
+        "precision": "range",
+        "cycles": [],
+        "cycleText": "2015-2021",
+        "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
+      },
       {
         "program": "CCHS",
         "precision": "range",
@@ -52479,6 +53566,15 @@
     ],
     "theme": "health",
     "uses": [
+      {
+        "program": "CCHS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
+      },
       {
         "program": "CCHS",
         "precision": "program_only",
@@ -52686,6 +53782,15 @@
     ],
     "theme": "health",
     "uses": [
+      {
+        "program": "CCHS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
+      },
       {
         "program": "CCHS",
         "precision": "program_only",
@@ -53281,6 +54386,15 @@
     ],
     "theme": "health",
     "uses": [
+      {
+        "program": "CCHS",
+        "precision": "range",
+        "cycles": [],
+        "cycleText": "2015-2016",
+        "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
+      },
       {
         "program": "CCHS",
         "precision": "range",
@@ -54668,6 +55782,31 @@
         "precision": "program_only",
         "cycles": [],
         "cycleText": "",
+        "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
+      }
+    ],
+    "mentions": []
+  },
+  {
+    "id": "url:05af7b345d5eee8d3401428bd7b09b607546d3beffe426ef0f5b4d9c9f037df3",
+    "title": "Illicit Drug Use and Unmet Healthcare Needs In Ontario: An Exploratory Study",
+    "doi": null,
+    "url": "https://hdl.handle.net/1974/32006",
+    "year": null,
+    "workType": "thesis",
+    "issuingOrganization": "Queen's University",
+    "sources": [
+      "Queen's University (QSpace)"
+    ],
+    "theme": "health",
+    "uses": [
+      {
+        "program": "CCHS",
+        "precision": "range",
+        "cycles": [],
+        "cycleText": "2017-2018",
         "evidenceLocation": "Abstract",
         "certainty": "verified",
         "statCanExplicit": true
@@ -56663,6 +57802,17 @@
         "evidenceLocation": "Abstract",
         "certainty": "verified",
         "statCanExplicit": true
+      },
+      {
+        "program": "CCHS",
+        "precision": "exact_cycles",
+        "cycles": [
+          "2020"
+        ],
+        "cycleText": "2020",
+        "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -58148,10 +59298,20 @@
     "workType": "dissertation",
     "issuingOrganization": "Queen's University",
     "sources": [
-      "OpenAlex"
+      "OpenAlex",
+      "Queen's University (QSpace)"
     ],
     "theme": "health",
     "uses": [
+      {
+        "program": "CCHS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
+      },
       {
         "program": "CCHS",
         "precision": "program_only",
@@ -59411,6 +60571,31 @@
     "mentions": []
   },
   {
+    "id": "url:2157f8b2defde8f96e533b1931e7efb34b2630d98d7bef2d528dae6ae17cc871",
+    "title": "The Well-being of Older Immigrants and Refugees in Canada:  Examining the Role of Entry Characteristics on Later-Life Satisfaction",
+    "doi": null,
+    "url": "https://hdl.handle.net/1974/31944",
+    "year": null,
+    "workType": "thesis",
+    "issuingOrganization": "Queen's University",
+    "sources": [
+      "Queen's University (QSpace)"
+    ],
+    "theme": "immigration",
+    "uses": [
+      {
+        "program": "CCHS",
+        "precision": "range",
+        "cycles": [],
+        "cycleText": "2009-2014",
+        "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
+      }
+    ],
+    "mentions": []
+  },
+  {
     "id": "url:215e21022c5cca8ed16b3cbf5af0ad734d03d2def74ce052493bd8fd62dcf5f5",
     "title": "The influence of low social support and living alone on premature mortality and hospital utilization among aging Canadians",
     "doi": null,
@@ -59572,10 +60757,20 @@
     "workType": "dissertation",
     "issuingOrganization": "Queen's University",
     "sources": [
-      "OpenAlex"
+      "OpenAlex",
+      "OpenAlex+Queen's University (QSpace)"
     ],
     "theme": "health",
     "uses": [
+      {
+        "program": "CCHS",
+        "precision": "range",
+        "cycles": [],
+        "cycleText": "2005-2018",
+        "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
+      },
       {
         "program": "CCHS",
         "precision": "range",
@@ -61037,10 +62232,22 @@
     "workType": "dissertation",
     "issuingOrganization": "Queen's University",
     "sources": [
-      "OpenAlex"
+      "OpenAlex",
+      "Queen's University (QSpace)"
     ],
     "theme": "digital society",
     "uses": [
+      {
+        "program": "GSS",
+        "precision": "exact_cycles",
+        "cycles": [
+          "2009"
+        ],
+        "cycleText": "2009",
+        "evidenceLocation": "Abstract",
+        "certainty": "provisional",
+        "statCanExplicit": false
+      },
       {
         "program": "GSS",
         "precision": "exact_cycles",
@@ -61712,10 +62919,20 @@
     "workType": "dissertation",
     "issuingOrganization": "Queen's University",
     "sources": [
-      "OpenAlex"
+      "OpenAlex",
+      "Queen's University (QSpace)"
     ],
     "theme": "digital society",
     "uses": [
+      {
+        "program": "CCHS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
+      },
       {
         "program": "CCHS",
         "precision": "program_only",
@@ -65367,10 +66584,22 @@
     "workType": "dissertation",
     "issuingOrganization": "Queen's University",
     "sources": [
-      "OpenAlex"
+      "OpenAlex",
+      "Queen's University (QSpace)"
     ],
     "theme": "health",
     "uses": [
+      {
+        "program": "CCHS",
+        "precision": "exact_cycles",
+        "cycles": [
+          "2010"
+        ],
+        "cycleText": "2010",
+        "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
+      },
       {
         "program": "CCHS",
         "precision": "exact_cycles",
@@ -66590,10 +67819,20 @@
     "workType": "dissertation",
     "issuingOrganization": "Queen's University",
     "sources": [
-      "OpenAlex"
+      "OpenAlex",
+      "Queen's University (QSpace)"
     ],
     "theme": "health",
     "uses": [
+      {
+        "program": "CHMS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
+      },
       {
         "program": "CHMS",
         "precision": "program_only",
@@ -70123,10 +71362,22 @@
     "workType": "dissertation",
     "issuingOrganization": "Queen's University",
     "sources": [
-      "OpenAlex"
+      "OpenAlex",
+      "Queen's University (QSpace)"
     ],
     "theme": "health",
     "uses": [
+      {
+        "program": "CCHS",
+        "precision": "exact_cycles",
+        "cycles": [
+          "2010"
+        ],
+        "cycleText": "2010",
+        "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
+      },
       {
         "program": "CCHS",
         "precision": "exact_cycles",
@@ -70332,6 +71583,7 @@
     "issuingOrganization": "University of Toronto",
     "sources": [
       "OpenAlex",
+      "OpenAlex+University of Toronto (TSpace)",
       "University of Toronto (TSpace)"
     ],
     "theme": "digital society",
@@ -71508,7 +72760,8 @@
     "workType": "dissertation",
     "issuingOrganization": "Queen's University",
     "sources": [
-      "OpenAlex"
+      "OpenAlex",
+      "Queen's University (QSpace)"
     ],
     "theme": "education",
     "uses": [
@@ -73014,6 +74267,15 @@
     ],
     "theme": "health",
     "uses": [
+      {
+        "program": "CCHS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
+      },
       {
         "program": "CCHS",
         "precision": "program_only",
@@ -77120,6 +78382,33 @@
     "mentions": []
   },
   {
+    "id": "url:8fd0ac7aa80a10542d678789a8c712f61bd89826daaa03042e47867104a89a5c",
+    "title": "Support Networks of Caregivers of Frail Older Adults",
+    "doi": null,
+    "url": "https://hdl.handle.net/1974/35341",
+    "year": 2025,
+    "workType": "thesis",
+    "issuingOrganization": "Queen's University",
+    "sources": [
+      "Queen's University (QSpace)"
+    ],
+    "theme": "families",
+    "uses": [
+      {
+        "program": "GSS",
+        "precision": "exact_cycles",
+        "cycles": [
+          "2018"
+        ],
+        "cycleText": "2018",
+        "evidenceLocation": "Abstract",
+        "certainty": "provisional",
+        "statCanExplicit": false
+      }
+    ],
+    "mentions": []
+  },
+  {
     "id": "url:907b45e16ca7b8641ec979998a75c2970c8bdfb55ac3a9fb73dcd0d3de476111",
     "title": "Frequency and source of prescription eyewear insurance coverage in Ontario: A repeated population-based cross-sectional study using survey data - Canadian Research Data Centre Network",
     "doi": null,
@@ -79288,6 +80577,15 @@
     ],
     "theme": "health",
     "uses": [
+      {
+        "program": "CCHS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Abstract",
+        "certainty": "provisional",
+        "statCanExplicit": false
+      },
       {
         "program": "CCHS",
         "precision": "program_only",
@@ -82917,6 +84215,33 @@
     "mentions": []
   },
   {
+    "id": "url:b59fa780ae526918d6ac1eafb9208f025dee9647ab8d53757f1462fcbd0c21ed",
+    "title": "Identifying Mental Health Issues In Canadian Immigrants With A Focus On Indian Immigrants",
+    "doi": null,
+    "url": "http://hdl.handle.net/1974/30478",
+    "year": null,
+    "workType": "thesis",
+    "issuingOrganization": "Queen's University",
+    "sources": [
+      "Queen's University (QSpace)"
+    ],
+    "theme": "immigration",
+    "uses": [
+      {
+        "program": "CCHS",
+        "precision": "exact_cycles",
+        "cycles": [
+          "2018"
+        ],
+        "cycleText": "2018",
+        "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
+      }
+    ],
+    "mentions": []
+  },
+  {
     "id": "url:b5e6ff1d2e9ef163328646e3c885aaae3ed5318bfdff297af4e555b4e4e3f700",
     "title": "Boundary-making as a destigmatization strategy: The case of Albanian and Bosnian Muslims in Canada - Canadian Research Data Centre Network",
     "doi": null,
@@ -84679,6 +86004,31 @@
     ]
   },
   {
+    "id": "url:c0488019ab3f3e187fb39561a5034c028bb2eaefbb0e53e5ee4cbe6e96743e0a",
+    "title": "One-Person Households in Canada and the Implications for Health: A Health Geography Perspective",
+    "doi": null,
+    "url": "https://hdl.handle.net/1974/32620",
+    "year": null,
+    "workType": "thesis",
+    "issuingOrganization": "Queen's University",
+    "sources": [
+      "Queen's University (QSpace)"
+    ],
+    "theme": "income and inequality",
+    "uses": [
+      {
+        "program": "CCHS",
+        "precision": "range",
+        "cycles": [],
+        "cycleText": "2017-2018",
+        "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
+      }
+    ],
+    "mentions": []
+  },
+  {
     "id": "url:c0926d52d9147c370e2f615e351bc6f999955f880a064ea602f3fdbf14ab71f6",
     "title": "Access to post-secondary education for student parents: Final report",
     "doi": null,
@@ -85526,6 +86876,31 @@
         "precision": "range",
         "cycles": [],
         "cycleText": "2006 to 2016",
+        "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
+      }
+    ],
+    "mentions": []
+  },
+  {
+    "id": "url:c550c0b2c58ce69f0d7caed6a0b7ee68c97b51c8736201eb5fa14cce24ace2df",
+    "title": "Childhood Maltreatment and the Association with Life Dissatisfaction",
+    "doi": null,
+    "url": "http://hdl.handle.net/1974/28652",
+    "year": null,
+    "workType": "thesis",
+    "issuingOrganization": "Queen's University",
+    "sources": [
+      "Queen's University (QSpace)"
+    ],
+    "theme": "families",
+    "uses": [
+      {
+        "program": "CCHS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
         "evidenceLocation": "Abstract",
         "certainty": "verified",
         "statCanExplicit": true
@@ -86761,7 +88136,7 @@
     "url": "https://tijseg.org/index.php/tijseg/article/view/54",
     "year": 2025,
     "workType": "article",
-    "issuingOrganization": "Turkish International Journal of Special Education and Guidance & Counselling (TIJSEG)",
+    "issuingOrganization": "Turkish International Journal of Special Education and Guidance & Counselling (TIJSEG) ISSN: 1300-7432",
     "sources": [
       "OpenAlex"
     ],
@@ -88569,6 +89944,15 @@
         "evidenceLocation": "Abstract",
         "certainty": "verified",
         "statCanExplicit": true
+      },
+      {
+        "program": "CCHS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
       }
     ],
     "mentions": []
@@ -89475,6 +90859,40 @@
         "cycles": [],
         "cycleText": "",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
+        "certainty": "verified",
+        "statCanExplicit": true
+      }
+    ],
+    "mentions": []
+  },
+  {
+    "id": "url:dd255109c717339978ebce72b54c0d4adb8ee9fff9cb5999cc60cb5ce9048e02",
+    "title": "You Should be Flattered: An Examination of the Non-Reporting of Stalking Victimization",
+    "doi": null,
+    "url": "http://hdl.handle.net/1974/30498",
+    "year": null,
+    "workType": "thesis",
+    "issuingOrganization": "Queen's University",
+    "sources": [
+      "Queen's University (QSpace)"
+    ],
+    "theme": "crime and justice",
+    "uses": [
+      {
+        "program": "GSS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
+      },
+      {
+        "program": "CSS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Abstract",
         "certainty": "verified",
         "statCanExplicit": true
       }
@@ -90562,6 +91980,31 @@
         "cycles": [],
         "cycleText": "2003-2012",
         "evidenceLocation": "CRDCN - Abstract & Data Used",
+        "certainty": "verified",
+        "statCanExplicit": true
+      }
+    ],
+    "mentions": []
+  },
+  {
+    "id": "url:e374a4ac73149036c8559d83ed889f08f9bb3629ab5c5be090d6fb90311772f3",
+    "title": "Household Food Insecurity Among Older People in Canada: the Exploration of a Public Health Issue Rendered Invisible",
+    "doi": null,
+    "url": "http://hdl.handle.net/1974/24861",
+    "year": null,
+    "workType": "thesis",
+    "issuingOrganization": "Queen's University",
+    "sources": [
+      "Queen's University (QSpace)"
+    ],
+    "theme": "health",
+    "uses": [
+      {
+        "program": "CCHS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Abstract",
         "certainty": "verified",
         "statCanExplicit": true
       }
@@ -91667,6 +93110,15 @@
     ],
     "theme": "health",
     "uses": [
+      {
+        "program": "CCHS",
+        "precision": "program_only",
+        "cycles": [],
+        "cycleText": "",
+        "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
+      },
       {
         "program": "CCHS",
         "precision": "program_only",
@@ -93494,6 +94946,17 @@
     ],
     "theme": "health",
     "uses": [
+      {
+        "program": "CCHS",
+        "precision": "exact_cycles",
+        "cycles": [
+          "2019"
+        ],
+        "cycleText": "2019",
+        "evidenceLocation": "Abstract",
+        "certainty": "verified",
+        "statCanExplicit": true
+      },
       {
         "program": "CCHS",
         "precision": "exact_cycles",
