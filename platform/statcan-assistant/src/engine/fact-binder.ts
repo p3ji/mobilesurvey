@@ -146,14 +146,23 @@ const ORDINAL_REGEX = /\b\d+(?:st|nd|rd|th)\b/i;
 /**
  * Remine's Zero-Numeral Contract Inspector
  * Detects whether the model wrote freehand numbers rather than referencing verified fact tokens.
- * Automatically excludes markdown links and code backticks where Table PIDs or coordinates reside.
+ * Automatically excludes markdown links, code backticks, fact tokens, and optional exempt phrases (e.g. official table titles).
  */
-export function checkBareNumerals(text: string): { valid: boolean; bareNumerals: string[]; resolvedText?: string } {
+export function checkBareNumerals(
+  text: string,
+  exemptPhrases: string[] = []
+): { valid: boolean; bareNumerals: string[]; resolvedText?: string } {
   // Strip allowed markdown links, code spans, and fact tokens before scanning
-  const stripped = text
+  let stripped = text
     .replace(MARKDOWN_LINK_REGEX, ' ')
     .replace(CODE_SPAN_REGEX, ' ')
     .replace(TOKEN_REGEX, ' ');
+
+  for (const phrase of exemptPhrases) {
+    if (phrase) {
+      stripped = stripped.split(phrase).join(' ');
+    }
+  }
 
   const badNumerals: string[] = [];
 

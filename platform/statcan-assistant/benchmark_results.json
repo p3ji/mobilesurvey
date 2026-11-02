@@ -15,7 +15,7 @@
     ],
     "zeroNumeralValid": true,
     "chartMark": "line",
-    "durationMs": 1001
+    "durationMs": 1018
   },
   {
     "index": 2,
@@ -31,7 +31,7 @@
     "caveats": [],
     "zeroNumeralValid": true,
     "chartMark": "line",
-    "durationMs": 754
+    "durationMs": 463
   },
   {
     "index": 3,
@@ -45,7 +45,7 @@
     "sampleValue": "823,690 (Units)",
     "gateZeroClean": true,
     "caveats": [],
-    "zeroNumeralValid": false,
+    "zeroNumeralValid": true,
     "chartMark": "line",
     "durationMs": 412
   },
@@ -63,7 +63,7 @@
     "caveats": [],
     "zeroNumeralValid": true,
     "chartMark": "line",
-    "durationMs": 401
+    "durationMs": 429
   },
   {
     "index": 5,
@@ -81,7 +81,7 @@
     ],
     "zeroNumeralValid": true,
     "chartMark": "line",
-    "durationMs": 581
+    "durationMs": 419
   },
   {
     "index": 6,
@@ -95,9 +95,9 @@
     "sampleValue": "28,008,860 (Units)",
     "gateZeroClean": true,
     "caveats": [],
-    "zeroNumeralValid": false,
+    "zeroNumeralValid": true,
     "chartMark": "line",
-    "durationMs": 515
+    "durationMs": 422
   },
   {
     "index": 7,
@@ -113,7 +113,7 @@
     "caveats": [],
     "zeroNumeralValid": true,
     "chartMark": "line",
-    "durationMs": 447
+    "durationMs": 709
   },
   {
     "index": 8,
@@ -129,7 +129,7 @@
     "caveats": [],
     "zeroNumeralValid": true,
     "chartMark": "line",
-    "durationMs": 420
+    "durationMs": 595
   },
   {
     "index": 9,
@@ -145,15 +145,25 @@
     "caveats": [],
     "zeroNumeralValid": true,
     "chartMark": "line",
-    "durationMs": 505
+    "durationMs": 456
   },
   {
     "index": 10,
     "domain": "Prices",
     "query": "gasoline prices",
-    "success": false,
-    "durationMs": 421,
-    "error": "No rows returned"
+    "success": true,
+    "productId": 18100001,
+    "tableTitle": "Monthly average retail prices for gasoline and fuel oil, by geography",
+    "coordinate": "3.1.0.0.0.0.0.0.0.0",
+    "rowsCount": 8,
+    "sampleValue": "144.3 (Units)",
+    "gateZeroClean": false,
+    "caveats": [
+      "Primary slice had no published observations. Automatically navigated to populated cross-tab (Geography: Charlottetown and Summerside, Prince Edward Island; Type of fuel: Regular unleaded gasoline at full service filling stations)."
+    ],
+    "zeroNumeralValid": true,
+    "chartMark": "line",
+    "durationMs": 916
   },
   {
     "index": 11,
@@ -171,7 +181,7 @@
     ],
     "zeroNumeralValid": true,
     "chartMark": "line",
-    "durationMs": 638
+    "durationMs": 505
   },
   {
     "index": 12,
@@ -189,7 +199,7 @@
     ],
     "zeroNumeralValid": true,
     "chartMark": "line",
-    "durationMs": 517
+    "durationMs": 420
   },
   {
     "index": 13,
@@ -207,7 +217,7 @@
     ],
     "zeroNumeralValid": true,
     "chartMark": "line",
-    "durationMs": 542
+    "durationMs": 605
   },
   {
     "index": 14,
@@ -225,7 +235,7 @@
     ],
     "zeroNumeralValid": true,
     "chartMark": "line",
-    "durationMs": 452
+    "durationMs": 511
   },
   {
     "index": 15,
@@ -241,7 +251,7 @@
     "caveats": [],
     "zeroNumeralValid": true,
     "chartMark": "line",
-    "durationMs": 511
+    "durationMs": 510
   },
   {
     "index": 16,
@@ -257,9 +267,9 @@
     "caveats": [
       "Values are reported in thousands (scaled by ×1,000)."
     ],
-    "zeroNumeralValid": false,
+    "zeroNumeralValid": true,
     "chartMark": "line",
-    "durationMs": 448
+    "durationMs": 494
   },
   {
     "index": 17,
@@ -273,9 +283,9 @@
     "sampleValue": "37,618,495 (Units)",
     "gateZeroClean": true,
     "caveats": [],
-    "zeroNumeralValid": false,
+    "zeroNumeralValid": true,
     "chartMark": "line",
-    "durationMs": 435
+    "durationMs": 515
   },
   {
     "index": 18,
@@ -293,7 +303,7 @@
     ],
     "zeroNumeralValid": true,
     "chartMark": "line",
-    "durationMs": 413
+    "durationMs": 456
   },
   {
     "index": 19,
@@ -309,7 +319,7 @@
     "caveats": [],
     "zeroNumeralValid": true,
     "chartMark": "line",
-    "durationMs": 482
+    "durationMs": 422
   },
   {
     "index": 20,
@@ -325,7 +335,7 @@
     "caveats": [],
     "zeroNumeralValid": true,
     "chartMark": "line",
-    "durationMs": 426
+    "durationMs": 692
   },
   {
     "index": 21,
@@ -341,7 +351,7 @@
     "caveats": [],
     "zeroNumeralValid": true,
     "chartMark": "line",
-    "durationMs": 488
+    "durationMs": 494
   },
   {
     "index": 22,
@@ -357,7 +367,7 @@
     "caveats": [],
     "zeroNumeralValid": true,
     "chartMark": "line",
-    "durationMs": 455
+    "durationMs": 421
   },
   {
     "index": 23,
@@ -373,7 +383,7 @@
     "caveats": [],
     "zeroNumeralValid": true,
     "chartMark": "line",
-    "durationMs": 477
+    "durationMs": 495
   },
   {
     "index": 24,
@@ -391,7 +401,7 @@
     ],
     "zeroNumeralValid": true,
     "chartMark": "line",
-    "durationMs": 534
+    "durationMs": 486
   },
   {
     "index": 25,
@@ -407,15 +417,25 @@
     "caveats": [],
     "zeroNumeralValid": true,
     "chartMark": "line",
-    "durationMs": 472
+    "durationMs": 1994
   },
   {
     "index": 26,
     "domain": "Housing",
     "query": "residential property price",
-    "success": false,
-    "durationMs": 476,
-    "error": "No rows returned"
+    "success": true,
+    "productId": 46100030,
+    "tableTitle": "Residential property owners by ownership type and residency status, with the number of buyers and sale price",
+    "coordinate": "8.1.1.1.1.0.0.0.0.0",
+    "rowsCount": 7,
+    "sampleValue": "488,930 (Units)",
+    "gateZeroClean": false,
+    "caveats": [
+      "Primary slice had no published observations. Automatically navigated to populated cross-tab (Geography: Prince Edward Island; Ownership type: Total, all ownership types)."
+    ],
+    "zeroNumeralValid": true,
+    "chartMark": "line",
+    "durationMs": 903
   },
   {
     "index": 27,
@@ -433,7 +453,7 @@
     ],
     "zeroNumeralValid": true,
     "chartMark": "line",
-    "durationMs": 470
+    "durationMs": 515
   },
   {
     "index": 28,
@@ -451,7 +471,7 @@
     ],
     "zeroNumeralValid": true,
     "chartMark": "line",
-    "durationMs": 400
+    "durationMs": 612
   },
   {
     "index": 29,
@@ -469,7 +489,7 @@
     ],
     "zeroNumeralValid": true,
     "chartMark": "line",
-    "durationMs": 422
+    "durationMs": 461
   },
   {
     "index": 30,
@@ -485,7 +505,7 @@
     "caveats": [],
     "zeroNumeralValid": true,
     "chartMark": "line",
-    "durationMs": 498
+    "durationMs": 482
   },
   {
     "index": 31,
@@ -503,7 +523,7 @@
     ],
     "zeroNumeralValid": true,
     "chartMark": "line",
-    "durationMs": 416
+    "durationMs": 459
   },
   {
     "index": 32,
@@ -521,7 +541,7 @@
     ],
     "zeroNumeralValid": true,
     "chartMark": "line",
-    "durationMs": 289
+    "durationMs": 357
   },
   {
     "index": 33,
@@ -537,7 +557,7 @@
     "caveats": [],
     "zeroNumeralValid": true,
     "chartMark": "line",
-    "durationMs": 435
+    "durationMs": 531
   },
   {
     "index": 34,
@@ -555,7 +575,7 @@
     ],
     "zeroNumeralValid": true,
     "chartMark": "line",
-    "durationMs": 415
+    "durationMs": 577
   },
   {
     "index": 35,
@@ -571,7 +591,7 @@
     "caveats": [],
     "zeroNumeralValid": true,
     "chartMark": "line",
-    "durationMs": 387
+    "durationMs": 465
   },
   {
     "index": 36,
@@ -587,7 +607,7 @@
     "caveats": [],
     "zeroNumeralValid": true,
     "chartMark": "line",
-    "durationMs": 516
+    "durationMs": 498
   },
   {
     "index": 37,
@@ -603,15 +623,25 @@
     "caveats": [],
     "zeroNumeralValid": true,
     "chartMark": "line",
-    "durationMs": 435
+    "durationMs": 470
   },
   {
     "index": 38,
     "domain": "Health",
     "query": "smoking prevalence",
-    "success": false,
-    "durationMs": 414,
-    "error": "No rows returned"
+    "success": true,
+    "productId": 13100978,
+    "tableTitle": "Prevalence and severity of tooth decay by age group and sex",
+    "coordinate": "1.2.1.1.1.0.0.0.0.0",
+    "rowsCount": 1,
+    "sampleValue": "28.1 (Units)",
+    "gateZeroClean": false,
+    "caveats": [
+      "Primary slice had no published observations. Automatically navigated to populated cross-tab (Geography: Canada; Measures: Non-cavitated lesions (1 to 30 years old))."
+    ],
+    "zeroNumeralValid": true,
+    "chartMark": "line",
+    "durationMs": 1168
   },
   {
     "index": 39,
@@ -627,7 +657,7 @@
     "caveats": [],
     "zeroNumeralValid": true,
     "chartMark": "line",
-    "durationMs": 554
+    "durationMs": 454
   },
   {
     "index": 40,
@@ -643,7 +673,7 @@
     "caveats": [],
     "zeroNumeralValid": true,
     "chartMark": "line",
-    "durationMs": 467
+    "durationMs": 489
   },
   {
     "index": 41,
@@ -659,7 +689,7 @@
     "caveats": [],
     "zeroNumeralValid": true,
     "chartMark": "line",
-    "durationMs": 909
+    "durationMs": 430
   },
   {
     "index": 42,
@@ -675,7 +705,7 @@
     "caveats": [],
     "zeroNumeralValid": true,
     "chartMark": "line",
-    "durationMs": 1791
+    "durationMs": 600
   },
   {
     "index": 43,
@@ -691,7 +721,7 @@
     "caveats": [],
     "zeroNumeralValid": true,
     "chartMark": "line",
-    "durationMs": 478
+    "durationMs": 474
   },
   {
     "index": 44,
@@ -707,7 +737,7 @@
     "caveats": [],
     "zeroNumeralValid": true,
     "chartMark": "line",
-    "durationMs": 464
+    "durationMs": 414
   },
   {
     "index": 45,
@@ -725,7 +755,7 @@
     ],
     "zeroNumeralValid": true,
     "chartMark": "line",
-    "durationMs": 517
+    "durationMs": 444
   },
   {
     "index": 46,
@@ -741,7 +771,7 @@
     "caveats": [],
     "zeroNumeralValid": true,
     "chartMark": "line",
-    "durationMs": 298
+    "durationMs": 351
   },
   {
     "index": 47,
@@ -757,7 +787,7 @@
     "caveats": [],
     "zeroNumeralValid": true,
     "chartMark": "line",
-    "durationMs": 432
+    "durationMs": 539
   },
   {
     "index": 48,
@@ -773,7 +803,7 @@
     "caveats": [],
     "zeroNumeralValid": true,
     "chartMark": "line",
-    "durationMs": 420
+    "durationMs": 431
   },
   {
     "index": 49,
@@ -791,7 +821,7 @@
     ],
     "zeroNumeralValid": true,
     "chartMark": "line",
-    "durationMs": 558
+    "durationMs": 527
   },
   {
     "index": 50,
@@ -807,6 +837,6 @@
     "caveats": [],
     "zeroNumeralValid": true,
     "chartMark": "line",
-    "durationMs": 490
+    "durationMs": 546
   }
 ]

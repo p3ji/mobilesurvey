@@ -255,6 +255,58 @@ export class StatCanWdsClient {
       }
     }
 
+    let finalNormalizedCoords = normalizedCoords;
+
+    // Automated Sparse Cross-Tab Fallback:
+    // If all initial coordinate requests yielded 0 rows, probe adjacent populated slices
+    if (allRows.length === 0 && normalizedCoords.length > 0) {
+      const fallback = await this.probeFallbackSlice(productId, meta, normalizedCoords[0]!, latestN);
+      if (fallback) {
+        finalNormalizedCoords = [fallback.coord];
+        const rawDataPoints = fallback.rawPoints;
+        const scaleFactorCode = rawDataPoints[0]?.scalarFactorCode ?? 0;
+        const { rows: filteredRows, caveats } = gateZeroFilter(rawDataPoints, scaleFactorCode);
+        for (const c of caveats) {
+          if (!allCaveats.includes(c)) allCaveats.push(c);
+        }
+
+        const coordParts = fallback.coord.split('.').map(Number);
+        const dimMemberLabels: Record<string, string> = {};
+        const memberNames: string[] = [];
+
+        for (let i = 0; i < coordParts.length && i < meta.dimensions.length; i++) {
+          const dim = meta.dimensions[i];
+          const memberId = coordParts[i];
+          if (dim && memberId && memberId > 0) {
+            const found = dim.members.find((m) => m.memberId === memberId);
+            const memberName = found ? found.memberNameEn : String(memberId);
+            const cleanDimKey = dim.dimensionNameEn.toLowerCase().replace(/[^a-z0-9]+/g, '_');
+            dimMemberLabels[cleanDimKey] = memberName;
+            memberNames.push(`${dim.dimensionNameEn}: ${memberName}`);
+
+            if (memberName.toLowerCase().includes('seasonally adjusted')) {
+              detectedSeasonalStatus = 'Seasonally adjusted';
+            } else if (memberName.toLowerCase().includes('unadjusted')) {
+              detectedSeasonalStatus = 'Unadjusted';
+            }
+          }
+        }
+
+        for (const r of filteredRows) {
+          if (r.vectorId) allVectorIds.add(r.vectorId);
+          allRows.push({
+            ...r,
+            ...dimMemberLabels,
+            coordinate: fallback.coord,
+          });
+        }
+
+        allCaveats.push(
+          `Primary slice had no published observations. Automatically navigated to populated cross-tab (${memberNames.slice(0, 2).join('; ')}).`
+        );
+      }
+    }
+
     // 3. Extract Remine Fact Tokens
     const facts = extractFactTokens(allRows, {}, meta.cubeTitleEn);
 
@@ -262,7 +314,7 @@ export class StatCanWdsClient {
     const provenance: ProvenanceMetadata = {
       productId,
       title: meta.cubeTitleEn,
-      coordinate: normalizedCoords.join('; '),
+      coordinate: finalNormalizedCoords.join('; '),
       vectorIds: Array.from(allVectorIds),
       frequency: meta.frequencyDescription,
       seasonalStatus: detectedSeasonalStatus,
@@ -331,6 +383,88 @@ export class StatCanWdsClient {
     }
 
     return this.cubeCache;
+  }
+
+  /**
+   * Automated Sparse Cross-Tab Probe
+   * When an initial coordinate returns zero published rows,
+   * systematically probes adjacent dimension member combinations
+   * to locate the nearest populated slice.
+   */
+  private async probeFallbackSlice(
+    productId: number,
+    meta: CubeMetadata,
+    initialCoord: string,
+    latestN: number
+  ): Promise<{ coord: string; rawPoints: any[] } | null> {
+    const parts = initialCoord.split('.');
+    const candidates: string[] = [];
+
+    // 1. Probe variations across individual dimensions
+    for (let dimIdx = 0; dimIdx < meta.dimensions.length; dimIdx++) {
+      const dim = meta.dimensions[dimIdx];
+      if (!dim) continue;
+      for (let mIdx = 0; mIdx < Math.min(dim.members.length, 5); mIdx++) {
+        const member = dim.members[mIdx];
+        if (member && String(member.memberId) !== parts[dimIdx]) {
+          const copy = [...parts];
+          copy[dimIdx] = String(member.memberId);
+          candidates.push(normalizeToTenParts(copy.join('.'), meta));
+        }
+      }
+    }
+
+    // 2. Grid probe across dim 0 and dim 1 (common for geography x measure tables)
+    if (meta.dimensions.length >= 2) {
+      const d0 = meta.dimensions[0];
+      const d1 = meta.dimensions[1];
+      if (d0 && d1) {
+        for (const d0m of d0.members.slice(0, 4)) {
+          for (const d1m of d1.members.slice(0, 4)) {
+            const copy = [...parts];
+            copy[0] = String(d0m.memberId);
+            copy[1] = String(d1m.memberId);
+            candidates.push(normalizeToTenParts(copy.join('.'), meta));
+          }
+        }
+      }
+    }
+
+    const uniqueCandidates = Array.from(new Set(candidates)).slice(0, 16);
+    if (uniqueCandidates.length === 0) return null;
+
+    const reqs = uniqueCandidates.map((coord) => ({
+      productId,
+      coordinate: coord,
+      latestN,
+    }));
+
+    try {
+      const resp = await fetch(`${STATCAN_WDS_BASE}/getDataFromCubePidCoordAndLatestNPeriods`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(reqs),
+      });
+
+      if (!resp.ok) return null;
+
+      const payload = (await resp.json()) as any[];
+      for (let i = 0; i < payload.length; i++) {
+        const item = payload[i];
+        if (item && item.status === 'SUCCESS') {
+          const pts = item.object?.vectorDataPoint || [];
+          const hasValidValue = pts.some((pt: any) => pt.value != null);
+          if (hasValidValue) {
+            const matchedCoord = uniqueCandidates[i] || item.object?.coordinate;
+            return { coord: matchedCoord, rawPoints: pts };
+          }
+        }
+      }
+    } catch {
+      // Non-blocking
+    }
+
+    return null;
   }
 
   private frequencyDescription(code?: number): string {

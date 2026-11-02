@@ -21,6 +21,123 @@ const tableHead = document.getElementById('table-head') as HTMLTableSectionEleme
 const tableBody = document.getElementById('table-body') as HTMLTableSectionElement;
 const downloadBtn = document.getElementById('download-csv-btn') as HTMLButtonElement;
 
+const openSettingsBtn = document.getElementById('open-settings-btn') as HTMLButtonElement;
+const closeSettingsBtn = document.getElementById('close-settings-btn') as HTMLButtonElement;
+const settingsModal = document.getElementById('settings-modal') as HTMLDivElement;
+const providerSelect = document.getElementById('provider-select') as HTMLSelectElement;
+const apiKeyInput = document.getElementById('api-key-input') as HTMLInputElement;
+const modelInput = document.getElementById('model-input') as HTMLInputElement;
+const baseUrlInput = document.getElementById('base-url-input') as HTMLInputElement;
+const toggleKeyBtn = document.getElementById('toggle-key-visibility') as HTMLButtonElement;
+const clearSettingsBtn = document.getElementById('clear-settings-btn') as HTMLButtonElement;
+const saveSettingsBtn = document.getElementById('save-settings-btn') as HTMLButtonElement;
+const aiStatusPill = document.getElementById('ai-status-pill') as HTMLSpanElement;
+const aiStatusLabel = document.getElementById('ai-status-label') as HTMLSpanElement;
+
+function updateStatusPill() {
+  const provider = localStorage.getItem('statcan_byok_provider') || 'none';
+  const key = localStorage.getItem('statcan_byok_key') || '';
+  const model = localStorage.getItem('statcan_byok_model') || '';
+
+  if (provider === 'none' || !key.trim()) {
+    if (aiStatusPill) aiStatusPill.className = 'status-pill status-pill-direct';
+    if (aiStatusLabel) aiStatusLabel.textContent = 'Deterministic Engine';
+  } else {
+    if (aiStatusPill) aiStatusPill.className = 'status-pill status-pill-ai';
+    const shortModel = model.split('/').pop() || 'AI Connected';
+    if (aiStatusLabel) aiStatusLabel.textContent = `AI: ${shortModel}`;
+  }
+}
+
+function loadSettingsIntoModal() {
+  const provider = localStorage.getItem('statcan_byok_provider') || 'openrouter';
+  const key = localStorage.getItem('statcan_byok_key') || '';
+  const model = localStorage.getItem('statcan_byok_model') || 'meta-llama/llama-3.3-70b-instruct';
+  const url = localStorage.getItem('statcan_byok_url') || 'https://openrouter.ai/api/v1';
+
+  if (providerSelect) providerSelect.value = provider;
+  if (apiKeyInput) apiKeyInput.value = key;
+  if (modelInput) modelInput.value = model;
+  if (baseUrlInput) baseUrlInput.value = url;
+}
+
+if (providerSelect) {
+  providerSelect.addEventListener('change', () => {
+    const p = providerSelect.value;
+    if (p === 'openrouter') {
+      baseUrlInput.value = 'https://openrouter.ai/api/v1';
+      modelInput.value = 'meta-llama/llama-3.3-70b-instruct';
+    } else if (p === 'openai') {
+      baseUrlInput.value = 'https://api.openai.com/v1';
+      modelInput.value = 'gpt-4o-mini';
+    } else if (p === 'custom') {
+      baseUrlInput.value = 'http://localhost:11434/v1';
+      modelInput.value = 'llama3.2';
+    } else if (p === 'none') {
+      apiKeyInput.value = '';
+    }
+  });
+}
+
+if (toggleKeyBtn && apiKeyInput) {
+  toggleKeyBtn.addEventListener('click', () => {
+    apiKeyInput.type = apiKeyInput.type === 'password' ? 'text' : 'password';
+  });
+}
+
+if (openSettingsBtn && settingsModal) {
+  openSettingsBtn.addEventListener('click', () => {
+    loadSettingsIntoModal();
+    settingsModal.style.display = 'flex';
+  });
+}
+
+if (closeSettingsBtn && settingsModal) {
+  closeSettingsBtn.addEventListener('click', () => {
+    settingsModal.style.display = 'none';
+  });
+}
+
+if (settingsModal) {
+  settingsModal.addEventListener('click', (e) => {
+    if (e.target === settingsModal) {
+      settingsModal.style.display = 'none';
+    }
+  });
+}
+
+if (clearSettingsBtn) {
+  clearSettingsBtn.addEventListener('click', () => {
+    localStorage.removeItem('statcan_byok_provider');
+    localStorage.removeItem('statcan_byok_key');
+    localStorage.removeItem('statcan_byok_model');
+    localStorage.removeItem('statcan_byok_url');
+    if (apiKeyInput) apiKeyInput.value = '';
+    if (providerSelect) providerSelect.value = 'none';
+    updateStatusPill();
+    if (settingsModal) settingsModal.style.display = 'none';
+  });
+}
+
+if (saveSettingsBtn) {
+  saveSettingsBtn.addEventListener('click', () => {
+    const p = providerSelect?.value || 'none';
+    const key = apiKeyInput?.value.trim() || '';
+    const model = modelInput?.value.trim() || '';
+    const url = baseUrlInput?.value.trim() || '';
+
+    localStorage.setItem('statcan_byok_provider', p);
+    localStorage.setItem('statcan_byok_key', key);
+    localStorage.setItem('statcan_byok_model', model);
+    localStorage.setItem('statcan_byok_url', url);
+
+    updateStatusPill();
+    if (settingsModal) settingsModal.style.display = 'none';
+  });
+}
+
+updateStatusPill();
+
 function appendMessage(text: string, role: 'user' | 'assistant'): HTMLDivElement {
   const div = document.createElement('div');
   div.className = `msg ${role}`;
@@ -144,7 +261,14 @@ form.addEventListener('submit', async (e) => {
   warningBanner.style.display = 'none';
   const statusMsg = appendMessage('Connecting to Statistics Canada WDS engine...', 'assistant');
 
+  const savedKey = localStorage.getItem('statcan_byok_key')?.trim() || undefined;
+  const savedUrl = localStorage.getItem('statcan_byok_url')?.trim() || undefined;
+  const savedModel = localStorage.getItem('statcan_byok_model')?.trim() || undefined;
+
   const runner = new StatCanAgentRunner({
+    apiKey: savedKey,
+    baseUrl: savedUrl,
+    model: savedModel,
     onEvent: (event: AgentEvent) => {
       if (event.type === 'tool_call' && event.call) {
         if (event.phase === 'started') {

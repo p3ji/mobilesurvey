@@ -231,6 +231,7 @@ CRITICAL RULES:
       answer: 'Completed query lookup.',
       result: publishedResult,
       toolCallCount,
+      zeroNumeralCompliant: true,
       warnings,
     };
   }
@@ -242,6 +243,7 @@ CRITICAL RULES:
     answer: string;
     result: StructuredResult | null;
     toolCallCount: number;
+    zeroNumeralCompliant: boolean;
     warnings: string[];
   }> {
     const candidates = await this.client.search(query, 5);
@@ -250,6 +252,7 @@ CRITICAL RULES:
         answer: `Could not find an official Statistics Canada table matching "${query}". Try searching for terms like "labour force", "cpi", or "population".`,
         result: null,
         toolCallCount: 1,
+        zeroNumeralCompliant: true,
         warnings: [],
       };
     }
@@ -297,7 +300,8 @@ CRITICAL RULES:
     }
 
     // Verify zero-numeral contract on the draft template BEFORE token substitution
-    const numeralCheck = checkBareNumerals(narrative);
+    // Official table titles may contain numbers (e.g. "15 Selected CMAs", "July 1") which are exempt from hallucination checks
+    const numeralCheck = checkBareNumerals(narrative, [selectedCube.cubeTitleEn]);
 
     const verifiedProse = bindFactTokens(narrative, fetchRes.facts);
 
@@ -346,7 +350,11 @@ CRITICAL RULES:
   }
 
   private async callLLM(messages: any[]): Promise<any> {
-    const resp = await fetch(`${this.baseUrl}/chat/completions`, {
+    const endpoint = this.baseUrl.endsWith('/chat/completions')
+      ? this.baseUrl
+      : `${this.baseUrl.replace(/\/+$/, '')}/chat/completions`;
+
+    const resp = await fetch(endpoint, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
