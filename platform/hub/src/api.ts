@@ -56,6 +56,10 @@ export const RUNTIME_URL =
   (import.meta.env.VITE_RUNTIME_URL as string | undefined) ??
   (isLocalhost() ? 'http://localhost:5174' : '/respondent');
 
+export const STATCAN_ASSISTANT_URL =
+  (import.meta.env.VITE_STATCAN_ASSISTANT_URL as string | undefined) ??
+  (isLocalhost() ? 'http://localhost:5178' : '/statcan-assistant');
+
 export const designerLink = (id: string) => `${DESIGNER_URL}/?survey=${encodeURIComponent(id)}`;
 
 // ── StatCan corpus source ─────────────────────────────────────────────────────

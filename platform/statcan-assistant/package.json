@@ -1,0 +1,23 @@
+{
+  "name": "@mobilesurvey/statcan-assistant",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Natural language data assistant for official Statistics Canada data, with sourced answers, charts, filterable tables, and CSV downloads.",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "lucide": "^1.21.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.2",
+    "typescript": "^5.6.3",
+    "vite": "^5.4.11",
+    "vitest": "^3.2.6"
+  }
+}

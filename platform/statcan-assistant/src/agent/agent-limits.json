@@ -1,0 +1,16 @@
+{
+  "max_tool_output_characters": 10000,
+  "max_result_rows": 500,
+  "max_model_rounds": 12,
+  "max_tool_calls": 12,
+  "max_estimated_cells": 50000,
+  "max_time_periods": 24,
+  "max_recent_messages": 6,
+  "max_summary_characters": 2400,
+  "tool_call_limits": {
+    "search_statcan": 2,
+    "inspect_dimensions": 4,
+    "fetch_statcan": 4,
+    "publish_result": 3
+  }
+}

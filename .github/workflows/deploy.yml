@@ -43,6 +43,7 @@ jobs:
           pnpm --filter @mobilesurvey/hub build
           pnpm --filter @mobilesurvey/designer build
           pnpm --filter @mobilesurvey/runtime build
+          pnpm --filter @mobilesurvey/statcan-assistant build
 
       - name: Prepare deployment directory
         run: |
@@ -55,10 +56,12 @@ jobs:
           # 3. Create subdirectories inside deploy *after* copying hub files
           mkdir -p deploy/designer
           mkdir -p deploy/respondent
+          mkdir -p deploy/statcan-assistant
 
           # 4. Copy the sub-apps into their respective paths
           cp -r tools/authoring/designer/dist/* deploy/designer/
           cp -r tools/collection/respondent/dist/* deploy/respondent/
+          cp -r platform/statcan-assistant/dist/* deploy/statcan-assistant/
 
           # 5. Set custom domain
           echo "msurvey.peji.ca" > deploy/CNAME

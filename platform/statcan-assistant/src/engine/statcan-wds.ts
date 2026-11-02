@@ -1,0 +1,306 @@
+/**
+ * StatCan Web Data Service (WDS) API Client Engine
+ * Integrated with Gate 0 Quality Filtering, Remine Fact Token Generation,
+ * Fuzzy Member Matching, and Multi-Coordinate Slicing.
+ */
+
+import type {
+  CubeMetadata,
+  FactToken,
+  ObservationRow,
+  ProvenanceMetadata,
+  StatCanCubeSummary,
+} from '../types.js';
+import { extractFactTokens, gateZeroFilter } from './fact-binder.js';
+import { matchDimensionMembers, MemberMatch } from './fuzzy-matcher.js';
+
+const STATCAN_WDS_BASE = 'https://www150.statcan.gc.ca/t1/wds/rest';
+const CACHE_KEY_CUBES = 'statcan_cubes_list_lite_v1';
+
+export class StatCanWdsClient {
+  private cubeCache: StatCanCubeSummary[] | null = null;
+  private metadataCache = new Map<number, CubeMetadata>();
+
+  /**
+   * Search StatCan tables by keyword or product ID with relevance ranking.
+   */
+  async search(query: string, limit = 10): Promise<StatCanCubeSummary[]> {
+    const cubes = await this.getAllCubes();
+    const cleanQuery = query.trim().toLowerCase();
+    const queryTokens = cleanQuery.split(/\s+/).filter(Boolean);
+
+    const matches: Array<{ score: number; cube: StatCanCubeSummary }> = [];
+
+    for (const cube of cubes) {
+      const pidStr = String(cube.productId);
+      const titleLower = (cube.cubeTitleEn || '').toLowerCase();
+
+      // Exact product ID match gets top priority
+      if (pidStr === cleanQuery || cleanQuery.includes(pidStr)) {
+        matches.push({ score: 100, cube });
+        continue;
+      }
+
+      let matchedTokens = 0;
+      for (const token of queryTokens) {
+        if (titleLower.includes(token)) {
+          matchedTokens++;
+        }
+      }
+
+      if (matchedTokens > 0) {
+        let score = (matchedTokens / queryTokens.length) * 10;
+        // Prioritize exact phrase matches in title
+        if (titleLower.includes(cleanQuery)) {
+          score += 15;
+        }
+        matches.push({ score, cube });
+      }
+    }
+
+    matches.sort((a, b) => b.score - a.score);
+    return matches.slice(0, limit).map((m) => m.cube);
+  }
+
+  /**
+   * Introspect dimensions and codelist members without downloading observations.
+   * Supports optional fuzzy search to discover members matching terms.
+   */
+  async inspectDimensions(
+    productId: number,
+    matchTerms?: string[]
+  ): Promise<{ metadata: CubeMetadata; matches?: Record<string, MemberMatch[]> }> {
+    let metadata: CubeMetadata;
+
+    if (this.metadataCache.has(productId)) {
+      metadata = this.metadataCache.get(productId)!;
+    } else {
+      const resp = await fetch(`${STATCAN_WDS_BASE}/getCubeMetadata`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify([{ productId }]),
+      });
+
+      if (!resp.ok) {
+        throw new Error(`StatCan WDS HTTP ${resp.status} for getCubeMetadata`);
+      }
+
+      const payload = (await resp.json()) as any[];
+      const first = payload[0];
+      if (!first || first.status !== 'SUCCESS') {
+        throw new Error(`StatCan WDS error: ${JSON.stringify(first)}`);
+      }
+
+      const rawCube = first.object;
+      metadata = {
+        productId: rawCube.productId,
+        cubeTitleEn: rawCube.cubeTitleEn,
+        cubeTitleFr: rawCube.cubeTitleFr,
+        frequencyCode: rawCube.frequencyCode,
+        frequencyDescription: this.frequencyDescription(rawCube.frequencyCode),
+        startReferencePeriod: rawCube.startReferencePeriod,
+        endReferencePeriod: rawCube.endReferencePeriod,
+        dimensions: (rawCube.dimension || []).map((d: any) => ({
+          dimensionPositionId: d.dimensionPositionId,
+          dimensionNameEn: d.dimensionNameEn,
+          hasUom: d.hasUom,
+          members: (d.member || []).map((m: any) => ({
+            memberId: m.memberId,
+            memberNameEn: m.memberNameEn,
+            parentMemberId: m.parentMemberId,
+          })),
+        })),
+      };
+
+      this.metadataCache.set(productId, metadata);
+    }
+
+    const matches = matchTerms && matchTerms.length > 0 ? matchDimensionMembers(metadata, matchTerms) : undefined;
+
+    return { metadata, matches };
+  }
+
+  /**
+   * Fetch a slice (or multi-coordinate slices) of observations.
+   * Passes data through Gate 0 filtering, scale-factor mapping, and fact token generation.
+   */
+  async fetchSlice(
+    productId: number,
+    coordinates: string | string[],
+    latestN = 6
+  ): Promise<{
+    rows: ObservationRow[];
+    title: string;
+    metadata: CubeMetadata;
+    provenance: ProvenanceMetadata;
+    facts: FactToken[];
+    caveats: string[];
+  }> {
+    const { metadata: meta } = await this.inspectDimensions(productId);
+    const coordList = Array.isArray(coordinates) ? coordinates : [coordinates];
+
+    const requests = coordList.map((coord) => ({
+      productId,
+      coordinate: coord,
+      latestN,
+    }));
+
+    const resp = await fetch(`${STATCAN_WDS_BASE}/getDataFromCubePidCoordAndLatestNPeriods`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(requests),
+    });
+
+    if (!resp.ok) {
+      throw new Error(`StatCan WDS HTTP ${resp.status} for getDataFromCubePidCoordAndLatestNPeriods`);
+    }
+
+    const payload = (await resp.json()) as any[];
+    const allRows: ObservationRow[] = [];
+    const allCaveats: string[] = [];
+    const allVectorIds = new Set<number>();
+    let detectedSeasonalStatus: 'Seasonally adjusted' | 'Unadjusted' | 'Unknown' = 'Unknown';
+
+    for (let reqIdx = 0; reqIdx < payload.length; reqIdx++) {
+      const item = payload[reqIdx];
+      const activeCoord = coordList[reqIdx] || coordList[0] || '1.1.1.1';
+      if (!item || item.status !== 'SUCCESS') {
+        continue;
+      }
+
+      const rawDataPoints = item.object?.vectorDataPoint || [];
+      const scaleFactorCode = rawDataPoints[0]?.scalarFactorCode ?? 0;
+
+      // 1. Pass through Gate 0: Code Bouncer
+      const { rows: filteredRows, caveats } = gateZeroFilter(rawDataPoints, scaleFactorCode);
+      for (const c of caveats) {
+        if (!allCaveats.includes(c)) allCaveats.push(c);
+      }
+
+      // 2. Decode dimension member labels from coordinate
+      const coordParts = activeCoord.split('.').map(Number);
+      const dimMemberLabels: Record<string, string> = {};
+
+      for (let i = 0; i < coordParts.length && i < meta.dimensions.length; i++) {
+        const dim = meta.dimensions[i];
+        const memberId = coordParts[i];
+        if (dim && memberId && memberId > 0) {
+          const found = dim.members.find((m) => m.memberId === memberId);
+          const memberName = found ? found.memberNameEn : String(memberId);
+          const cleanDimKey = dim.dimensionNameEn.toLowerCase().replace(/[^a-z0-9]+/g, '_');
+          dimMemberLabels[cleanDimKey] = memberName;
+
+          if (memberName.toLowerCase().includes('seasonally adjusted')) {
+            detectedSeasonalStatus = 'Seasonally adjusted';
+          } else if (memberName.toLowerCase().includes('unadjusted')) {
+            detectedSeasonalStatus = 'Unadjusted';
+          }
+        }
+      }
+
+      // Attach dimension labels and coordinate to each row
+      for (const r of filteredRows) {
+        if (r.vectorId) allVectorIds.add(r.vectorId);
+        allRows.push({
+          ...r,
+          ...dimMemberLabels,
+          coordinate: activeCoord,
+        });
+      }
+    }
+
+    // 3. Extract Remine Fact Tokens
+    const facts = extractFactTokens(allRows, {}, meta.cubeTitleEn);
+
+    // 4. Construct complete academic provenance record
+    const provenance: ProvenanceMetadata = {
+      productId,
+      title: meta.cubeTitleEn,
+      coordinate: coordList.join('; '),
+      vectorIds: Array.from(allVectorIds),
+      frequency: meta.frequencyDescription,
+      seasonalStatus: detectedSeasonalStatus,
+      tableUrl: `https://www150.statcan.gc.ca/t1/tbl1/en/tv.action?pid=${productId}01`,
+      wdsApiUrl: `${STATCAN_WDS_BASE}/getDataFromCubePidCoordAndLatestNPeriods`,
+      extractedAt: new Date().toISOString(),
+      caveats: allCaveats,
+    };
+
+    return {
+      rows: allRows,
+      title: meta.cubeTitleEn,
+      metadata: meta,
+      provenance,
+      facts,
+      caveats: allCaveats,
+    };
+  }
+
+  /**
+   * Fetch and cache the complete list of available StatCan cubes (~7,000 tables).
+   * Uses localStorage when available in browser to avoid repeated downloads.
+   */
+  private async getAllCubes(): Promise<StatCanCubeSummary[]> {
+    if (this.cubeCache) {
+      return this.cubeCache;
+    }
+
+    // Try browser localStorage cache
+    if (typeof window !== 'undefined' && window.localStorage) {
+      try {
+        const cachedStr = localStorage.getItem(CACHE_KEY_CUBES);
+        if (cachedStr) {
+          const parsed = JSON.parse(cachedStr);
+          if (Array.isArray(parsed) && parsed.length > 1000) {
+            this.cubeCache = parsed;
+            return parsed;
+          }
+        }
+      } catch {
+        // Ignore localStorage read errors
+      }
+    }
+
+    const resp = await fetch(`${STATCAN_WDS_BASE}/getAllCubesListLite`);
+    if (!resp.ok) {
+      throw new Error(`Failed to load StatCan cube list: HTTP ${resp.status}`);
+    }
+
+    const rawList = (await resp.json()) as any[];
+    this.cubeCache = rawList.map((item: any) => ({
+      productId: item.productId,
+      cubeTitleEn: item.cubeTitleEn,
+      cubeTitleFr: item.cubeTitleFr,
+      releaseTime: item.releaseTime,
+      subjectCode: item.subjectCode,
+    }));
+
+    // Cache in localStorage asynchronously
+    if (typeof window !== 'undefined' && window.localStorage && this.cubeCache) {
+      try {
+        localStorage.setItem(CACHE_KEY_CUBES, JSON.stringify(this.cubeCache));
+      } catch {
+        // Ignore quota errors
+      }
+    }
+
+    return this.cubeCache;
+  }
+
+  private frequencyDescription(code?: number): string {
+    switch (code) {
+      case 1:
+        return 'Daily';
+      case 6:
+        return 'Monthly';
+      case 9:
+        return 'Quarterly';
+      case 11:
+        return 'Semi-annual';
+      case 12:
+        return 'Annual';
+      default:
+        return 'Occasional';
+    }
+  }
+}
