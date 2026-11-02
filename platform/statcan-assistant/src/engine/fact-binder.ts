@@ -136,6 +136,8 @@ export function extractFactTokens(
   return facts;
 }
 
+const MARKDOWN_LINK_REGEX = /\[([^\]]*)\]\([^)]*\)/g;
+const CODE_SPAN_REGEX = /`[^`]*`/g;
 const TOKEN_REGEX = /\{\{\s*fact_\d+(\.\w+)?\s*\}\}/g;
 const NUMERAL_REGEX = /\b\d+(?:,\d{3})*(?:\.\d+)?(?:%|\b)/g;
 const YEAR_REGEX = /\b(19\d{2}|20\d{2})\b/;
@@ -144,10 +146,15 @@ const ORDINAL_REGEX = /\b\d+(?:st|nd|rd|th)\b/i;
 /**
  * Remine's Zero-Numeral Contract Inspector
  * Detects whether the model wrote freehand numbers rather than referencing verified fact tokens.
+ * Automatically excludes markdown links and code backticks where Table PIDs or coordinates reside.
  */
 export function checkBareNumerals(text: string): { valid: boolean; bareNumerals: string[]; resolvedText?: string } {
-  // Strip allowed fact tokens before scanning
-  const stripped = text.replace(TOKEN_REGEX, ' ');
+  // Strip allowed markdown links, code spans, and fact tokens before scanning
+  const stripped = text
+    .replace(MARKDOWN_LINK_REGEX, ' ')
+    .replace(CODE_SPAN_REGEX, ' ')
+    .replace(TOKEN_REGEX, ' ');
+
   const badNumerals: string[] = [];
 
   const matches = stripped.match(NUMERAL_REGEX) || [];

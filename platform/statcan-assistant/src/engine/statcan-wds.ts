@@ -1,7 +1,7 @@
 /**
  * StatCan Web Data Service (WDS) API Client Engine
  * Integrated with Gate 0 Quality Filtering, Remine Fact Token Generation,
- * Fuzzy Member Matching, and Multi-Coordinate Slicing.
+ * Fuzzy Member Matching, Multi-Coordinate Slicing, and Smart Catalogue Ranking.
  */
 
 import type {
@@ -17,12 +17,40 @@ import { matchDimensionMembers, MemberMatch } from './fuzzy-matcher.js';
 const STATCAN_WDS_BASE = 'https://www150.statcan.gc.ca/t1/wds/rest';
 const CACHE_KEY_CUBES = 'statcan_cubes_list_lite_v1';
 
+/**
+ * Normalizes any coordinate string to StatCan WDS's mandatory 10-part format.
+ * Validates that each position references a member ID that actually exists in that dimension.
+ */
+function normalizeToTenParts(coord: string, meta: CubeMetadata): string {
+  const parts = coord.split('.').filter(Boolean);
+
+  for (let i = 0; i < meta.dimensions.length; i++) {
+    const dim = meta.dimensions[i];
+    const memberId = Number(parts[i]);
+    const isValid = dim && dim.members.some((m) => m.memberId === memberId);
+
+    if (!dim || !isValid) {
+      // Pick the first valid memberId in this dimension
+      const firstMemberId = dim?.members[0]?.memberId ?? 1;
+      parts[i] = String(firstMemberId);
+    }
+  }
+
+  // StatCan WDS mandates exactly 10 positions, padded with 0
+  while (parts.length < 10) {
+    parts.push('0');
+  }
+
+  return parts.slice(0, 10).join('.');
+}
+
 export class StatCanWdsClient {
   private cubeCache: StatCanCubeSummary[] | null = null;
   private metadataCache = new Map<number, CubeMetadata>();
 
   /**
    * Search StatCan tables by keyword or product ID with relevance ranking.
+   * Penalizes inactive tables and rewards active, recently released tables.
    */
   async search(query: string, limit = 10): Promise<StatCanCubeSummary[]> {
     const cubes = await this.getAllCubes();
@@ -50,10 +78,27 @@ export class StatCanWdsClient {
 
       if (matchedTokens > 0) {
         let score = (matchedTokens / queryTokens.length) * 10;
+
         // Prioritize exact phrase matches in title
         if (titleLower.includes(cleanQuery)) {
           score += 15;
         }
+
+        // Penalize inactive or discontinued tables
+        if (titleLower.includes('inactive') || titleLower.includes('discontinued')) {
+          score -= 25;
+        }
+
+        // Reward recent releases (2024–2026) vs historical releases (< 2019)
+        if (cube.releaseTime) {
+          const yearMatch = cube.releaseTime.match(/^(\d{4})/);
+          if (yearMatch && yearMatch[1]) {
+            const year = parseInt(yearMatch[1], 10);
+            if (year >= 2024) score += 10;
+            else if (year < 2019) score -= 15;
+          }
+        }
+
         matches.push({ score, cube });
       }
     }
@@ -137,9 +182,10 @@ export class StatCanWdsClient {
     caveats: string[];
   }> {
     const { metadata: meta } = await this.inspectDimensions(productId);
-    const coordList = Array.isArray(coordinates) ? coordinates : [coordinates];
+    const rawCoords = Array.isArray(coordinates) ? coordinates : [coordinates];
+    const normalizedCoords = rawCoords.map((c) => normalizeToTenParts(c, meta));
 
-    const requests = coordList.map((coord) => ({
+    const requests = normalizedCoords.map((coord) => ({
       productId,
       coordinate: coord,
       latestN,
@@ -163,7 +209,7 @@ export class StatCanWdsClient {
 
     for (let reqIdx = 0; reqIdx < payload.length; reqIdx++) {
       const item = payload[reqIdx];
-      const activeCoord = coordList[reqIdx] || coordList[0] || '1.1.1.1';
+      const activeCoord = normalizedCoords[reqIdx] || normalizedCoords[0] || '1.1.1.1.0.0.0.0.0.0';
       if (!item || item.status !== 'SUCCESS') {
         continue;
       }
@@ -216,7 +262,7 @@ export class StatCanWdsClient {
     const provenance: ProvenanceMetadata = {
       productId,
       title: meta.cubeTitleEn,
-      coordinate: coordList.join('; '),
+      coordinate: normalizedCoords.join('; '),
       vectorIds: Array.from(allVectorIds),
       frequency: meta.frequencyDescription,
       seasonalStatus: detectedSeasonalStatus,

@@ -108,12 +108,13 @@ export function matchDimensionMembers(
 }
 
 /**
- * Compile a full StatCan coordinate string (e.g. "1.1.1.1.0.0.0.0.0.0")
- * from dimension member selections or match queries.
+ * Compile a full 10-part StatCan coordinate string (e.g. "1.1.1.1.1.1.0.0.0.0")
+ * from dimension member selections or defaults.
+ * StatCan WDS mandates exactly 10 coordinate positions, padded with 0.
  */
 export function compileCoordinate(
   meta: CubeMetadata,
-  selectedMemberIdsByPosition: Record<number, number>
+  selectedMemberIdsByPosition: Record<number, number> = {}
 ): string {
   const parts: string[] = [];
 
@@ -122,14 +123,19 @@ export function compileCoordinate(
     const selectedId = selectedMemberIdsByPosition[pos];
 
     if (selectedId != null && selectedId > 0) {
-      // Verify member exists in dimension
       const exists = dim.members.some((m) => m.memberId === selectedId);
-      parts.push(exists ? String(selectedId) : '1');
+      parts.push(exists ? String(selectedId) : String(dim.members[0]?.memberId ?? 1));
     } else {
-      // Default to 1 (usually the aggregate/total member in StatCan)
-      parts.push('1');
+      // Default to the first member in this dimension
+      const defaultId = dim.members[0]?.memberId ?? 1;
+      parts.push(String(defaultId));
     }
   }
 
-  return parts.join('.');
+  // StatCan WDS coordinates MUST be exactly 10 parts, padded with 0!
+  while (parts.length < 10) {
+    parts.push('0');
+  }
+
+  return parts.slice(0, 10).join('.');
 }

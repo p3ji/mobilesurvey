@@ -55,8 +55,8 @@ describe('Fuzzy Member Matcher', () => {
     expect(matches['Unemployment rate']?.[0]?.memberId).toBe(3);
     expect(matches['Unemployment rate']?.[0]?.dimensionPositionId).toBe(2);
 
-    // Compile coordinate: Position 1 -> Ontario (2), Position 2 -> Unemployment rate (3)
+    // Compile coordinate: Position 1 -> Ontario (2), Position 2 -> Unemployment rate (3) + 8 zeros
     const coord = compileCoordinate(mockMeta, { 1: 2, 2: 3 });
-    expect(coord).toBe('2.3');
+    expect(coord).toBe('2.3.0.0.0.0.0.0.0.0');
   });
 });

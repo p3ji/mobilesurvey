@@ -5,6 +5,7 @@
 
 import { StatCanWdsClient } from '../engine/statcan-wds.js';
 import { bindFactTokens, checkBareNumerals } from '../engine/fact-binder.js';
+import { compileCoordinate } from '../engine/fuzzy-matcher.js';
 import { STATCAN_AGENT_TOOLS } from './agent-tools.js';
 import type { ChartIntent, ObservationRow, ProvenanceMetadata, StructuredResult } from '../types.js';
 
@@ -59,6 +60,7 @@ export class StatCanAgentRunner {
     answer: string;
     result?: StructuredResult | null;
     toolCallCount: number;
+    zeroNumeralCompliant: boolean;
     warnings: string[];
   }> {
     const warnings: string[] = [];
@@ -77,6 +79,7 @@ export class StatCanAgentRunner {
         answer: `Updated visualization to ${updatedChart.type} chart.`,
         result: publishedResult,
         toolCallCount: 0,
+        zeroNumeralCompliant: true,
         warnings: [],
       };
     }
@@ -132,6 +135,7 @@ CRITICAL RULES:
           answer: finalAnswer,
           result: publishedResult,
           toolCallCount,
+          zeroNumeralCompliant: numeralCheck.valid,
           warnings,
         };
       }
@@ -253,8 +257,8 @@ CRITICAL RULES:
     const selectedCube = candidates[0]!;
     const { metadata } = await this.client.inspectDimensions(selectedCube.productId);
 
-    // Default aggregate coordinate
-    const defaultCoords = metadata.dimensions.map(() => '1').join('.');
+    // Default aggregate coordinate (10 parts)
+    const defaultCoords = compileCoordinate(metadata);
     const fetchRes = await this.client.fetchSlice(selectedCube.productId, defaultCoords, 8);
 
     const chartIntent: ChartIntent = {
@@ -292,12 +296,16 @@ CRITICAL RULES:
       narrative = `Retrieved observation records from ${selectedCube.cubeTitleEn}.`;
     }
 
+    // Verify zero-numeral contract on the draft template BEFORE token substitution
+    const numeralCheck = checkBareNumerals(narrative);
+
     const verifiedProse = bindFactTokens(narrative, fetchRes.facts);
 
     return {
       answer: `${verifiedProse}\n\nSource: [StatCan Table ${selectedCube.productId}](${fetchRes.provenance.tableUrl}) (Coordinate: \`${defaultCoords}\`).`,
       result,
       toolCallCount: 3,
+      zeroNumeralCompliant: numeralCheck.valid,
       warnings: fetchRes.caveats,
     };
   }
