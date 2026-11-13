@@ -16,6 +16,7 @@ import { matchDimensionMembers, MemberMatch } from './fuzzy-matcher.js';
 
 const STATCAN_WDS_BASE = 'https://www150.statcan.gc.ca/t1/wds/rest';
 const CACHE_KEY_CUBES = 'statcan_cubes_list_lite_v1';
+const FETCH_TIMEOUT_MS = 15_000;
 
 /**
  * Normalizes any coordinate string to StatCan WDS's mandatory 10-part format.
@@ -124,6 +125,7 @@ export class StatCanWdsClient {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify([{ productId }]),
+        signal: AbortSignal.timeout(FETCH_TIMEOUT_MS),
       });
 
       if (!resp.ok) {
@@ -195,6 +197,7 @@ export class StatCanWdsClient {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(requests),
+      signal: AbortSignal.timeout(FETCH_TIMEOUT_MS),
     });
 
     if (!resp.ok) {
@@ -359,7 +362,9 @@ export class StatCanWdsClient {
       }
     }
 
-    const resp = await fetch(`${STATCAN_WDS_BASE}/getAllCubesListLite`);
+    const resp = await fetch(`${STATCAN_WDS_BASE}/getAllCubesListLite`, {
+      signal: AbortSignal.timeout(FETCH_TIMEOUT_MS),
+    });
     if (!resp.ok) {
       throw new Error(`Failed to load StatCan cube list: HTTP ${resp.status}`);
     }
@@ -444,6 +449,7 @@ export class StatCanWdsClient {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(reqs),
+        signal: AbortSignal.timeout(FETCH_TIMEOUT_MS),
       });
 
       if (!resp.ok) return null;
